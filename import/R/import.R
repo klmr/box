@@ -46,6 +46,10 @@ import <- function (.module, .only = NULL, ...) {
 
     aliases <- as.list(aliases)
 
+    invisible(doImport(module, only, aliases))
+}
+
+doImport <- function (module, only, aliases) {
     #
     # Find file to import for module based on module search path.
     #
@@ -96,7 +100,7 @@ import <- function (.module, .only = NULL, ...) {
         # Rename all names to be aliased
     }
 
-    invisible(packageDir)
+    packageDir
 }
 
 #' @export
