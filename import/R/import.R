@@ -54,16 +54,14 @@ doImport <- function (module, only, aliases) {
     # Find file to import for module based on module search path.
     #
 
-    # TODO Implement module search path
-    searchPath <- '.'
-    moduleFile <- sprintf('%s/%s.R', searchPath, module)
+    moduleFile <- resolveModulePath(module)
+
+    if (is.null(moduleFile))
+        stop(sprintf("unable to find module %s in path '%s'", module, searchPath))
 
     #
     # Create a temporary package for the import file, and load it
     #
-
-    if (! file.exists(moduleFile))
-        stop(sprintf("unable to find module %s in path '%s'", module, searchPath))
 
     packageDir <- file.path(tempdir(), module)
     #on.exit(unlink(packageDir, recursive = TRUE))
