@@ -119,8 +119,7 @@ resolveModulePath <- function (module) {
     if (! is.symbol(substitute(module)))
         stop('`module` must be an identifier')
 
-    name <- qualifiedIdentifierToPath(
-        as.character(substitute(module)))
+    name <- qualifiedModuleToPath(as.character(substitute(module)))
 
     for (path in c('.', moduleSearchPath)) {
         putativePath <- file.path(path, name)
@@ -149,7 +148,8 @@ checkValidModule <- function (path) {
 loadedModules <- function () {
 }
 
-qualifiedIdentifierToPath <- function (id)
+# Performs the transformation 'a.bc.d' => 'a/bc/d'
+qualifiedModuleToPath <- function (id)
     do.call(file.path, as.list(strsplit(id, '\\.')[[1]]))
 
 moduleName <- function (module) {
