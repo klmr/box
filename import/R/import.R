@@ -49,6 +49,45 @@ import <- function (.module, .only = NULL, ...) {
     invisible(doImport(module, only, aliases))
 }
 
+#' @export
+export <- function (...) {
+
+}
+
+#' @export
+unload <- function (module) {
+}
+
+#' @export
+reload <- function (module) {
+}
+
+#' @export
+moduleSearchPath <- c(
+    strsplit(Sys.getenv('R_MODULE_PATH'), ':')[[1]],
+    '~/.R/modules')
+
+#' @export
+resolveModulePath <- function (module) {
+    if (! is.symbol(substitute(module)))
+        stop('`module` must be an identifier')
+
+    name <- qualifiedModuleToPath(as.character(substitute(module)))
+
+    for (path in c('.', moduleSearchPath)) {
+        putativePath <- file.path(path, name)
+        validated <- checkValidModule(putativePath)
+        if (! is.null(validated))
+            return(validated)
+    }
+
+    NULL # Nothing found
+}
+
+#' @export
+loadedModules <- function ()
+    names(loadedModulesInfo)
+
 doImport <- function (module, only, aliases) {
     #
     # Find file to import for module based on module search path.
@@ -101,36 +140,6 @@ doImport <- function (module, only, aliases) {
     packageDir
 }
 
-#' @export
-unload <- function (module) {
-}
-
-#' @export
-reload <- function (module) {
-}
-
-#' @export
-moduleSearchPath <- c(
-    strsplit(Sys.getenv('R_MODULE_PATH'), ':')[[1]],
-    '~/.R/modules')
-
-#' @export
-resolveModulePath <- function (module) {
-    if (! is.symbol(substitute(module)))
-        stop('`module` must be an identifier')
-
-    name <- qualifiedModuleToPath(as.character(substitute(module)))
-
-    for (path in c('.', moduleSearchPath)) {
-        putativePath <- file.path(path, name)
-        validated <- checkValidModule(putativePath)
-        if (! is.null(validated))
-            return(validated)
-    }
-
-    NULL # Nothing found
-}
-
 checkValidModule <- function (path) {
     paths <- c(paste(path, '.R', sep = ''),
                file.path(path, '_init.R'))
@@ -144,8 +153,21 @@ checkValidModule <- function (path) {
     else NULL
 }
 
-#' @export
-loadedModules <- function () {
+#
+# Importing a module adds an environment which contains all the modules' objects
+# and additionally adds all those specified in `only` (or all, if none are
+# specified) to the search path.
+# In addition, a tracking record is created for the import which contains its
+# name, file system location and a reference to its environment.
+# This is used for unloading and reloading.
+#
+
+prepareModule <- function (module, path) {
+    name <- paste('module', as.character(substitute(module)), sep = ':')
+    modEnv <- attach(module, name = name)
+    class(modEnv) <- 'module'
+    loadedModulesInfo[[name]] <- list(name = name, path = path, env = modEnv)
+    modEnv
 }
 
 # Performs the transformation 'a.bc.d' => 'a/bc/d'
