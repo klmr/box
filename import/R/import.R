@@ -28,7 +28,7 @@ import <- function (.module, .only = NULL, ...) {
 
         if (! all(vapply(only, is.symbol, TRUE)))
             stop(whatError)
-        only <- as.character(only)
+        only <- symbolToCharacter(only)
     }
 
     # `.aliases` expected format: a = b, c = d, e = f
@@ -51,7 +51,10 @@ import <- function (.module, .only = NULL, ...) {
 
 #' @export
 export <- function (...) {
-
+    exportNames <- symbolToCharacter(match.call(expand.dots = FALSE)$...)
+    theExportNames <<- exportNames
+    theExportAllNames <<- length(exportNames) == 0
+    invisible(exportNames)
 }
 
 #' @export
@@ -86,7 +89,7 @@ resolveModulePath <- function (module) {
 
 #' @export
 loadedModules <- function ()
-    names(loadedModulesInfo)
+    names(theLoadedModulesInfo)
 
 doImport <- function (module, only, aliases) {
     #
@@ -99,46 +102,18 @@ doImport <- function (module, only, aliases) {
         stop(sprintf("unable to find module %s in path '%s'", module, searchPath))
 
     #
-    # Create a temporary package for the import file, and load it
+    # * Source module file(s) in local context
+    # * Create module tracking record and hook up to exported environment
+    # * Collect exported symbols from `theExportName` and `theExportAllNames`
+    # * Copy exported names to exported environment
+    # * Link with documentation
+    # * (Make remaining names available via `:::` somehow?)
     #
-
-    packageDir <- file.path(tempdir(), module)
-    #on.exit(unlink(packageDir, recursive = TRUE))
-    require(devtools)
-    #on.exit(Sys.unsetenv('_R_CHECK_FORCE_SUGGESTS_'))
-    #Sys.setenv('_R_CHECK_FORCE_SUGGESTS_' = FALSE)
-    # Not using `create` to avoid redundant checks and diagnostic messages
-    #devtools::create(packageDir)
-
-    capture.output(suppressMessages(dir.create(packageDir)))
-    suppressMessages(dir.create(file.path(packageDir, 'R')))
-    suppressMessages(dir.create(file.path(packageDir, 'man')))
-    file.copy(moduleFile, file.path(packageDir, 'R'))
-    defaults <- list(Package = module,
-                     Version = '0.1',
-                     License = '',
-                     Description = '',
-                     Title = module,
-                     Author = '',
-                     Maintainer = 'Nobody <nobody@example.com>')
-    write.dcf(defaults, file.path(packageDir, 'DESCRIPTION'))
-    #devtools:::create_package_doc(packageDir, module)
-    #capture.output(suppressMessages(devtools::document(packageDir, reload = FALSE)))
-
-    if (! is.null(only)) {
-        # TODO Implement restricted imports
-        # Create a NAMESPACE file to import only the chosen names
-    }
-
-    devtools::load_all(packageDir, quiet = TRUE)
-
-    if (! is.null(aliases)) {
-        # TODO Implement aliases
-        # Rename all names to be aliased
-    }
-
-    packageDir
 }
+
+symbolToCharacter <- function (symbols)
+    # FIXME Surely there is a better way of handling operator names?
+    gsub('^`(.*)`$', '\\1', symbols)
 
 checkValidModule <- function (path) {
     paths <- c(paste(path, '.R', sep = ''),
@@ -166,7 +141,7 @@ prepareModule <- function (module, path) {
     name <- paste('module', as.character(substitute(module)), sep = ':')
     modEnv <- attach(module, name = name)
     class(modEnv) <- 'module'
-    loadedModulesInfo[[name]] <- list(name = name, path = path, env = modEnv)
+    theLoadedModulesInfo[[name]] <- list(name = name, path = path, env = modEnv)
     modEnv
 }
 
@@ -181,61 +156,6 @@ moduleName <- function (module) {
     as.character(substitute(module))
 }
 
-#
-# EVERYTHING BELOW THIS LINE IS LEGACY AND WILL BE REMOVED
-#
-
-
-# TODO Implement `as`
-# TODO Implement search path handling
-# TODO Consolidate metadata (such as imports list, include guard) in imports environment
-import <- function (module, imports = NULL, as = NULL) {
-    module <- as.character(substitute(module))
-    filename <- paste(module, 'R', sep = '.')
-
-    includeGuard <- paste('.INCLUDE', toupper(module), 'R', sep = '_')
-    if (exists(includeGuard, envir = topenv()))
-        return()
-
-    assign(includeGuard, TRUE, envir = topenv())
-    env <- new.env(parent = topenv())
-    class(env) <- 'module'
-    attr(env, 'name') <- module
-    sys.source(filename, chdir = TRUE, envir = env)
-
-    for (name in imports)
-        # TODO Issue warning for overwritten objects?
-        assign(name, get(name, envir = env), envir = topenv())
-
-    assign(module, env, envir = topenv())
-    if (is.null(imports)) ls(envir = env) else imports
-}
-
-reload <- function (module, imports = NULL, as = NULL) {
-    modName <- environmentName(module)
-    includeGuard <- paste('.INCLUDE', toupper(modName), 'R', sep = '_')
-    if (exists(includeGuard, envir = topenv()))
-        rm(list = includeGuard, envir = topenv())
-    do.call(import, list(modName, imports, as))
-}
-
-# TODO Purge objects, not only environment & include guard
-unload <- function (module) {
-    modName <- environmentName(module)
-    includeGuard <- paste('.INCLUDE', toupper(modName), 'R', sep = '_')
-    if (exists(includeGuard, envir = topenv()))
-        rm(list = c(includeGuard, modName), envir = topenv())
-}
-
-`::.module` <- function (module, name)
-    get(as.character(substitute(name)),
-        envir = get(as.character(substitute(module)), envir = topenv()))
-
-`::` <- function (module, name) {
-    module <- as.character(substitute(module))
-    name <- as.character(substitute(name))
-    if (exists(module, envir = topenv()))
-        UseMethod('::')
-    else
-        getExportedValue(module, name)
-}
+theLoadedModulesInfo <- list()
+theExportNames <- NULL
+theExportAllNames <- FALSE
