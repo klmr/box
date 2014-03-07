@@ -1,0 +1,8 @@
+Package: import
+Title: Alternative package management system for R
+Version: 0.1
+Authors@R: Konrad Rudolph <konrad.rudolph@gmail.com> [aut, cre]
+Description:
+Depends: R (>= 3.0.2)
+License: Apache License == 2.0
+LazyData: true
