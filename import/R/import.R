@@ -1,3 +1,7 @@
+# TODO
+# * Create a mechanism a la Python’s `if __name__ == '__main__'`
+#   so that modules can execute special code if invoked directly
+
 #' Import a module into the current R module context.
 #'
 #'
@@ -31,8 +35,8 @@ import <- function (.module, .only = NULL, ...) {
         only <- symbolToCharacter(only)
     }
 
-    # `.aliases` expected format: a = b, c = d, e = f
-    #                         OR: c(a = b)
+    # `aliases` expected format: a = b, c = d, e = f
+    #                        OR: c(a = b)
     # The second form is allowed so that the user can define aliases for the
     # imported names `.module` and `.only`, which would otherwise be impossible
     # because they shadow function arguments.
@@ -52,8 +56,8 @@ import <- function (.module, .only = NULL, ...) {
 #' @export
 export <- function (...) {
     exportNames <- symbolToCharacter(match.call(expand.dots = FALSE)$...)
-    theExportNames <<- exportNames
-    theExportAllNames <<- length(exportNames) == 0
+    theExportNames <<- c(theExportNames, exportNames)
+    theExportAllNames <<- length(theExportNames) == 0
     invisible(exportNames)
 }
 
@@ -99,10 +103,24 @@ doImport <- function (module, only, aliases) {
     moduleFile <- resolveModulePath(module)
 
     if (is.null(moduleFile))
-        stop(sprintf("unable to find module %s in path '%s'", module, searchPath))
+        stop(sprintf("unable to find module %s in path '%s'",
+                     module,
+                     paste(c('.', moduleSearchPath), collapse = ':')))
 
-    #
     # * Source module file(s) in local context
+
+    # TODO Handle recursive modules: only load a module once, and reuse its
+    # environments across all other modules which imported it.
+    localEnv <- new.env(parent = baseenv())
+    sys.source(moduleFile, envir = localEnv, chdir = TRUE)
+
+    # Environments:
+    # 1. all objects (loaded into)
+    # 2. exported only, accessible via `module::x`
+    # 3. imported only, attach’d, also `module::x`
+
+    # TODO How to realise mutable variables with the above schema?
+
     # * Create module tracking record and hook up to exported environment
     # * Collect exported symbols from `theExportName` and `theExportAllNames`
     # * Copy exported names to exported environment
