@@ -31,7 +31,7 @@ find_module = function (module) {
              paste(Map(function (p) sprintf('"%s"', p), import_search_path()),
                    collapse = ', '))
 
-    hits[1]
+    unname(hits[1])
 }
 
 #' Return the import module search path
