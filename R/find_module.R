@@ -7,10 +7,11 @@
 #' highest priority. If no path is found, return \code{NA}.
 find_module = function (module) {
     full_name = as.character(module)
+    parts = unlist(strsplit(full_name, '\\.'))
     # Prepend '' to ensure that at least one path component exists, otherwise
     # `file.path` will subsequently return an empty vector instead of '' for
     # `candidate_paths`.
-    parts = c('', unlist(strsplit(full_name, '\\.')))
+    parts = c(if (length(parts) < 2) '' else NULL, parts)
 
     # Use all-but-last parts to construct module source path, last part to
     # determine name of source file.
