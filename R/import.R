@@ -1,3 +1,10 @@
+#' Import a module into the current scope
+#'
+#' \code{module = import(module)} imports a specified module and makes its code
+#' available via the environment-like object it returns.
+#'
+#' @param module an identifier specifying the full module path
+#' @param attach NOT IMPLEMENTED
 #' @export
 import = function (module, attach = TRUE) {
     module = substitute(module)
