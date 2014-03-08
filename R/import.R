@@ -24,7 +24,7 @@ import = function (module, attach = TRUE) {
                                module_path = module_path),
                           parent = globalenv())
     module_env = new.env(parent = parent_env)
-    class(module_env) = 'module'
+    class(module_env) = c('module', class(module_env))
     local(source(module_path, chdir = TRUE, local = TRUE), envir = module_env)
 
     mark_module_loaded(module_env)
