@@ -15,7 +15,20 @@ import = function (module, attach = TRUE) {
         stop(attr(module_path, 'condition')$message)
 
     if (is_module_loaded(module))
-        return(invisible())
+        return(invisible(get_loaded_module(module)))
+
+    # The parent_env contains meta-information about the imported module.
+    # This is convenient, since we can also use it to hold the `module_path`
+    # variable which we subsequently access inside the `local` block.
+    parent_env = list2env(list(name = as.character(module),
+                               module_path = module_path),
+                          parent = globalenv())
+    module_env = new.env(parent = parent_env)
+    class(module_env) = 'module'
+    local(source(module_path, chdir = TRUE, local = TRUE), envir = module_env)
+
+    mark_module_loaded(module_env)
+    invisible(module_env)
 }
 
 .loaded_modules = new.env()
@@ -27,6 +40,9 @@ mark_module_loaded = function (module_env) {
     name = parent.env(module_env)$name
     assign(name, module_env, envir = .loaded_modules)
 }
+
+get_loaded_module = function (module)
+    get(as.character(module), envir = .loaded_modules)
 
 #' @export
 unload = function (module)
