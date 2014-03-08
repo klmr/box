@@ -18,13 +18,15 @@ import = function (module, attach = TRUE) {
         return(invisible())
 }
 
-.loaded_modules = c()
+.loaded_modules = new.env()
 
 is_module_loaded = function (module)
-    as.character(module) %in% .loaded_modules
+    exists(as.character(module), envir = .loaded_modules)
 
-mark_module_loaded = function (module)
-    '.loaded_modules' <<- c(.loaded_modules, as.character(module))
+mark_module_loaded = function (module_env) {
+    name = parent.env(module_env)$name
+    assign(name, module_env, envir = .loaded_modules)
+}
 
 #' @export
 unload = function (module)
