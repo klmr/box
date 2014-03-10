@@ -7,11 +7,10 @@
 #' highest priority. If no path is found, return \code{NA}.
 find_module = function (module) {
     full_name = as.character(module)
-    parts = unlist(strsplit(full_name, '\\.'))
     # Prepend '' to ensure that at least one path component exists, otherwise
     # `file.path` will subsequently return an empty vector instead of '' for
     # `candidate_paths`.
-    parts = c(if (length(parts) < 2) '' else NULL, parts)
+    parts = c('', unlist(strsplit(full_name, '\\.')))
 
     # Use all-but-last parts to construct module source path, last part to
     # determine name of source file.
@@ -31,7 +30,7 @@ find_module = function (module) {
              paste(Map(function (p) sprintf('"%s"', p), import_search_path()),
                    collapse = ', '))
 
-    unname(hits[1])
+    normalizePath(unname(hits[1]))
 }
 
 #' Return the import module search path
