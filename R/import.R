@@ -14,8 +14,8 @@ import = function (module, attach = TRUE) {
     if (is(module_path, 'try-error'))
         stop(attr(module_path, 'condition')$message)
 
-    if (is_module_loaded(module))
-        return(invisible(get_loaded_module(module)))
+    if (is_module_loaded(module_path))
+        return(invisible(get_loaded_module(module_path)))
 
     # The parent_env contains meta-information about the imported module.
     # This is convenient, since we can also use it to hold the `module_path`
@@ -31,18 +31,27 @@ import = function (module, attach = TRUE) {
     invisible(module_env)
 }
 
+#' Environment of loaded modules
+#'
+#' Each module is stored as an environment inside \code{.loaded_modules} with
+#' the module’s code location path as its identifier. The path rather than the
+#' module name is used because module names are not unique: two modules called
+#' \code{a} can exist nested inside modules \code{b} and \code{c}, respectively.
+#' Yet these may be loaded at the same time and need to be distinguished.
 .loaded_modules = new.env()
 
-is_module_loaded = function (module)
-    exists(as.character(module), envir = .loaded_modules)
+is_module_loaded = function (module_path)
+    exists(module_path, envir = .loaded_modules)
 
 mark_module_loaded = function (module_env) {
-    name = parent.env(module_env)$name
-    assign(name, module_env, envir = .loaded_modules)
+    assign(module_path(module_env), module_env, envir = .loaded_modules)
 }
 
-get_loaded_module = function (module)
-    get(as.character(module), envir = .loaded_modules)
+get_loaded_module = function (module_path)
+    get(module_path, envir = .loaded_modules)
+
+module_path = function (module_env)
+    parent.env(module_env)$module_path
 
 #' @export
 unload = function (module)
