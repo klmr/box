@@ -15,3 +15,8 @@ test_that('module is uniquely identified by path', {
     expect_true('double' %in% ls(a))
     expect_false('double' %in% ls(ba))
 })
+
+test_that('can use imported function', {
+    a = import(a)
+    expect_that(a$double(42), equals(42 * 2))
+})
