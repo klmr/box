@@ -31,10 +31,22 @@ import = function (module, attach = TRUE) {
     invisible(module_env)
 }
 
+#' Unload a given module
 #'
+#' Unset the module variable that is being passed as a parameter, and remove the
+#' loaded module from cache.
+#' @param module reference to the module which should be unloaded
+#' @note Any other references to the loaded modules remain unchanged, and will
+#' still work. However, subsequently importing the module again will reload its
+#' source files, which would not have happened without \code{unload}.
 #' @export
-unload = function (module)
-    NULL
+unload = function (module) {
+    module_ref = as.character(substitute(module))
+    rm(list = module_path(module), envir = .loaded_modules)
+    # unset the module reference in its scope, i.e. the caller’s environment or
+    # some parent thereof.
+    rm(list = module_ref, envir = parent.frame(), inherits = TRUE)
+}
 
 #' @export
 reload = function (module)
