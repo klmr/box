@@ -17,18 +17,21 @@ import = function (module, attach = TRUE) {
     if (is_module_loaded(module_path))
         return(invisible(get_loaded_module(module_path)))
 
+    invisible(do_import(as.character(module), module_path))
+}
+
+do_import = function (module_name, module_path) {
     # The parent_env contains meta-information about the imported module.
     # This is convenient, since we can also use it to hold the `module_path`
     # variable which we subsequently access inside the `local` block.
-    parent_env = list2env(list(name = as.character(module),
+    parent_env = list2env(list(name = module_name,
                                module_path = module_path),
                           parent = globalenv())
     module_env = new.env(parent = parent_env)
     class(module_env) = c('module', class(module_env))
     local(source(module_path, chdir = TRUE, local = TRUE), envir = module_env)
-
     mark_module_loaded(module_env)
-    invisible(module_env)
+    module_env
 }
 
 #' Unload a given module

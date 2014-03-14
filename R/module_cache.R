@@ -10,9 +10,8 @@
 is_module_loaded = function (module_path)
     exists(module_path, envir = .loaded_modules)
 
-mark_module_loaded = function (module_env) {
+mark_module_loaded = function (module_env)
     assign(module_path(module_env), module_env, envir = .loaded_modules)
-}
 
 get_loaded_module = function (module_path)
     get(module_path, envir = .loaded_modules)
