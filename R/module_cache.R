@@ -19,3 +19,19 @@ get_loaded_module = function (module_path)
 
 module_path = function (module_env)
     parent.env(module_env)$module_path
+
+#' Get a module’s name
+#'
+#' @param module_env a module environment (default: current module)
+#' @return A character string containing the name of the module or \code{NULL}
+#'  if called from outside a module.
+#' @note A module’s name is the fully qualified name it was first imported with.
+#' If the same module is subsequently imported using another qualified name
+#' (from within the same package, say, and hence truncated), the module name
+#' does not reflect that.
+#' This function approximates Python’s magic variable \code{__name__}, and can
+#' be used similarly to test whether a module was loaded via \code{import} or
+#' invoked directly.
+#' @export
+module_name = function (module_env = parent.frame())
+    if (is(module_env, 'module')) parent.env(module_env)$name else NULL
