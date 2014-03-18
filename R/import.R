@@ -52,5 +52,13 @@ unload = function (module) {
 }
 
 #' @export
-reload = function (module)
-    NULL
+reload = function (module) {
+    module_ref = as.character(substitute(module))
+    module_path = module_path(module)
+    module_name = module_name(module)
+    rm(list = module_path, envir = .loaded_modules)
+    #' @TODO Once we have `attach`, need also to take care of the search path
+    #' and whatnot.
+    assign(module_ref, do_import(module_name, module_path),
+           envir = parent.frame(), inherits = TRUE)
+}
