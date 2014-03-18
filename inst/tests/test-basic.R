@@ -20,3 +20,10 @@ test_that('can use imported function', {
     a = import(a)
     expect_that(a$double(42), equals(42 * 2))
 })
+
+test_that('module can modify its variables', {
+    a = import(a)
+    counter = a$counter
+    a$inc()
+    expect_that(a$counter, equals(counter + 1))
+})
