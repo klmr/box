@@ -49,7 +49,7 @@ time.
 
 R modules are normal R source files. However, `import` is different from
 `source` in some crucial regards. It’s also crucially different from normal
-packages. Please refer to the [comparison](#feature comparison) for details.
+packages. Please refer to the [comparison](#feature-comparison) for details.
 
 Feature comparison
 ------------------
@@ -78,11 +78,15 @@ import(relative.path.file, attach = TRUE)
   giving precedence to modules in the current directory), making it easy to
   reuse source files across projects without having to copy them around.
 * Repeatedly `import`ing, even in different modules, loads the module only once.
+  This makes it particularly well-suited for structuring projects into small,
+  decomposable units. This project was mainly borne out of the frustration that
+  is repeatedly `source`ing the same file, or alternatively having one “master
+  header” file which includes all other source files.
 
 ### With packages (`library`)
 
 Modules are conceived as a lightweight alternative to packages (see
-[rationale](#design rationale)). As such, modules are generally intended to be
+[rationale](#design-rationale)). As such, modules are generally intended to be
 more lightweight than packages.
 
 * Most importantly, modules often consist of single source code files.
@@ -102,6 +106,10 @@ more lightweight than packages.
 * As of now, there is no support for non-R code or dynamic libraries (but one
   may of course use facilities such as `dyn.load` and [Rcpp][] to include
   compiled code).
+* Control over exported and imported symbols is less fine-grained than for
+  packages with namespace for now. This is intentional, since modules handle
+  namespaces (via environments) more stringently than packages by default.
+  However, this might still change in the future to allow more control.
 
 [Rcpp]: http://www.rcpp.org/
 
@@ -112,10 +120,132 @@ more lightweight than packages.
 Design rationale
 ----------------
 
-> TODO
->
-> * Why? Why replace packages (mention `devtools`)?
-> * Why use identifier rather than character string as argument?
-> * Why not *allow* character string, as `library` does?
-> * Why not auto-define module reference in calling code, necessitating a
->   strictly redundant assignment?
+### Why? Why not use / write packages?
+
+While using R for exploratory data analysis as well as writing more robust
+analysis code, I have experienced the R mechanism of clumsily `source`ing lots
+of files to be a big hindrance. In fact, just adding a few helper functions to
+make using `source` less painful naturally evolved into an incomplete ad-hoc
+implementation of modules.
+
+The standard answer to this problem is “write a package”. But in the humble
+opinion of this person, R packages fall short in several regards, which this
+package (the irony is not lost on me) strives to rectify.
+
+#### Effort
+
+Writing packages incurs a non-trivial overhead. Packages need to live in their
+own folder hierarchy (and, importantly, cannot be nested), they require the
+specification of some meta information, a lot of which is simply irrelevant
+unless there is an immediate interest in publishing the package (such as the
+author name and contact, and licensing information). While it’s all right to
+thus encourage publication, realistically most code, even if reused internally,
+is never published.
+
+Last but not least, packages, before they can be used in code, need to be
+*built* and *installed*. And this needs to be repeated *every time* a single
+line of code is changed in the package. This is fine when developing a package
+in isolation; not so much when developing it in tandem with a bigger code base.
+
+`devtools` improves this work flow, but, as a [commenter on Stack Overflow][so]
+has pointed out,
+
+> devtools […] reduces the packaging effort from X to X/5, but X/5 in R is still
+> significant. In sensible interpreted languages X equals zero!
+
+A direct consequence of this is that many people *do* end up `source`ing all
+their code, and copying it between projects, and not putting their reusable code
+into a package. At best this is a lost opportunity. At worst you struggle
+keeping helper files between different projects in sync, which I’ve seen happen
+a lot.
+
+#### Not hierarchical
+
+Modular code often naturally forms recursive hierarchies. Most languages
+recognise this and allow modules to be nested (just think of Python’s or Java’s
+packages). R is the only widely used modern language (that I can think of) which
+has a flat package hierarchy.
+
+Allowing hierarchical nesting encourages users to organise project code into
+small, reusable modules from the outset. Even if these modules never get reused,
+they still improve the maintainability of the project.
+
+#### Low cohesion, tight coupling
+
+R’s packaging mechanism encourages huge, monolithic packages chock full of
+unrelated functions. CRAN has plenty of such packages. Without pointing fingers,
+let me give, as an example, the otherwise tremendously helpful [agricolae][]
+package, whose description reads
+
+> Statistical Procedures for Agricultural Research
+
+… I know projects which use this package because it includes a function to
+generate a consensus tree via bootstrapping. The projects in question have no
+relation whatsoever to agricultural research – and yet they resort to using a
+package whose *name* hints at its purpose, simply because of low cohesion.
+
+R’s packages fundamentally bias development towards [bad software
+engineering practices][cohesion].
+
+[so]: http://stackoverflow.com/a/15789538/1968
+[agricolae]: http://cran.r-project.org/web/packages/agricolae/index.html
+[cohesion]: http://en.wikipedia.org/wiki/Cohesion_(computer_science)
+
+#### Name clashes
+
+R packages provide namespaces and a mechanism for shielding client code from
+imports in the packages themselves. Nevertheless, there are situations where
+name clashes occur, because not all packages use namespaces (correctly).
+R 3.0.0 has allegedly solved this (by requiring use of namespaces) but I can
+still reproducibly generate a name clash with at least one package.
+
+### Why is the module name not passed as a string?
+
+`import` mimics `library` here – more importantly, however, `import` accepts an
+identifier because that is *fundamentally* what we want to convey. Module names
+should be thought of not as strings (and even less as paths!) but as language
+objects.
+
+### Okay, but why not allow a string also?
+
+`import` makes it fundamentally impossible to pass a module name via a variable.
+Again, this is fully intentional. Allowing `import(name = 'module')` would be
+trivially feasible. However, this goes explicitly against the intention of this
+package to provide a uniform interface, and experience from other languages
+(in the form of hard-coded library dependencies, module imports and headers)
+shows that making the imported module modifiable via variables is not needed.
+
+Incidentally, this also encourages the use of file names which resemble R
+identifiers.
+
+### Why do I manually need to assign the loaded module to a variable?
+
+In other words, why does `import` force the user to write
+
+```splus
+module = import(module)
+```
+
+Where the `module` name is redundant, instead of
+
+```splus
+import(module)
+```
+
+With the latter call automatically defining the required variable in the calling
+code? R definitely makes this possible (`reload` does it). However, several
+reasons speak against it. It’s potentially destructive (in as much as it may
+inadvertently overwrite an existing variable), and it makes the function rely
+entirely on side-effects, something which R code should always be wary of. It
+also makes it less obvious how to define an alias for the imported module in
+user code. As it is, the user can simply alias a module by assigning it to a
+different name, e.g. `m = import(module)`.
+
+Granted, both `unload` and `reload` violate this. However, both are actually
+*safe* because they only change the variable explicitly passed to them, and they
+shouldn’t be used in most code anyway (their purpose is for use in interactive
+sessions while developing modules).
+
+### Why are nested names accessed via `$`?
+
+> TODO / subject to change?
