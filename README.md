@@ -106,6 +106,10 @@ more lightweight than packages.
 * As of now, there is no support for non-R code or dynamic libraries (but one
   may of course use facilities such as `dyn.load` and [Rcpp][] to include
   compiled code).
+* Control over exported and imported symbols is less fine-grained than for
+  packages with namespace for now. This is intentional, since modules handle
+  namespaces (via environments) more stringently than packages by default.
+  However, this might still change in the future to allow more control.
 
 [Rcpp]: http://www.rcpp.org/
 
