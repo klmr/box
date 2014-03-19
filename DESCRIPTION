@@ -1,4 +1,4 @@
-Package: import
+Package: modules
 Title: Modules for R
 Version: 0.1
 Author: Konrad Rudolph <konrad.rudolph@gmail.com>

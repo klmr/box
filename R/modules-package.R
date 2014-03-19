@@ -3,6 +3,6 @@
 #' Use \code{module = import(module)} to import a module for usage.
 #' Fully qualified names are supported for nested modules, reminiscent of
 #' Python’s module mechanism.
-#' @name import
+#' @name modules
 #' @docType package
 NULL
