@@ -42,6 +42,8 @@ do_import = function (module_name, module_path) {
 #' @note Any other references to the loaded modules remain unchanged, and will
 #' still work. However, subsequently importing the module again will reload its
 #' source files, which would not have happened without \code{unload}.
+#' Unloading modules is primarily useful for testing during development, and
+#' should not be used in production code.
 #' @export
 unload = function (module) {
     module_ref = as.character(substitute(module))
@@ -51,6 +53,14 @@ unload = function (module) {
     rm(list = module_ref, envir = parent.frame(), inherits = TRUE)
 }
 
+#' Reload a given module
+#'
+#' Remove the loaded module from the cache, forcing a reload. The newly reloaded
+#' module is assigned to the module reference in the calling scope.
+#' @param module reference to the module which should be unloaded
+#' @note Any other references to the loaded modules remain unchanged, and will
+#' still work. Reloading modules is primarily useful for testing during
+#' development, and should not be used in production code.
 #' @export
 reload = function (module) {
     module_ref = as.character(substitute(module))
