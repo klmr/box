@@ -124,9 +124,11 @@ Design rationale
 
 While using R for exploratory data analysis as well as writing more robust
 analysis code, I have experienced the R mechanism of clumsily `source`ing lots
-of files to be a big hindrance.
+of files to be a big hindrance. In fact, just adding a few helper functions to
+make using `source` less painful naturally evolved into an incomplete ad-hoc
+implementation of modules.
 
-The standard answer to this dilemma is “write a package”. But in the humble
+The standard answer to this problem is “write a package”. But in the humble
 opinion of this person, R packages fall short in several regards, which this
 package (the irony is not lost on me) strives to rectify.
 
@@ -159,11 +161,14 @@ a lot.
 
 #### Not hierarchical
 
-> TODO
-> (All other languages do it and it’s very helpful for organisation)
+Modular code often naturally forms recursive hierarchies. Most languages
+recognise this and allow modules to be nested (just think of Python’s or Java’s
+packages). R is the only widely used modern language (that I can think of) which
+has a flat package hierarchy.
 
-> (It also improves project organisation and encourages using lots of small
-> modules inside a project, encouraging writing reusable code from the outset)
+Allowing hierarchical nesting encourages users to organise project code into
+small, reusable modules from the outset. Even if these modules never get reused,
+they still improve the maintainability of the project.
 
 #### Low cohesion, tight coupling
 
@@ -174,9 +179,10 @@ package, whose description reads
 
 > Statistical Procedures for Agricultural Research
 
-… I know code which uses this package because it includes a function to generate
-a consensus tree via bootstrapping. The code in question has no relation
-whatsoever to agricultural research.
+… I know projects which use this package because it includes a function to
+generate a consensus tree via bootstrapping. The projects in question have no
+relation whatsoever to agricultural research – and yet they resort to using a
+package whose *name* hints at its purpose, simply because of low cohesion.
 
 R’s packages fundamentally bias development towards [bad software
 engineering practices][cohesion].
@@ -185,7 +191,7 @@ engineering practices][cohesion].
 [agricolae]: http://cran.r-project.org/web/packages/agricolae/index.html
 [cohesion]: http://en.wikipedia.org/wiki/Cohesion_(computer_science)
 
-### Name clashes
+#### Name clashes
 
 R packages provide namespaces and a mechanism for shielding client code from
 imports in the packages themselves. Nevertheless, there are situations where
