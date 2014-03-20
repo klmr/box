@@ -4,9 +4,10 @@
 #' available via the environment-like object it returns.
 #'
 #' @param module an identifier specifying the full module path
-#' @param attach NOT IMPLEMENTED
+#' @param attach if \code{TRUE}, attach the newly loaded module to the object
+#'      search path
 #' @export
-import = function (module, attach = TRUE) {
+import = function (module, attach = FALSE) {
     module = substitute(module)
     stopifnot(is(module, 'name'))
     module_path = try(find_module(module), silent = TRUE)
