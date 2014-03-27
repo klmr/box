@@ -22,16 +22,25 @@ import = function (module, attach = FALSE) {
 }
 
 do_import = function (module_name, module_path) {
-    # The parent_env contains meta-information about the imported module.
-    # This is convenient, since we can also use it to hold the `module_path`
-    # variable which we subsequently access inside the `local` block.
-    parent_env = list2env(list(name = module_name,
-                               module_path = module_path),
-                          parent = globalenv())
-    module_env = new.env(parent = parent_env)
-    class(module_env) = c('module', class(module_env))
-    local(source(module_path, chdir = TRUE, local = TRUE), envir = module_env)
-    mark_module_loaded(module_env)
+    # The namespace contains a module’s content. This schema is very much like
+    # R package organisation, minus, for now, the `import:` part.
+    # A good resource for this is:
+    # <http://obeautifulcode.com/R/How-R-Searches-And-Finds-Stuff/>
+    namespace = structure(new.env(parent = .BaseNamespaceEnv),
+                          name = paste('namespace', module_name, sep = ':'),
+                          path = module_path,
+                          class = c('namespace', 'environment'))
+    local(source(attr(environment(), 'path'), chdir = TRUE, local = TRUE),
+          envir = namespace)
+    #' @TODO The parent environment of the module should be the next item in the
+    #' search list, I think – like for packages.
+    exported_functions = lsf.str(namespace)
+    module_env = structure(list2env(sapply(exported_functions,
+                                           get, envir = namespace)),
+                           name = paste('module', module_name, sep = ':'),
+                           path = module_path,
+                           class = c('module', 'environment'))
+    cache_module(module_env)
     module_env
 }
 

@@ -10,14 +10,15 @@
 is_module_loaded = function (module_path)
     exists(module_path, envir = .loaded_modules)
 
-mark_module_loaded = function (module_env)
+cache_module = function (module_env) {
     assign(module_path(module_env), module_env, envir = .loaded_modules)
+}
 
 get_loaded_module = function (module_path)
     get(module_path, envir = .loaded_modules)
 
 module_path = function (module_env)
-    parent.env(module_env)$module_path
+    attr(module_env, 'path')
 
 #' Get a module’s name
 #'
@@ -33,4 +34,13 @@ module_path = function (module_env)
 #' invoked directly.
 #' @export
 module_name = function (module_env = parent.frame())
-    if (is(module_env, 'module')) parent.env(module_env)$name else NULL
+    UseMethod('module_name', module_env)
+
+module_name.default = function (module_env = parent.frame())
+    NULL
+
+module_name.module = function (module_env = parent.frame())
+    strsplit(attr(module_env, 'name'), ':', fixed = TRUE)[[1]][2]
+
+module_name.namespace = function (module_env = parent.frame())
+    strsplit(attr(module_env, 'name'), ':', fixed = TRUE)[[1]][2]
