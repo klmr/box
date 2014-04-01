@@ -5,7 +5,17 @@
 #'
 #' @param module an identifier specifying the full module path
 #' @param attach if \code{TRUE}, attach the newly loaded module to the object
-#'      search path
+#'      search path (see \code{Details})
+#' @return the loaded module environment (invisible)
+#' @details Modules are loaded in an isolated environment which is returned, and
+#' optionally attached to the object search path of the current scope (if
+#' argument \code{attach} is specified). Note that, unlike for packages,
+#' attaching happens \emph{locally}: if \code{import} is executed in the global
+#' environment, the effect is the same. Otherwise, the imported module is
+#' inserted as the parent of the current \code{environment()}.
+#' When used (globally) \emph{inside} a module, the newly imported module is
+#' only available inside the module’s search path, not outside it (or in other
+#' modules which might be loaded).
 #' @seealso \code{unload}
 #' @seealso \code{reload}
 #' @seealso \code{module_name}
@@ -13,15 +23,24 @@
 import = function (module, attach = FALSE) {
     module = substitute(module)
     stopifnot(is(module, 'name'))
+    stopifnot(class(attach) == 'logical' && length(attach) == 1)
+
     module_path = try(find_module(module), silent = TRUE)
 
     if (is(module_path, 'try-error'))
         stop(attr(module_path, 'condition')$message)
 
-    if (is_module_loaded(module_path))
-        return(invisible(get_loaded_module(module_path)))
+    module_parent = parent.frame()
 
-    invisible(do_import(as.character(module), module_path, parent.frame()))
+    mod_env = if (is_module_loaded(module_path))
+            get_loaded_module(module_path)
+        else
+            do_import(as.character(module), module_path, module_parent)
+
+    if (attach)
+        parent.env(module_parent) = mod_env
+
+    invisible(mod_env)
 }
 
 do_import = function (module_name, module_path, module_parent) {
@@ -59,6 +78,8 @@ do_import = function (module_name, module_path, module_parent) {
 #' source files, which would not have happened without \code{unload}.
 #' Unloading modules is primarily useful for testing during development, and
 #' should not be used in production code.
+#'
+#' \code{unload} does not currently detach environments.
 #' @seealso \code{import}
 #' @seealso \code{reload}
 #' @export
@@ -78,6 +99,8 @@ unload = function (module) {
 #' @note Any other references to the loaded modules remain unchanged, and will
 #' still work. Reloading modules is primarily useful for testing during
 #' development, and should not be used in production code.
+#'
+#' \code{reload} does not work correctly with attached environments.
 #' @seealso \code{import}
 #' @seealso \code{unload}
 #' @export
