@@ -18,12 +18,12 @@ import = function (module, attach = FALSE) {
     if (is_module_loaded(module_path))
         return(invisible(get_loaded_module(module_path)))
 
-    invisible(do_import(as.character(module), module_path))
+    invisible(do_import(as.character(module), module_path, parent.frame()))
 }
 
-do_import = function (module_name, module_path) {
+do_import = function (module_name, module_path, module_parent) {
     # The namespace contains a module’s content. This schema is very much like
-    # R package organisation, minus, for now, the `import:` part.
+    # R package organisation.
     # A good resource for this is:
     # <http://obeautifulcode.com/R/How-R-Searches-And-Finds-Stuff/>
     namespace = structure(new.env(parent = .BaseNamespaceEnv),
@@ -35,8 +35,12 @@ do_import = function (module_name, module_path) {
     #' @TODO The parent environment of the module should be the next item in the
     #' search list, I think – like for packages.
     exported_functions = lsf.str(namespace)
+    # Skip one parent environment because this module is hooked into the chain
+    # between the calling environment and its ancestor, thus sitting in its
+    # local object search path.
     module_env = structure(list2env(sapply(exported_functions,
-                                           get, envir = namespace)),
+                                           get, envir = namespace),
+                                    parent = parent.env(module_parent)),
                            name = paste('module', module_name, sep = ':'),
                            path = module_path,
                            class = c('module', 'environment'))
@@ -79,6 +83,6 @@ reload = function (module) {
     rm(list = module_path, envir = .loaded_modules)
     #' @TODO Once we have `attach`, need also to take care of the search path
     #' and whatnot.
-    assign(module_ref, do_import(module_name, module_path),
+    assign(module_ref, do_import(module_name, module_path, parent.frame()),
            envir = parent.frame(), inherits = TRUE)
 }
