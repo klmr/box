@@ -38,7 +38,7 @@ import = function (module, attach = FALSE) {
             do_import(as.character(module), module_path, module_parent)
 
     if (attach)
-        parent.env(module_parent) = mod_env
+        base::attach(mod_env, name = environmentName(mod_env))
 
     invisible(mod_env)
 }
