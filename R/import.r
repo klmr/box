@@ -6,6 +6,9 @@
 #' @param module an identifier specifying the full module path
 #' @param attach if \code{TRUE}, attach the newly loaded module to the object
 #'      search path
+#' @seealso \code{unload}
+#' @seealso \code{reload}
+#' @seealso \code{module_name}
 #' @export
 import = function (module, attach = FALSE) {
     module = substitute(module)
@@ -32,8 +35,6 @@ do_import = function (module_name, module_path, module_parent) {
                           class = c('namespace', 'environment'))
     local(source(attr(environment(), 'path'), chdir = TRUE, local = TRUE),
           envir = namespace)
-    #' @TODO The parent environment of the module should be the next item in the
-    #' search list, I think – like for packages.
     exported_functions = lsf.str(namespace)
     # Skip one parent environment because this module is hooked into the chain
     # between the calling environment and its ancestor, thus sitting in its
@@ -58,6 +59,8 @@ do_import = function (module_name, module_path, module_parent) {
 #' source files, which would not have happened without \code{unload}.
 #' Unloading modules is primarily useful for testing during development, and
 #' should not be used in production code.
+#' @seealso \code{import}
+#' @seealso \code{reload}
 #' @export
 unload = function (module) {
     module_ref = as.character(substitute(module))
@@ -75,6 +78,8 @@ unload = function (module) {
 #' @note Any other references to the loaded modules remain unchanged, and will
 #' still work. Reloading modules is primarily useful for testing during
 #' development, and should not be used in production code.
+#' @seealso \code{import}
+#' @seealso \code{unload}
 #' @export
 reload = function (module) {
     module_ref = as.character(substitute(module))
