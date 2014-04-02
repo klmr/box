@@ -43,12 +43,13 @@ import = function (module, attach) {
     if (inherits(module_path, 'try-error'))
         stop(attr(module_path, 'condition')$message)
 
-    module_parent = parent.frame()
+    mod_ns = if (is_module_loaded(module_path))
+        get_loaded_module(module_path)
+    else
+        do_import(as.character(module), module_path)
 
-    mod_env = if (is_module_loaded(module_path))
-            get_loaded_module(module_path)
-        else
-            do_import(as.character(module), module_path, module_parent)
+    module_parent = parent.frame()
+    mod_env = exhibit_namespace(mod_ns, as.character(module), module_parent)
 
     if (attach)
         parent.env(module_parent) = mod_env
@@ -56,7 +57,7 @@ import = function (module, attach) {
     invisible(mod_env)
 }
 
-do_import = function (module_name, module_path, module_parent) {
+do_import = function (module_name, module_path) {
     # The namespace contains a module’s content. This schema is very much like
     # R package organisation.
     # A good resource for this is:
@@ -67,18 +68,20 @@ do_import = function (module_name, module_path, module_parent) {
                           class = c('namespace', 'environment'))
     local(source(attr(environment(), 'path'), chdir = TRUE, local = TRUE),
           envir = namespace)
+    cache_module(namespace)
+    namespace
+}
+
+exhibit_namespace = function (namespace, name, parent) {
     exported_functions = lsf.str(namespace)
     # Skip one parent environment because this module is hooked into the chain
     # between the calling environment and its ancestor, thus sitting in its
     # local object search path.
-    module_env = structure(list2env(sapply(exported_functions,
-                                           get, envir = namespace),
-                                    parent = parent.env(module_parent)),
-                           name = paste('module', module_name, sep = ':'),
-                           path = module_path,
-                           class = c('module', 'environment'))
-    cache_module(module_env)
-    module_env
+    structure(list2env(sapply(exported_functions, get, envir = namespace),
+                       parent = parent.env(parent)),
+              name = paste('module', name, sep = ':'),
+              path = module_path(namespace),
+              class = c('module', 'environment'))
 }
 
 #' Unload a given module
@@ -126,6 +129,8 @@ reload = function (module) {
     rm(list = module_path, envir = .loaded_modules)
     #' @TODO Once we have `attach`, need also to take care of the search path
     #' and whatnot.
-    assign(module_ref, do_import(module_name, module_path, parent.frame()),
-           envir = parent.frame(), inherits = TRUE)
+    mod_ns = do_import(module_name, module_path)
+    module_parent = parent.frame()
+    mod_env = exhibit_namespace(mod_ns, module_ref, module_parent)
+    assign(module_ref, mod_env, envir = module_parent, inherits = TRUE)
 }
