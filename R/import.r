@@ -9,20 +9,33 @@
 #' @return the loaded module environment (invisible)
 #' @details Modules are loaded in an isolated environment which is returned, and
 #' optionally attached to the object search path of the current scope (if
-#' argument \code{attach} is specified). Note that, unlike for packages,
-#' attaching happens \emph{locally}: if \code{import} is executed in the global
-#' environment, the effect is the same. Otherwise, the imported module is
-#' inserted as the parent of the current \code{environment()}.
-#' When used (globally) \emph{inside} a module, the newly imported module is
-#' only available inside the module’s search path, not outside it (or in other
-#' modules which might be loaded).
+#' argument \code{attach} is \code{TRUE}).
+#' \code{attach} defaults to \code{FALSE}. However, in interactive code it is
+#' often helpful to attach packages by default. Therefore, in interactive code
+#' invoked directly from the terminal only (i.e. not within modules),
+#' \code{attach} defaults to the value of \code{options('import.attach')}, which
+#' can be set to \code{TRUE} or \code{FALSE} depending on the user’s preference.
+#' @note Unlike for packages, attaching happens \emph{locally}: if
+#' \code{import} is executed in the global environment, the effect is the same.
+#' Otherwise, the imported module is inserted as the parent of the current
+#' \code{environment()}. When used (globally) \emph{inside} a module, the newly
+#' imported module is only available inside the module’s search path, not
+#' outside it (nor in other modules which might be loaded).
 #' @seealso \code{unload}
 #' @seealso \code{reload}
 #' @seealso \code{module_name}
 #' @export
-import = function (module, attach = FALSE) {
+import = function (module, attach) {
     module = substitute(module)
     stopifnot(inherits(module, 'name'))
+
+    if (missing(attach)) {
+        attach = if (interactive() && is.null(module_name()))
+            getOption('import.attach', FALSE)
+        else
+            FALSE
+    }
+
     stopifnot(class(attach) == 'logical' && length(attach) == 1)
 
     module_path = try(find_module(module), silent = TRUE)
