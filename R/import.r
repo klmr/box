@@ -51,8 +51,12 @@ import = function (module, attach) {
     module_parent = parent.frame()
     mod_env = exhibit_namespace(mod_ns, as.character(module), module_parent)
 
-    if (attach)
-        parent.env(module_parent) = mod_env
+    if (attach) {
+        if (identical(module_parent, .GlobalEnv))
+            attach(mod_env, name = environmentName(mod_env))
+        else
+            parent.env(module_parent) = mod_env
+    }
 
     invisible(mod_env)
 }
