@@ -10,37 +10,47 @@
 is_module_loaded = function (module_path)
     exists(module_path, envir = .loaded_modules)
 
-cache_module = function (module_env) {
-    assign(module_path(module_env), module_env, envir = .loaded_modules)
-}
+cache_module = function (module_ns)
+    assign(module_path(module_ns), module_ns, envir = .loaded_modules)
 
 get_loaded_module = function (module_path)
     get(module_path, envir = .loaded_modules)
 
-module_path = function (module_env)
-    attr(module_env, 'path')
+#' Get a module’s path
+#'
+#' @param module a module environment or namespace
+#' @return A character string containing the module’s full path.
+module_path = function (module)
+    attr(module, 'path')
 
 #' Get a module’s name
 #'
-#' @param module_env a module environment (default: current module)
+#' @param module a module environment (default: current module)
 #' @return A character string containing the name of the module or \code{NULL}
 #'  if called from outside a module.
-#' @note A module’s name is the fully qualified name it was first imported with.
-#' If the same module is subsequently imported using another qualified name
-#' (from within the same package, say, and hence truncated), the module name
-#' does not reflect that.
+#' @note A module’s name is the name of a module that it was \code{import}ed
+#' with. If the same module is subsequently imported using another qualifie
+#' name (from within the same package, say, and hence truncated), the module
+#' names of the two module instances may differ, even though the same copy of
+#' the byte code is used.
 #' This function approximates Python’s magic variable \code{__name__}, and can
 #' be used similarly to test whether a module was loaded via \code{import} or
 #' invoked directly.
 #' @export
-module_name = function (module_env = parent.frame())
-    UseMethod('module_name', module_env)
+module_name = function (module = parent.frame())
+    UseMethod('module_name', module)
 
-module_name.default = function (module_env = parent.frame())
+#' @seealso \code{module_name}
+#' @export
+module_name.default = function (module = parent.frame())
     NULL
 
-module_name.module = function (module_env = parent.frame())
-    strsplit(attr(module_env, 'name'), ':', fixed = TRUE)[[1]][2]
+#' @seealso \code{module_name}
+#' @export
+module_name.module = function (module = parent.frame())
+    strsplit(attr(module, 'name'), ':', fixed = TRUE)[[1]][2]
 
-module_name.namespace = function (module_env = parent.frame())
-    strsplit(attr(module_env, 'name'), ':', fixed = TRUE)[[1]][2]
+#' @seealso \code{module_name}
+#' @export
+module_name.namespace = function (module = parent.frame())
+    strsplit(attr(module, 'name'), ':', fixed = TRUE)[[1]][2]

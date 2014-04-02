@@ -1,7 +1,8 @@
 # Set up local module environment to test against.
 # Note that we override the normal path here.
 
-options(import.path = 'modules')
+options(import.path = 'modules',
+        import.attach = FALSE)
 
 #' Opposite of \code{is_identical_to}
 is_not_identical_to = function (expected, label = NULL) {
