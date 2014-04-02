@@ -15,7 +15,7 @@ find_module = function (module) {
     # Use all-but-last parts to construct module source path, last part to
     # determine name of source file.
     module_path = do.call(file.path, as.list(parts[-length(parts)]))
-    file_pattern = sprintf('%s\\.[rR]', parts[length(parts)])
+    file_pattern = sprintf('^%s\\.[rR]', parts[length(parts)])
 
     candidate_paths = file.path(import_search_path(), module_path)
 
