@@ -84,6 +84,7 @@ do_import = function (module_name, module_path, module_parent) {
 #' @seealso \code{reload}
 #' @export
 unload = function (module) {
+    stopifnot(inherits(module, 'module'))
     module_ref = as.character(substitute(module))
     rm(list = module_path(module), envir = .loaded_modules)
     # unset the module reference in its scope, i.e. the caller’s environment or
@@ -105,6 +106,7 @@ unload = function (module) {
 #' @seealso \code{unload}
 #' @export
 reload = function (module) {
+    stopifnot(inherits(module, 'module'))
     module_ref = as.character(substitute(module))
     module_path = module_path(module)
     module_name = module_name(module)
