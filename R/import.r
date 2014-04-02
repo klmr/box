@@ -7,6 +7,7 @@
 #' @param attach if \code{TRUE}, attach the newly loaded module to the object
 #'      search path (see \code{Details})
 #' @return the loaded module environment (invisible)
+#'
 #' @details Modules are loaded in an isolated environment which is returned, and
 #' optionally attached to the object search path of the current scope (if
 #' argument \code{attach} is \code{TRUE}).
@@ -15,12 +16,32 @@
 #' invoked directly from the terminal only (i.e. not within modules),
 #' \code{attach} defaults to the value of \code{options('import.attach')}, which
 #' can be set to \code{TRUE} or \code{FALSE} depending on the user’s preference.
+#'
+#' Modules are searched in the module search path \code{options('import.path')}.
+#' This is a vector of paths to consider, from the highest to the lowest
+#' priority. The current directory is \emph{always} considered first. That is,
+#' if a file \code{a.r} exists both in the current directory and in a module
+#' search path, the local file \code{./a.r} will be loaded.
+#'
+#' Module names can be fully qualified to refer to nested paths. See
+#' \code{Examples}.
+#'
 #' @note Unlike for packages, attaching happens \emph{locally}: if
 #' \code{import} is executed in the global environment, the effect is the same.
 #' Otherwise, the imported module is inserted as the parent of the current
 #' \code{environment()}. When used (globally) \emph{inside} a module, the newly
 #' imported module is only available inside the module’s search path, not
 #' outside it (nor in other modules which might be loaded).
+#'
+#' @examples
+#' # `a.r` is a file in the local directory containing a function `f`.
+#' a = import(a)
+#' a$f()
+#'
+#' # b/c.r is a file in path `b`, containing a function `g`.
+#' import(b.c, attach = TRUE)
+#' g() # No module name qualification necessary
+#'
 #' @seealso \code{unload}
 #' @seealso \code{reload}
 #' @seealso \code{module_name}
