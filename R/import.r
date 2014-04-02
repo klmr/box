@@ -22,12 +22,12 @@
 #' @export
 import = function (module, attach = FALSE) {
     module = substitute(module)
-    stopifnot(is(module, 'name'))
+    stopifnot(inherits(module, 'name'))
     stopifnot(class(attach) == 'logical' && length(attach) == 1)
 
     module_path = try(find_module(module), silent = TRUE)
 
-    if (is(module_path, 'try-error'))
+    if (inherits(module_path, 'try-error'))
         stop(attr(module_path, 'condition')$message)
 
     module_parent = parent.frame()
