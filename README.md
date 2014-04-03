@@ -65,6 +65,7 @@ packages. Please refer to the [comparison](#feature-comparison) for details.
 Installation
 ------------
 
+> TODO
 
 Feature comparison
 ------------------
@@ -273,3 +274,11 @@ sessions while developing modules).
 
 To do
 -----
+
+* Allow nested modules like packages in Python, with `__init__.r`.
+* Make S3 (and S4?) method lookup work.
+* Parse and load attached documentation?
+* Add argument `nonlocal` to override loading from working directory
+* Add simple module installation mechanism (`install.gist` etc).
+* Fix `unload` and `reload` to work with attached and multiply loaded modules
+* Add argument `path` to `import` to temporarily override `import.path`.
