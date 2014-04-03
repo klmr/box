@@ -88,6 +88,24 @@ import(relative.path.file, attach = TRUE)
 
 * Module content is loaded into its own private environment, akin to setting the
   `local=TRUE` option. It thus avoids polluting the global environment.
+* Since modules are environments, a module’s content can be listed easily via
+  `ls(modulename)`, and R shells provide auto-completion when writing
+  `modulename$` and pressing <kbd>Tab</kbd> repeatedly.
+* Modules can be executed directly (via `Rscript module.r` or similar) or
+  `import`ed. Unlike via `source`, a module *knows* when it’s being `import`ed,
+  which allows code to be executed conditionally only when it is executed
+  directly:
+
+  ```splus
+  if (is.null(module_name())) {
+      …
+  }
+  ```
+
+  This, of course, is similar to Python’s `if __name__ == '__main__': …`
+  mechanism. `module_name` returns a module’s name. Module source files which
+  are being executed directly don’t act as modules and hence have no name
+  (`module_name()` is `NULL`).
 * Loading happens in the module’s own directory, allowing the module to load
   local sources (the corresponding `source` option is `chdir=TRUE`).
 * `import` uses a standardised, customisable search path to locate modules (but
