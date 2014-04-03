@@ -1,6 +1,16 @@
 Modules for R
 =============
 
+Table of contents
+-----------------
+
+* [Summary](#summary)
+* [Installation](#installation)
+* [Feature comparison](#feature-comparison)
+* [Design rationale](#design-rationale)
+* [To do](#to-do)
+
+
 Summary
 -------
 
@@ -50,6 +60,11 @@ time.
 R modules are normal R source files. However, `import` is different from
 `source` in some crucial regards. It’s also crucially different from normal
 packages. Please refer to the [comparison](#feature-comparison) for details.
+
+
+Installation
+------------
+
 
 Feature comparison
 ------------------
@@ -119,6 +134,7 @@ more lightweight than packages.
 ### With Python’s `import` mechanism
 
 > TODO
+
 
 Design rationale
 ----------------
@@ -253,3 +269,7 @@ sessions while developing modules).
 ### Why are nested names accessed via `$`?
 
 > TODO / subject to change?
+
+
+To do
+-----
