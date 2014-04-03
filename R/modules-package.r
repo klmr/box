@@ -5,4 +5,6 @@
 #' Python’s module mechanism.
 #' @name modules
 #' @docType package
+#' @seealso \code{import}
+#' @seealso \code{module_name}
 NULL

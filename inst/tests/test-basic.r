@@ -21,9 +21,21 @@ test_that('can use imported function', {
     expect_that(a$double(42), equals(42 * 2))
 })
 
+test_that('modules only export functions', {
+    a = import(a)
+    expect(length(lsf.str(a)) > 0)
+    expect_that(length(lsf.str(a)), equals(length(ls(a))))
+    a_namespace = environment(a$double)
+    non_functions = setdiff(ls(a_namespace), ls(a))
+    expect(length(non_functions) > 0)
+    expect_true(exists(non_functions[[1]], envir = a_namespace))
+    expect_false(exists(non_functions[[1]], envir = a_namespace,
+                        mode = 'function'))
+})
+
 test_that('module can modify its variables', {
     a = import(a)
-    counter = a$counter
+    counter = a$get_counter()
     a$inc()
-    expect_that(a$counter, equals(counter + 1))
+    expect_that(a$get_counter(), equals(counter + 1))
 })

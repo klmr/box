@@ -82,6 +82,9 @@ import(relative.path.file, attach = TRUE)
   decomposable units. This project was mainly borne out of the frustration that
   is repeatedly `source`ing the same file, or alternatively having one “master
   header” file which includes all other source files.
+* Modules can only export functions, not objects. This is a consequence of how R
+  handles functions and objects, but it is a limitation that modules embrace to
+  enforce a clean public interface.
 
 ### With packages (`library`)
 
@@ -132,7 +135,7 @@ The standard answer to this problem is “write a package”. But in the humble
 opinion of this person, R packages fall short in several regards, which this
 package (the irony is not lost on me) strives to rectify.
 
-#### Effort
+#### i) Effort
 
 Writing packages incurs a non-trivial overhead. Packages need to live in their
 own folder hierarchy (and, importantly, cannot be nested), they require the
@@ -159,7 +162,9 @@ into a package. At best this is a lost opportunity. At worst you struggle
 keeping helper files between different projects in sync, which I’ve seen happen
 a lot.
 
-#### Not hierarchical
+[so]: http://stackoverflow.com/a/15789538/1968
+
+#### ii) Not hierarchical
 
 Modular code often naturally forms recursive hierarchies. Most languages
 recognise this and allow modules to be nested (just think of Python’s or Java’s
@@ -170,7 +175,7 @@ Allowing hierarchical nesting encourages users to organise project code into
 small, reusable modules from the outset. Even if these modules never get reused,
 they still improve the maintainability of the project.
 
-#### Low cohesion, tight coupling
+#### iii) Low cohesion, tight coupling
 
 R’s packaging mechanism encourages huge, monolithic packages chock full of
 unrelated functions. CRAN has plenty of such packages. Without pointing fingers,
@@ -187,11 +192,10 @@ package whose *name* hints at its purpose, simply because of low cohesion.
 R’s packages fundamentally bias development towards [bad software
 engineering practices][cohesion].
 
-[so]: http://stackoverflow.com/a/15789538/1968
 [agricolae]: http://cran.r-project.org/web/packages/agricolae/index.html
 [cohesion]: http://en.wikipedia.org/wiki/Cohesion_(computer_science)
 
-#### Name clashes
+#### iv) Name clashes
 
 R packages provide namespaces and a mechanism for shielding client code from
 imports in the packages themselves. Nevertheless, there are situations where
