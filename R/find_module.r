@@ -62,6 +62,7 @@ find_module = function (module) {
 #' order in which they need to be executed, or \code{NULL} if the arguments do
 #' not resolve to a valid nested module (i.e. not all of the path components
 #' which form the qualified module name contain a \code{__init__.r} file).
+#' The vector’s \code{names} are the names of the respective modules.
 #' @details The \code{module_name} is the fully qualified module path, but
 #' without the trailing module file (either \code{x.r} or \code{x/__init__.r}).
 module_init_files = function (module, module_path) {
@@ -89,12 +90,18 @@ module_init_files = function (module, module_path) {
     #
     # only `a/b/__init__.r` gets executed, not `a/__init__.r`.
 
+    path_prefix = function (i, parts)
+        paste(parts[1 : i], collapse = '.')
+
+    partials = seq_along(module_parts)
+    partials = setNames(partials, sapply(partials, path_prefix, module_parts))
+
     build_prefix = function (i)
         list.files(do.call(file.path,
                            as.list(c(base_path, module_parts[1 : i]))),
                    pattern = '^__init__\\.[rR]$', full.names = TRUE)
 
-    all_prefixes = unlist(sapply(seq_along(module_parts), build_prefix))
+    all_prefixes = unlist(sapply(partials, build_prefix))
 
     if (length(all_prefixes) != length(module_parts))
         NULL
