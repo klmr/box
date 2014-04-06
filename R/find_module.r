@@ -21,16 +21,6 @@ find_module = function (module) {
 
     candidate_paths = file.path(import_search_path(), module_path)
 
-    if (! identical(prefix, '')) {
-        # Remove those candidates which have no `__init__.r` files in the module
-        # name prefix but are nested.
-
-        is_valid_nested = function (path)
-            ! is.null(module_init_files(module, path))
-
-        candidate_paths = Filter(is_valid_nested, candidate_paths)
-    }
-
     # For each candidate, try finding a module file. A module file is either
     # `{suffix}.r` or `{suffix}/__init__.r`, preceded by the path prefix.
 
@@ -45,6 +35,16 @@ find_module = function (module) {
     }
 
     hits = unlist(lapply(candidate_paths, find_candidate))
+
+    if (! identical(prefix, '')) {
+        # Remove those candidates which have no `__init__.r` files in the module
+        # name prefix but are nested.
+
+        is_valid_nested = function (path)
+            ! is.null(module_init_files(module, path))
+
+        hits = Filter(is_valid_nested, hits)
+    }
 
     if (length(hits) == 0)
         stop('Unable to load module ', full_name, '; not found in ',
@@ -70,8 +70,11 @@ module_init_files = function (module, module_path) {
     module_parts = unlist(strsplit(full_name, '\\.'))
     module_parts = module_parts[-length(module_parts)]
 
+    has_children = grepl('/__init__\\.[rR]$', module_path)
     path_parts = unlist(strsplit(module_path, '/'))
-    path_prefix_length = length(path_parts) - length(module_parts)
+    path_prefix_length = length(path_parts) - length(module_parts) -
+        if (has_children) 2 else 1
+
     base_path = do.call(file.path, as.list(path_parts[1 : path_prefix_length]))
 
     # Find the `__init__.r` files in all path components of `module_parts`.
