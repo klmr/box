@@ -34,7 +34,7 @@ be used via
 str = import(tools.strings)
 ```
 
-This will import the code from a file with the name `tools/strings.R`, located
+This will import the code from a file with the name `tools/strings.r`, located
 either under the local directory or at a predefined, configurable location.
 
 Exported functions of the module could then be accessed via `str$func`:
@@ -76,7 +76,7 @@ Because of this package’s design, modules can directly replace `source`
 statements in code; in most cases,
 
 ```splus
-source('relative/path/file.R')
+source('relative/path/file.r')
 ```
 
 can be replaced by
