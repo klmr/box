@@ -33,6 +33,54 @@ find_module = function (module) {
     normalizePath(unname(hits[1]))
 }
 
+#' Return a list of paths to a module’s \code{__init__.r} files
+#'
+#' @param module expression containing the fully qualified module name
+#' @param module_name the module’s file path prefix (see \code{Details})
+#' @return a vector of paths to the module’s \code{__init__.r} files, in the
+#' order in which they need to be executed, or \code{NULL} if the arguments do
+#' not resolve to a valid nested module (i.e. not all of the path components
+#' which form the qualified module name contain a \code{__init__.r} file).
+#' @details The \code{module_name} is the fully qualified module path, but
+#' without the trailing module file (either \code{x.r} or \code{x/__init__.r}).
+module_init_files = function (module, module_path) {
+    full_name = as.character(module)
+    module_parts = unlist(strsplit(full_name, '\\.'))
+    module_parts = module_parts[-length(module_parts)]
+
+    path_parts = unlist(strsplit(module_path, '/'))
+    path_prefix_length = length(path_parts) - length(module_parts)
+    base_path = do.call(file.path, as.list(path_parts[1 : path_prefix_length]))
+
+    # Find the `__init__.r` files in all path components of `module_parts`.
+    # Any `__init__.r` files *upstream* of this path must be disregarded, e.g.
+    # for the following path
+    #
+    #   + a/
+    #   +-+ b/
+    #   | +-> __init__.r
+    #   +-> __init__.r
+    #
+    # and code
+    #
+    #   options(import.path = 'a')
+    #   import(b)
+    #
+    # only `a/b/__init__.r` gets executed, not `a/__init__.r`.
+
+    build_prefix = function (i)
+        list.files(do.call(file.path,
+                           as.list(c(base_path, module_parts[1 : i]))),
+                   pattern = '^__init__\\.[rR]$', full.names = TRUE)
+
+    all_prefixes = unlist(sapply(seq_along(module_parts), build_prefix))
+
+    if (length(all_prefixes) != length(module_parts))
+        NULL
+    else
+        all_prefixes
+}
+
 #' Return the import module search path
 #'
 #' @note The search paths are ordered from highest to lowest priority.
