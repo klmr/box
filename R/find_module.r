@@ -14,16 +14,37 @@ find_module = function (module) {
 
     # Use all-but-last parts to construct module source path, last part to
     # determine name of source file.
-    module_path = do.call(file.path, as.list(parts[-length(parts)]))
-    file_pattern = sprintf('^%s\\.[rR]', parts[length(parts)])
+    prefix = parts[-length(parts)]
+    suffix = parts[length(parts)]
+    module_path = do.call(file.path, as.list(prefix))
+    file_pattern = sprintf('^%s\\.[rR]$', suffix)
 
     candidate_paths = file.path(import_search_path(), module_path)
 
-    # `list.files` accepts multiple input paths, but it sorts the returned files
-    # alphabetically, and we thus lose information about the priority, thus we
-    #' vectorise manually.
-    hits = unlist(Vectorize(list.files)(candidate_paths, file_pattern,
-                                        full.names = TRUE))
+    if (! identical(prefix, '')) {
+        # Remove those candidates which have no `__init__.r` files in the module
+        # name prefix but are nested.
+
+        is_valid_nested = function (path)
+            ! is.null(module_init_files(module, path))
+
+        candidate_paths = Filter(is_valid_nested, candidate_paths)
+    }
+
+    # For each candidate, try finding a module file. A module file is either
+    # `{suffix}.r` or `{suffix}/__init__.r`, preceded by the path prefix.
+
+    find_candidate = function (path) {
+        candidate = list.files(path, file_pattern, full.names = TRUE)
+
+        if (length(candidate) == 0)
+            list.files(file.path(path, suffix), '^__init__\\.[rR]$',
+                       full.names = TRUE)
+        else
+            candidate
+    }
+
+    hits = unlist(lapply(candidate_paths, find_candidate))
 
     if (length(hits) == 0)
         stop('Unable to load module ', full_name, '; not found in ',
