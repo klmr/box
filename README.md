@@ -293,7 +293,6 @@ sessions while developing modules).
 To do
 -----
 
-* [Allow nested modules like packages in Python, with `__init__.r`.][1]
 * Make S3 (and S4?) method lookup work.
 * Parse and load attached documentation?
 * Add argument `nonlocal` to override loading from working directory
