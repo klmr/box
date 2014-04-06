@@ -64,11 +64,10 @@ import = function (module, attach) {
     if (inherits(module_path, 'try-error'))
         stop(attr(module_path, 'condition')$message)
 
-    mod_ns = if (is_module_loaded(module_path))
-        get_loaded_module(module_path)
-    else
-        do_import(as.character(module), module_path)
+    containing_modules = module_init_files(module, module_path)
+    mapply(do_import, names(containing_modules), containing_modules)
 
+    mod_ns = do_import(as.character(module), module_path)
     module_parent = parent.frame()
     mod_env = exhibit_namespace(mod_ns, as.character(module), module_parent)
 
@@ -83,6 +82,9 @@ import = function (module, attach) {
 }
 
 do_import = function (module_name, module_path) {
+    if (is_module_loaded(module_path))
+        return(get_loaded_module(module_path))
+
     # The namespace contains a module’s content. This schema is very much like
     # R package organisation.
     # A good resource for this is:
