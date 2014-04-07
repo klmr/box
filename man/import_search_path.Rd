@@ -1,0 +1,19 @@
+\name{import_search_path}
+\alias{import_search_path}
+\title{Return the import module search path}
+\usage{
+import_search_path()
+}
+\description{
+Return the import module search path
+}
+\note{
+The search paths are ordered from highest to lowest
+priority. \code{getwd()} always has the highest priority.
+
+There are two ways of modifying the module search path: by
+default, \code{options('import.path')} specifies the search
+path. If and only if that is unset, R also considers the
+environment variable \code{R_IMPORT_PATH}.
+}
+

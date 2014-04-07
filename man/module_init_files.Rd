@@ -1,0 +1,32 @@
+\name{module_init_files}
+\alias{module_init_files}
+\title{Return a list of paths to a module’s \code{__init__.r} files}
+\usage{
+module_init_files(module, module_path)
+}
+\arguments{
+  \item{module}{expression containing the fully qualified
+  module name}
+
+  \item{module_name}{the module’s file path prefix (see
+  \code{Details})}
+}
+\value{
+a vector of paths to the module’s \code{__init__.r} files,
+in the order in which they need to be executed, or
+\code{NULL} if the arguments do not resolve to a valid
+nested module (i.e. not all of the path components which
+form the qualified module name contain a \code{__init__.r}
+file). The vector’s \code{names} are the names of the
+respective modules.
+}
+\description{
+Return a list of paths to a module’s \code{__init__.r}
+files
+}
+\details{
+The \code{module_name} is the fully qualified module path,
+but without the trailing module file (either \code{x.r} or
+\code{x/__init__.r}).
+}
+

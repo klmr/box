@@ -1,0 +1,21 @@
+\name{find_module}
+\alias{find_module}
+\title{Find a module’s source code location}
+\usage{
+find_module(module)
+}
+\arguments{
+  \item{module}{expression containing the fully qualified
+  module name}
+}
+\value{
+the full path to the corresponding module source code
+location. If multiple hits are found, return the one with
+the highest priority, that is coming earlier in the search
+path, with the local directory having the highest priority.
+If no path is found, return \code{NA}.
+}
+\description{
+Find a module’s source code location
+}
+

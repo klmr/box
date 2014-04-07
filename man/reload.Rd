@@ -1,0 +1,30 @@
+\name{reload}
+\alias{reload}
+\title{Reload a given module}
+\usage{
+reload(module)
+}
+\arguments{
+  \item{module}{reference to the module which should be
+  unloaded}
+}
+\description{
+Remove the loaded module from the cache, forcing a reload.
+The newly reloaded module is assigned to the module
+reference in the calling scope.
+}
+\note{
+Any other references to the loaded modules remain
+unchanged, and will still work. Reloading modules is
+primarily useful for testing during development, and should
+not be used in production code.
+
+\code{reload} does not work correctly with attached
+environments.
+}
+\seealso{
+\code{import}
+
+\code{unload}
+}
+
