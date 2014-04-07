@@ -6,6 +6,7 @@ Table of contents
 
 * [Summary](#summary)
 * [Installation](#installation)
+* [Usage](#usage)
 * [Feature comparison](#feature-comparison)
 * [Design rationale](#design-rationale)
 * [To do](#to-do)
@@ -65,7 +66,66 @@ packages. Please refer to the [comparison](#feature-comparison) for details.
 Installation
 ------------
 
-> TODO
+For the moment, the package is distributed as source-only, meaning it cannot be
+directly installed via `devtools`. The easiest way of installation is as
+follows:
+
+```bash
+$ git clone https://github.com/klmr/modules.git
+$ cd modules/
+$ R
+```
+
+And then, inside R (**every** step is important!):
+
+```splus
+dev_mode() # Switch off (!) dev mode
+document()
+install(local = FALSE)
+```
+
+
+Usage
+-----
+
+Local, single-file modules can be used as-is: assuming you have a file called
+`foo.r` in your current directory, execute
+
+```splus
+foo = import(foo)
+```
+
+in R to make its content accessible via a module, and use it via
+`foo$function_name(…)`. Alternatively, you can use
+
+```splus
+import(foo, attach = TRUE)
+```
+
+but this form is usually discouraged since it clutters the global search path
+(inside modules it’s fine because modules are isolated namespaces and don’t leak
+their scope).
+
+If you want to access a module in a non-local path, the cleanest way is to
+create a central repository (e.g. at `~/.R/modules`) and to copy module source
+files there. Then you can either set the environment variable `R_IMPORT_PATH`
+or, inside R, `options(import.path)` in order for `import` to find modules
+present there.
+
+Nested modules (called “packages” in Python, but for obvious reasons this name
+is not used for R modules) are directories (either local, or in the import
+search path) which contain an `__init__.r` file. Assuming you have such a
+module `foo`, inside which is a nested module `bar`, you can then make it
+available in R via
+
+```splus
+foo = import(foo)     # Make available all of foo, or
+bar = import(foo.bar) # Make available only bar
+```
+
+During module development, you can `reload` a module to reflect its changes
+inside R, or `unload` it. In order to do this, you need to have assigned the
+result of `import` to an identifier.
 
 Feature comparison
 ------------------
