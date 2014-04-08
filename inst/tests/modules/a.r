@@ -10,3 +10,9 @@ get_counter = function () counter
 
 inc = function ()
     counter <<- counter + 1
+
+`%or%` = function (a, b)
+    if (length(a) > 0) a else b
+
+`+.string` = function (a, b)
+    paste(a, b, sep = '')
