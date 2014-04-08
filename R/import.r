@@ -120,13 +120,17 @@ exhibit_namespace = function (namespace, name, parent) {
 }
 
 export_operators = function (namespace, parent) {
-    #' @TODO Add support for S3, which also implies looking for `$.foo`.
-    is_predefined = function (f)
-        f %in% c('+', '-', '*', '/', '^', '**', '&', '|', ':', '::', ':::', '=',
-                 '<-', '<<-', '==', '<', '<=', '>', '>=', '!=', '~', '&&', '||')
+    # `$` cannot be overwritten, but it is generic so S3 variants of it can be
+    # defined. We therefore test it as well.
+    ops = c('+', '-', '*', '/', '^', '**', '&', '|', ':', '::', ':::', '$', '=',
+            '<-', '<<-', '==', '<', '<=', '>', '>=', '!=', '~', '&&', '||')
 
-    is_op = function (f)
-        is_predefined(f) || grepl('^%.*%$', f)
+    is_predefined = function (f) f %in% ops
+
+    is_op = function (f) {
+        prefix = strsplit(f, '\\.')[[1]][1]
+        is_predefined(prefix) || grepl('^%.*%$', prefix)
+    }
 
     operators = Filter(is_op, lsf.str(namespace))
     name = module_name(namespace)
