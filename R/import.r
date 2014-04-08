@@ -6,6 +6,8 @@
 #' @param module an identifier specifying the full module path
 #' @param attach if \code{TRUE}, attach the newly loaded module to the object
 #'      search path (see \code{Details})
+#' @param attach_operators if \code{TRUE}, attach operators of module to the
+#'      object search path, even if \code{attach} is \code{FALSE}
 #' @return the loaded module environment (invisible)
 #'
 #' @details Modules are loaded in an isolated environment which is returned, and
@@ -16,6 +18,10 @@
 #' invoked directly from the terminal only (i.e. not within modules),
 #' \code{attach} defaults to the value of \code{options('import.attach')}, which
 #' can be set to \code{TRUE} or \code{FALSE} depending on the user’s preference.
+#'
+#' \code{attach_operators} causes \emph{operators} to be attached by default,
+#' because operators can only be invoked in R if they re found in the search
+#' path. Not attaching them therefore drastically limits a module’s usefulness.
 #'
 #' Modules are searched in the module search path \code{options('import.path')}.
 #' This is a vector of paths to consider, from the highest to the lowest
@@ -46,7 +52,7 @@
 #' @seealso \code{reload}
 #' @seealso \code{module_name}
 #' @export
-import = function (module, attach) {
+import = function (module, attach, attach_operators = TRUE) {
     module = substitute(module)
     stopifnot(inherits(module, 'name'))
 
@@ -77,6 +83,8 @@ import = function (module, attach) {
         else
             parent.env(module_parent) = mod_env
     }
+    else if (attach_operators)
+        export_operators(mod_ns, module_parent)
 
     invisible(mod_env)
 }
@@ -109,6 +117,36 @@ exhibit_namespace = function (namespace, name, parent) {
               name = paste('module', name, sep = ':'),
               path = module_path(namespace),
               class = c('module', 'environment'))
+}
+
+export_operators = function (namespace, parent) {
+    # `$` cannot be overwritten, but it is generic so S3 variants of it can be
+    # defined. We therefore test it as well.
+    ops = c('+', '-', '*', '/', '^', '**', '&', '|', ':', '::', ':::', '$', '=',
+            '<-', '<<-', '==', '<', '<=', '>', '>=', '!=', '~', '&&', '||')
+
+    is_predefined = function (f) f %in% ops
+
+    is_op = function (f) {
+        prefix = strsplit(f, '\\.')[[1]][1]
+        is_predefined(prefix) || grepl('^%.*%$', prefix)
+    }
+
+    operators = Filter(is_op, lsf.str(namespace))
+    name = module_name(namespace)
+    # Skip one parent environment because this module is hooked into the chain
+    # between the calling environment and its ancestor, thus sitting in its
+    # local object search path.
+    op_env = structure(list2env(sapply(operators, get, envir = namespace),
+                                parent = parent.env(parent)),
+                       name = paste('operators', name, sep = ':'),
+                       path = module_path(namespace),
+                       class = c('module', 'environment'))
+
+    if (identical(parent, .GlobalEnv))
+        attach(op_env, name = environmentName(mod_env))
+    else
+        parent.env(parent) = op_env
 }
 
 #' Unload a given module
