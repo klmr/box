@@ -2,7 +2,7 @@
 \alias{import}
 \title{Import a module into the current scope}
 \usage{
-import(module, attach)
+import(module, attach, attach_operators = TRUE)
 }
 \arguments{
   \item{module}{an identifier specifying the full module
@@ -10,6 +10,10 @@ import(module, attach)
 
   \item{attach}{if \code{TRUE}, attach the newly loaded
   module to the object search path (see \code{Details})}
+
+  \item{attach_operators}{if \code{TRUE}, attach operators
+  of module to the object search path, even if
+  \code{attach} is \code{FALSE}}
 }
 \value{
 the loaded module environment (invisible)
@@ -31,6 +35,11 @@ directly from the terminal only (i.e. not within modules),
 \code{options('import.attach')}, which can be set to
 \code{TRUE} or \code{FALSE} depending on the user’s
 preference.
+
+\code{attach_operators} causes \emph{operators} to be
+attached by default, because operators can only be invoked
+in R if they re found in the search path. Not attaching
+them therefore drastically limits a module’s usefulness.
 
 Modules are searched in the module search path
 \code{options('import.path')}. This is a vector of paths to
