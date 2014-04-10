@@ -121,8 +121,8 @@ module_init_files = function (module, module_path) {
 #' \code{options('import.path')} specifies the search path. If and only if that
 #' is unset, R also considers the environment variable \code{R_IMPORT_PATH}.
 import_search_path = function () {
-    environment = Sys.getenv('R_IMPORT_PATH')
-    if (identical(environment, ''))
+    environment = strsplit(Sys.getenv('R_IMPORT_PATH'), ':')[[1]]
+    if (length(environment) == 0)
         environment = NULL
     c(getwd(), getOption('import.path', environment))
 }
