@@ -66,22 +66,11 @@ packages. Please refer to the [comparison](#feature-comparison) for details.
 Installation
 ------------
 
-For the moment, the package is distributed as source-only, meaning it cannot be
-directly installed via `devtools`. The easiest way of installation is as
-follows:
-
-```bash
-$ git clone https://github.com/klmr/modules.git
-$ cd modules/
-$ R
-```
-
-And then, inside R (**every** step is important!):
+To install using [`devtools`](https://github.com/hadley/devtools), just type the
+following command in R:
 
 ```splus
-dev_mode() # Switch off (!) dev mode
-document()
-install(local = FALSE)
+install_github('klmr/modules')
 ```
 
 
