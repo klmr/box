@@ -144,7 +144,7 @@ export_operators = function (namespace, parent) {
                        class = c('module', 'environment'))
 
     if (identical(parent, .GlobalEnv))
-        attach(op_env, name = environmentName(mod_env))
+        attach(op_env, name = environmentName(op_env))
     else
         parent.env(parent) = op_env
 }
