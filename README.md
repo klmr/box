@@ -98,7 +98,7 @@ their scope).
 If you want to access a module in a non-local path, the cleanest way is to
 create a central repository (e.g. at `~/.R/modules`) and to copy module source
 files there. Then you can either set the environment variable `R_IMPORT_PATH`
-or, inside R, `options(import.path)` in order for `import` to find modules
+or, inside R, `options('import.path')` in order for `import` to find modules
 present there.
 
 Nested modules (called “packages” in Python, but for obvious reasons this name
