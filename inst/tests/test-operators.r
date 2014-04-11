@@ -20,7 +20,7 @@ test_that('operator attachment can be disabled', {
 
 test_that('it works in the global environment', {
     local({
-        expect_false(exists('%or'))
+        expect_false(exists('%or%'))
         a = import(a)
         on.exit(unload(a))
         on.exit(detach('operators:a'), add = TRUE)
