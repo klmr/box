@@ -1,16 +1,15 @@
 #' Find a module’s source code location
 #'
-#' @param module expression containing the fully qualified module name
+#' @param module character string of the fully qualified module name
 #' @return the full path to the corresponding module source code location. If
 #' multiple hits are found, return the one with the highest priority, that is
 #' coming earlier in the search path, with the local directory having the
 #' highest priority. If no path is found, return \code{NA}.
 find_module = function (module) {
-    full_name = as.character(module)
     # Prepend '' to ensure that at least one path component exists, otherwise
     # `file.path` will subsequently return an empty vector instead of '' for
     # `candidate_paths`.
-    parts = c('', unlist(strsplit(full_name, '\\.')))
+    parts = c('', unlist(strsplit(module, '/')))
 
     # Use all-but-last parts to construct module source path, last part to
     # determine name of source file.
@@ -38,7 +37,7 @@ find_module = function (module) {
 
     if (! identical(prefix, '')) {
         # Remove those candidates which have no `__init__.r` files in the module
-        # name prefix but are nested.
+        # name prefix but are submodules.
 
         is_valid_nested = function (path)
             ! is.null(module_init_files(module, path))
@@ -47,7 +46,7 @@ find_module = function (module) {
     }
 
     if (length(hits) == 0)
-        stop('Unable to load module ', full_name, '; not found in ',
+        stop('Unable to load module ', module, '; not found in ',
              paste(Map(function (p) sprintf('"%s"', p), import_search_path()),
                    collapse = ', '))
 
@@ -56,18 +55,17 @@ find_module = function (module) {
 
 #' Return a list of paths to a module’s \code{__init__.r} files
 #'
-#' @param module expression containing the fully qualified module name
-#' @param module_name the module’s file path prefix (see \code{Details})
+#' @param module character string of the fully qualified module name
+#' @param module_path the module’s file path prefix (see \code{Details})
 #' @return a vector of paths to the module’s \code{__init__.r} files, in the
 #' order in which they need to be executed, or \code{NULL} if the arguments do
 #' not resolve to a valid nested module (i.e. not all of the path components
 #' which form the qualified module name contain a \code{__init__.r} file).
 #' The vector’s \code{names} are the names of the respective modules.
-#' @details The \code{module_name} is the fully qualified module path, but
+#' @details The \code{module_path} is the fully qualified module path, but
 #' without the trailing module file (either \code{x.r} or \code{x/__init__.r}).
 module_init_files = function (module, module_path) {
-    full_name = as.character(module)
-    module_parts = unlist(strsplit(full_name, '\\.'))
+    module_parts = unlist(strsplit(module, '/'))
     module_parts = module_parts[-length(module_parts)]
 
     has_children = grepl('/__init__\\.[rR]$', module_path)
@@ -89,7 +87,7 @@ module_init_files = function (module, module_path) {
     # and code
     #
     #   options(import.path = 'a')
-    #   import(b)
+    #   import('b')
     #
     # only `a/b/__init__.r` gets executed, not `a/__init__.r`.
 

@@ -10,7 +10,7 @@ test_that('module can be reloaded', {
     # Tear-down would be helpful here, but not supported by testthat.
     unload_all()
 
-    a = import(a)
+    a = import('a')
     expect_that(length(modules:::.loaded_modules), equals(1))
     counter = a$get_counter()
     a$inc()

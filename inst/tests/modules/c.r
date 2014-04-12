@@ -1,4 +1,4 @@
-import(a, attach = TRUE)
+import('a', attach = TRUE)
 
 double = function (x) c(x, x)
 
