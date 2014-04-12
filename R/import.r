@@ -1,7 +1,7 @@
 #' Import a module into the current scope
 #'
-#' \code{module = import(module)} imports a specified module and makes its code
-#' available via the environment-like object it returns.
+#' \code{module = import('module')} imports a specified module and makes its
+#' code available via the environment-like object it returns.
 #'
 #' @param module an identifier specifying the full module path
 #' @param attach if \code{TRUE}, attach the newly loaded module to the object
@@ -41,11 +41,11 @@
 #'
 #' @examples
 #' # `a.r` is a file in the local directory containing a function `f`.
-#' a = import(a)
+#' a = import('a')
 #' a$f()
 #'
 #' # b/c.r is a file in path `b`, containing a function `g`.
-#' import(b.c, attach = TRUE)
+#' import('b/c', attach = TRUE)
 #' g() # No module name qualification necessary
 #'
 #' @seealso \code{unload}

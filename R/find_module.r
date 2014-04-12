@@ -89,7 +89,7 @@ module_init_files = function (module, module_path) {
     # and code
     #
     #   options(import.path = 'a')
-    #   import(b)
+    #   import('b')
     #
     # only `a/b/__init__.r` gets executed, not `a/__init__.r`.
 
