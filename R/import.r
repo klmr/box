@@ -3,7 +3,7 @@
 #' \code{module = import('module')} imports a specified module and makes its
 #' code available via the environment-like object it returns.
 #'
-#' @param module an identifier specifying the full module path
+#' @param module a character string specifying the full module path
 #' @param attach if \code{TRUE}, attach the newly loaded module to the object
 #'      search path (see \code{Details})
 #' @param attach_operators if \code{TRUE}, attach operators of module to the
@@ -53,8 +53,7 @@
 #' @seealso \code{module_name}
 #' @export
 import = function (module, attach, attach_operators = TRUE) {
-    module = substitute(module)
-    stopifnot(inherits(module, 'name'))
+    stopifnot(inherits(module, 'character'))
 
     if (missing(attach)) {
         attach = if (interactive() && is.null(module_name()))
