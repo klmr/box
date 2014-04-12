@@ -120,10 +120,9 @@ exhibit_namespace = function (namespace, name, parent) {
 }
 
 export_operators = function (namespace, parent) {
-    # `$` cannot be overwritten, but it is generic so S3 variants of it can be
-    # defined. We therefore test it as well.
-    ops = c('+', '-', '*', '/', '^', '**', '&', '|', ':', '::', ':::', '$', '=',
-            '<-', '<<-', '==', '<', '<=', '>', '>=', '!=', '~', '&&', '||')
+    ops = c('+', '-', '*', '/', '^', '**', '&', '|', ':', '::', ':::', '$',
+            '$<-', '=', '<-', '<<-', '==', '<', '<=', '>', '>=', '!=', '~',
+            '&&', '||', '!', '?', '??', '@', '@<-')
 
     is_predefined = function (f) f %in% ops
 
