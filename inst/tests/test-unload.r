@@ -1,7 +1,7 @@
 context('Module unloading')
 
 test_that('module can be unloaded', {
-    a = import(a)
+    a = import('a')
     path = module_path(a)
     expect_true(is_module_loaded(path))
     unload(a)
@@ -10,9 +10,9 @@ test_that('module can be unloaded', {
 })
 
 test_that('unloaded module can be reloaded', {
-    a = import(a)
+    a = import('a')
     unload(a)
-    a = import(a)
+    a = import('a')
     expect_true(is_module_loaded(module_path(a)))
     expect_true(exists('a', inherits = FALSE))
 })
