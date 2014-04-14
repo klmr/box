@@ -5,8 +5,8 @@
 import(module, attach, attach_operators = TRUE)
 }
 \arguments{
-  \item{module}{an identifier specifying the full module
-  path}
+  \item{module}{a character string specifying the full
+  module path}
 
   \item{attach}{if \code{TRUE}, attach the newly loaded
   module to the object search path (see \code{Details})}
@@ -19,7 +19,7 @@ import(module, attach, attach_operators = TRUE)
 the loaded module environment (invisible)
 }
 \description{
-\code{module = import(module)} imports a specified module
+\code{module = import('module')} imports a specified module
 and makes its code available via the environment-like
 object it returns.
 }
@@ -64,11 +64,11 @@ might be loaded).
 }
 \examples{
 # `a.r` is a file in the local directory containing a function `f`.
-a = import(a)
+a = import('a')
 a$f()
 
 # b/c.r is a file in path `b`, containing a function `g`.
-import(b.c, attach = TRUE)
+import('b/c', attach = TRUE)
 g() # No module name qualification necessary
 }
 \seealso{

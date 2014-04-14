@@ -5,10 +5,10 @@
 module_init_files(module, module_path)
 }
 \arguments{
-  \item{module}{expression containing the fully qualified
+  \item{module}{character string of the fully qualified
   module name}
 
-  \item{module_name}{the module’s file path prefix (see
+  \item{module_path}{the module’s file path prefix (see
   \code{Details})}
 }
 \value{
@@ -25,7 +25,7 @@ Return a list of paths to a module’s \code{__init__.r}
 files
 }
 \details{
-The \code{module_name} is the fully qualified module path,
+The \code{module_path} is the fully qualified module path,
 but without the trailing module file (either \code{x.r} or
 \code{x/__init__.r}).
 }

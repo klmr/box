@@ -5,7 +5,7 @@
 find_module(module)
 }
 \arguments{
-  \item{module}{expression containing the fully qualified
+  \item{module}{character string of the fully qualified
   module name}
 }
 \value{
