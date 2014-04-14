@@ -24,15 +24,15 @@ contrast to R packages.
 Modules are loaded via the syntax
 
 ```splus
-module = import(module)
+module = import('module')
 ```
 
 Where `module` is the name of a module. Like in Python, modules can be grouped
-together, so that a name of a module could be, e.g. `tools.strings`. This could
-be used via
+together in submodules, so that a name of a module could be, e.g.
+`tools/strings`. This could be used via
 
 ```splus
-str = import(tools.strings)
+str = import('tools/strings')
 ```
 
 This will import the code from a file with the name `tools/strings.r`, located
@@ -51,7 +51,7 @@ Notice that we’ve aliased the actual module name to `str` in user code.
 Alternatively, modules can be imported into the global namespace:
 
 ```splus
-import(tools.strings, attach = TRUE)
+import('tools/strings', attach = TRUE)
 ```
 
 The module is then added to R’s `search()` vector (or equivalent) so that
@@ -81,14 +81,14 @@ Local, single-file modules can be used as-is: assuming you have a file called
 `foo.r` in your current directory, execute
 
 ```splus
-foo = import(foo)
+foo = import('foo')
 ```
 
 in R to make its content accessible via a module, and use it via
 `foo$function_name(…)`. Alternatively, you can use
 
 ```splus
-import(foo, attach = TRUE)
+import('foo', attach = TRUE)
 ```
 
 but this form is usually discouraged since it clutters the global search path
@@ -103,13 +103,13 @@ present there.
 
 Nested modules (called “packages” in Python, but for obvious reasons this name
 is not used for R modules) are directories (either local, or in the import
-search path) which contain an `__init__.r` file. Assuming you have such a
-module `foo`, inside which is a nested module `bar`, you can then make it
-available in R via
+search path) which contain an `__init__.r` file. Assuming you have such a module
+`foo`, inside which is a submodule `bar`, you can then make it available in R
+via
 
 ```splus
-foo = import(foo)     # Make available all of foo, or
-bar = import(foo.bar) # Make available only bar
+foo = import('foo')     # Make available foo, or
+bar = import('foo/bar') # Make available only foo/bar
 ```
 
 During module development, you can `reload` a module to reflect its changes
@@ -131,7 +131,7 @@ source('relative/path/file.r')
 can be replaced by
 
 ```splus
-import(relative.path.file, attach = TRUE)
+import('relative/path/file', attach = TRUE)
 ```
 – albeit with marked improvements:
 
@@ -287,37 +287,18 @@ name clashes occur, because not all packages use namespaces (correctly).
 R 3.0.0 has allegedly solved this (by requiring use of namespaces) but I can
 still reproducibly generate a name clash with at least one package.
 
-### Why is the module name not passed as a string?
-
-`import` mimics `library` here – more importantly, however, `import` accepts an
-identifier because that is *fundamentally* what we want to convey. Module names
-should be thought of not as strings (and even less as paths!) but as language
-objects.
-
-### Okay, but why not allow a string also?
-
-`import` makes it fundamentally impossible to pass a module name via a variable.
-Again, this is fully intentional. Allowing `import(name = 'module')` would be
-trivially feasible. However, this goes explicitly against the intention of this
-package to provide a uniform interface, and experience from other languages
-(in the form of hard-coded library dependencies, module imports and headers)
-shows that making the imported module modifiable via variables is not needed.
-
-Incidentally, this also encourages the use of file names which resemble R
-identifiers.
-
 ### Why do I manually need to assign the loaded module to a variable?
 
 In other words, why does `import` force the user to write
 
 ```splus
-module = import(module)
+module = import('module')
 ```
 
 Where the `module` name is redundant, instead of
 
 ```splus
-import(module)
+import('module')
 ```
 
 With the latter call automatically defining the required variable in the calling
@@ -327,7 +308,7 @@ inadvertently overwrite an existing variable), and it makes the function rely
 entirely on side-effects, something which R code should always be wary of. It
 also makes it less obvious how to define an alias for the imported module in
 user code. As it is, the user can simply alias a module by assigning it to a
-different name, e.g. `m = import(module)`.
+different name, e.g. `m = import('module')`.
 
 Granted, both `unload` and `reload` violate this. However, both are actually
 *safe* because they only change the variable explicitly passed to them, and they
@@ -348,5 +329,3 @@ To do
 * Add simple module installation mechanism (`install.gist` etc).
 * Fix `unload` and `reload` to work with attached and multiply loaded modules
 * Add argument `path` to `import` to temporarily override `import.path`.
-
-[1]: https://github.com/klmr/modules/issues/1

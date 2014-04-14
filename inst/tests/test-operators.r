@@ -2,7 +2,7 @@ context('Operator export test')
 
 test_that('operators are attached by default', {
     expect_false(exists('%or%'))
-    a = import(a)
+    a = import('a')
     on.exit(unload(a))
 
     expect_true(exists('%or%'))
@@ -12,7 +12,7 @@ test_that('operators are attached by default', {
 
 test_that('operator attachment can be disabled', {
     expect_false(exists('%or%'))
-    a = import(a, attach_operators = FALSE)
+    a = import('a', attach_operators = FALSE)
     on.exit(unload(a))
 
     expect_false(exists('%or%'))
@@ -20,8 +20,8 @@ test_that('operator attachment can be disabled', {
 
 test_that('it works in the global environment', {
     local({
-        expect_false(exists('%or'))
-        a = import(a)
+        expect_false(exists('%or%'))
+        a = import('a')
         on.exit(unload(a))
         on.exit(detach('operators:a'), add = TRUE)
 
@@ -30,7 +30,7 @@ test_that('it works in the global environment', {
 })
 
 test_that('S3 operators work', {
-    a = import(a)
+    a = import('a')
     on.exit(unload(a))
 
     expect_that(1 + 2, equals(3))
