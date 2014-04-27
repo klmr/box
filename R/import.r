@@ -45,9 +45,15 @@
 #' a = import('a')
 #' a$f()
 #'
-#' # b/c.r is a file in path `b`, containing a function `g`.
+#' # b/c.r is a file in path `b`, containing functions `f` and `g`.
+#' import('b/c', attach = 'f')
+#' # No module name qualification necessary
+#' f()
+#' g() # Error: could not find function "g"
+#'
 #' import('b/c', attach = TRUE)
-#' g() # No module name qualification necessary
+#' f()
+#' g()
 #'
 #' @seealso \code{unload}
 #' @seealso \code{reload}
