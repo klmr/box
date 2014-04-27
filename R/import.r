@@ -4,10 +4,11 @@
 #' code available via the environment-like object it returns.
 #'
 #' @param module a character string specifying the full module path
-#' @param attach if \code{TRUE}, attach the newly loaded module to the object
-#'      search path (see \code{Details})
+#' @param attach either a boolean or a  character vector. If \code{TRUE}, attach
+#'  the newly loaded module to the object search path (see \code{Details}).
+#'  Alternatively, if a character vector is given, attach only the listed names.
 #' @param attach_operators if \code{TRUE}, attach operators of module to the
-#'      object search path, even if \code{attach} is \code{FALSE}
+#'  object search path, even if \code{attach} is \code{FALSE}
 #' @return the loaded module environment (invisible)
 #'
 #' @details Modules are loaded in an isolated environment which is returned, and
@@ -62,7 +63,15 @@ import = function (module, attach, attach_operators = TRUE) {
             FALSE
     }
 
-    stopifnot(class(attach) == 'logical' && length(attach) == 1)
+    stopifnot(class(attach) == 'logical' && length(attach) == 1 ||
+              class(attach) == 'character')
+
+    if (is.character(attach)) {
+        export_list = attach
+        attach = TRUE
+    }
+    else
+        export_list = NULL
 
     module_path = try(find_module(module), silent = TRUE)
 
@@ -74,7 +83,8 @@ import = function (module, attach, attach_operators = TRUE) {
 
     mod_ns = do_import(as.character(module), module_path)
     module_parent = parent.frame()
-    mod_env = exhibit_namespace(mod_ns, as.character(module), module_parent)
+    mod_env = exhibit_namespace(mod_ns, as.character(module), module_parent,
+                                export_list)
 
     if (attach) {
         if (identical(module_parent, .GlobalEnv))
@@ -106,12 +116,21 @@ do_import = function (module_name, module_path) {
     namespace
 }
 
-exhibit_namespace = function (namespace, name, parent) {
-    exported_functions = lsf.str(namespace)
+exhibit_namespace = function (namespace, name, parent, export_list) {
+    if (is.null(export_list))
+        export_list = lsf.str(namespace)
+    else {
+        # Verify correctness.
+        exist = vapply(export_list, exists, logical(1), envir = namespace)
+        if (! all(exist))
+            stop(sprintf('Non-existent function(s) (%s) specified for import',
+                         paste(export_list[! exist], collapse = ', ')))
+    }
+
     # Skip one parent environment because this module is hooked into the chain
     # between the calling environment and its ancestor, thus sitting in its
     # local object search path.
-    structure(list2env(sapply(exported_functions, get, envir = namespace),
+    structure(list2env(sapply(export_list, get, envir = namespace),
                        parent = parent.env(parent)),
               name = paste('module', name, sep = ':'),
               path = module_path(namespace),
@@ -194,6 +213,6 @@ reload = function (module) {
     #' and whatnot.
     mod_ns = do_import(module_name, module_path)
     module_parent = parent.frame()
-    mod_env = exhibit_namespace(mod_ns, module_ref, module_parent)
+    mod_env = exhibit_namespace(mod_ns, module_ref, module_parent, NULL)
     assign(module_ref, mod_env, envir = module_parent, inherits = TRUE)
 }
