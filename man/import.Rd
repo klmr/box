@@ -8,8 +8,10 @@ import(module, attach, attach_operators = TRUE)
   \item{module}{a character string specifying the full
   module path}
 
-  \item{attach}{if \code{TRUE}, attach the newly loaded
-  module to the object search path (see \code{Details})}
+  \item{attach}{either a boolean or a character vector. If
+  \code{TRUE}, attach the newly loaded module to the object
+  search path (see \code{Details}).  Alternatively, if a
+  character vector is given, attach only the listed names.}
 
   \item{attach_operators}{if \code{TRUE}, attach operators
   of module to the object search path, even if
@@ -67,9 +69,15 @@ might be loaded).
 a = import('a')
 a$f()
 
-# b/c.r is a file in path `b`, containing a function `g`.
+# b/c.r is a file in path `b`, containing functions `f` and `g`.
+import('b/c', attach = 'f')
+# No module name qualification necessary
+f()
+g() # Error: could not find function "g"
+
 import('b/c', attach = TRUE)
-g() # No module name qualification necessary
+f()
+g()
 }
 \seealso{
 \code{unload}
