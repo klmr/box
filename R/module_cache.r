@@ -23,6 +23,27 @@ get_loaded_module = function (module_path)
 module_path = function (module)
     attr(module, 'path')
 
+#' Get a module’s base directory
+#'
+#' @param module a module environment or namespace
+#' @return A character string containing the module’s base directory,
+#'  or the current working directory if not invoked on a module.
+module_base_path = function (module)
+    UseMethod('module_base_path')
+
+module_base_path.default = function (module) {
+    if (identical(module, .GlobalEnv))
+        getwd()
+    else
+        module_base_path(parent.env(module))
+}
+
+module_base_path.module = function (module)
+    dirname(module_path(module))
+
+module_base_path.namespace = function (module)
+    dirname(module_path(module))
+
 #' Get a module’s name
 #'
 #' @param module a module environment (default: current module)
