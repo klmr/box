@@ -9,3 +9,8 @@ test_that('modules have a name', {
     expect(module_name(a) == 'a')
     expect(a$get_modname() == 'a')
 })
+
+test_that('module names can be read inside functions', {
+    a = import('a')
+    expect(a$get_modname2() == 'a')
+})

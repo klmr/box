@@ -6,6 +6,8 @@ counter = 1
 
 get_modname = function () modname
 
+get_modname2 = function () module_name()
+
 get_counter = function () counter
 
 inc = function ()
