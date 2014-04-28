@@ -42,8 +42,12 @@ module_name = function (module = parent.frame())
 
 #' @seealso \code{module_name}
 #' @export
-module_name.default = function (module = parent.frame())
-    NULL
+module_name.default = function (module = parent.frame()) {
+    if (identical(module, .GlobalEnv))
+        NULL
+    else
+        module_name(parent.env(module))
+}
 
 #' @seealso \code{module_name}
 #' @export
