@@ -95,4 +95,5 @@ compiled$convolve(1:3, 1:5)
 ```
 
 
-[install.r]: demo/inst/rcpp/__install__.r
+[Rcpp]: http://cran.r-project.org/web/packages/Rcpp/index.html
+[install.r]: rcpp/__install__.r
