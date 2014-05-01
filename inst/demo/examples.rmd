@@ -63,4 +63,4 @@ compiled = import('rcpp/compiled')
 compiled$convolve(1 : 3, 1 : 5)
 ```
 
-[install.r]: tree/master/inst/demo/rcpp/__install__.r
+[install.r]: rcpp/__install__.r
