@@ -33,7 +33,7 @@ module_base_path = function (module)
 
 module_base_path.default = function (module) {
     if (identical(module, .GlobalEnv))
-        getwd()
+        script_path()
     else
         module_base_path(parent.env(module))
 }
@@ -43,6 +43,28 @@ module_base_path.module = function (module)
 
 module_base_path.namespace = function (module)
     dirname(module_path(module))
+
+#' Return an R script’s path
+script_path = function () {
+    # Take a best guess at a script’s path. The following calling situations are
+    # covered:
+    #
+    # 1. Rscript script.r
+    # 2. R CMD BATCH script.r
+    # 3. Script run interactively (give up, use `getwd()`)
+
+    args = commandArgs()
+
+    file_arg = grep('--file=', args)
+    if (length(file_arg) != 0)
+        return(dirname(sub('--file=', '', args[file_arg])))
+
+    f_arg = grep('-f', args)
+    if (length(f_arg) != 0)
+        return(dirname(args[f_arg + 1]))
+
+    getwd()
+}
 
 #' Get a module’s name
 #'
