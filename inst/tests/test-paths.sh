@@ -27,7 +27,6 @@ rm output.rcmd
 
 rscript_result="$(Rscript --vanilla --no-restore --no-save "$script" | tail -n 1)"
 
-assert_equals "a" "a"
 assert_equals "$(fullpath "$rcmd_result")" "$expected"
 assert_equals "$(fullpath "$rscript_result")" "$expected"
 
