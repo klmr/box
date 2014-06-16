@@ -20,6 +20,8 @@ wd="$(pwd -P)"
 
 expected="$wd/inst/tests/modules"
 script='inst/tests/modules/d.r'
+assertions=0
+failed=0
 
 R CMD BATCH --vanilla --slave --no-restore --no-save --no-timing "$script" output.rcmd
 rcmd_result="$(tail -n 1 output.rcmd)"
