@@ -35,16 +35,6 @@ find_module = function (module) {
 
     hits = unlist(lapply(candidate_paths, find_candidate))
 
-    if (! identical(prefix, '')) {
-        # Remove those candidates which have no `__init__.r` files in the module
-        # name prefix but are submodules.
-
-        is_valid_nested = function (path)
-            ! is.null(module_init_files(module, path))
-
-        hits = Filter(is_valid_nested, hits)
-    }
-
     if (length(hits) == 0)
         stop('Unable to load module ', module, '; not found in ',
              paste(Map(function (p) sprintf('"%s"', p), import_search_path()),
