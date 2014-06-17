@@ -107,7 +107,7 @@ module_init_files = function (module, module_path) {
 #' Return the import module search path
 #'
 #' @note The search paths are ordered from highest to lowest priority.
-#' The current module’s path always has the highest priority.
+#' The current module’s path always has the lowest priority.
 #'
 #' There are two ways of modifying the module search path: by default,
 #' \code{options('import.path')} specifies the search path. If and only if that
@@ -116,5 +116,5 @@ import_search_path = function () {
     environment = strsplit(Sys.getenv('R_IMPORT_PATH'), ':')[[1]]
     if (length(environment) == 0)
         environment = NULL
-    c(module_base_path(parent.frame()), getOption('import.path', environment))
+    c(getOption('import.path', environment), module_base_path(parent.frame()))
 }
