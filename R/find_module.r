@@ -18,7 +18,11 @@ find_module = function (module) {
     module_path = do.call(file.path, as.list(prefix))
     file_pattern = sprintf('^%s\\.[rR]$', suffix)
 
-    candidate_paths = file.path(import_search_path(), module_path)
+    search_path = if (parts[1] %in% c('.', '..'))
+        module_base_path(environment())
+    else
+        import_search_path()
+    candidate_paths = file.path(search_path, module_path)
 
     # For each candidate, try finding a module file. A module file is either
     # `{suffix}.r` or `{suffix}/__init__.r`, preceded by the path prefix.
