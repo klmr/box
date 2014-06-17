@@ -70,7 +70,7 @@ To install using [`devtools`](https://github.com/hadley/devtools), just type the
 following command in R:
 
 ```splus
-install_github('klmr/modules')
+devtools::install_github('klmr/modules')
 ```
 
 
