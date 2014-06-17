@@ -116,8 +116,7 @@ do_import = function (module_name, module_path) {
                           name = paste('namespace', module_name, sep = ':'),
                           path = module_path,
                           class = c('namespace', 'environment'))
-    local(source(attr(environment(), 'path'), chdir = TRUE, local = TRUE),
-          envir = namespace)
+    local(source(attr(environment(), 'path'), local = TRUE), envir = namespace)
     cache_module(namespace)
     namespace
 }
