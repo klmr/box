@@ -222,3 +222,8 @@ reload = function (module) {
     mod_env = exhibit_namespace(mod_ns, module_ref, module_parent, NULL)
     assign(module_ref, mod_env, envir = module_parent, inherits = TRUE)
 }
+
+print.module = function (module) {
+    cat(sprintf('<%s>\n', attr(module, 'name')))
+    invisible(module)
+}
