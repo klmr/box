@@ -6,19 +6,20 @@
 #' coming earlier in the search path, with the local directory having the
 #' highest priority. If no path is found, return \code{NA}.
 find_module = function (module) {
-    # Prepend '' to ensure that at least one path component exists, otherwise
-    # `file.path` will subsequently return an empty vector instead of '' for
-    # `candidate_paths`.
-    parts = c('', unlist(strsplit(module, '/')))
+    parts = unlist(strsplit(module, '/'))
 
     # Use all-but-last parts to construct module source path, last part to
     # determine name of source file.
-    prefix = parts[-length(parts)]
+    prefix = if (length(parts) == 1) '' else parts[-length(parts)]
     suffix = parts[length(parts)]
     module_path = do.call(file.path, as.list(prefix))
     file_pattern = sprintf('^%s\\.[rR]$', suffix)
 
-    candidate_paths = file.path(import_search_path(), module_path)
+    search_path = if (parts[1] %in% c('.', '..'))
+        calling_module_path()
+    else
+        import_search_path()
+    candidate_paths = file.path(search_path, module_path)
 
     # For each candidate, try finding a module file. A module file is either
     # `{suffix}.r` or `{suffix}/__init__.r`, preceded by the path prefix.
@@ -35,22 +36,25 @@ find_module = function (module) {
 
     hits = unlist(lapply(candidate_paths, find_candidate))
 
-    if (! identical(prefix, '')) {
-        # Remove those candidates which have no `__init__.r` files in the module
-        # name prefix but are submodules.
-
-        is_valid_nested = function (path)
-            ! is.null(module_init_files(module, path))
-
-        hits = Filter(is_valid_nested, hits)
-    }
-
     if (length(hits) == 0)
         stop('Unable to load module ', module, '; not found in ',
              paste(Map(function (p) sprintf('"%s"', p), import_search_path()),
                    collapse = ', '))
 
     normalizePath(unname(hits[1]))
+}
+
+calling_module_path = function () {
+    # Go up through caller hierarchy until the caller’s `parent.env()` is no
+    # longer the same as the `parent.env()` of this function. This indicates
+    # that we have reached the actual caller of `import`.
+    package_env = parent.env(environment())
+    n = 1
+
+    while (identical(parent.env(parent.frame(n)), package_env))
+        n = n + 1
+
+    module_base_path(parent.frame(n))
 }
 
 #' Return a list of paths to a module’s \code{__init__.r} files
@@ -113,7 +117,7 @@ module_init_files = function (module, module_path) {
 #' Return the import module search path
 #'
 #' @note The search paths are ordered from highest to lowest priority.
-#' The current module’s path always has the highest priority.
+#' The current module’s path always has the lowest priority.
 #'
 #' There are two ways of modifying the module search path: by default,
 #' \code{options('import.path')} specifies the search path. If and only if that
@@ -122,5 +126,5 @@ import_search_path = function () {
     environment = strsplit(Sys.getenv('R_IMPORT_PATH'), ':')[[1]]
     if (length(environment) == 0)
         environment = NULL
-    c(module_base_path(parent.frame()), getOption('import.path', environment))
+    c(getOption('import.path', environment), module_base_path(parent.frame()))
 }
