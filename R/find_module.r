@@ -16,7 +16,7 @@ find_module = function (module) {
     file_pattern = sprintf('^%s\\.[rR]$', suffix)
 
     search_path = if (parts[1] %in% c('.', '..'))
-        module_base_path(environment())
+        calling_module_path()
     else
         import_search_path()
     candidate_paths = file.path(search_path, module_path)
@@ -42,6 +42,19 @@ find_module = function (module) {
                    collapse = ', '))
 
     normalizePath(unname(hits[1]))
+}
+
+calling_module_path = function () {
+    # Go up through caller hierarchy until the caller’s `parent.env()` is no
+    # longer the same as the `parent.env()` of this function. This indicates
+    # that we have reached the actual caller of `import`.
+    package_env = parent.env(environment())
+    n = 1
+
+    while (identical(parent.env(parent.frame(n)), package_env))
+        n = n + 1
+
+    module_base_path(parent.frame(n))
 }
 
 #' Return a list of paths to a module’s \code{__init__.r} files
