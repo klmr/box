@@ -6,14 +6,11 @@
 #' coming earlier in the search path, with the local directory having the
 #' highest priority. If no path is found, return \code{NA}.
 find_module = function (module) {
-    # Prepend '' to ensure that at least one path component exists, otherwise
-    # `file.path` will subsequently return an empty vector instead of '' for
-    # `candidate_paths`.
-    parts = c('', unlist(strsplit(module, '/')))
+    parts = unlist(strsplit(module, '/'))
 
     # Use all-but-last parts to construct module source path, last part to
     # determine name of source file.
-    prefix = parts[-length(parts)]
+    prefix = if (length(parts) == 1) '' else parts[-length(parts)]
     suffix = parts[length(parts)]
     module_path = do.call(file.path, as.list(prefix))
     file_pattern = sprintf('^%s\\.[rR]$', suffix)
