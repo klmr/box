@@ -116,8 +116,7 @@ do_import = function (module_name, module_path) {
                           name = paste('namespace', module_name, sep = ':'),
                           path = module_path,
                           class = c('namespace', 'environment'))
-    local(source(attr(environment(), 'path'), chdir = TRUE, local = TRUE),
-          envir = namespace)
+    source(module_path, local = namespace)
     cache_module(namespace)
     namespace
 }
@@ -221,4 +220,9 @@ reload = function (module) {
     module_parent = parent.frame()
     mod_env = exhibit_namespace(mod_ns, module_ref, module_parent, NULL)
     assign(module_ref, mod_env, envir = module_parent, inherits = TRUE)
+}
+
+print.module = function (module) {
+    cat(sprintf('<%s>\n', attr(module, 'name')))
+    invisible(module)
 }

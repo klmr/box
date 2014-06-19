@@ -18,3 +18,5 @@ inc = function ()
 
 `+.string` = function (a, b)
     paste(a, b, sep = '')
+
+which = function () '/a'
