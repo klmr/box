@@ -222,6 +222,9 @@ reload = function (module) {
     assign(module_ref, mod_env, envir = module_parent, inherits = TRUE)
 }
 
+#' Pretty-print a module’s description
+#'
+#' @export
 print.module = function (module) {
     cat(sprintf('<%s>\n', attr(module, 'name')))
     invisible(module)
