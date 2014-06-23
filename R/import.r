@@ -155,6 +155,10 @@ export_operators = function (namespace, parent) {
     }
 
     operators = Filter(is_op, lsf.str(namespace))
+
+    if (length(operators) == 0)
+        return()
+
     name = module_name(namespace)
     # Skip one parent environment because this module is hooked into the chain
     # between the calling environment and its ancestor, thus sitting in its
