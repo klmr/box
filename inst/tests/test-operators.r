@@ -23,8 +23,6 @@ test_that('it works in the global environment', {
         expect_false(exists('%or%'))
         a = import('a')
         on.exit(unload(a))
-        on.exit(detach('operators:a'), add = TRUE)
-
         expect_true(exists('%or%'))
     }, envir = .GlobalEnv)
 })
