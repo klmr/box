@@ -100,8 +100,10 @@ import = function (module, attach, attach_operators = TRUE) {
         NULL
 
     if (! is.null(attached_module)) {
-        if (identical(module_parent, .GlobalEnv))
+        if (identical(module_parent, .GlobalEnv)) {
             attach(attached_module, name = environmentName(attached_module))
+            attr(mod_env, 'attached') = environmentName(attached_module)
+        }
         else
             parent.env(module_parent) = attached_module
     }
@@ -194,7 +196,10 @@ unload = function (module) {
     stopifnot(inherits(module, 'module'))
     module_ref = as.character(substitute(module))
     rm(list = module_path(module), envir = .loaded_modules)
-    # unset the module reference in its scope, i.e. the caller’s environment or
+    attached = attr(module, 'attached')
+    if (! is.null(attached))
+        detach(attached, character.only = TRUE)
+    # Unset the module reference in its scope, i.e. the caller’s environment or
     # some parent thereof.
     rm(list = module_ref, envir = parent.frame(), inherits = TRUE)
 }
