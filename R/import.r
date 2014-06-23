@@ -92,14 +92,19 @@ import = function (module, attach, attach_operators = TRUE) {
     mod_env = exhibit_namespace(mod_ns, as.character(module), module_parent,
                                 export_list)
 
-    if (attach) {
-        if (identical(module_parent, .GlobalEnv))
-            attach(mod_env, name = environmentName(mod_env))
-        else
-            parent.env(module_parent) = mod_env
-    }
+    attached_module = if (attach)
+        mod_env
     else if (attach_operators)
         export_operators(mod_ns, module_parent)
+    else
+        NULL
+
+    if (! is.null(attached_module)) {
+        if (identical(module_parent, .GlobalEnv))
+            attach(attached_module, name = environmentName(attached_module))
+        else
+            parent.env(module_parent) = attached_module
+    }
 
     invisible(mod_env)
 }
@@ -163,16 +168,11 @@ export_operators = function (namespace, parent) {
     # Skip one parent environment because this module is hooked into the chain
     # between the calling environment and its ancestor, thus sitting in its
     # local object search path.
-    op_env = structure(list2env(sapply(operators, get, envir = namespace),
-                                parent = parent.env(parent)),
-                       name = paste('operators', name, sep = ':'),
-                       path = module_path(namespace),
-                       class = c('module', 'environment'))
-
-    if (identical(parent, .GlobalEnv))
-        attach(op_env, name = environmentName(op_env))
-    else
-        parent.env(parent) = op_env
+    structure(list2env(sapply(operators, get, envir = namespace),
+                       parent = parent.env(parent)),
+              name = paste('operators', name, sep = ':'),
+              path = module_path(namespace),
+              class = c('module', 'environment'))
 }
 
 #' Unload a given module
