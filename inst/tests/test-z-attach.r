@@ -23,3 +23,37 @@ test_that('module can be detached', {
     detach('module:a')
     expect_that(as.environment(2), is_identical_to(parent))
 })
+
+test_that('unloading a module detaches it', {
+    parent = as.environment(2)
+    a = local(import('a', attach = TRUE), envir = .GlobalEnv)
+    expect_that(search()[2], equals('module:a'))
+    expect_false(identical(as.environment(2), parent))
+
+    modules::unload(a)
+    expect_true(identical(as.environment(2), parent))
+})
+
+test_that('unloading a module detaches operators', {
+    parent = as.environment(2)
+    a = local(import('a', attach_operators = TRUE), envir = .GlobalEnv)
+    expect_that(search()[2], equals('operators:a'))
+    expect_false(identical(as.environment(2), parent))
+
+    modules::unload(a)
+    expect_true(identical(as.environment(2), parent))
+})
+
+test_that('reloading a module reattaches it', {
+    on.exit(modules::unload(a))
+    parent = as.environment(2)
+    a = local(import('a', attach = TRUE), envir = .GlobalEnv)
+
+    expect_that(search()[2], equals('module:a'))
+    expect_false(identical(as.environment(2), parent))
+    expect_true(identical(as.environment(3), parent))
+
+    modules::reload(a)
+    expect_false(identical(as.environment(2), parent))
+    expect_true(identical(as.environment(3), parent))
+})
