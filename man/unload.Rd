@@ -19,7 +19,9 @@ source files, which would not have happened without \code{unload}.
 Unloading modules is primarily useful for testing during development, and
 should not be used in production code.
 
-\code{unload} does not currently detach environments.
+\code{unload} comes with a few restrictions. It attempts to detach itself
+if it was previously attached. This only works if it is called in the same
+scope as the original \code{import}.
 }
 \seealso{
 \code{import}

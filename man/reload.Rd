@@ -17,7 +17,9 @@ Any other references to the loaded modules remain unchanged, and will
 still work. Reloading modules is primarily useful for testing during
 development, and should not be used in production code.
 
-\code{reload} does not work correctly with attached environments.
+\code{reload} comes with a few restrictions. It attempts to re-attach itself
+in parts or whole if it was previously attached in parts or whole. This only
+works if it is called in the same scope as the original \code{import}.
 }
 \seealso{
 \code{import}
