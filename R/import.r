@@ -92,15 +92,23 @@ import = function (module, attach, attach_operators = TRUE) {
     mod_env = exhibit_namespace(mod_ns, as.character(module), module_parent,
                                 export_list)
 
-    if (attach) {
-        if (identical(module_parent, .GlobalEnv))
-            attach(mod_env, name = environmentName(mod_env))
-        else
-            parent.env(module_parent) = mod_env
-    }
+    attached_module = if (attach)
+        mod_env
     else if (attach_operators)
         export_operators(mod_ns, module_parent)
+    else
+        NULL
 
+    if (! is.null(attached_module)) {
+        if (identical(module_parent, .GlobalEnv)) {
+            attach(attached_module, name = environmentName(attached_module))
+            attr(mod_env, 'attached') = environmentName(attached_module)
+        }
+        else
+            parent.env(module_parent) = attached_module
+    }
+
+    attr(mod_env, 'call') = match.call()
     invisible(mod_env)
 }
 
@@ -155,20 +163,19 @@ export_operators = function (namespace, parent) {
     }
 
     operators = Filter(is_op, lsf.str(namespace))
+
+    if (length(operators) == 0)
+        return()
+
     name = module_name(namespace)
     # Skip one parent environment because this module is hooked into the chain
     # between the calling environment and its ancestor, thus sitting in its
     # local object search path.
-    op_env = structure(list2env(sapply(operators, get, envir = namespace),
-                                parent = parent.env(parent)),
-                       name = paste('operators', name, sep = ':'),
-                       path = module_path(namespace),
-                       class = c('module', 'environment'))
-
-    if (identical(parent, .GlobalEnv))
-        attach(op_env, name = environmentName(op_env))
-    else
-        parent.env(parent) = op_env
+    structure(list2env(sapply(operators, get, envir = namespace),
+                       parent = parent.env(parent)),
+              name = paste('operators', name, sep = ':'),
+              path = module_path(namespace),
+              class = c('module', 'environment'))
 }
 
 #' Unload a given module
@@ -182,7 +189,9 @@ export_operators = function (namespace, parent) {
 #' Unloading modules is primarily useful for testing during development, and
 #' should not be used in production code.
 #'
-#' \code{unload} does not currently detach environments.
+#' \code{unload} comes with a few restrictions. It attempts to detach itself
+#' if it was previously attached. This only works if it is called in the same
+#' scope as the original \code{import}.
 #' @seealso \code{import}
 #' @seealso \code{reload}
 #' @export
@@ -190,7 +199,10 @@ unload = function (module) {
     stopifnot(inherits(module, 'module'))
     module_ref = as.character(substitute(module))
     rm(list = module_path(module), envir = .loaded_modules)
-    # unset the module reference in its scope, i.e. the caller’s environment or
+    attached = attr(module, 'attached')
+    if (! is.null(attached))
+        detach(attached, character.only = TRUE)
+    # Unset the module reference in its scope, i.e. the caller’s environment or
     # some parent thereof.
     rm(list = module_ref, envir = parent.frame(), inherits = TRUE)
 }
@@ -204,21 +216,21 @@ unload = function (module) {
 #' still work. Reloading modules is primarily useful for testing during
 #' development, and should not be used in production code.
 #'
-#' \code{reload} does not work correctly with attached environments.
+#' \code{reload} comes with a few restrictions. It attempts to re-attach itself
+#' in parts or whole if it was previously attached in parts or whole. This only
+#' works if it is called in the same scope as the original \code{import}.
 #' @seealso \code{import}
 #' @seealso \code{unload}
 #' @export
 reload = function (module) {
     stopifnot(inherits(module, 'module'))
     module_ref = as.character(substitute(module))
-    module_path = module_path(module)
-    module_name = module_name(module)
-    rm(list = module_path, envir = .loaded_modules)
-    #' @TODO Once we have `attach`, need also to take care of the search path
-    #' and whatnot.
-    mod_ns = do_import(module_name, module_path)
     module_parent = parent.frame()
-    mod_env = exhibit_namespace(mod_ns, module_ref, module_parent, NULL)
+    # Execute in parent scope, since `unload` deletes the scope’s reference to
+    # the module.
+    eval(call('unload', as.name(module_ref)), envir = module_parent)
+    # Use `eval` to replicate the exact call being made to `import`.
+    mod_env = eval(attr(module, 'call'), envir = module_parent)
     assign(module_ref, mod_env, envir = module_parent, inherits = TRUE)
 }
 
