@@ -108,6 +108,7 @@ import = function (module, attach, attach_operators = TRUE) {
             parent.env(module_parent) = attached_module
     }
 
+    attr(mod_env, 'call') = match.call()
     invisible(mod_env)
 }
 
@@ -188,7 +189,9 @@ export_operators = function (namespace, parent) {
 #' Unloading modules is primarily useful for testing during development, and
 #' should not be used in production code.
 #'
-#' \code{unload} does not currently detach environments.
+#' \code{unload} comes with a few restrictions. It attempts to detach itself
+#' if it was previously attached. This only works if it is called in the same
+#' scope as the original \code{import}.
 #' @seealso \code{import}
 #' @seealso \code{reload}
 #' @export
@@ -213,21 +216,21 @@ unload = function (module) {
 #' still work. Reloading modules is primarily useful for testing during
 #' development, and should not be used in production code.
 #'
-#' \code{reload} does not work correctly with attached environments.
+#' \code{reload} comes with a few restrictions. It attempts to re-attach itself
+#' in parts or whole if it was previously attached in parts or whole. This only
+#' works if it is called in the same scope as the original \code{import}.
 #' @seealso \code{import}
 #' @seealso \code{unload}
 #' @export
 reload = function (module) {
     stopifnot(inherits(module, 'module'))
     module_ref = as.character(substitute(module))
-    module_path = module_path(module)
-    module_name = module_name(module)
-    rm(list = module_path, envir = .loaded_modules)
-    #' @TODO Once we have `attach`, need also to take care of the search path
-    #' and whatnot.
-    mod_ns = do_import(module_name, module_path)
     module_parent = parent.frame()
-    mod_env = exhibit_namespace(mod_ns, module_ref, module_parent, NULL)
+    # Execute in parent scope, since `unload` deletes the scope’s reference to
+    # the module.
+    eval(call('unload', as.name(module_ref)), envir = module_parent)
+    # Use `eval` to replicate the exact call being made to `import`.
+    mod_env = eval(attr(module, 'call'), envir = module_parent)
     assign(module_ref, mod_env, envir = module_parent, inherits = TRUE)
 }
 

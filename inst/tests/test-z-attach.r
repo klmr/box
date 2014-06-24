@@ -45,15 +45,15 @@ test_that('unloading a module detaches operators', {
 })
 
 test_that('reloading a module reattaches it', {
-    on.exit(modules::unload(a))
     parent = as.environment(2)
-    a = local(import('a', attach = TRUE), envir = .GlobalEnv)
+    local({a = import('a', attach = TRUE)}, envir = .GlobalEnv)
 
     expect_that(search()[2], equals('module:a'))
-    expect_false(identical(as.environment(2), parent))
-    expect_true(identical(as.environment(3), parent))
+    expect_false(identical(as.environment(2), parent), 'Precondition')
+    expect_true(identical(as.environment(3), parent), 'Precondition')
 
-    modules::reload(a)
+    local(reload(a), envir = .GlobalEnv)
     expect_false(identical(as.environment(2), parent))
     expect_true(identical(as.environment(3), parent))
+    local(unload(a), envir = .GlobalEnv)
 })
