@@ -26,9 +26,10 @@
 #'
 #' Modules are searched in the module search path \code{options('import.path')}.
 #' This is a vector of paths to consider, from the highest to the lowest
-#' priority. The current directory is \emph{always} considered first. That is,
+#' priority. The current directory is \emph{always} considered last. That is,
 #' if a file \code{a.r} exists both in the current directory and in a module
-#' search path, the local file \code{./a.r} will be loaded.
+#' search path, the local file \code{./a.r} will not be loaded, unless the
+#' import is explicitly specified as \code{import('./a')}.
 #'
 #' Module names can be fully qualified to refer to nested paths. See
 #' \code{Examples}.
