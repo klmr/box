@@ -125,8 +125,10 @@ do_import = function (module_name, module_path) {
                           name = paste('namespace', module_name, sep = ':'),
                           path = module_path,
                           class = c('namespace', 'environment'))
-    source(module_path, local = namespace)
+    # First cache the (still empty) namespace, then source code into it. This is
+    # necessary to allow circular imports.
     cache_module(namespace)
+    source(module_path, local = namespace)
     namespace
 }
 
