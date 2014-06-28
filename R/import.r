@@ -26,9 +26,10 @@
 #'
 #' Modules are searched in the module search path \code{options('import.path')}.
 #' This is a vector of paths to consider, from the highest to the lowest
-#' priority. The current directory is \emph{always} considered first. That is,
+#' priority. The current directory is \emph{always} considered last. That is,
 #' if a file \code{a.r} exists both in the current directory and in a module
-#' search path, the local file \code{./a.r} will be loaded.
+#' search path, the local file \code{./a.r} will not be loaded, unless the
+#' import is explicitly specified as \code{import('./a')}.
 #'
 #' Module names can be fully qualified to refer to nested paths. See
 #' \code{Examples}.
@@ -41,6 +42,7 @@
 #' outside it (nor in other modules which might be loaded).
 #'
 #' @examples
+#' \dontrun{
 #' # `a.r` is a file in the local directory containing a function `f`.
 #' a = import('a')
 #' a$f()
@@ -54,7 +56,7 @@
 #' import('b/c', attach = TRUE)
 #' f()
 #' g()
-#'
+#' }
 #' @seealso \code{unload}
 #' @seealso \code{reload}
 #' @seealso \code{module_name}
@@ -124,8 +126,10 @@ do_import = function (module_name, module_path) {
                           name = paste('namespace', module_name, sep = ':'),
                           path = module_path,
                           class = c('namespace', 'environment'))
-    source(module_path, local = namespace)
+    # First cache the (still empty) namespace, then source code into it. This is
+    # necessary to allow circular imports.
     cache_module(namespace)
+    source(module_path, local = namespace)
     namespace
 }
 

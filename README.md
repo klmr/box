@@ -82,6 +82,7 @@ Local, single-file modules can be used as-is: assuming you have a file called
 
 ```splus
 foo = import('foo')
+# or: foo = import('./foo')
 ```
 
 in R to make its content accessible via a module, and use it via
@@ -103,9 +104,9 @@ present there.
 
 Nested modules (called “packages” in Python, but for obvious reasons this name
 is not used for R modules) are directories (either local, or in the import
-search path) which contain an `__init__.r` file. Assuming you have such a module
-`foo`, inside which is a submodule `bar`, you can then make it available in R
-via
+search path) which optionally contain an `__init__.r` file. Assuming you have
+such a module `foo`, inside which is a submodule `bar`, you can then make it
+available in R via
 
 ```splus
 foo = import('foo')     # Make available foo, or
@@ -151,12 +152,13 @@ import('relative/path/file', attach = TRUE)
   }
   ```
 
-  This, of course, is similar to Python’s `if __name__ == '__main__': …`
+  This is of course similar to Python’s `if __name__ == '__main__': …`
   mechanism. `module_name` returns a module’s name. Module source files which
   are being executed directly don’t act as modules and hence have no name
   (`module_name()` is `NULL`).
-* Loading happens in the module’s own directory, allowing the module to load
-  local sources (the corresponding `source` option is `chdir=TRUE`).
+* Modules can import other modules relative to their own path, without having to
+  `chdir` to the module’s path (similar to the `source` option `chdir=TRUE`, but
+  preserving `getwd()`).
 * `import` uses a standardised, customisable search path to locate modules (but
   giving precedence to modules in the current directory), making it easy to
   reuse source files across projects without having to copy them around.
