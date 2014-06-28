@@ -128,7 +128,10 @@ do_import = function (module_name, module_path) {
     # First cache the (still empty) namespace, then source code into it. This is
     # necessary to allow circular imports.
     cache_module(namespace)
-    source(module_path, local = namespace)
+    # R, Windows and Unicode don’t play together. `source` does not work here.
+    # See http://developer.r-project.org/Encodings_and_R.html and
+    # http://stackoverflow.com/q/5031630/1968 for a discussion of this.
+    eval(parse(module_path, encoding = 'UTF-8'), envir = namespace)
     namespace
 }
 
