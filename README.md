@@ -318,4 +318,9 @@ sessions while developing modules).
 
 ### Why are nested names accessed via `$`?
 
-> TODO / subject to change?
+Module objects are environments and, as such, allow any form of access that
+normal environments allow. This notably includes access of objects via the `$`
+operator. This differs from R packages, where objects can be explicitly
+addressed with the `package::object` syntax. For now, this syntax is not
+supported for modules because it is ambiguous when a module name shadows a
+package.
