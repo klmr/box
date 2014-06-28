@@ -42,6 +42,7 @@
 #' outside it (nor in other modules which might be loaded).
 #'
 #' @examples
+#' \dontrun{
 #' # `a.r` is a file in the local directory containing a function `f`.
 #' a = import('a')
 #' a$f()
@@ -55,7 +56,7 @@
 #' import('b/c', attach = TRUE)
 #' f()
 #' g()
-#'
+#' }
 #' @seealso \code{unload}
 #' @seealso \code{reload}
 #' @seealso \code{module_name}
