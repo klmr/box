@@ -1,4 +1,4 @@
-* 0.4: First final API
+* 0.4:
     * Make imports absolute by default, and add ability for explicit relative
       imports via the `./` or `../` prefix, and use the current script path as
       the base path, rather than the current working directory, when invoking a
@@ -9,6 +9,8 @@
     * Fix `module_name` bug
     * Add `module_file` function which works akin to `system.file`
     * Pretty-print module objects
+    * Support circular dependencies between modules
+    * Fix (hopefully) installation on Windows by specifying project encoding
 
 * 0.3:
     * Add capability of partially attaching modules
