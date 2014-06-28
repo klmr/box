@@ -9,7 +9,6 @@ Table of contents
 * [Usage](#usage)
 * [Feature comparison](#feature-comparison)
 * [Design rationale](#design-rationale)
-* [To do](#to-do)
 
 
 Summary
@@ -320,14 +319,3 @@ sessions while developing modules).
 ### Why are nested names accessed via `$`?
 
 > TODO / subject to change?
-
-
-To do
------
-
-* Make S3 (and S4?) method lookup work.
-* Parse and load attached documentation?
-* Add argument `nonlocal` to override loading from working directory
-* Add simple module installation mechanism (`install.gist` etc).
-* Fix `unload` and `reload` to work with attached and multiply loaded modules
-* Add argument `path` to `import` to temporarily override `import.path`.
