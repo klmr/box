@@ -91,9 +91,9 @@ in R to make its content accessible via a module, and use it via
 import('foo', attach = TRUE)
 ```
 
-but this form is usually discouraged since it clutters the global search path
-(inside modules it’s fine because modules are isolated namespaces and don’t leak
-their scope).
+But this form is usually discouraged at the file scope since it clutters the
+global search path (although it’s worth noting that modules are isolated
+namespaced and don’t leak their scope).
 
 If you want to access a module in a non-local path, the cleanest way is to
 create a central repository (e.g. at `~/.R/modules`) and to copy module source
