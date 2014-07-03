@@ -31,6 +31,8 @@ Python’s module mechanism.
 
 \code{module_name}
 
+\code{module_file}
+
 \code{unload}, \code{reload}
 }
 

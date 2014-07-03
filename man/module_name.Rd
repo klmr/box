@@ -25,4 +25,14 @@ This function approximates Python’s magic variable \code{__name__}, and can
 be used similarly to test whether a module was loaded via \code{import} or
 invoked directly.
 }
+\examples{
+\dontrun{
+cat('This code is always executed.\\n')
+
+if (is.null(module_name())) {
+    cat('This code is only executed when the module is run
+        as stand-alone code via Rscript or R CMD BATCH.\\n')
+}
+}
+}
 
