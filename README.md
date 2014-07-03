@@ -9,7 +9,6 @@ Table of contents
 * [Usage](#usage)
 * [Feature comparison](#feature-comparison)
 * [Design rationale](#design-rationale)
-* [To do](#to-do)
 
 
 Summary
@@ -92,9 +91,9 @@ in R to make its content accessible via a module, and use it via
 import('foo', attach = TRUE)
 ```
 
-but this form is usually discouraged since it clutters the global search path
-(inside modules it’s fine because modules are isolated namespaces and don’t leak
-their scope).
+But this form is usually discouraged at the file scope since it clutters the
+global search path (although it’s worth noting that modules are isolated
+namespaced and don’t leak their scope).
 
 If you want to access a module in a non-local path, the cleanest way is to
 create a central repository (e.g. at `~/.R/modules`) and to copy module source
@@ -319,15 +318,9 @@ sessions while developing modules).
 
 ### Why are nested names accessed via `$`?
 
-> TODO / subject to change?
-
-
-To do
------
-
-* Make S3 (and S4?) method lookup work.
-* Parse and load attached documentation?
-* Add argument `nonlocal` to override loading from working directory
-* Add simple module installation mechanism (`install.gist` etc).
-* Fix `unload` and `reload` to work with attached and multiply loaded modules
-* Add argument `path` to `import` to temporarily override `import.path`.
+Module objects are environments and, as such, allow any form of access that
+normal environments allow. This notably includes access of objects via the `$`
+operator. This differs from R packages, where objects can be explicitly
+addressed with the `package::object` syntax. For now, this syntax is not
+supported for modules because it is ambiguous when a module name shadows a
+package.

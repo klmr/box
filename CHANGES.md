@@ -1,3 +1,7 @@
+* 0.5:
+    * Assume all module source files are UTF-8 encoded
+    * Improve documentation
+
 * 0.4:
     * Make imports absolute by default, and add ability for explicit relative
       imports via the `./` or `../` prefix, and use the current script path as

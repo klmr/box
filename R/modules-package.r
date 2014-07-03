@@ -23,5 +23,6 @@
 #' @docType package
 #' @seealso \code{import}
 #' @seealso \code{module_name}
+#' @seealso \code{module_file}
 #' @seealso \code{unload}, \code{reload}
 NULL
