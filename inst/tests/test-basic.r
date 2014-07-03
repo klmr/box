@@ -41,3 +41,14 @@ test_that('hidden objects are not exported', {
     expect_true(exists('counter', envir = a))
     expect_false(exists('.modname', envir = a))
 })
+
+test_that('module bindings are locked', {
+    a = import('a')
+
+    expect_true(environmentIsLocked(a))
+    expect_true(bindingIsLocked('get_counter', a))
+    expect_true(bindingIsLocked('counter', a))
+
+    err = try({a$counter = 2}, silent = TRUE)
+    expect_that(class(err), equals('try-error'))
+})

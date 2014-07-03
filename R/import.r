@@ -111,6 +111,7 @@ import = function (module, attach, attach_operators = TRUE) {
     }
 
     attr(mod_env, 'call') = match.call()
+    lockEnvironment(mod_env, bindings = TRUE)
     invisible(mod_env)
 }
 
