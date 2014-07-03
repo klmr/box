@@ -111,6 +111,7 @@ import = function (module, attach, attach_operators = TRUE) {
     }
 
     attr(mod_env, 'call') = match.call()
+    lockEnvironment(mod_env, bindings = TRUE)
     invisible(mod_env)
 }
 
@@ -138,7 +139,7 @@ do_import = function (module_name, module_path) {
 
 exhibit_namespace = function (namespace, name, parent, export_list) {
     if (is.null(export_list))
-        export_list = lsf.str(namespace)
+        export_list = ls(namespace)
     else {
         # Verify correctness.
         exist = vapply(export_list, exists, logical(1), envir = namespace)
