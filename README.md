@@ -167,9 +167,6 @@ import('relative/path/file', attach = TRUE)
   decomposable units. This project was mainly borne out of the frustration that
   is repeatedly `source`ing the same file, or alternatively having one “master
   header” file which includes all other source files.
-* Modules can only export functions, not objects. This is a consequence of how R
-  handles functions and objects, but it is a limitation that modules embrace to
-  enforce a clean public interface.
 
 ### With packages (`library`)
 
