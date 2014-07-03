@@ -1,10 +1,10 @@
 double = function (x) x * 2
 
-modname = module_name()
+.modname = module_name()
 
 counter = 1
 
-get_modname = function () modname
+get_modname = function () .modname
 
 get_modname2 = function () module_name()
 
@@ -20,3 +20,5 @@ inc = function ()
     paste(a, b, sep = '')
 
 which = function () '/a'
+
+encoding_test = function () '☃' # U+2603: SNOWMAN

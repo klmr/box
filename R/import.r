@@ -111,6 +111,7 @@ import = function (module, attach, attach_operators = TRUE) {
     }
 
     attr(mod_env, 'call') = match.call()
+    lockEnvironment(mod_env, bindings = TRUE)
     invisible(mod_env)
 }
 
@@ -129,13 +130,16 @@ do_import = function (module_name, module_path) {
     # First cache the (still empty) namespace, then source code into it. This is
     # necessary to allow circular imports.
     cache_module(namespace)
-    source(module_path, local = namespace)
+    # R, Windows and Unicode don’t play together. `source` does not work here.
+    # See http://developer.r-project.org/Encodings_and_R.html and
+    # http://stackoverflow.com/q/5031630/1968 for a discussion of this.
+    eval(parse(module_path, encoding = 'UTF-8'), envir = namespace)
     namespace
 }
 
 exhibit_namespace = function (namespace, name, parent, export_list) {
     if (is.null(export_list))
-        export_list = lsf.str(namespace)
+        export_list = ls(namespace)
     else {
         # Verify correctness.
         exist = vapply(export_list, exists, logical(1), envir = namespace)

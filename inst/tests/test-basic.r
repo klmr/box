@@ -21,16 +21,12 @@ test_that('can use imported function', {
     expect_that(a$double(42), equals(42 * 2))
 })
 
-test_that('modules only export functions', {
+test_that('modules export all objects', {
     a = import('a')
     expect(length(lsf.str(a)) > 0)
-    expect_that(length(lsf.str(a)), equals(length(ls(a))))
+    expect(length(ls(a)) > length(lsf.str(a)))
     a_namespace = environment(a$double)
-    non_functions = setdiff(ls(a_namespace), ls(a))
-    expect(length(non_functions) > 0)
-    expect_true(exists(non_functions[[1]], envir = a_namespace))
-    expect_false(exists(non_functions[[1]], envir = a_namespace,
-                        mode = 'function'))
+    expect_that(a$counter, equals(1))
 })
 
 test_that('module can modify its variables', {
@@ -38,4 +34,21 @@ test_that('module can modify its variables', {
     counter = a$get_counter()
     a$inc()
     expect_that(a$get_counter(), equals(counter + 1))
+})
+
+test_that('hidden objects are not exported', {
+    a = import('a')
+    expect_true(exists('counter', envir = a))
+    expect_false(exists('.modname', envir = a))
+})
+
+test_that('module bindings are locked', {
+    a = import('a')
+
+    expect_true(environmentIsLocked(a))
+    expect_true(bindingIsLocked('get_counter', a))
+    expect_true(bindingIsLocked('counter', a))
+
+    err = try({a$counter = 2}, silent = TRUE)
+    expect_that(class(err), equals('try-error'))
 })
