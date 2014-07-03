@@ -35,3 +35,9 @@ test_that('module can modify its variables', {
     a$inc()
     expect_that(a$get_counter(), equals(counter + 1))
 })
+
+test_that('hidden objects are not exported', {
+    a = import('a')
+    expect_true(exists('counter', envir = a))
+    expect_false(exists('.modname', envir = a))
+})
