@@ -31,6 +31,11 @@ test_that('submodules can be loaded one by one', {
     expect_that(result, equals('a/b/c/e.r'))
 })
 
+test_that('module can export nested submodules', {
+    b = import('b')
+    expect_that(b$answer, equals(42))
+})
+
 test_that('submodules load all relevant init files', {
     setup()
     on.exit(teardown())
