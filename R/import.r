@@ -119,11 +119,16 @@ do_import = function (module_name, module_path) {
     if (is_module_loaded(module_path))
         return(get_loaded_module(module_path))
 
+    # Environment with helper functions which are only available when loading a
+    # module via `import`, and are not otherwise exported by the package.
+    helper_env = list2env(list(export_submodule = export_submodule),
+                          parent = .BaseNamespaceEnv)
+
     # The namespace contains a module’s content. This schema is very much like
     # R package organisation.
     # A good resource for this is:
     # <http://obeautifulcode.com/R/How-R-Searches-And-Finds-Stuff/>
-    namespace = structure(new.env(parent = .BaseNamespaceEnv),
+    namespace = structure(new.env(parent = helper_env),
                           name = paste('namespace', module_name, sep = ':'),
                           path = module_path,
                           class = c('namespace', 'environment'))
