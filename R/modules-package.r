@@ -25,4 +25,5 @@
 #' @seealso \code{module_name}
 #' @seealso \code{module_file}
 #' @seealso \code{unload}, \code{reload}
+#' @seealso \code{export_submodule}
 NULL
