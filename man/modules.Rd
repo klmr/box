@@ -34,5 +34,7 @@ Python’s module mechanism.
 \code{module_file}
 
 \code{unload}, \code{reload}
+
+\code{export_submodule}
 }
 
