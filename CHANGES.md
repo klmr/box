@@ -1,5 +1,8 @@
 * 0.5:
     * Assume all module source files are UTF-8 encoded
+    * Export non-function objects as well as functions
+    * Lock exported namespace so that its symbols cannot be modified
+    * Add `export_submodule` function
     * Improve documentation
 
 * 0.4:
