@@ -199,8 +199,28 @@ more lightweight than packages.
 
 ### With Python’s `import` mechanism
 
-> TODO
+R modules are heavily inspired by Python modules, but embedded in R syntax.
 
+* There is one general form of the `import` function, corresponding to
+  <code>import <em>modname</em></code> in Python. Arguments can be used to
+  emulate the other forms: <code>import(<em>x</em>, attach = TRUE)</code>
+  loosely corresponds to <code>from <em>x</em> import \*</code>.
+  <code>import(<em>x</em>, attach = c('foo', 'bar'))</code> corresponds to
+  <code>from <em>x</em> import foo, bar</code>.
+
+* Like in Python, imports are absolute by default. This means that if there are
+  two modules of the same name, one in the global search path and one in the
+  local directory, `import`ing that module will resolve to the one in the global
+  search path, and in order to import the local module instead, the user has to
+  specify a relative path: <code>import('./<em>modname</em>')</code>. Unlike in
+  Python, modules can always be specified as relative imports, not only for
+  submodules.
+
+* Modules export functions and objects they define, but they do not export
+  symbols they themselves import: if a module `a` contains `import('b', attach =
+  TRUE)`, none of the symbols from `b` will be visible for any code importing
+  `a`. Where this is not the desired behaviour, users can use the
+  `export_submodule` function instead of `import`.
 
 Design rationale
 ----------------
