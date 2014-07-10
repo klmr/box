@@ -216,11 +216,15 @@ R modules are heavily inspired by Python modules, but embedded in R syntax.
   Python, modules can always be specified as relative imports, not only for
   submodules.
 
-* Modules export functions and objects they define, but they do not export
-  symbols they themselves import: if a module `a` contains `import('b', attach =
-  TRUE)`, none of the symbols from `b` will be visible for any code importing
-  `a`. Where this is not the desired behaviour, users can use the
-  `export_submodule` function instead of `import`.
+* When specifying `attach = TRUE`, names of the `import`ed module are made
+  available directly in the calling scope, but unlike in Python they are not
+  *copied* into that scope, so local names may shadow imported names.
+
+* As a consequence of this, modules export functions and objects they define,
+  but they do not export symbols they themselves import: if a module `a`
+  contains `import('b', attach = TRUE)`, none of the symbols from `b` will be
+  visible for any code importing `a`. Where this is not the desired behaviour,
+  users can use the `export_submodule` function instead of `import`.
 
 Design rationale
 ----------------
