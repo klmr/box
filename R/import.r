@@ -173,7 +173,7 @@ exhibit_namespace = function (namespace, name, parent, export_list) {
 export_operators = function (namespace, parent) {
     ops = c('+', '-', '*', '/', '^', '**', '&', '|', ':', '::', ':::', '$',
             '$<-', '=', '<-', '<<-', '==', '<', '<=', '>', '>=', '!=', '~',
-            '&&', '||', '!', '?', '??', '@', '@<-')
+            '&&', '||', '!', '?', '@', '@<-', ':=')
 
     is_predefined = function (f) f %in% ops
 
