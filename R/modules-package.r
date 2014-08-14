@@ -12,7 +12,7 @@
 #'     in two paths, the first hit is accepted.
 #'     The current directory is always prepended to the search paths.
 #'   \item \code{import.attach}:
-#'     A boolean specifying whether operators from a module should be attached
+#'     A boolean specifying whether functions from a module should be attached
 #'     by default when using \code{import}, even if \code{attach=FALSE} is
 #'     specified. This option is only considered while running in interactive
 #'     mode, and not inside a module. The option is furthermore overridden by
