@@ -23,6 +23,7 @@ find_module = function (module) {
 
     # For each candidate, try finding a module file. A module file is either
     # `{suffix}.r` or `{suffix}/__init__.r`, preceded by the path prefix.
+    # Preference is given to `{suffix}.r`.
 
     find_candidate = function (path) {
         candidate = list.files(path, file_pattern, full.names = TRUE)
