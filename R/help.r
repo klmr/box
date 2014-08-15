@@ -19,8 +19,8 @@ module_help = function (topic, verbose = getOption('verbose'),
         stop(sQuote(deparse(topic)), ' is not a valid module help topic',
              call. = FALSE)
 
-    module_name = as.character(topic[[2]])
-    module = get(module_name, parent.frame())
+    module = get(as.character(topic[[2]]), parent.frame())
+    module_name = module_name(module)
     object = as.character(topic[[3]])
 
     doc = attr(module, 'doc')[[object]]
