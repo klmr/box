@@ -6,7 +6,9 @@ Maintainer: Konrad Rudolph <konrad.rudolph@gmail.com>
 Description: Alternative package management system for R
 Depends:
     R (>= 3.0.2)
-Imports: tools, roxygen2
+Imports:
+    tools,
+    roxygen2
 License: Apache License (== 2.0) | file LICENSE
 LazyData: true
 Encoding: UTF-8
