@@ -2,7 +2,8 @@ parse_documentation = function (module) {
     module_path = module_path(module)
     parsed = list(env = module,
                   blocks = roxygen2:::parse_file(module_path, module))
-    rdfiles = roxygen2:::roc_process(rd_roclet(), parsed, dirname(module_path))
+    roclet = roxygen2:::rd_roclet()
+    rdfiles = roxygen2:::roc_process(roclet, parsed, dirname(module_path))
     rdcontents = lapply(rdfiles, roxygen2:::format.rd_file, wrap = FALSE)
     setNames(rdcontents, sub('\\.Rd$', '', names(rdcontents)))
 }
