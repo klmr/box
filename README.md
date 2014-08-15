@@ -166,6 +166,9 @@ import('relative/path/file', attach = TRUE)
   decomposable units. This project was mainly borne out of the frustration that
   is repeatedly `source`ing the same file, or alternatively having one “master
   header” file which includes all other source files.
+* Doc comments inside a module source file are parsed during `import`, and
+  interactive help on module contents is subsequently available via the usual
+  mechanisms (e.g. `?mod$fun`).
 
 ### With packages (`library`)
 
@@ -185,8 +188,6 @@ more lightweight than packages.
   internally, something that packages only allow at coarse level. In particular,
   modules can be *nested* as in Python to create hierarchies, and this is in
   fact encouraged.
-* As of now, no documentation for functions is loaded for modules. This is
-  currently the biggest “to do” item.
 * As of now, there is no support for non-R code or dynamic libraries (but one
   may of course use facilities such as `dyn.load` and [Rcpp][] to include
   compiled code).
