@@ -1,3 +1,6 @@
+* 0.6:
+    * Add support for documentation via roxygen2 doc comments in modules
+
 * 0.5:
     * Assume all module source files are UTF-8 encoded
     * Improve documentation
