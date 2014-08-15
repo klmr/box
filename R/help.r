@@ -8,8 +8,25 @@ parse_documentation = function (module) {
     setNames(rdcontents, sub('\\.Rd$', '', names(rdcontents)))
 }
 
-module_help = function (topic, verbose = getOption('verbose'),
-                        help_type = getOption('help_type', 'text')) {
+#' Display module documentation
+#'
+#' \code{module_help} displays help on a module’s objects and functions in much
+#' the same way \code{\link[utils]{help}} does for package contents.
+#'
+#' @param topic fully-qualified name of the object or function to get help for,
+#'  in the format \code{module$function}
+#' @param help_type character string specifying the output format; currently,
+#'  only \code{'text'} is supported
+#' @note Help is only available if \code{\link{import}} loaded the help stored
+#' in the module file(s). By default, this happens only in interactive sessions.
+#' @rdname help
+#' @export
+#' @examples
+#' \dontrun{
+#' mod = import('mod')
+#' module_help(mod$func)
+#' }
+module_help = function (topic, help_type = getOption('help_type', 'text')) {
     if (help_type != 'text')
         warning('Only help_type == ', sQuote('text'), ' supported for now.')
 
@@ -48,6 +65,15 @@ is_module_help_topic = function (topic, parent)
     exists(as.character(topic[[2]]), parent) &&
     ! is.null(module_name(get(as.character(topic[[2]]), parent)))
 
+#' @usage
+#' ?module$function
+#' @inheritParams utils::`?`
+#' @rdname help
+#' @export
+#' @examples
+#' \dontrun{
+#' ?mod$func
+#' }
 `?` = function (e1, e2) {
     topic = substitute(e1)
     if (missing(e2) && is_module_help_topic(topic, parent.frame()))
@@ -56,6 +82,14 @@ is_module_help_topic = function (topic, parent)
         eval(`[[<-`(match.call(), 1, utils::`?`))
 }
 
+#' @usage
+#' help(module$function)
+#' @inheritParams utils::help
+#' @export
+#' @examples
+#' \dontrun{
+#' help(mod$func)
+#' }
 help = function (topic, ...) {
     topic = substitute(topic)
     delegate = if (is_module_help_topic(topic, parent.frame()))
