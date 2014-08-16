@@ -15,6 +15,7 @@ counter = 1
 get_modname = function () .modname
 
 #' The module’s name, via a function
+#' @name get_modname
 get_modname2 = function () module_name()
 
 #' Read the counter
