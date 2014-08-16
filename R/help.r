@@ -77,9 +77,9 @@ is_module_help_topic = function (topic, parent)
 `?` = function (e1, e2) {
     topic = substitute(e1)
     if (missing(e2) && is_module_help_topic(topic, parent.frame()))
-        eval(call('module_help', topic))
+        eval(call('module_help', topic), envir = parent.frame())
     else
-        eval(`[[<-`(match.call(), 1, utils::`?`))
+        eval(`[[<-`(match.call(), 1, utils::`?`), envir = parent.frame())
 }
 
 #' @usage
@@ -96,5 +96,5 @@ help = function (topic, ...) {
         module_help
     else
         utils::help
-    eval(`[[<-`(match.call(), 1, delegate))
+    eval(`[[<-`(match.call(), 1, delegate), envir = parent.frame())
 }
