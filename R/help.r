@@ -4,8 +4,17 @@ parse_documentation = function (module) {
                   blocks = roxygen2:::parse_file(module_path, module))
     roclet = roxygen2:::rd_roclet()
     rdfiles = roxygen2:::roc_process(roclet, parsed, dirname(module_path))
-    rdcontents = lapply(rdfiles, roxygen2:::format.rd_file, wrap = FALSE)
-    setNames(rdcontents, sub('\\.Rd$', '', names(rdcontents)))
+
+    # Due to aliases, documentation entries may have more than one name.
+    # Duplicate the relevant documentation entries to get around this.
+    # Unfortunately this makes the relevant code ~7x longer.
+    aliases = lapply(rdfiles, function (rd) unique(rd[[1]]$alias$value))
+    doc_for_name = function (name, aliases)
+        sapply(aliases, function (.) rdfiles[[name]], simplify = FALSE)
+    docs = mapply(doc_for_name, names(aliases), aliases)
+    formatted = lapply(unlist(docs, recursive = FALSE, use.names = FALSE),
+                       roxygen2:::format.rd_file, wrap = FALSE)
+    setNames(formatted, unlist(lapply(docs, names)))
 }
 
 #' Display module documentation
@@ -77,9 +86,9 @@ is_module_help_topic = function (topic, parent)
 `?` = function (e1, e2) {
     topic = substitute(e1)
     if (missing(e2) && is_module_help_topic(topic, parent.frame()))
-        eval(call('module_help', topic))
+        eval(call('module_help', topic), envir = parent.frame())
     else
-        eval(`[[<-`(match.call(), 1, utils::`?`))
+        eval(`[[<-`(match.call(), 1, utils::`?`), envir = parent.frame())
 }
 
 #' @usage
@@ -96,5 +105,5 @@ help = function (topic, ...) {
         module_help
     else
         utils::help
-    eval(`[[<-`(match.call(), 1, delegate))
+    eval(`[[<-`(match.call(), 1, delegate), envir = parent.frame())
 }
