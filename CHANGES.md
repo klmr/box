@@ -1,3 +1,6 @@
+* 0.6.1:
+    * Support aliases and illegal R names for documentation topics
+
 * 0.6:
     * Add support for documentation via roxygen2 doc comments in modules
 
