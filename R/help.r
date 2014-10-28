@@ -11,7 +11,7 @@ parse_documentation = function (module) {
     aliases = lapply(rdfiles, function (rd) unique(rd[[1]]$alias$value))
     doc_for_name = function (name, aliases)
         sapply(aliases, function (.) rdfiles[[name]], simplify = FALSE)
-    docs = mapply(doc_for_name, names(aliases), aliases)
+    docs = mapply(doc_for_name, names(aliases), aliases, SIMPLIFY = FALSE)
     formatted = lapply(unlist(docs, recursive = FALSE, use.names = FALSE),
                        roxygen2:::format.rd_file, wrap = FALSE)
     setNames(formatted, unlist(lapply(docs, names)))
