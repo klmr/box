@@ -7,8 +7,6 @@ Sys.setenv(TAR = '/usr/bin/tar')
 
 source('printenv.r')
 
-# `utils` package should already be loaded by now but isn’t. Do it manually.
-# (Details: http://stackoverflow.com/q/14670217/1968)
 library(utils)
 library(devtools)
 dev_mode(TRUE)
