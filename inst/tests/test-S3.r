@@ -1,5 +1,29 @@
 context('S3 dispatch test')
 
+test_that('S3 generics are recognized', {
+    foo = function (x) UseMethod('foo')
+    bar = function (x) print('UseMethod')
+    baz = function (x) {
+        x = 42
+        UseMethod('baz')
+    }
+    qux = function (x) {
+        UseMethod('print')
+        a = 12
+    }
+    quz = function (x)
+        foo(bar(sum(1, UseMethod('quz'))))
+
+    expect_true(is_S3_user_generic('foo'))
+    expect_false(is_S3_user_generic('bar'))
+    expect_true(is_S3_user_generic('baz'),
+                'Multi-statement method not recognized')
+    expect_true(is_S3_user_generic('qux'),
+                'Method cannot dispatch to generic of different name')
+    expect_true(is_S3_user_generic('quz'),
+                '`UseMethod` can be nested in other calls')
+})
+
 test_that('S3 methods are found', {
     s3 = import('s3')
     test = local(getS3method('test', 'character', s3))
