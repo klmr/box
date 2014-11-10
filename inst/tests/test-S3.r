@@ -26,7 +26,7 @@ test_that('S3 generics are recognized', {
 
 test_that('S3 methods are found', {
     s3 = import('s3')
-    test = local(getS3method('test', 'character', s3))
+    test = local(getS3method('test', 'character'), s3)
     expect_that(test, equals(s3$test.character))
 
     # NOT executed locally!
