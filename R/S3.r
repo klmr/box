@@ -1,3 +1,9 @@
+register_S3_method = function (name, class, method) {
+    module = environment(method)
+    attr(module, 's3') = c(attr(module, 's3'), method)
+    registerS3method(name, class, method, module)
+}
+
 #' @param function_name function name as character string
 is_S3_user_generic = function (function_name, envir = parent.frame()) {
     is_S3 = function (b) {
