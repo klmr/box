@@ -158,6 +158,8 @@ do_import = function (module_name, module_path, doc) {
     # http://stackoverflow.com/q/5031630/1968 for a discussion of this.
     eval(parse(module_path, encoding = 'UTF-8'), envir = namespace)
 
+    make_S3_methods_known(namespace)
+
     if (doc)
         attr(namespace, 'doc') = parse_documentation(namespace)
     namespace
