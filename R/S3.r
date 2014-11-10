@@ -1,6 +1,6 @@
 register_S3_method = function (name, class, method) {
     module = environment(method)
-    attr(module, 's3') = c(attr(module, 's3'), method)
+    attr(module, 'S3') = c(attr(module, 'S3'), paste(name, class, sep = '.'))
     registerS3method(name, class, method, module)
 }
 
@@ -50,6 +50,11 @@ make_S3_methods_known = function (module) {
         grep(sprintf('^%s\\.[^.]', generic), functions, value = TRUE)
 
     register_method = function (name, generic) {
+        # Ensure we don’t register functions which have already been
+        # registered explicitly.
+        if (name %in% attr(module, 'S3'))
+            return()
+
         # + 1 for dot, + 1 for position after that.
         class = substr(name, nchar(generic) + 2, nchar(name))
         method = get(name, envir = module, mode = 'function')
