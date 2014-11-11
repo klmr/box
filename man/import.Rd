@@ -3,7 +3,7 @@
 \alias{import}
 \title{Import a module into the current scope}
 \usage{
-import(module, attach, attach_operators = TRUE)
+import(module, attach, attach_operators = TRUE, doc)
 }
 \arguments{
 \item{module}{a character string specifying the full module path}
@@ -14,6 +14,9 @@ Alternatively, if a character vector is given, attach only the listed names.}
 
 \item{attach_operators}{if \code{TRUE}, attach operators of module to the
 object search path, even if \code{attach} is \code{FALSE}}
+
+\item{doc}{boolean specifying whether to load the module’s documentation (see
+\code{Details})}
 }
 \value{
 the loaded module environment (invisible)
@@ -36,6 +39,9 @@ can be set to \code{TRUE} or \code{FALSE} depending on the user’s preference.
 because operators can only be invoked in R if they re found in the search
 path. Not attaching them therefore drastically limits a module’s usefulness.
 
+\code{doc} loads the module’s documentation, specified as roxygen comments.
+It defaults to \code{TRUE} in interactive mode and to \code{FALSE} otherwise.
+
 Modules are searched in the module search path \code{options('import.path')}.
 This is a vector of paths to consider, from the highest to the lowest
 priority. The current directory is \emph{always} considered last. That is,
@@ -45,6 +51,9 @@ import is explicitly specified as \code{import('./a')}.
 
 Module names can be fully qualified to refer to nested paths. See
 \code{Examples}.
+
+Module source code files are assumed to be encoded in UTF-8 without BOM.
+Ensure that this is the case when using an extended character set.
 }
 \note{
 Unlike for packages, attaching happens \emph{locally}: if
@@ -77,5 +86,7 @@ g()
 \code{reload}
 
 \code{module_name}
+
+\code{module_help}
 }
 
