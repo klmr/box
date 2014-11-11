@@ -1,3 +1,6 @@
+* 0.7:
+    * Add support for S3 methods in modules
+
 * 0.6.1:
     * Support aliases and illegal R names for documentation topics
 
