@@ -51,7 +51,7 @@ make_S3_methods_known = function (module) {
 
     register_method = function (name, generic) {
         # Ensure we don’t register functions which have already been
-        # registered explicitly.
+        # registered explicitly. This guards against ambiguous cases.
         if (name %in% attr(module, 'S3'))
             return()
 
