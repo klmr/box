@@ -12,13 +12,13 @@ print.test = function (x)
 
 register_S3_method('print', 'test', print.test)
 
-seq = function (from, to)
-    UseMethod('seq')
+se = function (...)
+    UseMethod('se')
 
-seq.default = function (from, to)
-    's3$seq.default'
+se.default = function (...)
+    's3$se.default'
 
-seq.int.test = function (from, to)
-    seq.int(from, to)
+se.contrast.test = function (...)
+    's3$se.contrast.test'
 
-register_S3_method('seq.int', 'test', seq.int.test)
+register_S3_method('se.contrast', 'test', se.contrast.test)

@@ -46,9 +46,12 @@ test_that('can call S3 methods without attaching', {
 
 test_that('S3 methods are not registered twice', {
     s3 = import('s3')
-    seq = local(getS3method('seq', 'int.test'), s3)
-    expect_that(seq, not(equals(s3$seq.int.test)),
-                'Already registered method should not be re-registered')
-    expect_that(seq, equals(s3$seq.default),
-                'Already registered method should not be re-registered')
+
+    result = s3$se(structure(1, class = 'contrast.test'))
+    expect_that(result, equals('s3$se.default'),
+                'Generic does not call `se.contrast.test`')
+
+    result = se.contrast(structure(1, class = 'test'))
+    expect_that(result, equals('s3$se.contrast.test'),
+                'Known generics are still callable')
 })
