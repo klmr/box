@@ -4,14 +4,14 @@
 #' Fully qualified names are supported for nested modules, reminiscent of
 #' Python’s module mechanism.
 #'
-#' @section S3 class support
+#' @section S3 class support:
 #'
 #' Modules can contain S3 generics and methods. To override known generics
 #' (defined outside modules), methods inside a module need to be registered
 #' using \code{\link{register_S3_method}}. See the documentation on that
 #' function for details.
 #'
-#' @section Package options
+#' @section Package options:
 #'
 #' \itemize{
 #'   \item \code{import.path}:
