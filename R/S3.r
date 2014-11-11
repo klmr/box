@@ -20,11 +20,9 @@ is_S3_user_generic = function (function_name, envir = parent.frame()) {
     is_S3(body(get(function_name, envir = envir, mode = 'function')))
 }
 
-lsf = function (envir) {
-    names = ls(envir)
+lsf = function (envir)
     Filter(function (n) exists(n, envir, mode = 'function', inherits = FALSE),
-           names)
-}
+           ls(envir))
 
 # TODO: Ensure we handle ambiguous cases correctly. Consider:
 # `print.some.class`, which could be method `print` or `print.some`. Solution:
