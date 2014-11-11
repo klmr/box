@@ -3,6 +3,14 @@
 #' Use \code{module = import('module')} to import a module for usage.
 #' Fully qualified names are supported for nested modules, reminiscent of
 #' Python’s module mechanism.
+#'
+#' @section S3 class support:
+#'
+#' Modules can contain S3 generics and methods. To override known generics
+#' (defined outside modules), methods inside a module need to be registered
+#' using \code{\link{register_S3_method}}. See the documentation on that
+#' function for details.
+#'
 #' @section Package options:
 #'
 #' \itemize{
@@ -12,7 +20,7 @@
 #'     in two paths, the first hit is accepted.
 #'     The current directory is always prepended to the search paths.
 #'   \item \code{import.attach}:
-#'     A boolean specifying whether operators from a module should be attached
+#'     A boolean specifying whether functions from a module should be attached
 #'     by default when using \code{import}, even if \code{attach=FALSE} is
 #'     specified. This option is only considered while running in interactive
 #'     mode, and not inside a module. The option is furthermore overridden by
@@ -26,4 +34,5 @@
 #' @seealso \code{module_file}
 #' @seealso \code{unload}, \code{reload}
 #' @seealso \code{export_submodule}
+#' @seealso \code{register_S3_method}
 NULL

@@ -9,6 +9,8 @@
 #'  Alternatively, if a character vector is given, attach only the listed names.
 #' @param attach_operators if \code{TRUE}, attach operators of module to the
 #'  object search path, even if \code{attach} is \code{FALSE}
+#' @param doc boolean specifying whether to load the module’s documentation (see
+#'  \code{Details})
 #' @return the loaded module environment (invisible)
 #'
 #' @details Modules are loaded in an isolated environment which is returned, and
@@ -24,6 +26,9 @@
 #' because operators can only be invoked in R if they re found in the search
 #' path. Not attaching them therefore drastically limits a module’s usefulness.
 #'
+#' \code{doc} loads the module’s documentation, specified as roxygen comments.
+#' It defaults to \code{TRUE} in interactive mode and to \code{FALSE} otherwise.
+#'
 #' Modules are searched in the module search path \code{options('import.path')}.
 #' This is a vector of paths to consider, from the highest to the lowest
 #' priority. The current directory is \emph{always} considered last. That is,
@@ -33,6 +38,9 @@
 #'
 #' Module names can be fully qualified to refer to nested paths. See
 #' \code{Examples}.
+#'
+#' Module source code files are assumed to be encoded in UTF-8 without BOM.
+#' Ensure that this is the case when using an extended character set.
 #'
 #' @note Unlike for packages, attaching happens \emph{locally}: if
 #' \code{import} is executed in the global environment, the effect is the same.
@@ -60,8 +68,9 @@
 #' @seealso \code{unload}
 #' @seealso \code{reload}
 #' @seealso \code{module_name}
+#' @seealso \code{module_help}
 #' @export
-import = function (module, attach, attach_operators = TRUE) {
+import = function (module, attach, attach_operators = TRUE, doc) {
     stopifnot(inherits(module, 'character'))
 
     if (missing(attach)) {
@@ -81,15 +90,19 @@ import = function (module, attach, attach_operators = TRUE) {
     else
         export_list = NULL
 
+    if (missing(doc))
+        doc = interactive()
+
     module_path = try(find_module(module), silent = TRUE)
 
     if (inherits(module_path, 'try-error'))
         stop(attr(module_path, 'condition')$message)
 
     containing_modules = module_init_files(module, module_path)
-    mapply(do_import, names(containing_modules), containing_modules)
+    mapply(do_import, names(containing_modules), containing_modules,
+           rep(doc, length(containing_modules)))
 
-    mod_ns = do_import(as.character(module), module_path)
+    mod_ns = do_import(as.character(module), module_path, doc)
     module_parent = parent.frame()
     mod_env = exhibit_namespace(mod_ns, as.character(module), module_parent,
                                 export_list)
@@ -102,6 +115,9 @@ import = function (module, attach, attach_operators = TRUE) {
         NULL
 
     if (! is.null(attached_module)) {
+        # The following distinction is necesary because R segfaults if we try to
+        # change `parent.env(.GlobalEnv)`. More info:
+        # http://stackoverflow.com/q/22790484/1968
         if (identical(module_parent, .GlobalEnv)) {
             attach(attached_module, name = environmentName(attached_module))
             attr(mod_env, 'attached') = environmentName(attached_module)
@@ -115,7 +131,7 @@ import = function (module, attach, attach_operators = TRUE) {
     invisible(mod_env)
 }
 
-do_import = function (module_name, module_path) {
+do_import = function (module_name, module_path, doc) {
     if (is_module_loaded(module_path))
         return(get_loaded_module(module_path))
 
@@ -132,13 +148,20 @@ do_import = function (module_name, module_path) {
                           name = paste('namespace', module_name, sep = ':'),
                           path = module_path,
                           class = c('namespace', 'environment'))
+
     # First cache the (still empty) namespace, then source code into it. This is
     # necessary to allow circular imports.
     cache_module(namespace)
+
     # R, Windows and Unicode don’t play together. `source` does not work here.
     # See http://developer.r-project.org/Encodings_and_R.html and
     # http://stackoverflow.com/q/5031630/1968 for a discussion of this.
     eval(parse(module_path, encoding = 'UTF-8'), envir = namespace)
+
+    make_S3_methods_known(namespace)
+
+    if (doc)
+        attr(namespace, 'doc') = parse_documentation(namespace)
     namespace
 }
 
@@ -161,13 +184,14 @@ exhibit_namespace = function (namespace, name, parent, export_list) {
                        parent = parent.env(parent)),
               name = paste('module', name, sep = ':'),
               path = module_path(namespace),
+              doc = attr(namespace, 'doc'),
               class = c('module', 'environment'))
 }
 
 export_operators = function (namespace, parent) {
     ops = c('+', '-', '*', '/', '^', '**', '&', '|', ':', '::', ':::', '$',
             '$<-', '=', '<-', '<<-', '==', '<', '<=', '>', '>=', '!=', '~',
-            '&&', '||', '!', '?', '??', '@', '@<-')
+            '&&', '||', '!', '?', '@', '@<-', ':=')
 
     is_predefined = function (f) f %in% ops
 

@@ -4,7 +4,7 @@
 #' @return the full path to the corresponding module source code location. If
 #' multiple hits are found, return the one with the highest priority, that is
 #' coming earlier in the search path, with the local directory having the
-#' highest priority. If no path is found, return \code{NA}.
+#' lowest priority. If no path is found, return \code{NA}.
 find_module = function (module) {
     parts = unlist(strsplit(module, '/'))
 
@@ -23,6 +23,7 @@ find_module = function (module) {
 
     # For each candidate, try finding a module file. A module file is either
     # `{suffix}.r` or `{suffix}/__init__.r`, preceded by the path prefix.
+    # Preference is given to `{suffix}.r`.
 
     find_candidate = function (path) {
         candidate = list.files(path, file_pattern, full.names = TRUE)
@@ -38,7 +39,7 @@ find_module = function (module) {
 
     if (length(hits) == 0)
         stop('Unable to load module ', module, '; not found in ',
-             paste(Map(function (p) sprintf('"%s"', p), import_search_path()),
+             paste(Map(function (p) sprintf('"%s"', p), search_path),
                    collapse = ', '))
 
     normalizePath(unname(hits[1]))

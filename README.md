@@ -166,6 +166,9 @@ import('relative/path/file', attach = TRUE)
   decomposable units. This project was mainly borne out of the frustration that
   is repeatedly `source`ing the same file, or alternatively having one “master
   header” file which includes all other source files.
+* Doc comments inside a module source file are parsed during `import`, and
+  interactive help on module contents is subsequently available via the usual
+  mechanisms (e.g. `?mod$fun`).
 
 ### With packages (`library`)
 
@@ -185,8 +188,6 @@ more lightweight than packages.
   internally, something that packages only allow at coarse level. In particular,
   modules can be *nested* as in Python to create hierarchies, and this is in
   fact encouraged.
-* As of now, no documentation for functions is loaded for modules. This is
-  currently the biggest “to do” item.
 * As of now, there is no support for non-R code or dynamic libraries (but one
   may of course use facilities such as `dyn.load` and [Rcpp][] to include
   compiled code).
@@ -199,8 +200,32 @@ more lightweight than packages.
 
 ### With Python’s `import` mechanism
 
-> TODO
+R modules are heavily inspired by Python modules, but embedded in R syntax.
 
+* There is one general form of the `import` function, corresponding to
+  <code>import <em>modname</em></code> in Python. Arguments can be used to
+  emulate the other forms: <code>import(<em>x</em>, attach = TRUE)</code>
+  loosely corresponds to <code>from <em>x</em> import \*</code>.
+  <code>import(<em>x</em>, attach = c('foo', 'bar'))</code> corresponds to
+  <code>from <em>x</em> import foo, bar</code>.
+
+* Like in Python, imports are absolute by default. This means that if there are
+  two modules of the same name, one in the global search path and one in the
+  local directory, `import`ing that module will resolve to the one in the global
+  search path, and in order to import the local module instead, the user has to
+  specify a relative path: <code>import('./<em>modname</em>')</code>. Unlike in
+  Python, modules can always be specified as relative imports, not only for
+  submodules.
+
+* When specifying `attach = TRUE`, names of the `import`ed module are made
+  available directly in the calling scope, but unlike in Python they are not
+  *copied* into that scope, so local names may shadow imported names.
+
+* As a consequence of this, modules export functions and objects they define,
+  but they do not export symbols they themselves import: if a module `a`
+  contains `import('b', attach = TRUE)`, none of the symbols from `b` will be
+  visible for any code importing `a`. Where this is not the desired behaviour,
+  users can use the `export_submodule` function instead of `import`.
 
 Design rationale
 ----------------

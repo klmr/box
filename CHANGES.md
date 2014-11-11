@@ -1,3 +1,12 @@
+* 0.7:
+    * Add support for S3 methods in modules
+
+* 0.6.1:
+    * Support aliases and illegal R names for documentation topics
+
+* 0.6:
+    * Add support for documentation via roxygen2 doc comments in modules
+
 * 0.5:
     * Assume all module source files are UTF-8 encoded
     * Export non-function objects as well as functions
