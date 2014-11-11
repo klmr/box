@@ -64,7 +64,5 @@ make_S3_methods_known = function (module) {
     Map(function (name) Map(register_method, methods[[name]], name),
         names(methods))
 
-    # Third step: register methods for generics defined elsewhere
-
-    NULL
+    invisible()
 }
