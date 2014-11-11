@@ -1,9 +1,43 @@
+#' Register an S3 method for a given generic and class.
+#'
+#' @param name the name of the generic as a character string
+#' @param class the class name
+#' @param method the method to register
+#'
+#' @details Methods for generics defined in the same module do not need to be
+#' registered explicitly, and indeed \emph{should not} be registered. However,
+#' if the user wants to add a method for a known generic (e.g.
+#' \code{\link{print}}), then this needs to be made known explicitly.
+#'
+#' @note \strong{Do not} call \code{\link{registerS3method}} inside a module.
+#' Use \code{register_S3_method} instead – this is important for the module’s
+#' own book-keeping.
+#' @examples
+#' \dontrun{
+#' # In module a:
+#' print.my_class = function (x) {
+#'     cat(sprintf('My class with field %s\n', x$field))
+#'     invisible(x)
+#' }
+#'
+#' register_S3_method('print', 'my_class', print.my_class)
+#'
+#' # Globally:
+#' a = import('a')
+#' obj = structure(list(field = 42), class = 'my_class')
+#' obj # calls `print`, with output "My class with field 42"
+#' }
+#' @export
 register_S3_method = function (name, class, method) {
     module = environment(method)
     attr(module, 'S3') = c(attr(module, 'S3'), paste(name, class, sep = '.'))
     registerS3method(name, class, method, module)
 }
 
+#' Check whether a function given by name is a user-defined generic
+#'
+#' A user-defined generic is any function which, at some point, calls
+# \code{UseMethod}.
 #' @param function_name function name as character string
 is_S3_user_generic = function (function_name, envir = parent.frame()) {
     is_S3 = function (b) {
@@ -20,21 +54,23 @@ is_S3_user_generic = function (function_name, envir = parent.frame()) {
     is_S3(body(get(function_name, envir = envir, mode = 'function')))
 }
 
+#' Return a list of functions in an environment
+#'
+#' @param envir the environment to search in
 lsf = function (envir)
     Filter(function (n) exists(n, envir, mode = 'function', inherits = FALSE),
            ls(envir))
 
-# TODO: Ensure we handle ambiguous cases correctly. Consider:
-# `print.some.class`, which could be method `print` or `print.some`. Solution:
-# simply FORBID function names with dots in them. However, this isn’t always
-# possible because we may want to extend existing methods.
-
+#' Find and register S3 methods inside a module
 make_S3_methods_known = function (module) {
-    # Ambiguous cases must be manually registered by the user, and are ignored
-    # here, by checking for each method in turn that has already been
-    # registered.
-
-    # An ambiguous case looks like this: `print.data.frame`.
+    # S3 methods are found by first finding all generics, and then searching
+    # function names with the generic’s name as a prefix. This may however
+    # fail for cases where a found name actually corresponds to a method for a
+    # different, “known” generic with a dot in its name (an example of this is
+    # `se.contrast`). We therefore test whether a method was already
+    # registered manually via `register_S3_method` before registering it
+    # automatically here. To avoid such ambiguities it is highly recommended
+    # not to use dots in function and class names. Use underscores instead.
 
     # First step: find generics defined in module
 
