@@ -3,7 +3,6 @@
 %\VignetteIndexEntry{Basic usage}
 -->
 ```{r include=FALSE}
-options(import.path = 'vignettes')
 rm(list = ls())
 
 local({
@@ -15,8 +14,12 @@ local({
     }
 
     knit_hooks$set(file = function (before, options, envir)
-        if (! before)
-            source_file(file.path('.', options$file), options$lang)
+        if (! before) {
+            # Necessary because this file is built both as vignette and
+            # independent, and this happens from different working directories.
+            path_prefix = if (grepl('vignettes$', getwd())) '.' else 'vignettes'
+            source_file(file.path(path_prefix, options$file), options$lang)
+        }
     )
 })
 ```
@@ -25,10 +28,10 @@ local({
 
 ### The `seq` module
 
-For the purpose of this tutorial, we are going to use the toy module `util/seq`,
-which is implemented in the file [`util/seq.r`](util/seq.r). The module implements some very
-basic mechanisms to deal with DNA sequences (character strings consisting
-entirely of the letters `A`, `C`, `G` and `T`).
+For the purpose of this tutorial, we are going to use the toy module
+`utils/seq`, which is implemented in the file [`utils/seq.r`](utils/seq.r).
+The module implements some very basic mechanisms to deal with DNA sequences
+(character strings consisting entirely of the letters `A`, `C`, `G` and `T`).
 
 First, we load the module.
 
@@ -86,10 +89,10 @@ the module search path: this is where `import` searches for modules. If more
 than one path is given, `import` searches them all until a module of matching
 name is found.
 
-The `import` statement can now simply specify `seq` instead of `util/seq` as the
-module name. We also specify `attach=TRUE`. This has an effect similar to
-package loading (or `attach`ing an environment): all the module’s names are now
-available for direct use without necessitating the `seq$` qualifier.
+The `import` statement can now simply specify `seq` instead of `utils/seq` as
+the module name. We also specify `attach=TRUE`. This has an effect similar to
+package loading (or `attach`ing an environment): all the module’s names are
+now available for direct use without necessitating the `seq$` qualifier.
 
 However, unlike the `attach` function, module attachment happens *in local
 scope* only. Since the above code was executed in global scope, there’s no
