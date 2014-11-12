@@ -1,5 +1,9 @@
+<!--
+%\VignetteEngine{knitr::knitr}
+%\VignetteIndexEntry{Basic usage}
+-->
 ```{r include=FALSE}
-options(import.path = 'inst/demo')
+options(import.path = 'vignettes')
 rm(list = ls())
 
 local({
@@ -12,7 +16,7 @@ local({
 
     knit_hooks$set(file = function (before, options, envir)
         if (! before)
-            source_file(file.path('inst/demo', options$file), options$lang)
+            source_file(file.path('.', options$file), options$lang)
     )
 })
 ```
