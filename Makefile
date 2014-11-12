@@ -22,3 +22,7 @@ inst/doc/%.md: vignettes/%.rmd
 .PHONY: documentation
 documentation:
 	Rscript --no-save --no-restore -e "document()"
+
+cleanall:
+	${RM} -r inst/doc
+	${RM} -r man
