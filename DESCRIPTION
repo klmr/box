@@ -12,3 +12,7 @@ Imports:
 License: Apache License (== 2.0) | file LICENSE
 LazyData: true
 Encoding: UTF-8
+Suggests:
+    knitr,
+    testthat
+VignetteBuilder: knitr
