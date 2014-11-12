@@ -1,3 +1,6 @@
+.PHONY: all
+all: documentation vignettes
+
 .PHONY: vignettes
 # Additionally build the *.md file, and copy all files
 vignettes: knit_all
