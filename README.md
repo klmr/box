@@ -24,7 +24,7 @@ contrast to R packages.
 
 Modules are loaded via the syntax
 
-```splus
+```r
 module = import('module')
 ```
 
@@ -32,7 +32,7 @@ Where `module` is the name of a module. Like in Python, modules can be grouped
 together in submodules, so that a name of a module could be, e.g.
 `tools/strings`. This could be used via
 
-```splus
+```r
 str = import('tools/strings')
 ```
 
@@ -41,7 +41,7 @@ either under the local directory or at a predefined, configurable location.
 
 Exported functions of the module could then be accessed via `str$func`:
 
-```splus
+```r
 some_string = 'Hello, World!'
 upper = str$to_upper(some_string)
 # => 'HELLO, WORLD!'
@@ -51,7 +51,7 @@ Notice that we’ve aliased the actual module name to `str` in user code.
 
 Alternatively, modules can be imported into the global namespace:
 
-```splus
+```r
 import('tools/strings', attach = TRUE)
 ```
 
@@ -70,7 +70,7 @@ Installation
 To install using [`devtools`](https://github.com/hadley/devtools), just type the
 following command in R:
 
-```splus
+```r
 devtools::install_github('klmr/modules')
 ```
 
@@ -81,7 +81,7 @@ Usage
 Local, single-file modules can be used as-is: assuming you have a file called
 `foo.r` in your current directory, execute
 
-```splus
+```r
 foo = import('foo')
 # or: foo = import('./foo')
 ```
@@ -89,7 +89,7 @@ foo = import('foo')
 in R to make its content accessible via a module, and use it via
 `foo$function_name(…)`. Alternatively, you can use
 
-```splus
+```r
 import('foo', attach = TRUE)
 ```
 
@@ -109,7 +109,7 @@ search path) which optionally contain an `__init__.r` file. Assuming you have
 such a module `foo`, inside which is a submodule `bar`, you can then make it
 available in R via
 
-```splus
+```r
 foo = import('foo')     # Make available foo, or
 bar = import('foo/bar') # Make available only foo/bar
 ```
@@ -126,13 +126,13 @@ Feature comparison
 Because of this package’s design, modules can directly replace `source`
 statements in code; in most cases,
 
-```splus
+```r
 source('relative/path/file.r')
 ```
 
 can be replaced by
 
-```splus
+```r
 import('relative/path/file', attach = TRUE)
 ```
 – albeit with marked improvements:
@@ -147,7 +147,7 @@ import('relative/path/file', attach = TRUE)
   which allows code to be executed conditionally only when it is executed
   directly:
 
-  ```splus
+  ```r
   if (is.null(module_name())) {
       …
   }
@@ -316,13 +316,13 @@ still reproducibly generate a name clash with at least one package.
 
 In other words, why does `import` force the user to write
 
-```splus
+```r
 module = import('module')
 ```
 
 Where the `module` name is redundant, instead of
 
-```splus
+```r
 import('module')
 ```
 
