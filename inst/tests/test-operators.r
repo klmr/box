@@ -35,3 +35,27 @@ test_that('S3 operators work', {
     s = structure('foo', class = 'string')
     expect_that(s + 'bar', equals('foobar'))
 })
+
+test_that('dot operators work', {
+    # Test cases for the fix of issue 42.
+    expect_false(exists('%.%'))
+    expect_false(exists('%x.%'))
+    expect_false(exists('%.x%'))
+    expect_false(exists('%x.x%'))
+    # S3 generic `%%`
+    expect_false(exists('%%.%%'))
+    expect_false(exists('%a%.class%'))
+
+    a = import('a')
+    on.exit(unload(a))
+
+    expect_true(exists('%.%'))
+    expect_true(exists('%x.%'))
+    expect_true(exists('%.x%'))
+    expect_true(exists('%x.x%'))
+    expect_true(exists('%%.%%'))
+    expect_true(exists('%a%.class%'))
+    # S3 method (not an operator)
+    expect_true(exists('%foo.bar', envir = a))
+    expect_false(exists('%foo.bar'))
+})

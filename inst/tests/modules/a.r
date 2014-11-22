@@ -36,3 +36,21 @@ inc = function ()
 which = function () '/a'
 
 encoding_test = function () '☃' # U+2603: SNOWMAN
+
+# Test cases for the issue 42. The semantics of the functions don’t matter so I
+# am using whimsical place-holders. What matters is whether or not the functions
+# get exported as operators.
+
+`%.%` = function (f, g) function (x) f(g(x))
+
+`%x.%` = function (x, f) f(x)
+
+`%.x%` = function (f, x) f(x)
+
+`%x.x%` = function (x, y) function (f) f(x, y)
+
+`%foo.bar` = function (x) message(x)
+
+`%%.%%` = function (a, b) list(a, b)
+
+`%a%.class%` = function (a, b) list(a, b)
