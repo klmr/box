@@ -196,7 +196,8 @@ export_operators = function (namespace, parent) {
     is_predefined = function (f) f %in% ops
 
     is_op = function (f) {
-        prefix = strsplit(f, '\\.')[[1]][1]
+        # `.` delimits an S3 method name, but only when not inside `%…%`.
+        prefix = regmatches(f, regexpr('^[^.]+|(%[^%]*%)', f))
         is_predefined(prefix) || grepl('^%.*%$', prefix)
     }
 
