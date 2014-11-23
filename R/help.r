@@ -101,7 +101,8 @@ is_module_help_topic = function (topic, parent)
 #' }
 help = function (topic, ...) {
     topic = substitute(topic)
-    delegate = if (is_module_help_topic(topic, parent.frame()))
+    delegate = if (! missing(topic) &&
+                   is_module_help_topic(topic, parent.frame()))
         module_help
     else
         utils::help
