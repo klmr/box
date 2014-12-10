@@ -69,10 +69,25 @@ module_help = function (topic, help_type = getOption('help_type', 'text')) {
               delete.file = TRUE)
 }
 
-is_module_help_topic = function (topic, parent)
-    is.call(topic) && topic[[1]] == '$' &&
-    exists(as.character(topic[[2]]), parent) &&
-    ! is.null(module_name(get(as.character(topic[[2]]), parent)))
+is_module_help_topic = function (topic, parent) {
+    # For nested modules, `topic` looks like this: `a$b$c…`. We need to retrieve
+    # the first part of this (`a`) and check whether it’s a module.
+
+    leftmost_name = function (expr) {
+        if (is.name(expr))
+            expr
+        else if (! is.call(expr) || expr[[1]] != '$')
+            NULL
+        else
+            leftmost_name(expr[[2]])
+    }
+
+    top_module = leftmost_name(topic)
+
+    ! is.null(top_module) &&
+        exists(as.character(top_module), parent) &&
+        ! is.null(module_name(get(as.character(top_module), parent)))
+}
 
 #' @usage
 #' ?module$function
