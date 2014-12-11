@@ -107,9 +107,9 @@ namespaced and don’t leak their scope).
 
 If you want to access a module in a non-local path, the cleanest way is to
 create a central repository (e.g. at `~/.R/modules`) and to copy module source
-files there. Then you can either set the environment variable `R_IMPORT_PATH`
-or, inside R, `options('import.path')` in order for `import` to find modules
-present there.
+files there. Now `import` needs to know how to find this repository. This can be
+done by either setting the environment variable `R_IMPORT_PATH` or, inside R
+(e.g. in `~/.Rprofile`), via `options('import.path')`.
 
 Nested modules (called “packages” in Python, but for obvious reasons this name
 is not used for R modules) are directories (either local, or in the import
