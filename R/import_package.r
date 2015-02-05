@@ -1,4 +1,4 @@
-import_package = function (package, attach) {
+import_package = function (package, attach, attach_operators = TRUE) {
     stopifnot(inherits(package, 'character'))
 
     if (missing(attach)) {
@@ -8,20 +8,13 @@ import_package = function (package, attach) {
             FALSE
     }
 
-    stopifnot(class(attach) == 'logical' && length(attach) == 1 ||
-              class(attach) == 'character')
-
-    if (is.character(attach)) {
-        export_list = attach
-        attach = TRUE
-    }
-    else
-        export_list = NULL
+    stopifnot(class(attach) == 'logical' && length(attach) == 1)
 
     module_parent = parent.frame()
 
     # TODO: Do we actually need this? Nothing is attached here, even if loading
     # the package via `library` would attach stuff.
+    # We can also just opt to blatantly ignore `Depends` packages.
     # Furthermore, S4 functions don’t work, and nor do S3, I’d wager.
 
     # Package which use `Depends` will pollute the global `search()` path.
@@ -53,7 +46,37 @@ import_package = function (package, attach) {
 
     # TODO: Handle attaching
 
-    pkg_ns
+    # TODO: Return entries from  `.__NAMESPACE__.$exports`
+    # FIXME: Wrong environment name set (is: 'module:packagename')
+    # FIXME: Can the following ever differ from its contents, i.e. is
+    #   all.equal(ls(…$exports), sapply(ls(…$exports), get, envir = …$exports))?
+    export_list = getNamespaceExports(pkg_ns)
+    pkg_env = exhibit_namespace(pkg_ns, package, module_parent, export_list)
+
+    pkg_env$.__S3MethodsTable__. = pkg_ns$.__S3MethodsTable__.
+
+    attached_module = if (attach)
+        pkg_env
+    else if (attach_operators)
+        export_operators(pkg_ns, module_parent)
+    else
+        NULL
+
+    if (! is.null(attached_module)) {
+        # The following distinction is necessary because R segfaults if we try
+        # to change `parent.env(.GlobalEnv)`. More info:
+        # http://stackoverflow.com/q/22790484/1968
+        if (identical(module_parent, .GlobalEnv)) {
+            # FIXME: Run .onAttach?
+            attach(attached_module, name = environmentName(attached_module))
+            attr(pkg_env, 'attached') = environmentName(attached_module)
+        }
+        else
+            parent.env(module_parent) = attached_module
+    }
+
+    lockEnvironment(pkg_env, bindings = TRUE)
+    invisible(pkg_env)
 }
 
 # Similar to `base::requireNamespace`, but returns the package namespace,
