@@ -51,6 +51,7 @@ import_package = function (package, attach, attach_operators = TRUE) {
     # FIXME: Can the following ever differ from its contents, i.e. is
     #   all.equal(ls(…$exports), sapply(ls(…$exports), get, envir = …$exports))?
     export_list = getNamespaceExports(pkg_ns)
+    # TODO: Use `importIntoEnv`
     pkg_env = exhibit_namespace(pkg_ns, package, module_parent, export_list)
 
     pkg_env$.__S3MethodsTable__. = pkg_ns$.__S3MethodsTable__.
