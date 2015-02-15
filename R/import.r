@@ -115,8 +115,8 @@ import = function (module, attach, attach_operators = TRUE, doc) {
         NULL
 
     if (! is.null(attached_module)) {
-        # The following distinction is necesary because R segfaults if we try to
-        # change `parent.env(.GlobalEnv)`. More info:
+        # The following distinction is necessary because R segfaults if we try
+        # to change `parent.env(.GlobalEnv)`. More info:
         # http://stackoverflow.com/q/22790484/1968
         if (identical(module_parent, .GlobalEnv)) {
             attach(attached_module, name = environmentName(attached_module))
