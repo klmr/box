@@ -41,7 +41,7 @@ import_package = function (package, attach, attach_operators = TRUE) {
 
     pkg_ns = require_namespace(package)
     if (inherits(pkg_ns, 'error'))
-        stop('Unable to load packge ', sQuote(package), '\n',
+        stop('Unable to load package ', sQuote(package), '\n',
              'Failed with error: ', sQuote(conditionMessage(pkg_ns)))
 
     # TODO: Handle attaching
@@ -54,6 +54,7 @@ import_package = function (package, attach, attach_operators = TRUE) {
     # TODO: Use `importIntoEnv`
     pkg_env = exhibit_namespace(pkg_ns, package, module_parent, export_list)
 
+    # FIXME Is this needed?
     pkg_env$.__S3MethodsTable__. = pkg_ns$.__S3MethodsTable__.
 
     attached_module = if (attach)
