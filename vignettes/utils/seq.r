@@ -49,10 +49,8 @@ register_S3_method('print', 'seq', print.seq)
 #' @param seq character vector of biological sequences
 revcomp = function (seq) {
     rc = function (seq) {
-        bases = strsplit(seq, '')[[1]]
-        base_compl = function (x) switch(x, A = 'T', C = 'G', G = 'C', T = 'A')
-        compl = vapply(bases, base_compl, character(1))
-        paste(rev(compl), collapse = '')
+        bases = strsplit(chartr('ACGT', 'TGCA', seq), '')[[1]]
+        paste(rev(bases), collapse = '')
     }
     `class<-`(setNames(vapply(seq, rc, character(1)), names(seq)), class = 'seq')
 }
