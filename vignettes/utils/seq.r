@@ -59,10 +59,7 @@ revcomp = function (seq) {
 #' @param seq sequences
 #' @return A \code{\link[base::table]{table}} for the nucleotides of each
 #'  sequence in the input.
-table = function (seq) {
-    # In order to ensure that non-existing nucleotides appear as 0 in the table,
-    # we append 'ACGT' to the string, and later subtract 1 from all counts.
-    seq = vapply(seq, function (s) paste0(s, 'ACGT'), character(1))
-    setNames(Map(function (t) t - 1, Map(base::table, strsplit(seq, ''))),
+table = function (seq)
+    setNames(lapply(lapply(strsplit(seq, ''), factor, c('A', 'C', 'G', 'T')),
+                    base::table),
              names(seq))
-}
