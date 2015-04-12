@@ -1,3 +1,3 @@
-```{r}
-modules::import('a')
+```{r echo=FALSE}
+modules::import('./a')
 ```
