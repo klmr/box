@@ -70,12 +70,19 @@ script_path = function () {
     # covered:
     #
     # 1. Explicitly via `set_script_path` set script path
-    # 2. Rscript script.r
-    # 3. R CMD BATCH script.r
-    # 4. Script run interactively (give up, use `getwd()`)
+    # 2. Inside knitr
+    # 3. Rscript script.r
+    # 4. R CMD BATCH script.r
+    # 5. Script run interactively (give up, use `getwd()`)
 
     if (exists('.', envir = .loaded_modules))
         return(get('.', envir = .loaded_modules))
+
+    if ('knitr' %in% loadedNamespaces()) {
+        knitr_input = suppressWarnings(knitr::current_input(dir = TRUE))
+        if (! is.null(knitr_input))
+            return(dirname(knitr_input))
+    }
 
     args = commandArgs()
 
