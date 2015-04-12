@@ -44,14 +44,45 @@ module_base_path.module = function (module)
 module_base_path.namespace = function (module)
     dirname(module_path(module))
 
+#' Set the base path of the script.
+#'
+#' @param path character string containing the relative or absolute path, or
+#' \code{NULL} to reset the path
+#'
+#' @details
+#' \emph{modules} needs to know the base path of the topmost calling R script
+#' to find relative import locations. In most cases, it can figure the path out
+#' automatically. However, in some cases third party packages load files in such
+#' a way that \emph{modules} cannot find out the correct path of the script any
+#' more. \code{set_script_path} can be used in these cases to set the script
+#' path manually.
+#' @export
+set_script_path = function (path) {
+    if (is.null(path))
+        rm(., envir = .loaded_modules)
+    else
+        assign('.', dirname(path), .loaded_modules)
+}
+
 #' Return an R script’s path
 script_path = function () {
     # Take a best guess at a script’s path. The following calling situations are
     # covered:
     #
-    # 1. Rscript script.r
-    # 2. R CMD BATCH script.r
-    # 3. Script run interactively (give up, use `getwd()`)
+    # 1. Explicitly via `set_script_path` set script path
+    # 2. Inside knitr
+    # 3. Rscript script.r
+    # 4. R CMD BATCH script.r
+    # 5. Script run interactively (give up, use `getwd()`)
+
+    if (exists('.', envir = .loaded_modules))
+        return(get('.', envir = .loaded_modules))
+
+    if ('knitr' %in% loadedNamespaces()) {
+        knitr_input = suppressWarnings(knitr::current_input(dir = TRUE))
+        if (! is.null(knitr_input))
+            return(dirname(knitr_input))
+    }
 
     args = commandArgs()
 

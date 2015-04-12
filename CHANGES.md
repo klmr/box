@@ -1,3 +1,7 @@
+* 0.7.2:
+    * Fix building of vignette (#52)
+    * Add support for knitr with help from @yihui (#31, yihui/knitr#950)
+
 * 0.7.1:
     * Add a vignette
     * Fix operators whose name contains a dot
