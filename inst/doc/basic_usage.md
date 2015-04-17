@@ -88,7 +88,7 @@ seq$print.seq
 ##     Map(print_single, lines, names)
 ##     invisible(seq)
 ## }
-## <environment: 0x7fe747109038>
+## <environment: 0x7fb39e46dae0>
 ```
 
 ### Attaching modules
@@ -151,7 +151,7 @@ local({
 ```
 
 ```
-## $GATTACA
+## [[1]]
 ## 
 ## A C G T 
 ## 3 1 1 2

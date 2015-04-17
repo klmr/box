@@ -9,7 +9,7 @@ local({
         sprintf('```%s\n%s\n```', language, code)
     }
 
-    knit_hooks$set(file = function (before, options, envir)
+    knitr::knit_hooks$set(file = function (before, options, envir)
         if (! before) {
             # Necessary because this file is built both as vignette and
             # independent, and this happens from different working directories.
@@ -18,6 +18,8 @@ local({
         }
     )
 })
+
+library(modules, quietly = TRUE, warn.conflicts = FALSE)
 
 ## ------------------------------------------------------------------------
 seq = import('utils/seq')
