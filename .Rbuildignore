@@ -1,0 +1,6 @@
+.Rprofile
+.gitignore
+CHANGES.md
+Makefile
+README.md
+printenv.r
