@@ -1,6 +1,6 @@
-.Rprofile
-.gitignore
-CHANGES.md
+devel\.Rprofile
+\.gitignore
+CHANGES\.md
 Makefile
-README.md
-printenv.r
+README\.md
+printenv\.r
