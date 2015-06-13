@@ -70,7 +70,7 @@ script_path = function () {
     # covered:
     #
     # 1. Explicitly via `set_script_path` set script path
-    # 2. Inside knitr
+    # 2. Inside calling container (knitr, Shiny)
     # 3. Rscript script.r
     # 4. R CMD BATCH script.r
     # 5. Script run interactively (give up, use `getwd()`)
@@ -78,11 +78,11 @@ script_path = function () {
     if (exists('.', envir = .loaded_modules))
         return(get('.', envir = .loaded_modules))
 
-    if ('knitr' %in% loadedNamespaces()) {
-        knitr_input = suppressWarnings(knitr::current_input(dir = TRUE))
-        if (! is.null(knitr_input))
-            return(dirname(knitr_input))
-    }
+    if (! is.null({knitr_path = knitr_path()}))
+        return(knitr_path)
+
+    if (! is.null({shiny_path = shiny_path()}))
+        return(shiny_path)
 
     args = commandArgs()
 
@@ -95,6 +95,34 @@ script_path = function () {
         return(dirname(args[f_arg + 1]))
 
     getwd()
+}
+
+knitr_path = function () {
+    if (! 'knitr' %in% loadedNamespaces())
+        return(NULL)
+
+    knitr_input = suppressWarnings(knitr::current_input(dir = TRUE))
+    if (! is.null(knitr_input))
+        dirname(knitr_input)
+}
+
+shiny_path = function () {
+    # Look for `runApp` call somewhere in the call stack.
+    frames = sys.frames()
+    calls = lapply(sys.calls(), `[[`, 1)
+    call_name = function (call)
+        if (is.function(call)) '<closure>' else deparse(call)
+    call_names = vapply(calls, call_name, character(1))
+
+    target_call = grep('^runApp$', call_names)
+
+    if (length(target_call) == 0)
+        return(NULL)
+
+    target_frame = frames[[target_call]]
+    namespace_frame = parent.env(target_frame)
+    if(isNamespace(namespace_frame) && environmentName(namespace_frame) == 'shiny')
+        getwd()
 }
 
 #' Get a module’s name
