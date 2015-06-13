@@ -4,3 +4,4 @@ CHANGES\.md
 Makefile
 README\.md
 printenv\.r
+^\..+
