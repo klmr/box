@@ -78,11 +78,8 @@ script_path = function () {
     if (exists('.', envir = .loaded_modules))
         return(get('.', envir = .loaded_modules))
 
-    if ('knitr' %in% loadedNamespaces()) {
-        knitr_input = suppressWarnings(knitr::current_input(dir = TRUE))
-        if (! is.null(knitr_input))
-            return(dirname(knitr_input))
-    }
+    if (! is.null({knitr_path = knitr_path()}))
+        return(knitr_path)
 
     args = commandArgs()
 
@@ -95,6 +92,15 @@ script_path = function () {
         return(dirname(args[f_arg + 1]))
 
     getwd()
+}
+
+knitr_path = function () {
+    if (! 'knitr' %in% loadedNamespaces())
+        return(NULL)
+
+    knitr_input = suppressWarnings(knitr::current_input(dir = TRUE))
+    if (! is.null(knitr_input))
+        dirname(knitr_input)
 }
 
 #' Get a module’s name
