@@ -81,6 +81,9 @@ script_path = function () {
     if (! is.null({knitr_path = knitr_path()}))
         return(knitr_path)
 
+    if (! is.null({shiny_path = shiny_path()}))
+        return(shiny_path)
+
     args = commandArgs()
 
     file_arg = grep('--file=', args)
@@ -101,6 +104,25 @@ knitr_path = function () {
     knitr_input = suppressWarnings(knitr::current_input(dir = TRUE))
     if (! is.null(knitr_input))
         dirname(knitr_input)
+}
+
+shiny_path = function () {
+    # Look for `runApp` call somewhere in the call stack.
+    frames = sys.frames()
+    calls = lapply(sys.calls(), `[[`, 1)
+    call_name = function (call)
+        if (is.function(call)) '<closure>' else deparse(call)
+    call_names = vapply(calls, call_name, character(1))
+
+    target_call = grep('^runApp$', call_names)
+
+    if (length(target_call) == 0)
+        return(NULL)
+
+    target_frame = frames[[target_call]]
+    namespace_frame = parent.env(target_frame)
+    if(isNamespace(namespace_frame) && environmentName(namespace_frame) == 'shiny')
+        getwd()
 }
 
 #' Get a module’s name
