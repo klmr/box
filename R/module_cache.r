@@ -70,7 +70,7 @@ script_path = function () {
     # covered:
     #
     # 1. Explicitly via `set_script_path` set script path
-    # 2. Inside knitr
+    # 2. Inside calling container (knitr, Shiny)
     # 3. Rscript script.r
     # 4. R CMD BATCH script.r
     # 5. Script run interactively (give up, use `getwd()`)
