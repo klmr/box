@@ -15,7 +15,6 @@ import_package = function (package, attach, attach_operators = TRUE) {
     # TODO: Do we actually need this? Nothing is attached here, even if loading
     # the package via `library` would attach stuff.
     # We can also just opt to blatantly ignore `Depends` packages.
-    # Furthermore, S4 functions don’t work, and nor do S3, I’d wager.
 
     # Package which use `Depends` will pollute the global `search()` path.
     # We save the old `search()` path, and restore it afterwards. Furthermore,
@@ -44,18 +43,9 @@ import_package = function (package, attach, attach_operators = TRUE) {
         stop('Unable to load package ', sQuote(package), '\n',
              'Failed with error: ', sQuote(conditionMessage(pkg_ns)))
 
-    # TODO: Handle attaching
-
-    # TODO: Return entries from  `.__NAMESPACE__.$exports`
-    # FIXME: Wrong environment name set (is: 'module:packagename')
-    # FIXME: Can the following ever differ from its contents, i.e. is
-    #   all.equal(ls(…$exports), sapply(ls(…$exports), get, envir = …$exports))?
+    # TODO: Use `importIntoEnv`?
     export_list = getNamespaceExports(pkg_ns)
-    # TODO: Use `importIntoEnv`
-    pkg_env = exhibit_namespace(pkg_ns, package, module_parent, export_list)
-
-    # FIXME Is this needed?
-    pkg_env$.__S3MethodsTable__. = pkg_ns$.__S3MethodsTable__.
+    pkg_env = exhibit_package_namespace(pkg_ns, package, module_parent, export_list)
 
     attached_module = if (attach)
         pkg_env
@@ -89,4 +79,14 @@ require_namespace = function(package) {
         ns = tryCatch(loadNamespace(package), error = identity)
 
     ns
+}
+
+exhibit_package_namespace = function (namespace, name, parent, export_list) {
+    # See `exhibit_namespace` for an explanation of the structure.
+    structure(list2env(sapply(export_list, getExportedValue, ns = namespace,
+                              simplify = FALSE),
+                       parent = parent.env(parent)),
+              name = paste('package', name, sep = ':'),
+              path = getNamespaceInfo(namespace, 'path'),
+              class = c('package', 'module', 'environment'))
 }
