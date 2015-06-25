@@ -12,32 +12,6 @@ import_package = function (package, attach, attach_operators = TRUE) {
 
     module_parent = parent.frame()
 
-    # TODO: Do we actually need this? Nothing is attached here, even if loading
-    # the package via `library` would attach stuff.
-    # We can also just opt to blatantly ignore `Depends` packages.
-
-    # Package which use `Depends` will pollute the global `search()` path.
-    # We save the old `search()` path, and restore it afterwards. Furthermore,
-    # We attach the list of attached packages to our local parent environment
-    # chain instead.
-    old_search = search()
-    on.exit({
-        if (! identical(module_parent, .GlobalEnv)) {
-            newly_attached = setdiff(search(), old_search)
-            for (pkg in newly_attached)
-                detach(pkg)
-
-            # Insert them into the current package’s parent chain.
-            # We only need to insert the first one, since it already has the
-            # others as its parents.
-            # NOTE: This relies on the fact that `setdiff` doesn’t change the
-            # order of the elements.
-
-            parent.env(tail(newly_attached, 1)) = parent.env(module_parent)
-            parent.env(module_parent) = newly_attached[1]
-        }
-    })
-
     pkg_ns = require_namespace(package)
     if (inherits(pkg_ns, 'error'))
         stop('Unable to load package ', sQuote(package), '\n',
