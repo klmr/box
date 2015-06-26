@@ -1,3 +1,20 @@
+#' @param package a character string specifying the package name
+#' @rdname import
+#' @details
+#' \code{pkg = import_package('pkg')} imports a package and treats it much as if
+#' it were a module, making package contents available in the \code{pkg}
+#' variable.
+#' @examples
+#' \dontrun{
+#' dplyr = import_package('dplyr')
+#' # Not attached, so we cannot do:
+#' #cars = tbl_df(cars)
+#' # Instead, this works:
+#' cars = dplyr$tbl_df(cars)
+#' # But this invokes the correct `print` method for class `tbl_df`:
+#' print(cars)
+#' }
+#' @export
 import_package = function (package, attach, attach_operators = TRUE) {
     stopifnot(inherits(package, 'character'))
 

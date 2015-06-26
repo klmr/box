@@ -42,7 +42,7 @@
 #' Module source code files are assumed to be encoded in UTF-8 without BOM.
 #' Ensure that this is the case when using an extended character set.
 #'
-#' @note Unlike for packages, attaching happens \emph{locally}: if
+#' @note Unlike for \code{\link{library}}, attaching happens \emph{locally}: if
 #' \code{import} is executed in the global environment, the effect is the same.
 #' Otherwise, the imported module is inserted as the parent of the current
 #' \code{environment()}. When used (globally) \emph{inside} a module, the newly

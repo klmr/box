@@ -1,8 +1,9 @@
 #' An alternative module system for R
 #'
-#' Use \code{module = import('module')} to import a module for usage.
-#' Fully qualified names are supported for nested modules, reminiscent of
-#' Python’s module mechanism.
+#' Use \code{module = import('module')} to import a module for usage, or
+#' \code{module = import_package('package')} to import a package. Fully
+#' qualified names are supported for nested modules, reminiscent of Python’s
+#' module mechanism.
 #'
 #' @section S3 class support:
 #'
@@ -30,6 +31,7 @@
 #' @name modules
 #' @docType package
 #' @seealso \code{import}
+#' @seealso \code{import_package}
 #' @seealso \code{module_name}
 #' @seealso \code{module_file}
 #' @seealso \code{unload}, \code{reload}
