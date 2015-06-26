@@ -161,11 +161,9 @@ module_name.default = function (module = parent.frame()) {
 }
 
 #' @seealso \code{module_name}
-#' @export
 module_name.module = function (module = parent.frame())
     strsplit(attr(module, 'name'), ':', fixed = TRUE)[[1]][2]
 
 #' @seealso \code{module_name}
-#' @export
 module_name.namespace = function (module = parent.frame())
     strsplit(attr(module, 'name'), ':', fixed = TRUE)[[1]][2]
