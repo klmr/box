@@ -1,3 +1,6 @@
+* 0.7.3:
+    * Add Shiny support (#53, rstudio/shinyapps#152)
+
 * 0.7.2:
     * Fix building of vignette (#52)
     * Add support for knitr with help from @yihui (#31, yihui/knitr#950)
@@ -17,6 +20,9 @@
 
 * 0.5:
     * Assume all module source files are UTF-8 encoded
+    * Export non-function objects as well as functions
+    * Lock exported namespace so that its symbols cannot be modified
+    * Add `export_submodule` function
     * Improve documentation
 
 * 0.4:
