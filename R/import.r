@@ -102,15 +102,15 @@ import = function (module, attach, attach_operators = TRUE, doc) {
     mapply(do_import, names(containing_modules), containing_modules,
            rep(doc, length(containing_modules)))
 
-    mod_ns = do_import(as.character(module), module_path, doc)
+    mod_ns = do_import(module, module_path, doc)
     module_parent = parent.frame()
-    mod_env = exhibit_namespace(mod_ns, as.character(module), module_parent,
+    mod_env = exhibit_namespace(mod_ns, module, module_parent,
                                 export_list)
 
     attached_module = if (attach)
         mod_env
     else if (attach_operators)
-        export_operators(mod_ns, module_parent)
+        export_operators(mod_ns, module_parent, module)
     else
         NULL
 
@@ -188,7 +188,7 @@ exhibit_namespace = function (namespace, name, parent, export_list) {
               class = c('module', 'environment'))
 }
 
-export_operators = function (namespace, parent) {
+export_operators = function (namespace, parent, module_name) {
     ops = c('+', '-', '*', '/', '^', '**', '&', '|', ':', '::', ':::', '$',
             '$<-', '=', '<-', '<<-', '==', '<', '<=', '>', '>=', '!=', '~',
             '&&', '||', '!', '?', '@', '@<-', ':=')
@@ -206,13 +206,12 @@ export_operators = function (namespace, parent) {
     if (length(operators) == 0)
         return()
 
-    name = module_name(namespace)
     # Skip one parent environment because this module is hooked into the chain
     # between the calling environment and its ancestor, thus sitting in its
     # local object search path.
     structure(list2env(sapply(operators, get, envir = namespace),
                        parent = parent.env(parent)),
-              name = paste('operators', name, sep = ':'),
+              name = paste('operators', module_name, sep = ':'),
               path = module_path(namespace),
               class = c('module', 'environment'))
 }
