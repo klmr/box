@@ -41,7 +41,7 @@ import_package = function (package, attach, attach_operators = TRUE) {
     attached_module = if (attach)
         pkg_env
     else if (attach_operators)
-        export_operators(pkg_ns, module_parent)
+        export_operators(pkg_ns, module_parent, package)
     else
         NULL
 
