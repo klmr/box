@@ -39,6 +39,7 @@ register_S3_method = function (name, class, method) {
 #' A user-defined generic is any function which, at some point, calls
 # \code{UseMethod}.
 #' @param function_name function name as character string
+#' @param envir the environment this function is invoked from
 is_S3_user_generic = function (function_name, envir = parent.frame()) {
     is_S3 = function (b) {
         if (length(b) == 0)
@@ -62,6 +63,8 @@ lsf = function (envir)
            ls(envir))
 
 #' Find and register S3 methods inside a module
+#'
+#' @param module the module object for which to register S3 methods
 make_S3_methods_known = function (module) {
     # S3 methods are found by first finding all generics, and then searching
     # function names with the generic’s name as a prefix. This may however
