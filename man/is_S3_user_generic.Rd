@@ -8,6 +8,8 @@ is_S3_user_generic(function_name, envir = parent.frame())
 }
 \arguments{
 \item{function_name}{function name as character string}
+
+\item{envir}{the environment this function is invoked from}
 }
 \description{
 A user-defined generic is any function which, at some point, calls

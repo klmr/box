@@ -4,7 +4,12 @@
 \alias{print.module}
 \title{Pretty-print a module’s description}
 \usage{
-\method{print}{module}(module)
+\method{print}{module}(x, ...)
+}
+\arguments{
+\item{x}{module object}
+
+\item{...}{unused}
 }
 \description{
 Pretty-print a module’s description

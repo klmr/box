@@ -6,6 +6,9 @@
 \usage{
 make_S3_methods_known(module)
 }
+\arguments{
+\item{module}{the module object for which to register S3 methods}
+}
 \description{
 Find and register S3 methods inside a module
 }
