@@ -1,3 +1,7 @@
+* 0.8:
+    * Add support for importing packages (#45)
+    * Make module access operator `$` stricter
+
 * 0.7.3:
     * Add Shiny support (#53, rstudio/shinyapps#152)
 

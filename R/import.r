@@ -274,8 +274,10 @@ reload = function (module) {
 
 #' Pretty-print a module’s description
 #'
+#' @param x module object
+#' @param ... unused
 #' @export
-print.module = function (module) {
-    cat(sprintf('<%s>\n', attr(module, 'name')))
-    invisible(module)
+print.module = function (x, ...) {
+    cat(sprintf('<%s>\n', attr(x, 'name')))
+    invisible(x)
 }
