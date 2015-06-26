@@ -6,9 +6,10 @@
 \alias{modules-package}
 \title{An alternative module system for R}
 \description{
-Use \code{module = import('module')} to import a module for usage.
-Fully qualified names are supported for nested modules, reminiscent of
-Python’s module mechanism.
+Use \code{module = import('module')} to import a module for usage, or
+\code{module = import_package('package')} to import a package. Fully
+qualified names are supported for nested modules, reminiscent of Python’s
+module mechanism.
 }
 \section{S3 class support}{
 
@@ -38,6 +39,8 @@ function for details.
 }
 \seealso{
 \code{import}
+
+\code{import_package}
 
 \code{module_name}
 
