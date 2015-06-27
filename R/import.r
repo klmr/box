@@ -272,10 +272,6 @@ reload = function (module) {
     assign(module_ref, mod_env, envir = module_parent, inherits = TRUE)
 }
 
-#' Pretty-print a module’s description
-#'
-#' @param x module object
-#' @param ... unused
 #' @export
 print.module = function (x, ...) {
     cat(sprintf('<%s>\n', attr(x, 'name')))
