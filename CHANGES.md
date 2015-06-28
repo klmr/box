@@ -1,3 +1,6 @@
+* 0.8.1:
+    * Fix bug concerning wrong operator attachment for packages
+
 * 0.8:
     * Add support for importing packages (#45)
 
