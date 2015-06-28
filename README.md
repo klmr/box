@@ -69,6 +69,19 @@ R modules are normal R source files. However, `import` is different from
 packages. Please refer to the [comparison][wiki:feature-comparison] for details.
 
 
+### But I need packages!
+
+Not to worry, simply use `import_package` instead of `import` and treat the
+imported package the same way you would treat a module:
+
+```r
+dplyr = import_package('dplyr')
+cars %>% dplyr$filter(speed > 15)
+```
+
+For consistency, `library` and `require` should not be used in conjunction with
+modules (although they can).
+
 Installation
 ------------
 
