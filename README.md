@@ -69,6 +69,19 @@ R modules are normal R source files. However, `import` is different from
 packages. Please refer to the [comparison][wiki:feature-comparison] for details.
 
 
+### But I need packages!
+
+Not to worry, simply use `import_package` instead of `import` and treat the
+imported package the same way you would treat a module:
+
+```r
+dplyr = import_package('dplyr')
+cars %>% dplyr$filter(speed > 15)
+```
+
+For consistency, `library` and `require` should not be used in conjunction with
+modules (although they can).
+
 Installation
 ------------
 
@@ -107,9 +120,9 @@ namespaced and don’t leak their scope).
 
 If you want to access a module in a non-local path, the cleanest way is to
 create a central repository (e.g. at `~/.R/modules`) and to copy module source
-files there. Then you can either set the environment variable `R_IMPORT_PATH`
-or, inside R, `options('import.path')` in order for `import` to find modules
-present there.
+files there. Now `import` needs to know how to find this repository. This can be
+done by either setting the environment variable `R_IMPORT_PATH` or, inside R
+(e.g. in `~/.Rprofile`), via `options('import.path')`.
 
 Nested modules (called “packages” in Python, but for obvious reasons this name
 is not used for R modules) are directories (either local, or in the import
