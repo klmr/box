@@ -110,7 +110,7 @@ import = function (module, attach, attach_operators = TRUE, doc) {
     attached_module = if (attach)
         mod_env
     else if (attach_operators)
-        export_operators(mod_ns, module_parent, module)
+        export_operators(mod_env, module_parent, module)
     else
         NULL
 
@@ -188,7 +188,21 @@ exhibit_namespace = function (namespace, name, parent, export_list) {
               class = c('module', 'environment'))
 }
 
-export_operators = function (namespace, parent, module_name) {
+#' Copy a module’s operators into a separate environment
+#'
+#' This function is used to create an attachable environment containing only the
+#' module’s operators, as these would otherwise not be readily usable.
+#' @param environment the module environment
+#' @param parent the parent environment of the calling code, to determine how to
+#'  chain the environments properly
+#' @param module_name the name of the module
+#' @return A new environment containing the operators of the module.
+#' @note This function expects the module \emph{environment} rather than the
+#' \emph{namespace}. This is important because, for package modules, we only
+#' want to expose exported operators, and not all exported operators are visible
+#' inside the namespace (see, for example, \code{\link[dplyr]{%>%}}, which is
+#' imported from the package “magrittr”).
+export_operators = function (environment, parent, module_name) {
     ops = c('+', '-', '*', '/', '^', '**', '&', '|', ':', '::', ':::', '$',
             '$<-', '=', '<-', '<<-', '==', '<', '<=', '>', '>=', '!=', '~',
             '&&', '||', '!', '?', '@', '@<-', ':=')
@@ -201,7 +215,7 @@ export_operators = function (namespace, parent, module_name) {
         is_predefined(prefix) || grepl('^%.*%$', prefix)
     }
 
-    operators = Filter(is_op, lsf.str(namespace))
+    operators = Filter(is_op, lsf.str(environment))
 
     if (length(operators) == 0)
         return()
@@ -209,10 +223,10 @@ export_operators = function (namespace, parent, module_name) {
     # Skip one parent environment because this module is hooked into the chain
     # between the calling environment and its ancestor, thus sitting in its
     # local object search path.
-    structure(list2env(sapply(operators, get, envir = namespace),
+    structure(list2env(sapply(operators, get, envir = environment),
                        parent = parent.env(parent)),
               name = paste('operators', module_name, sep = ':'),
-              path = module_path(namespace),
+              path = module_path(environment),
               class = c('module', 'environment'))
 }
 
