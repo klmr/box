@@ -14,7 +14,7 @@ Export a given submodule from the current module
 }
 \note{
 Sometimes, a module may want to export all or some of its submodules in
-bulk. Simply doing \code{import('submodul', attach = TRUE)} won’t work,
+bulk. Simply doing \code{import('submodule', attach = TRUE)} won’t work,
 however, since \code{attach} only has a local effect. \code{export_submodule},
 by contrast, exports a submodule’s contents as if they were defined directly
 inside the current module.
