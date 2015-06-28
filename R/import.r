@@ -200,7 +200,7 @@ exhibit_namespace = function (namespace, name, parent, export_list) {
 #' @note This function expects the module \emph{environment} rather than the
 #' \emph{namespace}. This is important because, for package modules, we only
 #' want to expose exported operators, and not all exported operators are visible
-#' inside the namespace (see, for example, \code{\link[dplyr]{%>%}}, which is
+#' inside the namespace (see, for example, \code{\link[dplyr]{\%>\%}}, which is
 #' imported from the package “magrittr”).
 export_operators = function (environment, parent, module_name) {
     ops = c('+', '-', '*', '/', '^', '**', '&', '|', ':', '::', ':::', '$',
