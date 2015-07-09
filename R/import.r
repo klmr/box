@@ -179,8 +179,7 @@ exhibit_namespace = function (namespace, name, parent, export_list) {
     # Skip one parent environment because this module is hooked into the chain
     # between the calling environment and its ancestor, thus sitting in its
     # local object search path.
-    structure(list2env(sapply(export_list, get, envir = namespace,
-                              simplify = FALSE),
+    structure(list2env(mget(export_list, envir = namespace),
                        parent = parent.env(parent)),
               name = paste('module', name, sep = ':'),
               path = module_path(namespace),
