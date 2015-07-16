@@ -285,9 +285,9 @@ reload = function (module) {
     module_parent = parent.frame()
     # Execute in parent scope, since `unload` deletes the scope’s reference to
     # the module.
-    eval(call('unload', as.name(module_ref)), envir = module_parent)
+    eval.parent(call('unload', as.name(module_ref)))
     # Use `eval` to replicate the exact call being made to `import`.
-    mod_env = eval(attr(module, 'call'), envir = module_parent)
+    mod_env = eval.parent(attr(module, 'call'))
     assign(module_ref, mod_env, envir = module_parent, inherits = TRUE)
 }
 
