@@ -282,12 +282,28 @@ unload = function (module) {
 reload = function (module) {
     stopifnot(inherits(module, 'module'))
     module_ref = as.character(substitute(module))
+
+    module_ns = get_loaded_module(attr(module, 'path'))
     uncache_module(module)
+    # If loading fails, restore old module.
+    on.exit(cache_module(module_ns))
+
     attached = attr(module, 'attached')
-    if (! is.null(attached))
-        detach(attached, character.only = TRUE)
+    if (! is.null(attached)) {
+        attached_pos = match(attached, search())
+        if (! is.na(attached_pos)) {
+            attached_env = as.environment(attached)
+            detach(attached, character.only = TRUE)
+            on.exit(attach(attached_env, pos = attached_pos, name = attached),
+                    add = TRUE)
+        }
+    }
+
     # Use `eval` to replicate the exact call being made to `import`.
     mod_env = eval.parent(attr(module, 'call'))
+    # Importing worked, so cancel restoring the old module.
+    on.exit()
+
     assign(module_ref, mod_env, envir = parent.frame(), inherits = TRUE)
 }
 
