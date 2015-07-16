@@ -282,13 +282,12 @@ unload = function (module) {
 reload = function (module) {
     stopifnot(inherits(module, 'module'))
     module_ref = as.character(substitute(module))
-    module_parent = parent.frame()
     # Execute in parent scope, since `unload` deletes the scope’s reference to
     # the module.
     eval.parent(call('unload', as.name(module_ref)))
     # Use `eval` to replicate the exact call being made to `import`.
     mod_env = eval.parent(attr(module, 'call'))
-    assign(module_ref, mod_env, envir = module_parent, inherits = TRUE)
+    assign(module_ref, mod_env, envir = parent.frame(), inherits = TRUE)
 }
 
 #' @export
