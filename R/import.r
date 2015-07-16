@@ -152,6 +152,9 @@ do_import = function (module_name, module_path, doc) {
     # First cache the (still empty) namespace, then source code into it. This is
     # necessary to allow circular imports.
     cache_module(namespace)
+    # If loading fails due to an error inside the module (i.e. `parse` or `eval`
+    # will fail), we unload the module again.
+    on.exit(uncache_module(namespace))
 
     # R, Windows and Unicode don’t play together. `source` does not work here.
     # See http://developer.r-project.org/Encodings_and_R.html and
@@ -162,6 +165,9 @@ do_import = function (module_name, module_path, doc) {
 
     if (doc)
         attr(namespace, 'doc') = parse_documentation(namespace)
+
+    # No error occured — prevent unloading.
+    on.exit()
     namespace
 }
 
@@ -249,9 +255,9 @@ export_operators = function (environment, parent, module_name) {
 unload = function (module) {
     stopifnot(inherits(module, 'module'))
     module_ref = as.character(substitute(module))
-    rm(list = module_path(module), envir = .loaded_modules)
+    uncache_module(module)
     attached = attr(module, 'attached')
-    if (! is.null(attached))
+    if (! is.null(attached) && ! is.na(match(attached, search())))
         detach(attached, character.only = TRUE)
     # Unset the module reference in its scope, i.e. the caller’s environment or
     # some parent thereof.
@@ -276,13 +282,29 @@ unload = function (module) {
 reload = function (module) {
     stopifnot(inherits(module, 'module'))
     module_ref = as.character(substitute(module))
-    module_parent = parent.frame()
-    # Execute in parent scope, since `unload` deletes the scope’s reference to
-    # the module.
-    eval(call('unload', as.name(module_ref)), envir = module_parent)
+
+    module_ns = get_loaded_module(attr(module, 'path'))
+    uncache_module(module)
+    # If loading fails, restore old module.
+    on.exit(cache_module(module_ns))
+
+    attached = attr(module, 'attached')
+    if (! is.null(attached)) {
+        attached_pos = match(attached, search())
+        if (! is.na(attached_pos)) {
+            attached_env = as.environment(attached)
+            detach(attached, character.only = TRUE)
+            on.exit(attach(attached_env, pos = attached_pos, name = attached),
+                    add = TRUE)
+        }
+    }
+
     # Use `eval` to replicate the exact call being made to `import`.
-    mod_env = eval(attr(module, 'call'), envir = module_parent)
-    assign(module_ref, mod_env, envir = module_parent, inherits = TRUE)
+    mod_env = eval.parent(attr(module, 'call'))
+    # Importing worked, so cancel restoring the old module.
+    on.exit()
+
+    assign(module_ref, mod_env, envir = parent.frame(), inherits = TRUE)
 }
 
 #' @export
