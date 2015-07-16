@@ -257,7 +257,7 @@ unload = function (module) {
     module_ref = as.character(substitute(module))
     uncache_module(module)
     attached = attr(module, 'attached')
-    if (! is.null(attached))
+    if (! is.null(attached) && ! is.na(match(attached, search())))
         detach(attached, character.only = TRUE)
     # Unset the module reference in its scope, i.e. the caller’s environment or
     # some parent thereof.
