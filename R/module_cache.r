@@ -13,6 +13,9 @@ is_module_loaded = function (module_path)
 cache_module = function (module_ns)
     assign(module_path(module_ns), module_ns, envir = .loaded_modules)
 
+uncache_module = function (module_ns)
+    rm(list = module_path(module_ns), envir = .loaded_modules)
+
 get_loaded_module = function (module_path)
     get(module_path, envir = .loaded_modules)
 

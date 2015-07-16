@@ -152,6 +152,9 @@ do_import = function (module_name, module_path, doc) {
     # First cache the (still empty) namespace, then source code into it. This is
     # necessary to allow circular imports.
     cache_module(namespace)
+    # If loading fails due to an error inside the module (i.e. `parse` or `eval`
+    # will fail), we unload the module again.
+    on.exit(uncache_module(namespace))
 
     # R, Windows and Unicode don’t play together. `source` does not work here.
     # See http://developer.r-project.org/Encodings_and_R.html and
@@ -162,6 +165,9 @@ do_import = function (module_name, module_path, doc) {
 
     if (doc)
         attr(namespace, 'doc') = parse_documentation(namespace)
+
+    # No error occured — prevent unloading.
+    on.exit()
     namespace
 }
 
@@ -249,7 +255,7 @@ export_operators = function (environment, parent, module_name) {
 unload = function (module) {
     stopifnot(inherits(module, 'module'))
     module_ref = as.character(substitute(module))
-    rm(list = module_path(module), envir = .loaded_modules)
+    uncache_module(module)
     attached = attr(module, 'attached')
     if (! is.null(attached))
         detach(attached, character.only = TRUE)
