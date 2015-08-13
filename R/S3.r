@@ -98,10 +98,11 @@ make_S3_methods_known = function (module) {
         registerS3method(generic, class, method, module)
     }
 
+    register_methods = function (name)
+        if (length(methods[[name]]) > 0)
+            Map(register_method, methods[[name]], name)
+
     methods = sapply(generics, find_methods, simplify = FALSE)
-
-    Map(function (name) Map(register_method, methods[[name]], name),
-        names(methods))
-
+    Map(register_methods, names(methods))
     invisible()
 }
