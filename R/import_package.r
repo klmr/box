@@ -1,4 +1,5 @@
 #' @param package a character string specifying the package name
+#'
 #' @rdname import
 #' @details
 #' \code{pkg = import_package('pkg')} imports a package and treats it much as if
