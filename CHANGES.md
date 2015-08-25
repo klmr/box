@@ -2,6 +2,7 @@
     * Fix loading of a package that contains errors (#58)
     * Fix `reload` overwriting the wrong object if its name is shadowed by the
       name of the reloaded module (#51)
+    * Fix loading of S3 generics without associated methods (#63)
 
 * 0.8.1:
     * Fix bug concerning wrong operator attachment for packages
