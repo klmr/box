@@ -11,7 +11,7 @@ setup = function () {
 teardown = function () {
     options(import.path = previous_import_path)
     # Unload all modules
-    local(rm(list = ls()), envir = modules:::.loaded_modules)
+    local(rm(list = ls()), envir = modules:::loaded_modules)
 }
 
 test_that('submodules can be loaded one by one', {
