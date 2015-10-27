@@ -8,7 +8,7 @@
 loaded_modules = new.env()
 
 is_module_loaded = function (module_path)
-    exists(module_path, envir = loaded_modules)
+    exists(module_path, envir = loaded_modules, inherits = FALSE)
 
 cache_module = function (module_ns)
     assign(module_path(module_ns), module_ns, envir = loaded_modules)
@@ -17,7 +17,7 @@ uncache_module = function (module_ns)
     rm(list = module_path(module_ns), envir = loaded_modules)
 
 get_loaded_module = function (module_path)
-    get(module_path, envir = loaded_modules)
+    get(module_path, envir = loaded_modules, inherits = FALSE)
 
 #' Get a module’s path
 #'
@@ -80,8 +80,8 @@ script_path = function () {
     # 4. R CMD BATCH script.r
     # 5. Script run interactively (give up, use `getwd()`)
 
-    if (exists('.', envir = loaded_modules))
-        return(get('.', envir = loaded_modules))
+    if (exists('.', envir = loaded_modules, inherits = FALSE))
+        return(get('.', envir = loaded_modules, inherits = FALSE))
 
     if (! is.null({knitr_path = knitr_path()}))
         return(knitr_path)
