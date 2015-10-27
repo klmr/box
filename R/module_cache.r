@@ -5,7 +5,7 @@
 #' module name is used because module names are not unique: two modules called
 #' \code{a} can exist nested inside modules \code{b} and \code{c}, respectively.
 #' Yet these may be loaded at the same time and need to be distinguished.
-loaded_modules = new.env()
+loaded_modules = new.env(parent = emptyenv())
 
 is_module_loaded = function (module_path)
     exists(module_path, envir = loaded_modules, inherits = FALSE)
