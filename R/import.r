@@ -104,8 +104,8 @@ import = function (module, attach, attach_operators = TRUE, doc) {
 
     mod_ns = do_import(module, module_path, doc)
     module_parent = parent.frame()
-    mod_env = exhibit_namespace(mod_ns, module, module_parent,
-                                export_list)
+    mod_env = exhibit_module_namespace(mod_ns, module, module_parent,
+                                       export_list)
 
     attached_module = if (attach)
         mod_env
@@ -171,7 +171,7 @@ do_import = function (module_name, module_path, doc) {
     namespace
 }
 
-exhibit_namespace = function (namespace, name, parent, export_list) {
+exhibit_module_namespace = function (namespace, name, parent, export_list) {
     if (is.null(export_list))
         export_list = ls(namespace)
     else {
