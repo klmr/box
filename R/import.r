@@ -171,24 +171,6 @@ do_import = function (module_name, module_path, doc) {
     namespace
 }
 
-exhibit_module_namespace = function (namespace, name, parent, export_list) {
-    if (is.null(export_list))
-        export_list = ls(namespace)
-    else {
-        # Verify correctness.
-        exist = vapply(export_list, exists, logical(1), envir = namespace)
-        if (! all(exist))
-            stop(sprintf('Non-existent function(s) (%s) specified for import',
-                         paste(export_list[! exist], collapse = ', ')))
-    }
-
-    exhibit_namespace(mget(export_list, envir = namespace),
-                      paste('module', name, sep = ':'),
-                      module_path(namespace),
-                      attr(namespace, 'doc'),
-                      parent)
-}
-
 #' Copy a module’s operators into a separate environment
 #'
 #' This function is used to create an attachable environment containing only the

@@ -72,12 +72,3 @@ require_namespace = function(package) {
 
     ns
 }
-
-exhibit_package_namespace = function (namespace, name, parent, export_list) {
-    objects = sapply(export_list, getExportedValue, ns = namespace, simplify = FALSE)
-    exhibit_namespace(objects,
-                      paste('package', name, sep = ':'),
-                      getNamespaceInfo(namespace, 'path'),
-                      NULL,
-                      parent)
-}
