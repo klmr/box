@@ -182,15 +182,11 @@ exhibit_module_namespace = function (namespace, name, parent, export_list) {
                          paste(export_list[! exist], collapse = ', ')))
     }
 
-    # Skip one parent environment because this module is hooked into the chain
-    # between the calling environment and its ancestor, thus sitting in its
-    # local object search path.
-    structure(list2env(mget(export_list, envir = namespace),
-                       parent = parent.env(parent)),
-              name = paste('module', name, sep = ':'),
-              path = module_path(namespace),
-              doc = attr(namespace, 'doc'),
-              class = c('module', 'environment'))
+    exhibit_namespace(mget(export_list, envir = namespace),
+                      paste('module', name, sep = ':'),
+                      module_path(namespace),
+                      attr(namespace, 'doc'),
+                      parent)
 }
 
 #' Copy a module’s operators into a separate environment

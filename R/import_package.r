@@ -74,11 +74,10 @@ require_namespace = function(package) {
 }
 
 exhibit_package_namespace = function (namespace, name, parent, export_list) {
-    # See `exhibit_namespace` for an explanation of the structure.
-    structure(list2env(sapply(export_list, getExportedValue, ns = namespace,
-                              simplify = FALSE),
-                       parent = parent.env(parent)),
-              name = paste('package', name, sep = ':'),
-              path = getNamespaceInfo(namespace, 'path'),
-              class = c('package', 'module', 'environment'))
+    objects = sapply(export_list, getExportedValue, ns = namespace, simplify = FALSE)
+    exhibit_namespace(objects,
+                      paste('package', name, sep = ':'),
+                      getNamespaceInfo(namespace, 'path'),
+                      NULL,
+                      parent)
 }
