@@ -38,16 +38,16 @@ module_base_path = function (module)
 
 module_base_path.default = function (module) {
     if (identical(module, .GlobalEnv))
-        script_path()
+        normalizePath(script_path(), winslash = '/')
     else
         module_base_path(parent.env(module))
 }
 
 module_base_path.module = function (module)
-    dirname(module_path(module))
+    normalizePath(dirname(module_path(module)), winslash = '/')
 
 module_base_path.namespace = function (module)
-    dirname(module_path(module))
+    normalizePath(dirname(module_path(module)), winslash = '/')
 
 #' Set the base path of the script.
 #'
