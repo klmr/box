@@ -30,7 +30,7 @@ test_that('module_base_path works', {
         readLines(output_file)
     })
 
-    test_that(rcmd_result, equals(file.path(getwd(), 'inst/test/modules')))
+    expect_that(rcmd_result, equals(file.path(getwd(), 'modules')))
 
     rscript_result = local({
         p = pipe(paste(rscript, script))
@@ -38,5 +38,5 @@ test_that('module_base_path works', {
         readLines(p)
     })
 
-    test_that(rscript_result, equals(file.path(getwd(), 'inst/test/modules')))
+    expect_that(rscript_result, equals(file.path(getwd(), 'modules')))
 })
