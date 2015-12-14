@@ -15,17 +15,13 @@ test_that('module_file works for module', {
 })
 
 test_that('module_base_path works', {
-    # This is a placeholder for a hard to write test which needs to invoke
-    # R via the command line, load the development version of the modules
-    # and parse the output.o
-
-    # Unfortunately, `load_all` reproducibly segfaults when called inside a
-    # a script being executed by a test.
+    # On earlier versions of “devtools”, this test reproducibly segfaulted due
+    # to the call to `load_all` from within a script. This seems to be fixed now
+    # with version 1.9.1.9000.
 
     rcmd = 'R CMD BATCH --slave --vanilla --no-restore --no-save --no-timing'
     rscript = 'Rscript --slave --vanilla --no-restore --no-save'
     script = 'modules/d.r'
-    return()
 
     rcmd_result = local({
         output_file = 'output.rout'
