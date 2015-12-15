@@ -39,25 +39,7 @@ import_package = function (package, attach, attach_operators = TRUE) {
     export_list = getNamespaceExports(pkg_ns)
     pkg_env = exhibit_package_namespace(pkg_ns, package, module_parent, export_list)
 
-    attached_module = if (attach)
-        pkg_env
-    else if (attach_operators)
-        export_operators(pkg_env, module_parent, package)
-    else
-        NULL
-
-    if (! is.null(attached_module)) {
-        # The following distinction is necessary because R segfaults if we try
-        # to change `parent.env(.GlobalEnv)`. More info:
-        # http://stackoverflow.com/q/22790484/1968
-        if (identical(module_parent, .GlobalEnv)) {
-            # FIXME: Run .onAttach?
-            attach(attached_module, name = environmentName(attached_module))
-            attr(pkg_env, 'attached') = environmentName(attached_module)
-        }
-        else
-            parent.env(module_parent) = attached_module
-    }
+    attach_module(attach, attach_operators, package, pkg_env, module_parent)
 
     lockEnvironment(pkg_env, bindings = TRUE)
     invisible(pkg_env)
