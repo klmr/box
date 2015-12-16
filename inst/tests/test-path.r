@@ -40,3 +40,17 @@ test_that('module_base_path works', {
 
     expect_that(rscript_result, equals(file.path(getwd(), 'modules')))
 })
+
+test_that('module_file works after attaching modules', {
+    # Test that #66 is fixed and that there are no regressions.
+
+    x = import('mod_file')
+    expected_module_file = file.path(getwd(), 'modules')
+
+    expect_that(x$this_module_file, equals(expected_module_file))
+    expect_that(x$function_module_file(), equals(expected_module_file))
+    expect_that(x$this_module_file2, equals(expected_module_file))
+    expect_that(x$after_module_attach(), equals(expected_module_file))
+    expect_that(x$after_package_attach(), equals(expected_module_file))
+    expect_that(x$nested_module_file(), equals(expected_module_file))
+})
