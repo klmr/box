@@ -15,7 +15,8 @@ after_module_attach = function () {
         sink(file)
         expr
     }
-    silently(import('nested/a', attach = TRUE))
+    a = silently(import('nested/a', attach = TRUE))
+    on.exit(unload(a))
     module_file()
 }
 
