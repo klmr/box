@@ -48,6 +48,13 @@ test_that('module_file works after attaching modules', {
     import('a', attach = TRUE)
     expect_that(module_file(), equals(expected_module_file))
 
+    local({
+        expected_module_file = module_file()
+        a = import('a', attach = TRUE)
+        on.exit(unload(a))
+        expect_that(module_file(), equals(expected_module_file))
+    }, envir = .GlobalEnv)
+
     x = import('mod_file')
     expected_module_file = file.path(getwd(), 'modules')
     expect_that(x$this_module_file, equals(expected_module_file))
