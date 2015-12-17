@@ -19,6 +19,24 @@ uncache_module = function (module_ns)
 get_loaded_module = function (module_path)
     get(module_path, envir = loaded_modules, inherits = FALSE)
 
+module_attributes = function (module)
+    get('.__module__.', module, mode = 'environment', inherits = TRUE)
+
+`module_attributes<-` = function (module, value) {
+    module$.__module__. = value
+    module
+}
+
+module_attr = function (module, attr)
+    get(attr, module_attributes(module))
+
+`module_attr<-` = function (module, attr, value) {
+    if (! exists('.__module__.', module, mode = 'environment', inherits = FALSE))
+        module_attributes(module) = new.env(parent = emptyenv())
+    module$.__module__.[[attr]] = value
+    module
+}
+
 #' Get a module’s path
 #'
 #' @param module a module environment or namespace
