@@ -211,11 +211,11 @@ export_operators = function (environment, parent, module_name) {
     # Skip one parent environment because this module is hooked into the chain
     # between the calling environment and its ancestor, thus sitting in its
     # local object search path.
-    structure(list2env(sapply(operators, get, envir = environment),
-                       parent = parent.env(parent)),
-              name = paste('operators', module_name, sep = ':'),
-              path = module_path(environment),
-              class = c('module', 'environment'))
+    exhibit_namespace(mget(operators, envir = environment),
+                      paste('operators', module_name, sep = ':'),
+                      module_path(environment),
+                      NULL,
+                      parent.env(parent))
 }
 
 #' Unload a given module
