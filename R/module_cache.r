@@ -42,30 +42,20 @@ module_attr = function (module, attr)
 #' @param module a module environment or namespace
 #' @return A character string containing the module’s full path.
 module_path = function (module)
-    attr(module, 'path')
-
-# FIXME: Maintain registry of meta information for all functions.
+    module_attr(module, 'path')
 
 #' Get a module’s base directory
 #'
 #' @param module a module environment or namespace
 #' @return A character string containing the module’s base directory,
 #'  or the current working directory if not invoked on a module.
-module_base_path = function (module)
-    UseMethod('module_base_path')
-
-module_base_path.default = function (module) {
-    if (identical(module, .GlobalEnv))
+module_base_path = function (module) {
+    path = try(module_attr(module, 'path'), silent = TRUE)
+    if (inherits(path, 'try-error'))
         normalizePath(script_path(), winslash = '/')
     else
-        module_base_path(parent.env(module))
+        normalizePath(dirname(path), winslash = '/')
 }
-
-module_base_path.module = function (module)
-    normalizePath(dirname(module_path(module)), winslash = '/')
-
-module_base_path.namespace = function (module)
-    normalizePath(dirname(module_path(module)), winslash = '/')
 
 #' Set the base path of the script.
 #'
@@ -171,24 +161,10 @@ shiny_path = function () {
 #' }
 #' }
 #' @export
-module_name = function (module = parent.frame())
-    UseMethod('module_name', module)
-
-#' @seealso \code{module_name}
-#' @export
-module_name.default = function (module = parent.frame()) {
-    if (identical(module, .GlobalEnv))
+module_name = function (module = parent.frame()) {
+    name = try(module_attr(module, 'name'), silent = TRUE)
+    if (inherits(name, 'try-error'))
         NULL
     else
-        module_name(parent.env(module))
+        strsplit(name, ':', fixed = TRUE)[[1]][2]
 }
-
-#' @seealso \code{module_name}
-#' @export
-module_name.module = function (module = parent.frame())
-    strsplit(attr(module, 'name'), ':', fixed = TRUE)[[1]][2]
-
-#' @seealso \code{module_name}
-#' @export
-module_name.namespace = function (module = parent.frame())
-    strsplit(attr(module, 'name'), ':', fixed = TRUE)[[1]][2]
