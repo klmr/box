@@ -18,6 +18,15 @@ test_that('module names can be read inside functions', {
 test_that('module_name works after attaching modules', {
     # Test that #66 is fixed and that there are no regressions.
 
+    a = import('a', attach = TRUE)
+    expect_that(module_name(), is_null())
+
+    local({
+        a = import('a', attach = TRUE)
+        on.exit(unload(a))
+        expect_that(module_name(), is_null())
+    }, envir = .GlobalEnv)
+
     x = import('mod_name')
 
     expect_that(x$this_module_name, equals('mod_name'))
