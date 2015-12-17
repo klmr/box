@@ -3,12 +3,11 @@ exhibit_namespace = function (objects, name, path, doc, parent) {
     # between the calling environment and its ancestor, thus sitting in its
     # local object search path.
 
-    # FIXME: Store original environment info for all functions, as described in #66.
-    structure(list2env(objects, parent = parent.env(parent)),
-              name = name,
-              path = path,
-              doc = doc,
-              class = c(if (grepl('^package:', name)) 'package', 'module', 'environment'))
+    env = list2env(objects, parent = parent.env(parent))
+    module_attr(env, 'path') = path
+    module_attr(env, 'name') = name
+    class = c(if (grepl('^package:', name)) 'package', 'module', 'environment')
+    structure(env, name = name, doc = doc, class = class)
 }
 
 exhibit_module_namespace = function (namespace, name, parent, export_list) {

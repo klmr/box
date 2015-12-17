@@ -151,8 +151,10 @@ do_import = function (module_name, module_path, doc) {
     # <http://obeautifulcode.com/R/How-R-Searches-And-Finds-Stuff/>
     namespace = structure(new.env(parent = helper_env),
                           name = paste('namespace', module_name, sep = ':'),
-                          path = module_path,
                           class = c('namespace', 'environment'))
+
+    module_attr(namespace, 'name') = environmentName(namespace)
+    module_attr(namespace, 'path') = module_path
 
     # First cache the (still empty) namespace, then source code into it. This is
     # necessary to allow circular imports.
@@ -266,7 +268,7 @@ reload = function (module) {
     stopifnot(inherits(module, 'module'))
     module_ref = as.character(substitute(module))
 
-    module_ns = get_loaded_module(attr(module, 'path'))
+    module_ns = get_loaded_module(module_path(module))
     uncache_module(module)
     # If loading fails, restore old module.
     on.exit(cache_module(module_ns))
@@ -292,6 +294,6 @@ reload = function (module) {
 
 #' @export
 print.module = function (x, ...) {
-    cat(sprintf('<%s>\n', attr(x, 'name')))
+    cat(sprintf('<%s>\n', module_attr(x, 'name')))
     invisible(x)
 }
