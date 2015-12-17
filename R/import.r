@@ -125,6 +125,8 @@ attach_module = function (all, operators, name, mod_env, parent) {
     if (is.null(attached_module))
         return()
 
+    fix_module_attributes(parent)
+
     # The following distinction is necessary because R segfaults if we try
     # to change `parent.env(.GlobalEnv)`. More info:
     # http://stackoverflow.com/q/22790484/1968
@@ -134,6 +136,14 @@ attach_module = function (all, operators, name, mod_env, parent) {
     }
     else
         parent.env(parent) = attached_module
+}
+
+fix_module_attributes = function (module) {
+    old_attributes = try(module_attributes(module), silent = TRUE)
+    if (! inherits(old_attributes, 'try-error'))
+        module_attributes(module) = old_attributes
+    else
+        module_attributes(module) = new.env(parent = emptyenv())
 }
 
 do_import = function (module_name, module_path, doc) {
