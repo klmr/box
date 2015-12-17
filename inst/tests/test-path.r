@@ -45,8 +45,11 @@ test_that('module_file works after attaching modules', {
     # Test that #66 is fixed and that there are no regressions.
 
     x = import('mod_file')
-    expected_module_file = file.path(getwd(), 'modules')
+    expected_module_file = module_file()
+    import('a', attach = TRUE)
+    expect_that(module_file(), equals(expected_module_file))
 
+    expected_module_file = file.path(getwd(), 'modules')
     expect_that(x$this_module_file, equals(expected_module_file))
     expect_that(x$function_module_file(), equals(expected_module_file))
     expect_that(x$this_module_file2, equals(expected_module_file))
