@@ -16,7 +16,8 @@
 #' print(cars)
 #' }
 #' @export
-import_package = function (package, attach, attach_operators = TRUE) {
+#' @rdname import_package
+import_package_ = function (package, attach, attach_operators = TRUE) {
     stopifnot(inherits(package, 'character'))
 
     if (missing(attach)) {
@@ -43,6 +44,21 @@ import_package = function (package, attach, attach_operators = TRUE) {
 
     lockEnvironment(pkg_env, bindings = TRUE)
     invisible(pkg_env)
+}
+
+#' @export
+import_package = function (package, attach, attach_operators = TRUE) {
+    call = `[[<-`(sys.call(), 1, quote(import_package_))
+    if (! inherits(substitute(module), 'character')) {
+        msg = sprintf(paste('Calling %s with a variable will change its',
+                            'semantics in version 1.0 of %s. Use %s instead.',
+                            'See %s for more information.'),
+                      sQuote('import_package'), sQuote('modules'),
+                      sQuote(deparse(call)),
+                      sQuote('https://github.com/klmr/modules/issues/68'))
+        .Deprecated(msg = msg)
+    }
+    eval.parent(call)
 }
 
 # Similar to `base::requireNamespace`, but returns the package namespace,

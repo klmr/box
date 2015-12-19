@@ -18,10 +18,26 @@
 #' x = import('x')
 #' x$answer_to_life() # returns 42
 #' }
-export_submodule = function (submodule) {
+#' @rdname export_submodule
+export_submodule_ = function (submodule) {
     parent = parent.frame()
-    module = import(submodule, attach = FALSE)
+    call = bquote(import_(.(submodule), attach_operators = FALSE))
+    module = eval.parent(call)
     expose_single = function (symbol)
         assign(symbol, get(symbol, envir = module), envir = parent)
     invisible(lapply(ls(module), expose_single))
+}
+
+export_submodule = function (submodule) {
+    call = `[[<-`(sys.call(), 1, quote(export_submodule_))
+    if (! inherits(substitute(module), 'character')) {
+        msg = sprintf(paste('Calling %s with a variable will change its',
+                            'semantics in version 1.0 of %s. Use %s instead.',
+                            'See %s for more information.'),
+                      sQuote('export_submodule'), sQuote('modules'),
+                      sQuote(deparse(call)),
+                      sQuote('https://github.com/klmr/modules/issues/68'))
+        .Deprecated(msg = msg)
+    }
+    eval.parent(call)
 }
