@@ -104,31 +104,46 @@ import = function (module, attach, attach_operators = TRUE, doc) {
 
     mod_ns = do_import(module, module_path, doc)
     module_parent = parent.frame()
-    mod_env = exhibit_namespace(mod_ns, module, module_parent,
-                                export_list)
+    mod_env = exhibit_module_namespace(mod_ns, module, module_parent,
+                                       export_list)
 
-    attached_module = if (attach)
-        mod_env
-    else if (attach_operators)
-        export_operators(mod_env, module_parent, module)
-    else
-        NULL
-
-    if (! is.null(attached_module)) {
-        # The following distinction is necessary because R segfaults if we try
-        # to change `parent.env(.GlobalEnv)`. More info:
-        # http://stackoverflow.com/q/22790484/1968
-        if (identical(module_parent, .GlobalEnv)) {
-            attach(attached_module, name = environmentName(attached_module))
-            attr(mod_env, 'attached') = environmentName(attached_module)
-        }
-        else
-            parent.env(module_parent) = attached_module
-    }
+    attach_module(attach, attach_operators, module, mod_env, module_parent)
 
     attr(mod_env, 'call') = match.call()
     lockEnvironment(mod_env, bindings = TRUE)
     invisible(mod_env)
+}
+
+attach_module = function (all, operators, name, mod_env, parent) {
+    attached_module = if (all)
+        mod_env
+    else if (operators)
+        export_operators(mod_env, parent, name)
+    else
+        NULL
+
+    if (is.null(attached_module))
+        return()
+
+    fix_module_attributes(parent)
+
+    # The following distinction is necessary because R segfaults if we try
+    # to change `parent.env(.GlobalEnv)`. More info:
+    # http://stackoverflow.com/q/22790484/1968
+    if (identical(parent, .GlobalEnv)) {
+        attach(attached_module, name = environmentName(attached_module))
+        attr(mod_env, 'attached') = environmentName(attached_module)
+    }
+    else
+        parent.env(parent) = attached_module
+}
+
+fix_module_attributes = function (module) {
+    old_attributes = try(module_attributes(module), silent = TRUE)
+    if (! inherits(old_attributes, 'try-error'))
+        module_attributes(module) = old_attributes
+    else
+        module_attributes(module) = new.env(parent = emptyenv())
 }
 
 do_import = function (module_name, module_path, doc) {
@@ -146,8 +161,10 @@ do_import = function (module_name, module_path, doc) {
     # <http://obeautifulcode.com/R/How-R-Searches-And-Finds-Stuff/>
     namespace = structure(new.env(parent = helper_env),
                           name = paste('namespace', module_name, sep = ':'),
-                          path = module_path,
                           class = c('namespace', 'environment'))
+
+    module_attr(namespace, 'name') = environmentName(namespace)
+    module_attr(namespace, 'path') = module_path
 
     # First cache the (still empty) namespace, then source code into it. This is
     # necessary to allow circular imports.
@@ -169,28 +186,6 @@ do_import = function (module_name, module_path, doc) {
     # No error occured — prevent unloading.
     on.exit()
     namespace
-}
-
-exhibit_namespace = function (namespace, name, parent, export_list) {
-    if (is.null(export_list))
-        export_list = ls(namespace)
-    else {
-        # Verify correctness.
-        exist = vapply(export_list, exists, logical(1), envir = namespace)
-        if (! all(exist))
-            stop(sprintf('Non-existent function(s) (%s) specified for import',
-                         paste(export_list[! exist], collapse = ', ')))
-    }
-
-    # Skip one parent environment because this module is hooked into the chain
-    # between the calling environment and its ancestor, thus sitting in its
-    # local object search path.
-    structure(list2env(mget(export_list, envir = namespace),
-                       parent = parent.env(parent)),
-              name = paste('module', name, sep = ':'),
-              path = module_path(namespace),
-              doc = attr(namespace, 'doc'),
-              class = c('module', 'environment'))
 }
 
 #' Copy a module’s operators into a separate environment
@@ -228,11 +223,11 @@ export_operators = function (environment, parent, module_name) {
     # Skip one parent environment because this module is hooked into the chain
     # between the calling environment and its ancestor, thus sitting in its
     # local object search path.
-    structure(list2env(sapply(operators, get, envir = environment),
-                       parent = parent.env(parent)),
-              name = paste('operators', module_name, sep = ':'),
-              path = module_path(environment),
-              class = c('module', 'environment'))
+    exhibit_namespace(mget(operators, envir = environment),
+                      paste('operators', module_name, sep = ':'),
+                      module_path(environment),
+                      NULL,
+                      parent.env(parent))
 }
 
 #' Unload a given module
@@ -283,7 +278,7 @@ reload = function (module) {
     stopifnot(inherits(module, 'module'))
     module_ref = as.character(substitute(module))
 
-    module_ns = get_loaded_module(attr(module, 'path'))
+    module_ns = get_loaded_module(module_path(module))
     uncache_module(module)
     # If loading fails, restore old module.
     on.exit(cache_module(module_ns))
@@ -309,6 +304,6 @@ reload = function (module) {
 
 #' @export
 print.module = function (x, ...) {
-    cat(sprintf('<%s>\n', attr(x, 'name')))
+    cat(sprintf('<%s>\n', module_attr(x, 'name')))
     invisible(x)
 }

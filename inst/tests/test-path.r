@@ -15,17 +15,13 @@ test_that('module_file works for module', {
 })
 
 test_that('module_base_path works', {
-    # This is a placeholder for a hard to write test which needs to invoke
-    # R via the command line, load the development version of the modules
-    # and parse the output.o
-
-    # Unfortunately, `load_all` reproducibly segfaults when called inside a
-    # a script being executed by a test.
+    # On earlier versions of “devtools”, this test reproducibly segfaulted due
+    # to the call to `load_all` from within a script. This seems to be fixed now
+    # with version 1.9.1.9000.
 
     rcmd = 'R CMD BATCH --slave --vanilla --no-restore --no-save --no-timing'
     rscript = 'Rscript --slave --vanilla --no-restore --no-save'
     script = 'modules/d.r'
-    return()
 
     rcmd_result = local({
         output_file = 'output.rout'
@@ -34,7 +30,7 @@ test_that('module_base_path works', {
         readLines(output_file)
     })
 
-    test_that(rcmd_result, equals(file.path(getwd(), 'inst/test/modules')))
+    expect_that(rcmd_result, equals(file.path(getwd(), 'modules')))
 
     rscript_result = local({
         p = pipe(paste(rscript, script))
@@ -42,5 +38,29 @@ test_that('module_base_path works', {
         readLines(p)
     })
 
-    test_that(rscript_result, equals(file.path(getwd(), 'inst/test/modules')))
+    expect_that(rscript_result, equals(file.path(getwd(), 'modules')))
+})
+
+test_that('module_file works after attaching modules', {
+    # Test that #66 is fixed and that there are no regressions.
+
+    expected_module_file = module_file()
+    import('a', attach = TRUE)
+    expect_that(module_file(), equals(expected_module_file))
+
+    local({
+        expected_module_file = module_file()
+        a = import('a', attach = TRUE)
+        on.exit(unload(a))
+        expect_that(module_file(), equals(expected_module_file))
+    }, envir = .GlobalEnv)
+
+    x = import('mod_file')
+    expected_module_file = file.path(getwd(), 'modules')
+    expect_that(x$this_module_file, equals(expected_module_file))
+    expect_that(x$function_module_file(), equals(expected_module_file))
+    expect_that(x$this_module_file2, equals(expected_module_file))
+    expect_that(x$after_module_attach(), equals(expected_module_file))
+    expect_that(x$after_package_attach(), equals(expected_module_file))
+    expect_that(x$nested_module_file(), equals(expected_module_file))
 })

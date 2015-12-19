@@ -1,4 +1,4 @@
 library(testthat)
-library(import)
+library(modules)
 
 test_package('import')
