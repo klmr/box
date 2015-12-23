@@ -55,3 +55,9 @@ test_that('S3 methods are not registered twice', {
     expect_that(result, equals('s3$se.contrast.test'),
                 'Known generics are still callable')
 })
+
+test_that('Forwarded S3 genetics without methods work', {
+    s3_b = import('s3_b')
+    expect_that(s3_b$test(1), equals('test.default'))
+    expect_that(s3_b$test('a'), equals('test.character'))
+})

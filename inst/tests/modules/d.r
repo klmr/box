@@ -1,3 +1,2 @@
-library(devtools)
-load_all()
-cat(module_base_path(environment()), '\n')
+devtools::load_all(quiet = TRUE)
+cat(paste0(module_base_path(environment()), '\n'))

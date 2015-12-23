@@ -1,9 +1,21 @@
+* 0.9:
+    * Fix wrong module name and path information after a module has been
+      attached (#66, #67, #70)
+    * Deprecate usage of variables for package names (#68)
+
+* 0.8.2:
+    * Fix loading of a package that contains errors (#58)
+    * Fix `reload` overwriting the wrong object if its name is shadowed by the
+      name of the reloaded module (#51)
+    * Fix loading of S3 generics without associated methods (#63)
+
 * 0.8.1:
     * Fix bug concerning wrong operator attachment for packages
 
 * 0.8:
     * Add support for importing packages (#45)
     * Make module access operator `$` stricter
+    * Improve type checking (module access operator `$` is stricter, #55)
 
 * 0.7.3:
     * Add Shiny support (#53, rstudio/shinyapps#152)

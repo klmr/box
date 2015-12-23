@@ -19,7 +19,7 @@
 #'     A vector of paths which are searched for modules. The paths are ordered
 #'     from highest to lowest precedence – if a module of the same name exists
 #'     in two paths, the first hit is accepted.
-#'     The current directory is always prepended to the search paths.
+#'     The current directory is always appended to the search paths.
 #'   \item \code{import.attach}:
 #'     A boolean specifying whether functions from a module should be attached
 #'     by default when using \code{import}, even if \code{attach=FALSE} is

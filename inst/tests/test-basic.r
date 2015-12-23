@@ -6,6 +6,13 @@ test_that('module can be imported', {
     expect_true('double' %in% ls(a))
 })
 
+test_that('import works in global namespace', {
+    local({
+        a = import('a')
+        unload(a) # To get rid of attached operators.
+    }, envir = .GlobalEnv)
+})
+
 test_that('module is uniquely identified by path', {
     a = import('a')
     ba = import('b/a')

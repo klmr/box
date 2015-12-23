@@ -8,8 +8,8 @@ test_that('modules are found when knitr is not loaded', {
 
 test_that('modules are found when knitr is loaded', {
     loadNamespace('knitr')
-    expect_that(script_path(), equals(getwd()))
     on.exit(unloadNamespace('knitr'))
+    expect_that(script_path(), equals(getwd()))
 })
 
 test_that('modules are found inside a knitr document', {

@@ -1,48 +1,61 @@
 #' Environment of loaded modules
 #'
-#' Each module is stored as an environment inside \code{.loaded_modules} with
+#' Each module is stored as an environment inside \code{loaded_modules} with
 #' the module’s code location path as its identifier. The path rather than the
 #' module name is used because module names are not unique: two modules called
 #' \code{a} can exist nested inside modules \code{b} and \code{c}, respectively.
 #' Yet these may be loaded at the same time and need to be distinguished.
-.loaded_modules = new.env()
+loaded_modules = new.env(parent = emptyenv())
 
 is_module_loaded = function (module_path)
-    exists(module_path, envir = .loaded_modules)
+    exists(module_path, envir = loaded_modules, inherits = FALSE)
 
 cache_module = function (module_ns)
-    assign(module_path(module_ns), module_ns, envir = .loaded_modules)
+    assign(module_path(module_ns), module_ns, envir = loaded_modules)
+
+uncache_module = function (module_ns)
+    rm(list = module_path(module_ns), envir = loaded_modules)
 
 get_loaded_module = function (module_path)
-    get(module_path, envir = .loaded_modules)
+    get(module_path, envir = loaded_modules, inherits = FALSE)
+
+module_attributes = function (module)
+    get('.__module__.', module, mode = 'environment', inherits = TRUE)
+
+`module_attributes<-` = function (module, value) {
+    module$.__module__. = value
+    module
+}
+
+module_attr = function (module, attr)
+    get(attr, module_attributes(module))
+
+`module_attr<-` = function (module, attr, value) {
+    if (! exists('.__module__.', module, mode = 'environment', inherits = FALSE))
+        module_attributes(module) = new.env(parent = emptyenv())
+    module$.__module__.[[attr]] = value
+    module
+}
 
 #' Get a module’s path
 #'
 #' @param module a module environment or namespace
 #' @return A character string containing the module’s full path.
 module_path = function (module)
-    attr(module, 'path')
+    module_attr(module, 'path')
 
 #' Get a module’s base directory
 #'
 #' @param module a module environment or namespace
 #' @return A character string containing the module’s base directory,
 #'  or the current working directory if not invoked on a module.
-module_base_path = function (module)
-    UseMethod('module_base_path')
-
-module_base_path.default = function (module) {
-    if (identical(module, .GlobalEnv))
-        script_path()
+module_base_path = function (module) {
+    path = try(module_attr(module, 'path'), silent = TRUE)
+    if (inherits(path, 'try-error'))
+        normalizePath(script_path(), winslash = '/')
     else
-        module_base_path(parent.env(module))
+        normalizePath(dirname(path), winslash = '/')
 }
-
-module_base_path.module = function (module)
-    dirname(module_path(module))
-
-module_base_path.namespace = function (module)
-    dirname(module_path(module))
 
 #' Set the base path of the script.
 #'
@@ -59,9 +72,9 @@ module_base_path.namespace = function (module)
 #' @export
 set_script_path = function (path) {
     if (is.null(path))
-        rm(., envir = .loaded_modules)
+        rm(., envir = loaded_modules)
     else
-        assign('.', dirname(path), .loaded_modules)
+        assign('.', dirname(path), loaded_modules)
 }
 
 #' Return an R script’s path
@@ -75,8 +88,8 @@ script_path = function () {
     # 4. R CMD BATCH script.r
     # 5. Script run interactively (give up, use `getwd()`)
 
-    if (exists('.', envir = .loaded_modules))
-        return(get('.', envir = .loaded_modules))
+    if (exists('.', envir = loaded_modules, inherits = FALSE))
+        return(get('.', envir = loaded_modules, inherits = FALSE))
 
     if (! is.null({knitr_path = knitr_path()}))
         return(knitr_path)
@@ -148,24 +161,10 @@ shiny_path = function () {
 #' }
 #' }
 #' @export
-module_name = function (module = parent.frame())
-    UseMethod('module_name', module)
-
-#' @seealso \code{module_name}
-#' @export
-module_name.default = function (module = parent.frame()) {
-    if (identical(module, .GlobalEnv))
+module_name = function (module = parent.frame()) {
+    name = try(module_attr(module, 'name'), silent = TRUE)
+    if (inherits(name, 'try-error'))
         NULL
     else
-        module_name(parent.env(module))
+        strsplit(name, ':', fixed = TRUE)[[1]][2]
 }
-
-#' @seealso \code{module_name}
-#' @export
-module_name.module = function (module = parent.frame())
-    strsplit(attr(module, 'name'), ':', fixed = TRUE)[[1]][2]
-
-#' @seealso \code{module_name}
-#' @export
-module_name.namespace = function (module = parent.frame())
-    strsplit(attr(module, 'name'), ':', fixed = TRUE)[[1]][2]
