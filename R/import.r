@@ -70,7 +70,8 @@
 #' @seealso \code{module_name}
 #' @seealso \code{module_help}
 #' @export
-import = function (module, attach, attach_operators = TRUE, doc) {
+#' @rdname import
+import_ = function (module, attach, attach_operators = TRUE, doc) {
     stopifnot(inherits(module, 'character'))
 
     if (missing(attach)) {
@@ -112,6 +113,21 @@ import = function (module, attach, attach_operators = TRUE, doc) {
     attr(mod_env, 'call') = match.call()
     lockEnvironment(mod_env, bindings = TRUE)
     invisible(mod_env)
+}
+
+#' @export
+import = function (module, attach, attach_operators = TRUE, doc) {
+    call = `[[<-`(sys.call(), 1, quote(import_))
+    if (! inherits(substitute(module), 'character')) {
+        msg = sprintf(paste('Calling %s with a variable will change its',
+                            'semantics in version 1.0 of %s. Use %s instead.',
+                            'See %s for more information.'),
+                      sQuote('import'), sQuote('modules'),
+                      sQuote(deparse(call)),
+                      sQuote('https://github.com/klmr/modules/issues/68'))
+        .Deprecated(msg = msg)
+    }
+    eval.parent(call)
 }
 
 attach_module = function (all, operators, name, mod_env, parent) {
