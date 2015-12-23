@@ -276,7 +276,7 @@ s
 ##     Map(print_single, lines, names)
 ##     invisible(seq)
 ## }
-## &lt;environment: 0x7fab42d6f660&gt;
+## &lt;environment: 0x7fa77f219988&gt;
 </code></pre>
 
 <h3>Attaching modules</h3>
@@ -313,11 +313,10 @@ distinction between local and global scope:</p>
 <pre><code class="r">search()
 </code></pre>
 
-<pre><code>##  [1] &quot;.GlobalEnv&quot;        &quot;module:seq&quot;        &quot;package:knitr&quot;    
-##  [4] &quot;package:stats&quot;     &quot;package:graphics&quot;  &quot;package:grDevices&quot;
-##  [7] &quot;package:datasets&quot;  &quot;devtools_shims&quot;    &quot;package:modules&quot;  
-## [10] &quot;package:devtools&quot;  &quot;package:utils&quot;     &quot;Autoloads&quot;        
-## [13] &quot;package:base&quot;
+<pre><code>##  [1] &quot;.GlobalEnv&quot;        &quot;module:seq&quot;        &quot;package:modules&quot;  
+##  [4] &quot;package:devtools&quot;  &quot;package:knitr&quot;     &quot;package:stats&quot;    
+##  [7] &quot;package:graphics&quot;  &quot;package:grDevices&quot; &quot;package:utils&quot;    
+## [10] &quot;package:datasets&quot;  &quot;Autoloads&quot;         &quot;package:base&quot;
 </code></pre>
 
 <p>Notice the second position, which reads “module:seq”. But now let’s undo
@@ -343,10 +342,10 @@ scope, the module is not attached:</p>
 <pre><code class="r">search()
 </code></pre>
 
-<pre><code>##  [1] &quot;.GlobalEnv&quot;        &quot;package:knitr&quot;     &quot;package:stats&quot;    
-##  [4] &quot;package:graphics&quot;  &quot;package:grDevices&quot; &quot;package:datasets&quot; 
-##  [7] &quot;devtools_shims&quot;    &quot;package:modules&quot;   &quot;package:devtools&quot; 
-## [10] &quot;package:utils&quot;     &quot;Autoloads&quot;         &quot;package:base&quot;
+<pre><code>##  [1] &quot;.GlobalEnv&quot;        &quot;package:modules&quot;   &quot;package:devtools&quot; 
+##  [4] &quot;package:knitr&quot;     &quot;package:stats&quot;     &quot;package:graphics&quot; 
+##  [7] &quot;package:grDevices&quot; &quot;package:utils&quot;     &quot;package:datasets&quot; 
+## [10] &quot;Autoloads&quot;         &quot;package:base&quot;
 </code></pre>
 
 <pre><code class="r">table(&#39;GATTACA&#39;)
