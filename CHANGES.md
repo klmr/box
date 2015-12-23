@@ -1,6 +1,7 @@
 * 0.9:
     * Fix wrong module name and path information after a module has been
       attached (#66, #67, #70)
+    * Deprecate usage of variables for package names (#68)
 
 * 0.8.2:
     * Fix loading of a package that contains errors (#58)
