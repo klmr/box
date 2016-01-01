@@ -159,7 +159,9 @@ attach_module = function (all, operators, name, mod_env, parent) {
     # to change `parent.env(.GlobalEnv)`. More info:
     # http://stackoverflow.com/q/22790484/1968
     if (identical(parent, .GlobalEnv)) {
-        attach(attached_module, name = environmentName(attached_module))
+        warn = interactive() && getOption('import.warn_conflicts', TRUE)
+        attach(attached_module, name = environmentName(attached_module),
+               warn.conflicts = warn)
         attr(mod_env, 'attached') = environmentName(attached_module)
     }
     else
