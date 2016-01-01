@@ -2,12 +2,15 @@
 % Please edit documentation in R/import.r, R/import_package.r
 \name{import_}
 \alias{import_}
+\alias{import_package}
 \alias{import_package_}
 \title{Import a module into the current scope}
 \usage{
 import_(module, attach, attach_operators = TRUE, doc)
 
 import_package_(package, attach, attach_operators = TRUE)
+
+import_package(package, attach, attach_operators = TRUE)
 }
 \arguments{
 \item{module}{a character string specifying the full module path}

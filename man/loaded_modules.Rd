@@ -2,12 +2,29 @@
 % Please edit documentation in R/module_cache.r
 \docType{data}
 \name{loaded_modules}
+\alias{cache_module}
+\alias{get_loaded_module}
+\alias{is_module_loaded}
 \alias{loaded_modules}
+\alias{uncache_module}
 \title{Environment of loaded modules}
-\format{\preformatted{<environment: 0x7fd17968b358> 
+\format{\preformatted{<environment: 0x7fd762df99f0> 
 }}
 \usage{
 loaded_modules
+
+is_module_loaded(module_path)
+
+cache_module(module_ns)
+
+uncache_module(module_ns)
+
+get_loaded_module(module_path)
+}
+\arguments{
+\item{module_ns}{module namespace environment}
+
+\item{is_module_loaded}{fully resolved module path}
 }
 \description{
 Each module is stored as an environment inside \code{loaded_modules} with
@@ -15,6 +32,16 @@ the module’s code location path as its identifier. The path rather than the
 module name is used because module names are not unique: two modules called
 \code{a} can exist nested inside modules \code{b} and \code{c}, respectively.
 Yet these may be loaded at the same time and need to be distinguished.
+
+\code{is_module_loaded} tests whether a module is already lodaded
+
+\code{cache_module} caches a module namespace and marks the module as loaded.
+
+\code{uncache_module} removes a module namespace from the cache, unloading
+the module from memory.
+
+\code{get_loaded_module} returns a loaded module, identified by its path,
+from cache.
 }
 \keyword{datasets}
 
