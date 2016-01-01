@@ -16,7 +16,6 @@
 #' print(cars)
 #' }
 #' @export
-#' @rdname import_package
 import_package_ = function (package, attach, attach_operators = TRUE) {
     stopifnot(inherits(package, 'character'))
 
@@ -47,6 +46,7 @@ import_package_ = function (package, attach, attach_operators = TRUE) {
 }
 
 #' @export
+#' @rdname import
 import_package = function (package, attach, attach_operators = TRUE) {
     call = `[[<-`(sys.call(), 1, quote(import_package_))
     if (! inherits(substitute(module), 'character')) {

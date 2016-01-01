@@ -130,6 +130,18 @@ import = function (module, attach, attach_operators = TRUE, doc) {
     eval.parent(call)
 }
 
+#' Attach a module environment locally or globally
+#'
+#' @param all logical specifying whether to attach the whole module
+#' @param operators logical specifying whether to attach operators
+#' @param name the module name
+#' @param mod_env the module environment to attach
+#' @param parent the module parent environment
+#' @details
+#' If neither \code{all} nor \code{operators} are \code{TRUE}, this function
+#' does nothing. Otherwise, it will either attach the whole module environment
+#' or the operators it exports. Attaching is done by inserting the module at the
+#' first position into the parent environment chain.
 attach_module = function (all, operators, name, mod_env, parent) {
     attached_module = if (all)
         mod_env
@@ -147,21 +159,37 @@ attach_module = function (all, operators, name, mod_env, parent) {
     # to change `parent.env(.GlobalEnv)`. More info:
     # http://stackoverflow.com/q/22790484/1968
     if (identical(parent, .GlobalEnv)) {
-        attach(attached_module, name = environmentName(attached_module))
+        warn = interactive() && getOption('import.warn_conflicts', TRUE)
+        attach(attached_module, name = environmentName(attached_module),
+               warn.conflicts = warn)
         attr(mod_env, 'attached') = environmentName(attached_module)
     }
     else
         parent.env(parent) = attached_module
 }
 
-fix_module_attributes = function (module) {
-    old_attributes = try(module_attributes(module), silent = TRUE)
+#' Save a module’s inherited attributes into a local environment
+#'
+#' @param envir the environment into which to copy the inherited attributes
+#' @details
+#' Attaching a module to an environment makes the environment “forget” its
+#' actual enclosing environment. This is important since that module holds
+#' information such as the module name or path, which may be required in the
+#' current local scope. To fix this, \code{fix_module_attributes} copies the
+#' enclosing module’s attributes into the local environment.
+fix_module_attributes = function (envir) {
+    old_attributes = try(module_attributes(envir), silent = TRUE)
     if (! inherits(old_attributes, 'try-error'))
-        module_attributes(module) = old_attributes
+        module_attributes(envir) = old_attributes
     else
-        module_attributes(module) = new.env(parent = emptyenv())
+        module_attributes(envir) = new.env(parent = emptyenv())
 }
 
+#' Perform the actual import operation on an individual module
+#'
+#' @param module_name the name of the module, as specified by the user
+#' @param module_path the fully resolved path to the module file
+#' @param doc logical, whether the module documentation should be parsed
 do_import = function (module_name, module_path, doc) {
     if (is_module_loaded(module_path))
         return(get_loaded_module(module_path))

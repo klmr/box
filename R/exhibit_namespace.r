@@ -1,3 +1,14 @@
+#' Exhibit objects from an internal module namespace as an environment
+#'
+#' @param namespace the namespace to export object from
+#' @param name the name of the resulting environment
+#' @param parent the parent environment of the resulting environment
+#' @param export_list the list of objects to export; if \code{NULL}, export
+#' everything
+#' @param objects named list of objects
+#' @param path the fully resolved path to the corresponding module or package
+#' @param doc the module documentation
+#' @return Returns the resulting environment.
 exhibit_namespace = function (objects, name, path, doc, parent) {
     # Skip one parent environment because this module is hooked into the chain
     # between the calling environment and its ancestor, thus sitting in its
@@ -10,6 +21,9 @@ exhibit_namespace = function (objects, name, path, doc, parent) {
     structure(env, name = name, doc = doc, class = class)
 }
 
+#' 
+#' \code{exhibit_module_namespace} exports a namespace for a module.
+#' @rdname exhibit_namespace
 exhibit_module_namespace = function (namespace, name, parent, export_list) {
     if (is.null(export_list))
         export_list = ls(namespace)
@@ -28,6 +42,9 @@ exhibit_module_namespace = function (namespace, name, parent, export_list) {
                       parent)
 }
 
+#' 
+#' \code{exhibit_package_namespace} exports a namespace for a package.
+#' @rdname exhibit_namespace
 exhibit_package_namespace = function (namespace, name, parent, export_list) {
     objects = sapply(export_list, getExportedValue, ns = namespace, simplify = FALSE)
     exhibit_namespace(objects,

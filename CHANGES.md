@@ -1,3 +1,7 @@
+* 0.9.1:
+    * Fix typo in test for deprecation warning (from #68)
+    * Disable name conflict warning when run in non-interactive mode (#48)
+
 * 0.9:
     * Fix wrong module name and path information after a module has been
       attached (#66, #67, #70)
