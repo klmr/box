@@ -8,9 +8,7 @@
 \usage{
 module_help(topic, help_type = getOption("help_type", "text"))
 
-
 ?module$function
-
 
 help(module$function)
 }

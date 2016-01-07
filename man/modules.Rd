@@ -18,7 +18,6 @@ Modules can contain S3 generics and methods. To override known generics
 (defined outside modules), methods inside a module need to be registered
 using \code{\link{register_S3_method}}. See the documentation on that
 function for details.
-
 }
 
 \section{Package options}{
@@ -42,7 +41,6 @@ function for details.
     the global object search path. This warning is only issued while running
     in interactive mode. The option defaults to \code{TRUE}.
 }
-
 }
 \seealso{
 \code{import}

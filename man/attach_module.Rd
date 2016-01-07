@@ -21,7 +21,6 @@ attach_module(all, operators, name, mod_env, parent)
 Attach a module environment locally or globally
 }
 \details{
-
 If neither \code{all} nor \code{operators} are \code{TRUE}, this function
 does nothing. Otherwise, it will either attach the whole module environment
 or the operators it exports. Attaching is done by inserting the module at the

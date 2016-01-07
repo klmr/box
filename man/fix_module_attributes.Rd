@@ -13,7 +13,6 @@ fix_module_attributes(envir)
 Save a module’s inherited attributes into a local environment
 }
 \details{
-
 Attaching a module to an environment makes the environment “forget” its
 actual enclosing environment. This is important since that module holds
 information such as the module name or path, which may be required in the

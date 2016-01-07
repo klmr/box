@@ -8,8 +8,7 @@
 \alias{loaded_modules}
 \alias{uncache_module}
 \title{Environment of loaded modules}
-\format{\preformatted{<environment: 0x7fd762df99f0> 
-}}
+\format{An object of class \code{environment} of length 0.}
 \usage{
 loaded_modules
 

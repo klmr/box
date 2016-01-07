@@ -21,7 +21,6 @@ Methods for generics defined in the same module do not need to be
 registered explicitly, and indeed \emph{should not} be registered. However,
 if the user wants to add a method for a known generic (e.g.
 \code{\link{print}}), then this needs to be made known explicitly.
-
 }
 \note{
 \strong{Do not} call \code{\link{registerS3method}} inside a module.

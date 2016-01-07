@@ -14,7 +14,6 @@ set_script_path(path)
 Set the base path of the script.
 }
 \details{
-
 \emph{modules} needs to know the base path of the topmost calling R script
 to find relative import locations. In most cases, it can figure the path out
 automatically. However, in some cases third party packages load files in such

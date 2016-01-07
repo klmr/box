@@ -29,7 +29,6 @@ object search path, even if \code{attach} is \code{FALSE}}
 }
 \value{
 the loaded module environment (invisible)
-
 }
 \description{
 \code{module = import('module')} imports a specified module and makes its
@@ -65,8 +64,6 @@ Module names can be fully qualified to refer to nested paths. See
 Module source code files are assumed to be encoded in UTF-8 without BOM.
 Ensure that this is the case when using an extended character set.
 
-
-
 \code{pkg = import_package('pkg')} imports a package and treats it much as if
 it were a module, making package contents available in the \code{pkg}
 variable.
@@ -78,7 +75,6 @@ Otherwise, the imported module is inserted as the parent of the current
 \code{environment()}. When used (globally) \emph{inside} a module, the newly
 imported module is only available inside the module’s search path, not
 outside it (nor in other modules which might be loaded).
-
 }
 \examples{
 \dontrun{
