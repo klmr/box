@@ -1,3 +1,6 @@
+* 0.9.2:
+    * Fix missing export of `export_submodule_` (#75)
+
 * 0.9.1:
     * Fix typo in test for deprecation warning (from #68)
     * Disable name conflict warning when run in non-interactive mode (#48)

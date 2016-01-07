@@ -196,7 +196,8 @@ do_import = function (module_name, module_path, doc) {
 
     # Environment with helper functions which are only available when loading a
     # module via `import`, and are not otherwise exported by the package.
-    helper_env = list2env(list(export_submodule = export_submodule),
+    helper_env = list2env(list(export_submodule = export_submodule,
+                               export_submodule_ = export_submodule_),
                           parent = .BaseNamespaceEnv)
 
     # The namespace contains a module’s content. This schema is very much like

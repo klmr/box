@@ -1,6 +1,6 @@
 Package: modules
 Title: Modules for R
-Version: 0.9.1
+Version: 0.9.2
 Author: Konrad Rudolph <konrad.rudolph@gmail.com>
 Maintainer: Konrad Rudolph <konrad.rudolph@gmail.com>
 Description: Alternative package management system for R
