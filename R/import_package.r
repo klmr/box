@@ -49,7 +49,7 @@ import_package_ = function (package, attach, attach_operators = TRUE) {
 #' @rdname import
 import_package = function (package, attach, attach_operators = TRUE) {
     call = `[[<-`(sys.call(), 1, quote(import_package_))
-    if (! inherits(substitute(module), 'character')) {
+    if (! inherits(substitute(package), 'character')) {
         msg = sprintf(paste('Calling %s with a variable will change its',
                             'semantics in version 1.0 of %s. Use %s instead.',
                             'See %s for more information.'),
