@@ -64,3 +64,9 @@ test_that('module_file works after attaching modules', {
     expect_that(x$after_package_attach(), equals(expected_module_file))
     expect_that(x$nested_module_file(), equals(expected_module_file))
 })
+
+test_that('regression #76 is fixed', {
+    expect_that({x = import('issue76')},
+        not(throws_error('could not find function "helper"')))
+    expect_that(x$helper_var, equals(3))
+})
