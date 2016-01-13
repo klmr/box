@@ -1,3 +1,7 @@
+* 0.9.3:
+    * Fix regression in 0.9 due to attachment of operator environment (#71)
+    * Fix another typo in test for deprecation warning (from #68)
+
 * 0.9.2:
     * Fix missing export of `export_submodule_` (#75)
 
