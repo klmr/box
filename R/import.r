@@ -272,7 +272,7 @@ export_operators = function (environment, parent, module_name) {
                       paste('operators', module_name, sep = ':'),
                       module_path(environment),
                       NULL,
-                      parent.env(parent))
+                      parent)
 }
 
 #' Unload a given module
