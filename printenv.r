@@ -7,7 +7,7 @@ printenv = function (env = parent.frame()) {
 
         cat(default_display)
         if (name_display != default_display) {
-            if (frame < sys.nframe() && ! is.null(fn <- sys.function(frame))) {
+            if (frame < sys.nframe() && ! is.null((fn = sys.function(frame)))) {
                 fn_env = environment(fn)
                 # Inside a function, print function name.
                 name = function_name(fn, fn_env)
