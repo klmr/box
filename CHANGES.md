@@ -1,3 +1,6 @@
+* 0.9.4:
+    * Fix regression in 0.9 when “modules” package is not attached
+
 * 0.9.3:
     * Fix regression in 0.9 due to attachment of operator environment (#71)
     * Fix another typo in test for deprecation warning (from #68)

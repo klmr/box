@@ -122,10 +122,10 @@ script_path = function () {
     if (exists('.', envir = loaded_modules, inherits = FALSE))
         return(get('.', envir = loaded_modules, inherits = FALSE))
 
-    if (! is.null({knitr_path = knitr_path()}))
+    if (! is.null((knitr_path = knitr_path())))
         return(knitr_path)
 
-    if (! is.null({shiny_path = shiny_path()}))
+    if (! is.null((shiny_path = shiny_path())))
         return(shiny_path)
 
     args = commandArgs()
