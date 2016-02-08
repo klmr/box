@@ -48,7 +48,13 @@ import_package_ = function (package, attach, attach_operators = TRUE) {
 #' @export
 #' @rdname import
 import_package = function (package, attach, attach_operators = TRUE) {
-    call = `[[<-`(sys.call(), 1, quote(import_package_))
+    # Substitute exactly `import_package` with `import_package_` in call. This
+    # ensures that the call works regardless of whether it was bare or
+    # qualified (`modules::import_package`).
+    call = sys.call()
+    call[[1]] = do.call(substitute,
+                        list(call[[1]],
+                             list(import_package = quote(import_package_))))
     if (! inherits(substitute(package), 'character')) {
         msg = sprintf(paste('Calling %s with a variable will change its',
                             'semantics in version 1.0 of %s. Use %s instead.',

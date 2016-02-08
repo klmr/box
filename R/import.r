@@ -117,7 +117,12 @@ import_ = function (module, attach, attach_operators = TRUE, doc) {
 
 #' @export
 import = function (module, attach, attach_operators = TRUE, doc) {
-    call = `[[<-`(sys.call(), 1, quote(import_))
+    # Substitute exactly `import` with `import_` in call. This ensures that the
+    # call works regardless of whether it was bare or qualified
+    # (`modules::import`).
+    call = sys.call()
+    call[[1]] = do.call(substitute,
+                        list(call[[1]], list(import = quote(import_))))
     if (! inherits(substitute(module), 'character')) {
         msg = sprintf(paste('Calling %s with a variable will change its',
                             'semantics in version 1.0 of %s. Use %s instead.',
