@@ -1,0 +1,4 @@
+language: R
+
+r_binary_packages:
+    - roxygen2
