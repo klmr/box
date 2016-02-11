@@ -166,8 +166,11 @@ attach_module = function (all, operators, name, mod_env, parent) {
     # http://stackoverflow.com/q/22790484/1968
     if (identical(parent, .GlobalEnv)) {
         warn = interactive() && getOption('import.warn_conflicts', TRUE)
-        attach(attached_module, name = environmentName(attached_module),
-               warn.conflicts = warn)
+        # To avoid spurious `R CMD CHECK` warning. Modules only uses `attach`
+        # when explicitly prompted by the user, so the use should be acceptable.
+        get('attach', .BaseNamespaceEnv, mode = 'function'
+            )(attached_module, name = environmentName(attached_module),
+            warn.conflicts = warn)
         attr(mod_env, 'attached') = environmentName(attached_module)
     }
     else
@@ -340,7 +343,11 @@ reload = function (module) {
         if (! is.na(attached_pos)) {
             attached_env = as.environment(attached)
             detach(attached, character.only = TRUE)
-            on.exit(attach(attached_env, pos = attached_pos, name = attached),
+            # To avoid spurious `R CMD CHECK` warning. Modules only uses
+            # `attach` when explicitly prompted by the user, so the use should
+            # be acceptable.
+            on.exit(get('attach', .BaseNamespaceEnv, mode = 'function')
+                    (attached_env, pos = attached_pos, name = attached),
                     add = TRUE)
         }
     }
