@@ -3,7 +3,9 @@ Title: Modules for R
 Version: 0.9.4
 Author: Konrad Rudolph <konrad.rudolph@gmail.com>
 Maintainer: Konrad Rudolph <konrad.rudolph@gmail.com>
-Description: Alternative package management system for R
+Description: Create reusable code modules in R. An alternative package
+    management system for R, similar to module systems in Python, Ruby or
+    JavaScript.
 Depends:
     R (>= 3.0.2)
 Imports:
