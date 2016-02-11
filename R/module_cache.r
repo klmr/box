@@ -9,7 +9,7 @@ loaded_modules = new.env(parent = emptyenv())
 
 #' 
 #' \code{is_module_loaded} tests whether a module is already lodaded
-#' @param is_module_loaded fully resolved module path
+#' @param module_path fully resolved module path
 #' @rdname loaded_modules
 is_module_loaded = function (module_path)
     exists(module_path, envir = loaded_modules, inherits = FALSE)
