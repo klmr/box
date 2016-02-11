@@ -70,7 +70,7 @@ import_package = function (package, attach, attach_operators = TRUE) {
 # Similar to `base::requireNamespace`, but returns the package namespace,
 # doesn’t swallow the error message, and without NSE shenanigans.
 require_namespace = function (package) {
-    ns = .Internal(getRegisteredNamespace(package))
+    ns = base::.getNamespace(package)
     if (is.null(ns))
         ns = tryCatch(loadNamespace(package), error = identity)
 

@@ -2,7 +2,7 @@ parse_documentation = function (module) {
     module_path = module_path(module)
     parsed = list(env = module,
                   blocks = roxygen2:::parse_file(module_path, module))
-    roclet = roxygen2:::rd_roclet()
+    roclet = roxygen2::rd_roclet()
     rdfiles = roxygen2:::roc_process(roclet, parsed, dirname(module_path))
 
     # Due to aliases, documentation entries may have more than one name.
@@ -75,7 +75,7 @@ is_module_help_topic = function (topic, parent)
     ! is.null(module_name(get(as.character(topic[[2]]), parent)))
 
 #' @usage
-#' ?module$function
+#' # ?module$function
 #' @inheritParams utils::`?`
 #' @rdname help
 #' @export
@@ -92,7 +92,7 @@ is_module_help_topic = function (topic, parent)
 }
 
 #' @usage
-#' help(module$function)
+#' # help(module$function)
 #' @inheritParams utils::help
 #' @export
 #' @examples
