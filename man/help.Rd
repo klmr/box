@@ -8,9 +8,9 @@
 \usage{
 module_help(topic, help_type = getOption("help_type", "text"))
 
-?module$function
+# ?module$function
 
-help(module$function)
+# help(module$function)
 }
 \arguments{
 \item{topic}{fully-qualified name of the object or function to get help for,

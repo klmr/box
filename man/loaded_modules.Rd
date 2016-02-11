@@ -21,9 +21,9 @@ uncache_module(module_ns)
 get_loaded_module(module_path)
 }
 \arguments{
-\item{module_ns}{module namespace environment}
+\item{module_path}{fully resolved module path}
 
-\item{is_module_loaded}{fully resolved module path}
+\item{module_ns}{module namespace environment}
 }
 \description{
 Each module is stored as an environment inside \code{loaded_modules} with
