@@ -103,7 +103,9 @@ module_base_path = function (module) {
 #' @export
 set_script_path = function (path) {
     if (is.null(path))
-        rm(., envir = loaded_modules)
+        # Use `list = '.'` instead of `.` to work around bug in `R CMD CHECK`,
+        # which thinks that `.` refers to a non-existent global symbol.
+        rm(list = '.', envir = loaded_modules)
     else
         assign('.', dirname(path), loaded_modules)
 }
