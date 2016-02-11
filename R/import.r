@@ -116,6 +116,7 @@ import_ = function (module, attach, attach_operators = TRUE, doc) {
 }
 
 #' @export
+#' @rdname import
 import = function (module, attach, attach_operators = TRUE, doc) {
     # Substitute exactly `import` with `import_` in call. This ensures that the
     # call works regardless of whether it was bare or qualified
