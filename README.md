@@ -1,7 +1,10 @@
 ![Logo](../../blob/images/r-modules.png?raw=true) Modules for R
 ===============================================================
 
-[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/klmr/modules?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Travis CI
+status](https://travis-ci.org/klmr/modules.svg?branch=master)](https://travis-ci.org/klmr/modules)
+[![Gitter](https://badges.gitter.im/Join
+Chat.svg)](https://gitter.im/klmr/modules?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Table of contents
 -----------------

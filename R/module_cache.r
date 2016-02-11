@@ -9,7 +9,7 @@ loaded_modules = new.env(parent = emptyenv())
 
 #' 
 #' \code{is_module_loaded} tests whether a module is already lodaded
-#' @param is_module_loaded fully resolved module path
+#' @param module_path fully resolved module path
 #' @rdname loaded_modules
 is_module_loaded = function (module_path)
     exists(module_path, envir = loaded_modules, inherits = FALSE)
@@ -103,7 +103,9 @@ module_base_path = function (module) {
 #' @export
 set_script_path = function (path) {
     if (is.null(path))
-        rm(., envir = loaded_modules)
+        # Use `list = '.'` instead of `.` to work around bug in `R CMD CHECK`,
+        # which thinks that `.` refers to a non-existent global symbol.
+        rm(list = '.', envir = loaded_modules)
     else
         assign('.', dirname(path), loaded_modules)
 }

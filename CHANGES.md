@@ -1,5 +1,7 @@
 * 0.9.4:
     * Fix regression in 0.9 when “modules” package is not attached
+    * Fix `R CMD CHECK` warnings
+    * Fix missing documentation of `import` (#78)
 
 * 0.9.3:
     * Fix regression in 0.9 due to attachment of operator environment (#71)
