@@ -1,7 +1,7 @@
-.Rprofile
-.gitignore
-CHANGES.md
+\.Rprofile
+\.gitignore
+CHANGES\.md
 Makefile
-README.md
-printenv.r
+README\.md
+printenv\.r
 ^\.travis\.yml$
