@@ -14,30 +14,32 @@ test_that('module_file works for module', {
     expect_that(length(module_file(c('b', 'c.r'), module = a)), equals(2))
 })
 
+rcmd = function (script_path) {
+    cmd = 'R CMD BATCH --slave --vanilla --no-restore --no-save --no-timing'
+    output_file = 'output.rout'
+    on.exit(unlink(output_file))
+    system(paste(cmd, script_path, output_file))
+    readLines(output_file)
+}
+
+rscript = function (script_path) {
+    cmd = 'Rscript --slave --vanilla --no-restore --no-save'
+    p = pipe(paste(cmd, script_path))
+    on.exit(close(p))
+    readLines(p)
+}
+
 test_that('module_base_path works', {
     # On earlier versions of “devtools”, this test reproducibly segfaulted due
     # to the call to `load_all` from within a script. This seems to be fixed now
     # with version 1.9.1.9000.
 
-    rcmd = 'R CMD BATCH --slave --vanilla --no-restore --no-save --no-timing'
-    rscript = 'Rscript --slave --vanilla --no-restore --no-save'
     script = 'modules/d.r'
 
-    rcmd_result = local({
-        output_file = 'output.rout'
-        on.exit(unlink(output_file))
-        system(paste(rcmd, script, output_file))
-        readLines(output_file)
-    })
-
+    rcmd_result = rcmd(script)
     expect_that(rcmd_result, equals(file.path(getwd(), 'modules')))
 
-    rscript_result = local({
-        p = pipe(paste(rscript, script))
-        on.exit(close(p))
-        readLines(p)
-    })
-
+    rscript_result = rscript(script)
     expect_that(rscript_result, equals(file.path(getwd(), 'modules')))
 })
 
@@ -69,4 +71,7 @@ test_that('regression #76 is fixed', {
     expect_that({x = import('issue76')},
         not(throws_error('could not find function "helper"')))
     expect_that(x$helper_var, equals(3))
+})
+
+test_that('regression #79 is fixed', {
 })
