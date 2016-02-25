@@ -60,13 +60,12 @@ test_that('module_base_path works', {
     # On earlier versions of “devtools”, this test reproducibly segfaulted due
     # to the call to `load_all` from within a script. This seems to be fixed now
     # with version 1.9.1.9000.
+    script_path = 'modules/d.r'
 
-    script = 'modules/d.r'
-
-    rcmd_result = rcmd(script)
+    rcmd_result = rcmd(script_path)
     expect_that(rcmd_result, equals(file.path(getwd(), 'modules')))
 
-    rscript_result = rscript(script)
+    rscript_result = rscript(script_path)
     expect_that(rscript_result, equals(file.path(getwd(), 'modules')))
 })
 
@@ -101,4 +100,11 @@ test_that('regression #76 is fixed', {
 })
 
 test_that('regression #79 is fixed', {
+    script_path = 'modules/issue79.r'
+    result = tail(interactive_r(script_path), 3)
+
+    expect_that(result[1], equals('> before; after'))
+    expect_that(result[2], equals('NULL'))
+    # The following assertion in particular should not fail.
+    expect_that(result[3], equals('NULL'))
 })
