@@ -205,6 +205,11 @@ do_import = function (module_name, module_path, doc) {
 
     # Environment with helper functions which are only available when loading a
     # module via `import`, and are not otherwise exported by the package.
+
+    modules_exports = sapply(getNamespaceExports(getNamespace('modules')),
+                             getExportedValue,
+                             ns = getNamespace('modules'),
+                             simplify = FALSE)
     helper_env = list2env(list(export_submodule = export_submodule,
                                export_submodule_ = export_submodule_),
                           parent = .BaseNamespaceEnv)
