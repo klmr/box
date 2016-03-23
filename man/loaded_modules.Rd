@@ -3,6 +3,7 @@
 \docType{data}
 \name{loaded_modules}
 \alias{cache_module}
+\alias{clear_modules_cache}
 \alias{get_loaded_module}
 \alias{is_module_loaded}
 \alias{loaded_modules}
@@ -17,6 +18,8 @@ is_module_loaded(module_path)
 cache_module(module_ns)
 
 uncache_module(module_ns)
+
+clear_modules_cache()
 
 get_loaded_module(module_path)
 }
@@ -38,6 +41,8 @@ Yet these may be loaded at the same time and need to be distinguished.
 
 \code{uncache_module} removes a module namespace from the cache, unloading
 the module from memory.
+
+\code{clear_modules_cache} unloads all loaded modules from the cache.
 
 \code{get_loaded_module} returns a loaded module, identified by its path,
 from cache.
