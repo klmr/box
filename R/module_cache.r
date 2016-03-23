@@ -32,7 +32,8 @@ uncache_module = function (module_ns)
 #' \code{clear_modules_cache} unloads all loaded modules from the cache.
 #' @rdname loaded_modules
 clear_modules_cache = function ()
-    rm(list = ls(envir = loaded_modules, all = TRUE), envir = loaded_modules)
+    rm(list = ls(envir = loaded_modules, all.names = TRUE),
+       envir = loaded_modules)
 
 #' 
 #' \code{get_loaded_module} returns a loaded module, identified by its path,
