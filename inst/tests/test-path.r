@@ -108,3 +108,23 @@ test_that('regression #79 is fixed', {
     # The following assertion in particular should not fail.
     expect_that(result[3], equals('NULL'))
 })
+
+test_that('‹modules› is attached inside modules', {
+    # Detach ‹modules› temporarily.
+    modules_name = 'package:modules'
+    modules_env = as.environment(modules_name)
+    on.exit(attach(modules_env, name = modules_name))
+    detach(modules_name, character.only = TRUE)
+
+    # Verify that package is no longer attached.
+    expect_false(modules_name %in% search())
+
+    # Verify that trying to call ‹modules› functions fails.
+    expect_that(source('modules/issue44.r'),
+                throws_error('could not find function "module_name"'))
+
+    # Verify that using ‹modules› functions inside module still works.
+    expect_that((result = capture.output(import('issue44'))),
+                not(throws_error('could not find function "module_name"')))
+    expect_that(result, equals('issue44'))
+})
