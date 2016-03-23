@@ -210,8 +210,9 @@ do_import = function (module_name, module_path, doc) {
                              getExportedValue,
                              ns = getNamespace('modules'),
                              simplify = FALSE)
-    helper_env = list2env(list(export_submodule = export_submodule,
-                               export_submodule_ = export_submodule_),
+    helper_env = list2env(c(modules_exports,
+                            list(export_submodule = export_submodule,
+                                 export_submodule_ = export_submodule_)),
                           parent = .BaseNamespaceEnv)
 
     # The namespace contains a module’s content. This schema is very much like
