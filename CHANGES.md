@@ -1,5 +1,8 @@
+* 0.9.5:
+    * Locally attach ‹modules› inside modules (#44)
+
 * 0.9.4:
-    * Fix regression in 0.9 when “modules” package is not attached
+    * Fix regression in 0.9 when ‹modules› package is not attached
     * Fix `R CMD CHECK` warnings
     * Fix missing documentation of `import` (#78)
 
