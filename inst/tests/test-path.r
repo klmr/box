@@ -3,8 +3,8 @@ context('Find module path relative files')
 test_that('module_file works in global namespace', {
     expect_that(module_file(), equals(getwd()))
     expect_true(nchar(module_file('run-all.r')) > 0)
-    throws_error(module_file('XXX-does-not-exist', mustWork = TRUE),
-                 'no file found')
+    expect_that(module_file('XXX-does-not-exist', mustWork = TRUE),
+                throws_error('no file found'))
 })
 
 test_that('module_file works for module', {
@@ -107,4 +107,24 @@ test_that('regression #79 is fixed', {
     expect_that(result[2], equals('NULL'))
     # The following assertion in particular should not fail.
     expect_that(result[3], equals('NULL'))
+})
+
+test_that('‹modules› is attached inside modules', {
+    # Detach ‹modules› temporarily.
+    modules_name = 'package:modules'
+    modules_env = as.environment(modules_name)
+    on.exit(attach(modules_env, name = modules_name))
+    detach(modules_name, character.only = TRUE)
+
+    # Verify that package is no longer attached.
+    expect_false(modules_name %in% search())
+
+    # Verify that trying to call ‹modules› functions fails.
+    expect_that(source('modules/issue44.r'),
+                throws_error('could not find function "module_name"'))
+
+    # Verify that using ‹modules› functions inside module still works.
+    expect_that((result = capture.output(import('issue44'))),
+                not(throws_error('could not find function "module_name"')))
+    expect_that(result, equals('issue44'))
 })
