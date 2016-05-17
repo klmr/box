@@ -38,9 +38,8 @@ find_module = function (module) {
     hits = unlist(lapply(candidate_paths, find_candidate))
 
     if (length(hits) == 0)
-        stop('Unable to load module ', module, '; not found in ',
-             paste(Map(function (p) sprintf('"%s"', p), search_path),
-                   collapse = ', '))
+        stop('Unable to load module ', sQuote(module), '; not found in ',
+             paste(sQuote(search_path), collapse = ', '))
 
     normalizePath(unname(hits[1]))
 }
