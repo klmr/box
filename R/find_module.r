@@ -73,7 +73,7 @@ module_init_files = function (module, module_path) {
     module_parts = module_parts[-length(module_parts)]
 
     has_children = grepl('/__init__\\.[rR]$', module_path)
-    path_parts = unlist(strsplit(module_path, '/'))
+    path_parts = split_path(module_path)
     path_prefix_length = length(path_parts) - length(module_parts) -
         if (has_children) 2 else 1
 
@@ -127,4 +127,12 @@ import_search_path = function () {
     if (length(environment) == 0)
         environment = NULL
     c(getOption('import.path', environment), module_base_path(parent.frame()))
+}
+
+split_path = function (path) {
+    if (identical(path, dirname(path))) {
+        if (path == '.') NULL else path
+    } else {
+        c(Recall(dirname(path)), basename(path))
+    }
 }
