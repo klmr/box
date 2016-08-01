@@ -77,7 +77,7 @@ module_init_files = function (module, module_path) {
     path_prefix_length = length(path_parts) - length(module_parts) -
         if (has_children) 2 else 1
 
-    base_path = do.call(file.path, as.list(path_parts[1 : path_prefix_length]))
+    base_path = do.call(file.path, as.list(path_parts[seq_len(path_prefix_length)]))
 
     # Find the `__init__.r` files in all path components of `module_parts`.
     # Any `__init__.r` files *upstream* of this path must be disregarded, e.g.
