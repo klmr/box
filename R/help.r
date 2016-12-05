@@ -8,7 +8,7 @@ parse_documentation = function (module) {
     # Due to aliases, documentation entries may have more than one name.
     # Duplicate the relevant documentation entries to get around this.
     # Unfortunately this makes the relevant code ~7x longer.
-    aliases = lapply(rdfiles, function (rd) unique(rd[[1]]$alias$value))
+    aliases = lapply(rdfiles, function (rd) unique(rd[[1]]$alias$values))
     doc_for_name = function (name, aliases)
         sapply(aliases, function (.) rdfiles[[name]], simplify = FALSE)
     docs = mapply(doc_for_name, names(aliases), aliases, SIMPLIFY = FALSE)
