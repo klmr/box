@@ -28,7 +28,7 @@ module_file = function (..., module = parent.frame(), mustWork = FALSE) {
         existing
     else
         if (mustWork)
-            stop('File not found: ', paths)
+            stop('File not found: ', sQuote(paths))
         else
             ''
 }
