@@ -130,12 +130,12 @@ test_that('‹modules› is attached inside modules', {
 })
 
 test_that('common split_path operations are working', {
-    expect_paths_equal(split_path('foo'), './foo')
-    expect_paths_equal(split_path('foo/'), './foo')
-    expect_paths_equal(split_path('./foo'), './foo')
-    expect_paths_equal(split_path('./foo/'), './foo')
-    expect_paths_equal(split_path('foo/bar'), './foo/bar')
-    expect_paths_equal(split_path('foo/bar/'), './foo/bar')
+    expect_correct_path_split('foo')
+    expect_correct_path_split('foo/')
+    expect_correct_path_split('./foo')
+    expect_correct_path_split('./foo/')
+    expect_correct_path_split('foo/bar')
+    expect_correct_path_split('foo/bar/')
     expect_is_cwd('.')
     expect_is_cwd('./')
     expect_is_cwd('./.')
@@ -145,11 +145,11 @@ test_that('split_path is working on Unix', {
     if (.Platform$OS.type != 'unix')
         skip('Only run on Unix')
 
-    expect_paths_equal(split_path('/foo/bar'), '/foo/bar')
-    expect_paths_equal(split_path('/foo/bar/'), '/foo/bar')
-    expect_paths_equal(split_path('/.'), '/')
-    expect_paths_equal(split_path('~'), '~')
-    expect_paths_equal(split_path('~/foo'), '~/foo')
+    expect_correct_path_split('/foo/bar')
+    expect_correct_path_split('/foo/bar/')
+    expect_correct_path_split('/.')
+    expect_correct_path_split('~')
+    expect_correct_path_split('~/foo')
 })
 
 test_that('split_path is working on Windows', {
