@@ -8,7 +8,9 @@ realpath = function (path) {
 expect_paths_equal = function (actual, expected) {
     actual_norm = realpath(merge_path(actual))
     expected_norm = realpath(expected)
-    expect_equal(actual_norm, expected_norm, label = deparse(substitute(actual)))
+    expect_equal(actual_norm, expected_norm,
+                 label = deparse(substitute(actual)),
+                 expected.label = deparse(substitute(expected)))
 }
 
 expect_is_cwd = function (actual)
