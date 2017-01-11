@@ -24,5 +24,8 @@ expect_paths_equal = function (actual, expected) {
                  expected.label = deparse(substitute(expected)))
 }
 
+expect_correct_path_split = function (actual)
+    expect_paths_equal(split_path(actual), actual)
+
 expect_is_cwd = function (actual)
     eval.parent(bquote(expect_paths_equal(.(actual), '.')))
