@@ -139,6 +139,8 @@ test_that('common split_path operations are working', {
     expect_is_cwd('.')
     expect_is_cwd('./')
     expect_is_cwd('./.')
+    expect_correct_path_split('~')
+    expect_correct_path_split('~/foo')
 })
 
 test_that('split_path is working on Unix', {
@@ -148,8 +150,6 @@ test_that('split_path is working on Unix', {
     expect_correct_path_split('/foo/bar')
     expect_correct_path_split('/foo/bar/')
     expect_correct_path_split('/.')
-    expect_correct_path_split('~')
-    expect_correct_path_split('~/foo')
 })
 
 test_that('split_path is working on Windows', {
