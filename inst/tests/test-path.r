@@ -129,28 +129,25 @@ test_that('‹modules› is attached inside modules', {
     expect_that(result, equals('issue44'))
 })
 
-test_that('split_path is working on Unix', {
+test_that('common split_path operations are working', {
     expect_paths_equal(split_path('foo'), './foo')
     expect_paths_equal(split_path('foo/'), './foo')
     expect_paths_equal(split_path('./foo'), './foo')
     expect_paths_equal(split_path('./foo/'), './foo')
     expect_paths_equal(split_path('foo/bar'), './foo/bar')
     expect_paths_equal(split_path('foo/bar/'), './foo/bar')
-    expect_paths_equal(split_path('/foo/bar'), '/foo/bar')
-    expect_paths_equal(split_path('/foo/bar/'), '/foo/bar')
-
-    # expect_equal(split_path('foo'), c('.', 'foo'))
-    # expect_equal(split_path('foo/'), c('.', 'foo'))
-    # expect_equal(split_path('./foo'), c('.', 'foo'))
-    # expect_equal(split_path('./foo/'), c('.', 'foo'))
-    # expect_equal(split_path('foo/bar'), c('.', 'foo', 'bar'))
-    # expect_equal(split_path('foo/bar/'), c('.', 'foo', 'bar'))
-    # expect_equal(split_path('/foo/bar'), c('/', 'foo', 'bar'))
-    # expect_equal(split_path('/foo/bar/'), c('/', 'foo', 'bar'))
     expect_is_cwd('.')
     expect_is_cwd('./')
     expect_is_cwd('./.')
+})
+
+test_that('split_path is working on Unix', {
+    if (.Platform$OS.type == 'unix')
+        skip('Only run on Unix')
+
+    expect_paths_equal(split_path('/foo/bar'), '/foo/bar')
+    expect_paths_equal(split_path('/foo/bar/'), '/foo/bar')
     expect_paths_equal(split_path('/.'), '/')
-    # expect_equal(split_path('/.'), c('/', '.'))
     expect_paths_equal(split_path('~'), '~')
+    expect_paths_equal(split_path('~/foo'), '~/foo')
 })
