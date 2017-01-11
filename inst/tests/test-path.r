@@ -142,7 +142,7 @@ test_that('common split_path operations are working', {
 })
 
 test_that('split_path is working on Unix', {
-    if (.Platform$OS.type == 'unix')
+    if (.Platform$OS.type != 'unix')
         skip('Only run on Unix')
 
     expect_paths_equal(split_path('/foo/bar'), '/foo/bar')
@@ -150,4 +150,12 @@ test_that('split_path is working on Unix', {
     expect_paths_equal(split_path('/.'), '/')
     expect_paths_equal(split_path('~'), '~')
     expect_paths_equal(split_path('~/foo'), '~/foo')
+})
+
+test_that('split_path is working on Windows', {
+    if (.Platform$OS.type != 'windows')
+        skip('Only run on Windows')
+
+    # Standard paths
+    # UNC paths
 })
