@@ -130,9 +130,8 @@ import_search_path = function () {
 }
 
 split_path = function (path) {
-    if (identical(path, dirname(path))) {
-        if (path == '.') NULL else path
-    } else {
+    if (identical(path, dirname(path)))
+        path
+    else
         c(Recall(dirname(path)), basename(path))
-    }
 }
