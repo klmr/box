@@ -135,3 +135,7 @@ split_path = function (path) {
     else
         c(Recall(dirname(path)), basename(path))
 }
+
+merge_path = function (components) {
+    do.call(file.path, as.list(components))
+}
