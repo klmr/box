@@ -12,7 +12,7 @@ find_module = function (module) {
     # determine name of source file.
     prefix = if (length(parts) == 1) '' else parts[-length(parts)]
     suffix = parts[length(parts)]
-    module_path = do.call(file.path, as.list(prefix))
+    module_path = merge_path(prefix)
     file_pattern = sprintf('^%s\\.[rR]$', suffix)
 
     search_path = if (parts[1] %in% c('.', '..'))
@@ -77,7 +77,7 @@ module_init_files = function (module, module_path) {
     path_prefix_length = length(path_parts) - length(module_parts) -
         if (has_children) 2 else 1
 
-    base_path = do.call(file.path, as.list(path_parts[seq_len(path_prefix_length)]))
+    base_path = merge_path(path_parts[seq_len(path_prefix_length)])
 
     # Find the `__init__.r` files in all path components of `module_parts`.
     # Any `__init__.r` files *upstream* of this path must be disregarded, e.g.
@@ -102,8 +102,7 @@ module_init_files = function (module, module_path) {
     partials = setNames(partials, sapply(partials, path_prefix, module_parts))
 
     build_prefix = function (i)
-        list.files(do.call(file.path,
-                           as.list(c(base_path, module_parts[1 : i]))),
+        list.files(merge_path(c(base_path, module_parts[seq_len(i)])),
                    pattern = '^__init__\\.[rR]$', full.names = TRUE)
 
     all_prefixes = unlist(sapply(partials, build_prefix))
