@@ -128,3 +128,34 @@ test_that('‹modules› is attached inside modules', {
                 not(throws_error('could not find function "module_name"')))
     expect_that(result, equals('issue44'))
 })
+
+test_that('common split_path operations are working', {
+    expect_correct_path_split('foo')
+    expect_correct_path_split('foo/')
+    expect_correct_path_split('./foo')
+    expect_correct_path_split('./foo/')
+    expect_correct_path_split('foo/bar')
+    expect_correct_path_split('foo/bar/')
+    expect_is_cwd('.')
+    expect_is_cwd('./')
+    expect_is_cwd('./.')
+    expect_correct_path_split('~')
+    expect_correct_path_split('~/foo')
+})
+
+test_that('split_path is working on Unix', {
+    if (.Platform$OS.type != 'unix')
+        skip('Only run on Unix')
+
+    expect_correct_path_split('/foo/bar')
+    expect_correct_path_split('/foo/bar/')
+    expect_correct_path_split('/.')
+})
+
+test_that('split_path is working on Windows', {
+    if (.Platform$OS.type != 'windows')
+        skip('Only run on Windows')
+
+    # Standard paths
+    # UNC paths
+})

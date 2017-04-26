@@ -12,7 +12,7 @@ find_module = function (module) {
     # determine name of source file.
     prefix = if (length(parts) == 1) '' else parts[-length(parts)]
     suffix = parts[length(parts)]
-    module_path = do.call(file.path, as.list(prefix))
+    module_path = merge_path(prefix)
     file_pattern = sprintf('^%s\\.[rR]$', suffix)
 
     search_path = if (parts[1] %in% c('.', '..'))
@@ -38,9 +38,8 @@ find_module = function (module) {
     hits = unlist(lapply(candidate_paths, find_candidate))
 
     if (length(hits) == 0)
-        stop('Unable to load module ', module, '; not found in ',
-             paste(Map(function (p) sprintf('"%s"', p), search_path),
-                   collapse = ', '))
+        stop('Unable to load module ', sQuote(module), '; not found in ',
+             paste(sQuote(search_path), collapse = ', '))
 
     normalizePath(unname(hits[1]))
 }
@@ -74,11 +73,11 @@ module_init_files = function (module, module_path) {
     module_parts = module_parts[-length(module_parts)]
 
     has_children = grepl('/__init__\\.[rR]$', module_path)
-    path_parts = unlist(strsplit(module_path, '/'))
+    path_parts = split_path(module_path)
     path_prefix_length = length(path_parts) - length(module_parts) -
         if (has_children) 2 else 1
 
-    base_path = do.call(file.path, as.list(path_parts[1 : path_prefix_length]))
+    base_path = merge_path(path_parts[seq_len(path_prefix_length)])
 
     # Find the `__init__.r` files in all path components of `module_parts`.
     # Any `__init__.r` files *upstream* of this path must be disregarded, e.g.
@@ -103,8 +102,7 @@ module_init_files = function (module, module_path) {
     partials = setNames(partials, sapply(partials, path_prefix, module_parts))
 
     build_prefix = function (i)
-        list.files(do.call(file.path,
-                           as.list(c(base_path, module_parts[1 : i]))),
+        list.files(merge_path(c(base_path, module_parts[seq_len(i)])),
                    pattern = '^__init__\\.[rR]$', full.names = TRUE)
 
     all_prefixes = unlist(sapply(partials, build_prefix))
@@ -128,4 +126,31 @@ import_search_path = function () {
     if (length(environment) == 0)
         environment = NULL
     c(getOption('import.path', environment), module_base_path(parent.frame()))
+}
+
+#' Split a path into its components and merge them back together
+#'
+#' \code{split_path(path)} is a platform independent and file system logic
+#' aware alternative to \code{strsplit(path, '/')[[1]]}.
+#' @param path the path to split
+#' @return \code{split_path} returns a character vector of path components that
+#' logically represent \code{path}.
+split_path = function (path) {
+    if (identical(path, dirname(path)))
+        path
+    else
+        c(Recall(dirname(path)), basename(path))
+}
+
+#' \code{merge_path(split_path(path))} is equivalent to \code{path}.
+#' @return \code{merge_path} returns a single character string that is
+#' logically equivalent to the \code{path} passed to \code{split_path}.
+#' logically represent \code{path}.
+#' @note \code{merge_path} is the inverse function to \code{split_path}.
+#' However, this does not mean that its result will be identical to the
+#' original path. Instead, it is only guaranteed that it will refer to the same
+#' logical path given the same working directory.
+#' @rdname split_path
+merge_path = function (components) {
+    do.call(file.path, as.list(components))
 }

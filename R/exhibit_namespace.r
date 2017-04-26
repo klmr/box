@@ -32,7 +32,7 @@ exhibit_module_namespace = function (namespace, name, parent, export_list) {
         exist = vapply(export_list, exists, logical(1), envir = namespace)
         if (! all(exist))
             stop(sprintf('Non-existent function(s) (%s) specified for import',
-                         paste(export_list[! exist], collapse = ', ')))
+                         paste(sQuote(export_list[! exist]), collapse = ', ')))
     }
 
     exhibit_namespace(mget(export_list, envir = namespace),
