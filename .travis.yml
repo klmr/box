@@ -2,4 +2,4 @@ language: R
 
 cache: packages
 
-before_script: make documentation
+before_script: make doc
