@@ -1,5 +1,5 @@
 .PHONY: all
-all: documentation vignettes
+all: doc vignettes
 
 .PHONY: test
 ## Run unit tests
@@ -25,9 +25,9 @@ inst/doc:
 inst/doc/%.md: vignettes/%.rmd | inst/doc
 	Rscript --no-save --no-restore -e "library(knitr); knit('$<', '$@')"
 
-.PHONY: documentation
+.PHONY: doc
 ## Compile the in-line package documentation
-documentation:
+doc:
 	Rscript --no-save --no-restore -e "library(devtools); document()"
 
 ## Clean up all build files
