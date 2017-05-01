@@ -33,6 +33,7 @@
 
 * 0.8:
     * Add support for importing packages (#45)
+    * Make module access operator `$` stricter
     * Improve type checking (module access operator `$` is stricter, #55)
 
 * 0.7.3:
