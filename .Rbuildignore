@@ -1,4 +1,5 @@
-devel\.Rprofile
+\.Rprofile_develop
+\.Rprofile
 \.gitignore
 CHANGES\.md
 Makefile
