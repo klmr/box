@@ -1,3 +1,5 @@
 language: R
 
+cache: packages
+
 before_script: make documentation
