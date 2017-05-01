@@ -1,7 +1,29 @@
 rscript = Rscript --no-save --no-restore
 
+# Deployment configuration
+deploy_remote = origin
+deploy_branch = master
+deploy_source = develop
+
 .PHONY: all
 all: doc vignettes
+
+.PHONY: deploy
+# Deploy the code with documentation to Github
+deploy: update-master
+	git add --force NAMESPACE
+	git add --force man
+	git commit --message Deployment
+	git push --force ${deploy_remote} ${deploy_branch}
+	git checkout ${deploy_source}
+	git checkout DESCRIPTION # To undo Roxygen meddling with file
+
+.PHONY: update-master
+update-master:
+	git checkout ${deploy_source}
+	git branch --delete --force ${deploy_branch}
+	git checkout -b ${deploy_branch}
+	${MAKE} doc vignettes
 
 .PHONY: test
 ## Run unit tests
