@@ -1,15 +1,17 @@
+rscript = Rscript --no-save --no-restore
+
 .PHONY: all
 all: doc vignettes
 
 .PHONY: test
 ## Run unit tests
 test:
-	Rscript --no-save --no-restore -e "devtools::test()"
+	${rscript} -e "devtools::test()"
 
 .PHONY: vignettes
 ## Compile all vignettes and other R Markdown articles
 vignettes: knit_all
-	Rscript --no-save --no-restore -e "library(knitr); library(devtools); build_vignettes()"
+	${rscript} -e "library(knitr); library(devtools); build_vignettes()"
 
 rmd_files=$(wildcard vignettes/*.rmd)
 knit_results=$(patsubst vignettes/%.rmd,inst/doc/%.md,${rmd_files})
@@ -23,12 +25,12 @@ inst/doc:
 	mkdir -p $@
 
 inst/doc/%.md: vignettes/%.rmd | inst/doc
-	Rscript --no-save --no-restore -e "library(knitr); knit('$<', '$@')"
+	${rscript} -e "library(knitr); knit('$<', '$@')"
 
 .PHONY: doc
 ## Compile the in-line package documentation
 doc:
-	Rscript --no-save --no-restore -e "library(devtools); document()"
+	${rscript} -e "library(devtools); document()"
 
 ## Clean up all build files
 cleanall:
