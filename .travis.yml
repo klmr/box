@@ -1,4 +1,5 @@
 language: R
 
-r_binary_packages:
-    - roxygen2
+cache: packages
+
+before_script: make documentation
