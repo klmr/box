@@ -1,6 +1,11 @@
 .PHONY: all
 all: documentation vignettes
 
+.PHONY: test
+## Run unit tests
+test:
+	Rscript --no-save --no-restore -e "devtools::test()"
+
 .PHONY: vignettes
 ## Compile all vignettes and other R Markdown articles
 vignettes: knit_all
