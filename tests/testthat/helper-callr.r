@@ -15,7 +15,7 @@ rscript = function (script_path) {
 
 interactive_r = function (script_path) {
     cmd = 'R --vanilla --interactive'
-    output_file = 'output.rout'
+    output_file = tempfile(fileext = '.rout')
     on.exit(unlink(output_file))
 
     local({
