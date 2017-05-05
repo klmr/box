@@ -13,15 +13,18 @@ rscript = function (script_path) {
     readLines(p)
 }
 
-interactive_r = function (script_path) {
+interactive_r = function (script_path, text) {
     cmd = 'R --vanilla --interactive'
     output_file = tempfile(fileext = '.rout')
     on.exit(unlink(output_file))
 
+    if (! missing(script_path))
+        text = readLines(script_path)
+
     local({
         p = pipe(paste(cmd, '>', output_file), 'w')
         on.exit(close(p))
-        writeLines(readLines(script_path), p)
+        writeLines(text, p)
         writeLines('interactive()', p)
     })
 
