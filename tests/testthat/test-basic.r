@@ -18,7 +18,7 @@ test_that('module is uniquely identified by path', {
     ba = import('b/a')
     expect_true(is_module_loaded(module_path(a)))
     expect_true(is_module_loaded(module_path(ba)))
-    expect_that(module_path(a), is_not_identical_to(module_path(ba)))
+    expect_not_identical(module_path(a), module_path(ba))
     expect_true('double' %in% ls(a))
     expect_false('double' %in% ls(ba))
 })
