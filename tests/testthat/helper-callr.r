@@ -30,10 +30,17 @@ interactive_r = function (script_path, text) {
 
     result = readLines(output_file)
 
+    strip_ansi_escapes = function (str) {
+        # Only support CSI Select Graphic Rendition for now. This is necessary
+        # to guard against R packages such as ‹colorout›.
+        gsub('\033\\[(\\d+(;\\d+)*)?m', '', str)
+    }
+
     check_line = function (which, expected)
-        if (! identical(result[which], expected))
+        if (! identical(strip_ansi_escapes(result[which]), expected)) {
             stop('Unexpected value ', sQuote(result[which]), ', expected ',
                  sQuote(expected), ' in `interactive_r`')
+        }
 
     # Ensure that code was actually run interactively.
     end = length(result)
