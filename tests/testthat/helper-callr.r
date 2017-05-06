@@ -36,11 +36,14 @@ interactive_r = function (script_path, text) {
         gsub('\033\\[(\\d+(;\\d+)*)?m', '', str)
     }
 
-    check_line = function (which, expected)
+    check_line = function (which, expected) {
+        # Separate check to generate only one assertion, and only if needed.
         if (! identical(strip_ansi_escapes(result[which]), expected)) {
-            stop('Unexpected value ', sQuote(result[which]), ', expected ',
-                 sQuote(expected), ' in `interactive_r`')
+            expect_identical(strip_ansi_escapes(result[which]), expected,
+                             label = sprintf('"%s"', result[which]),
+                             info = 'interactive_r')
         }
+    }
 
     # Ensure that code was actually run interactively.
     end = length(result)
