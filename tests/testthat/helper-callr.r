@@ -1,5 +1,5 @@
 rcmd = function (script_path) {
-    cmd = 'R CMD BATCH --slave --vanilla --no-restore --no-save --no-timing'
+    cmd = 'R CMD BATCH --slave --no-restore --no-save --no-timing'
     output_file = 'output.rout'
     on.exit(unlink(output_file))
     system(paste(cmd, script_path, output_file))
@@ -7,14 +7,14 @@ rcmd = function (script_path) {
 }
 
 rscript = function (script_path) {
-    cmd = 'Rscript --slave --vanilla --no-restore --no-save'
+    cmd = 'Rscript --slave --no-restore --no-save'
     p = pipe(paste(cmd, script_path))
     on.exit(close(p))
     readLines(p)
 }
 
 interactive_r = function (script_path, text) {
-    cmd = 'R --vanilla --interactive'
+    cmd = 'R --interactive --no-restore --no-save'
     output_file = tempfile(fileext = '.rout')
     on.exit(unlink(output_file))
 
