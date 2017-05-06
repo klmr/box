@@ -13,13 +13,21 @@ rscript = function (script_path) {
     readLines(p)
 }
 
-interactive_r = function (script_path, text) {
+interactive_r = function (script_path, text, code) {
     cmd = 'R --interactive --no-restore --no-save'
     output_file = tempfile(fileext = '.rout')
     on.exit(unlink(output_file))
 
-    if (! missing(script_path))
-        text = readLines(script_path)
+    text = if (! missing(script_path)) {
+        readLines(script_path)
+    } else if (! missing(code)) {
+        deparse(substitute(code), backtick = TRUE)
+    } else if (! missing(text)) {
+        text
+    } else {
+        stop('Missing argument')
+    }
+
 
     local({
         p = pipe(paste(cmd, '>', output_file), 'w')
