@@ -1,20 +1,28 @@
+r_cmdline = function (cmd, args = '') {
+    in_tests = grepl('tests/testthat$', getwd())
+    rprofile = file.path(if (in_tests) '..' else 'tests', 'rprofile.r')
+    args = c('--no-save', '--no-restore', args)
+    sprintf('R_OLD_PROFILE_USER="$R_PROFILE_USER" R_PROFILE_USER="%s" %s %s',
+            rprofile, cmd, paste(args, collapse = ' '))
+}
+
 rcmd = function (script_path) {
-    cmd = 'R CMD BATCH --slave --no-restore --no-save --no-timing'
-    output_file = 'output.rout'
+    cmd = r_cmdline('R CMD BATCH', c('--slave', '--no-timing'))
+    output_file = tempfile(fileext = '.rout')
     on.exit(unlink(output_file))
     system(paste(cmd, script_path, output_file))
     readLines(output_file)
 }
 
 rscript = function (script_path) {
-    cmd = 'Rscript --slave --no-restore --no-save'
+    cmd = r_cmdline('Rscript', '--slave')
     p = pipe(paste(cmd, script_path))
     on.exit(close(p))
     readLines(p)
 }
 
 interactive_r = function (script_path, text, code) {
-    cmd = 'R --interactive --no-restore --no-save'
+    cmd = r_cmdline('R --interactive')
     output_file = tempfile(fileext = '.rout')
     on.exit(unlink(output_file))
 
