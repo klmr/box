@@ -4,7 +4,7 @@ test_that('module_file works in global namespace', {
     expect_that(module_file(), equals(getwd()))
     expect_true(nchar(module_file('run-all.r')) > 0)
     expect_that(module_file('XXX-does-not-exist', mustWork = TRUE),
-                throws_error('no file found'))
+                throws_error('File not found'))
 })
 
 test_that('module_file works for module', {
