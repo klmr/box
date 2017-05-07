@@ -1,6 +1,6 @@
 r_cmdline = function (cmd, args = '') {
     in_tests = grepl('tests/testthat$', getwd())
-    rprofile = file.path(if (in_tests) '..' else 'tests', 'rprofile.r')
+    rprofile = file.path(if (in_tests) '.' else 'tests/testthat', 'support', 'rprofile.r')
     args = c('--no-save', '--no-restore', args)
     sprintf('R_OLD_PROFILE_USER="$R_PROFILE_USER" R_PROFILE_USER="%s" %s %s',
             rprofile, cmd, paste(args, collapse = ' '))
