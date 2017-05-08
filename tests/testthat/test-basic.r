@@ -10,6 +10,7 @@ test_that('import works in global namespace', {
     local({
         a = import('a')
         unload(a) # To get rid of attached operators.
+        expect_true(FALSE, 'FIXME: missing test')
     }, envir = .GlobalEnv)
 })
 
