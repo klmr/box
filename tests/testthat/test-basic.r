@@ -9,8 +9,9 @@ test_that('module can be imported', {
 test_that('import works in global namespace', {
     local({
         a = import('a')
-        unload(a) # To get rid of attached operators.
-        expect_true(FALSE, 'FIXME: missing test')
+        on.exit(unload(a)) # To get rid of attached operators.
+        expect_true(is_module_loaded(module_path(a)))
+        expect_true('double' %in% ls(a))
     }, envir = .GlobalEnv)
 })
 
