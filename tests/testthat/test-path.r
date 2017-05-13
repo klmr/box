@@ -52,8 +52,7 @@ test_that('module_file works after attaching modules', {
 })
 
 test_that('regression #76 is fixed', {
-    expect_that({x = import('issue76')},
-        not(throws_error('could not find function "helper"')))
+    expect_error((x = import('issue76')), NA)
     expect_that(x$helper_var, equals(3))
 })
 
@@ -82,8 +81,7 @@ test_that('‹modules› is attached inside modules', {
                 throws_error('could not find function "module_name"'))
 
     # Verify that using ‹modules› functions inside module still works.
-    expect_that((result = capture.output(import('issue44'))),
-                not(throws_error('could not find function "module_name"')))
+    expect_error((result = capture.output(import('issue44'))), NA)
     expect_that(result, equals('issue44'))
 })
 

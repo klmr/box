@@ -32,8 +32,8 @@ test_that('can use imported function', {
 
 test_that('modules export all objects', {
     a = import('a')
-    expect_more_than(length(lsf.str(a)), 0)
-    expect_more_than(length(ls(a)), length(lsf.str(a)))
+    expect_gt(length(lsf.str(a)), 0)
+    expect_gt(length(ls(a)), length(lsf.str(a)))
     a_namespace = environment(a$double)
     expect_that(a$counter, equals(1))
 })
