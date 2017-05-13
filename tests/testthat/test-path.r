@@ -2,7 +2,7 @@ context('Find module path relative files')
 
 test_that('module_file works in global namespace', {
     expect_that(module_file(), equals(getwd()))
-    expect_true(nchar(module_file('run-all.r')) > 0)
+    expect_true(nchar(module_file('test-path.r')) > 0)
     expect_that(module_file('XXX-does-not-exist', mustWork = TRUE),
                 throws_error('File not found'))
 })
