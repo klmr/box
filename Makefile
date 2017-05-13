@@ -30,6 +30,9 @@ update-master:
 test:
 	${rscript} -e "devtools::test()"
 
+test-%:
+	${rscript} -e "devtools::test(filter = '$*')"
+
 .PHONY: vignettes
 ## Compile all vignettes and other R Markdown articles
 vignettes: knit_all
