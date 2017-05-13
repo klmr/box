@@ -96,7 +96,7 @@ module_init_files = function (module, module_path) {
     # only `a/b/__init__.r` gets executed, not `a/__init__.r`.
 
     path_prefix = function (i, parts)
-        paste(parts[1 : i], collapse = '.')
+        paste(parts[seq_len(i)], collapse = '.')
 
     partials = seq_along(module_parts)
     partials = setNames(partials, sapply(partials, path_prefix, module_parts))
@@ -107,10 +107,10 @@ module_init_files = function (module, module_path) {
 
     all_prefixes = unlist(sapply(partials, build_prefix))
 
-    if (length(all_prefixes) != length(module_parts))
+    if (is.null(all_prefixes) || length(all_prefixes) != length(module_parts))
         NULL
     else
-        all_prefixes
+        setNames(normalizePath(all_prefixes), names(all_prefixes))
 }
 
 #' Return the import module search path
