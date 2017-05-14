@@ -19,12 +19,12 @@ test_that('module_name works after attaching modules', {
     # Test that #66 is fixed and that there are no regressions.
 
     a = import('a', attach = TRUE)
-    expect_that(module_name(), is_null())
+    expect_null(module_name())
 
     local({
         a = import('a', attach = TRUE)
         on.exit(unload(a))
-        expect_that(module_name(), is_null())
+        expect_null(module_name())
     }, envir = .GlobalEnv)
 
     x = import('mod_name')

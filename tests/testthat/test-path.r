@@ -2,9 +2,11 @@ context('Find module path relative files')
 
 test_that('module_file works in global namespace', {
     expect_that(module_file(), equals(getwd()))
-    expect_true(nchar(module_file('run-all.r')) > 0)
+    this_file = (function() getSrcFilename(sys.call(sys.nframe())))()
+    expect_true(nzchar(this_file)) # Just to make sure.
+    expect_true(nchar(module_file(this_file)) > 0)
     expect_that(module_file('XXX-does-not-exist', mustWork = TRUE),
-                throws_error('no file found'))
+                throws_error('File not found'))
 })
 
 test_that('module_file works for module', {
@@ -13,48 +15,6 @@ test_that('module_file works for module', {
     expect_true(grepl('/c\\.r$', module_file('c.r', module = a)))
     expect_that(length(module_file(c('b', 'c.r'), module = a)), equals(2))
 })
-
-rcmd = function (script_path) {
-    cmd = 'R CMD BATCH --slave --vanilla --no-restore --no-save --no-timing'
-    output_file = 'output.rout'
-    on.exit(unlink(output_file))
-    system(paste(cmd, script_path, output_file))
-    readLines(output_file)
-}
-
-rscript = function (script_path) {
-    cmd = 'Rscript --slave --vanilla --no-restore --no-save'
-    p = pipe(paste(cmd, script_path))
-    on.exit(close(p))
-    readLines(p)
-}
-
-interactive_r = function (script_path) {
-    cmd = 'R --vanilla --interactive'
-    output_file = 'output.rout'
-    on.exit(unlink(output_file))
-
-    local({
-        p = pipe(paste(cmd, '>', output_file), 'w')
-        on.exit(close(p))
-        writeLines(readLines(script_path), p)
-        writeLines('interactive()', p)
-    })
-
-    result = readLines(output_file)
-
-    check_line = function (which, expected)
-        if (! identical(result[which], expected))
-            stop('Unexpected value ', sQuote(result[which]), ', expected ',
-                 sQuote(expected), ' in `interactive_r`')
-
-    # Ensure that code was actually run interactively.
-    end = length(result)
-    check_line(end - 2, '> interactive()')
-    check_line(end - 1, '[1] TRUE')
-    check_line(end, '> ')
-    result[1 : (end - 3)]
-}
 
 test_that('module_base_path works', {
     # On earlier versions of “devtools”, this test reproducibly segfaulted due
@@ -94,8 +54,7 @@ test_that('module_file works after attaching modules', {
 })
 
 test_that('regression #76 is fixed', {
-    expect_that({x = import('issue76')},
-        not(throws_error('could not find function "helper"')))
+    expect_error((x = import('issue76')), NA)
     expect_that(x$helper_var, equals(3))
 })
 
@@ -124,8 +83,7 @@ test_that('‹modules› is attached inside modules', {
                 throws_error('could not find function "module_name"'))
 
     # Verify that using ‹modules› functions inside module still works.
-    expect_that((result = capture.output(import('issue44'))),
-                not(throws_error('could not find function "module_name"')))
+    expect_error((result = capture.output(import('issue44'))), NA)
     expect_that(result, equals('issue44'))
 })
 

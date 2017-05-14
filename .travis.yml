@@ -3,3 +3,6 @@ language: R
 cache: packages
 
 before_script: make doc
+
+notifications:
+    email: false

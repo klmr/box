@@ -9,7 +9,9 @@ test_that('module can be imported', {
 test_that('import works in global namespace', {
     local({
         a = import('a')
-        unload(a) # To get rid of attached operators.
+        on.exit(unload(a)) # To get rid of attached operators.
+        expect_true(is_module_loaded(module_path(a)))
+        expect_true('double' %in% ls(a))
     }, envir = .GlobalEnv)
 })
 
@@ -18,7 +20,7 @@ test_that('module is uniquely identified by path', {
     ba = import('b/a')
     expect_true(is_module_loaded(module_path(a)))
     expect_true(is_module_loaded(module_path(ba)))
-    expect_that(module_path(a), is_not_identical_to(module_path(ba)))
+    expect_not_identical(module_path(a), module_path(ba))
     expect_true('double' %in% ls(a))
     expect_false('double' %in% ls(ba))
 })
@@ -30,8 +32,8 @@ test_that('can use imported function', {
 
 test_that('modules export all objects', {
     a = import('a')
-    expect_more_than(length(lsf.str(a)), 0)
-    expect_more_than(length(ls(a)), length(lsf.str(a)))
+    expect_gt(length(lsf.str(a)), 0)
+    expect_gt(length(ls(a)), length(lsf.str(a)))
     a_namespace = environment(a$double)
     expect_that(a$counter, equals(1))
 })
