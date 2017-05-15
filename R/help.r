@@ -1,19 +1,20 @@
 parse_documentation = function (module) {
     module_path = module_path(module)
     parsed = list(env = module,
-                  blocks = roxygen2:::parse_file(module_path, module))
+                  blocks = roxygen2:::parse_blocks(module_path, module,
+                                                   registry = roxygen2:::default_tags()))
     roclet = roxygen2::rd_roclet()
-    rdfiles = roxygen2:::roc_process(roclet, parsed, dirname(module_path))
+    rdfiles = roxygen2::roclet_process(roclet, parsed, dirname(module_path))
 
     # Due to aliases, documentation entries may have more than one name.
     # Duplicate the relevant documentation entries to get around this.
     # Unfortunately this makes the relevant code ~7x longer.
-    aliases = lapply(rdfiles, function (rd) unique(rd[[1]]$alias$values))
+    aliases = lapply(rdfiles, function (rd) unique(rd$fields$alias$values))
     doc_for_name = function (name, aliases)
         sapply(aliases, function (.) rdfiles[[name]], simplify = FALSE)
     docs = mapply(doc_for_name, names(aliases), aliases, SIMPLIFY = FALSE)
     formatted = lapply(unlist(docs, recursive = FALSE, use.names = FALSE),
-                       roxygen2:::format.rd_file, wrap = FALSE)
+                       format, wrap = FALSE)
     setNames(formatted, unlist(lapply(docs, names)))
 }
 

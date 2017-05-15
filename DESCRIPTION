@@ -1,6 +1,6 @@
 Package: modules
 Title: Modules for R
-Version: 0.9.5
+Version: 0.9.6
 Author: Konrad Rudolph <konrad.rudolph@gmail.com>
 Maintainer: Konrad Rudolph <konrad.rudolph@gmail.com>
 Description: Create reusable code modules in R. An alternative package
@@ -10,7 +10,7 @@ Depends:
     R (>= 3.0.2)
 Imports:
     tools,
-    roxygen2
+    roxygen2 (>= 6.0.1)
 License: Apache License (== 2.0) | file LICENSE
 LazyData: true
 Encoding: UTF-8

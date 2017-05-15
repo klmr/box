@@ -1,3 +1,6 @@
+* 0.9.6:
+    * Fix broken interaction with Roxygen2 (#103)
+
 * 0.9.5:
     * Locally attach ‹modules› inside modules (#44)
 
