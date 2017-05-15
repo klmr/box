@@ -9,7 +9,7 @@ deploy_source = develop
 all: doc vignettes
 
 .PHONY: deploy
-# Deploy the code with documentation to Github
+## Deploy the code with documentation to Github
 deploy: update-master
 	git add --force NAMESPACE
 	git add --force man
