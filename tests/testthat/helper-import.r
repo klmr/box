@@ -6,11 +6,12 @@ options(import.path = 'modules',
 
 #' Opposite of \code{is_identical_to}
 expect_not_identical = function (object, expected, info = NULL, label = NULL, expected.label = NULL) {
-    lab_act = make_label(object, label)
-    lab_exp = make_label(expected, expected.label)
+    lab_act = testthat::make_label(object, label)
+    lab_exp = testthat::make_label(expected, expected.label)
     ident = identical(object, expected)
 
     msg = if (ident) 'Objects identical' else ''
-    expect(! ident, sprintf('%s identical to %s.\n%s', lab_act, lab_exp, msg),
-           info = info)
+    testthat::expect_false(ident, info = info,
+                           label = sprintf('%s identical to %s.\n%s',
+                                           lab_act, lab_exp, msg))
 }

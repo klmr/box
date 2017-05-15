@@ -54,9 +54,9 @@ normalize_path = function (path) {
 expect_paths_equal = function (actual, expected) {
     actual_norm = realpath(merge_path(actual))
     expected_norm = realpath(expected)
-    expect_equal(actual_norm, expected_norm,
-                 label = deparse(substitute(actual)),
-                 expected.label = deparse(substitute(expected)))
+    testthat::expect_equal(actual_norm, expected_norm,
+                           label = deparse(substitute(actual)),
+                           expected.label = deparse(substitute(expected)))
 }
 
 expect_correct_path_split = function (actual)
