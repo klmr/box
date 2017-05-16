@@ -1,6 +1,6 @@
 parse_documentation = function (module) {
     module_path = module_path(module)
-    roclets = list(roxygen2::rd_roclet())
+    roclets = list(roxygen2::rd_roclet(), export_roclet())
     registry = unlist(lapply(roclets, roxygen2::roclet_tags))
     parsed = list(env = module,
                   blocks = roxygen2:::parse_blocks(module_path, module, registry))
