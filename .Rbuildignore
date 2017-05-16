@@ -6,3 +6,4 @@
 ^README\.md$
 ^printenv\.r$
 ^\.travis\.yml$
+CONTRIBUTING.md

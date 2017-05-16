@@ -143,6 +143,7 @@ split_path = function (path) {
 }
 
 #' \code{merge_path(split_path(path))} is equivalent to \code{path}.
+#' @param components character string vector of path components to merge
 #' @return \code{merge_path} returns a single character string that is
 #' logically equivalent to the \code{path} passed to \code{split_path}.
 #' logically represent \code{path}.

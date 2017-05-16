@@ -42,4 +42,6 @@
 #' @seealso \code{unload}, \code{reload}
 #' @seealso \code{export_submodule}
 #' @seealso \code{register_S3_method}
+#' @importFrom stats setNames
+#' @importFrom utils lsf.str
 NULL
