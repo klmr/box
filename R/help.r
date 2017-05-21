@@ -4,23 +4,27 @@ roxygen2_parse_code = function(file, env, registry) {
 
 parse_documentation = function (module) {
     module_path = module_path(module)
+
     roclets = list(roxygen2::rd_roclet(), export_roclet())
     registry = unlist(lapply(roclets, roxygen2::roclet_tags))
+
     parsed = list(env = module,
                   blocks = roxygen2_parse_code(module_path, module, registry))
-    results = lapply(roclets, roxygen2::roclet_process, parsed, dirname(module_path))
+    results = lapply(roclets, roxygen2::roclet_process,
+                     parsed = parsed, base_path = dirname(module_path))
     rdfiles = results[[1]]
 
     # Due to aliases, documentation entries may have more than one name.
     # Duplicate the relevant documentation entries to get around this.
-    # Unfortunately this makes the relevant code ~7x longer.
     aliases = lapply(rdfiles, function (rd) unique(rd$fields$alias$values))
+
     doc_for_name = function (name, aliases)
-        sapply(aliases, function (.) rdfiles[[name]], simplify = FALSE)
-    docs = mapply(doc_for_name, names(aliases), aliases, SIMPLIFY = FALSE)
-    formatted = lapply(unlist(docs, recursive = FALSE, use.names = FALSE),
-                       format, wrap = FALSE)
-    setNames(formatted, unlist(lapply(docs, names)))
+        # Can’t use `rep` here: `rdfiles[[…]]` is an environment.
+        lapply(aliases, function (.) rdfiles[[name]])
+
+    docs = unlist(Map(doc_for_name, names(aliases), aliases))
+    formatted = lapply(docs, format, wrap = FALSE)
+    setNames(formatted, unlist(aliases))
 }
 
 #' Display module documentation
