@@ -1,9 +1,13 @@
+roxygen2_parse_code = function(file, env, registry) {
+    roxygen2:::parse_blocks(file, env, registry = registry)
+}
+
 parse_documentation = function (module) {
     module_path = module_path(module)
     roclets = list(roxygen2::rd_roclet(), export_roclet())
     registry = unlist(lapply(roclets, roxygen2::roclet_tags))
     parsed = list(env = module,
-                  blocks = roxygen2:::parse_blocks(module_path, module, registry))
+                  blocks = roxygen2_parse_code(module_path, module, registry))
     results = lapply(roclets, roxygen2::roclet_process, parsed, dirname(module_path))
     rdfiles = results[[1]]
 
