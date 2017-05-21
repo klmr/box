@@ -15,16 +15,10 @@ parse_documentation = function (module) {
     rdfiles = results[[1]]
 
     # Due to aliases, documentation entries may have more than one name.
-    # Duplicate the relevant documentation entries to get around this.
     aliases = lapply(rdfiles, function (rd) unique(rd$fields$alias$values))
-
-    doc_for_name = function (name, aliases)
-        # Can’t use `rep` here: `rdfiles[[…]]` is an environment.
-        lapply(aliases, function (.) rdfiles[[name]])
-
-    docs = unlist(Map(doc_for_name, names(aliases), aliases))
-    formatted = lapply(docs, format, wrap = FALSE)
-    setNames(formatted, unlist(aliases))
+    names = rep(names(aliases), lengths(aliases))
+    docs = setNames(rdfiles[names], unlist(aliases))
+    lapply(docs, format, wrap = FALSE)
 }
 
 #' Display module documentation
