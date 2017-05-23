@@ -40,9 +40,6 @@ parse_documentation = function (module) {
 #' module_help(mod$func)
 #' }
 module_help = function (topic, help_type = getOption('help_type', 'text')) {
-    if (help_type != 'text')
-        warning('Only help_type == ', sQuote('text'), ' supported for now.')
-
     topic = substitute(topic)
 
     if (! is_module_help_topic(topic, parent.frame()))
