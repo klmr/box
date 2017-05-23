@@ -58,19 +58,7 @@ module_help = function (topic, help_type = getOption('help_type', 'text')) {
         stop('No documentation available for ', sQuote(object),
              ' in module ', sQuote(module_name), call. = FALSE)
 
-    rd = tools::parse_Rd(textConnection(doc))
-
-    # Taken from utils:::print.help_files_with_topic
-    temp = tools::Rd2txt(rd, out = tempfile('Rtxt'), package = module_name)
-
-    # Patch header line.
-    doc_text = readLines(temp)
-    doc_text[1] = sub('package:', ' module:', doc_text[1])
-    writeLines(doc_text, temp)
-
-    file.show(temp,
-              title = gettextf('R Help on %s', sQuote(as.character(topic))),
-              delete.file = TRUE)
+    display_help(doc, paste0('module:', module_name), help_type)
 }
 
 is_module_help_topic = function (topic, parent)
