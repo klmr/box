@@ -1,3 +1,6 @@
+* 0.9.7:
+    * Support rudimentary HTML help
+
 * 0.9.6:
     * Fix broken interaction with Roxygen2 (#103)
 
