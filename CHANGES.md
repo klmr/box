@@ -1,5 +1,6 @@
 * 0.9.7:
     * Support rudimentary HTML help
+    * Fix `help(package = …)` (#38, #73)
 
 * 0.9.6:
     * Fix broken interaction with Roxygen2 (#103)
