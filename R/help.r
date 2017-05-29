@@ -1,21 +1,24 @@
+roxygen2_parse_code = function(file, env, registry) {
+    roxygen2:::parse_blocks(file, env, registry = registry)
+}
+
 parse_documentation = function (module) {
     module_path = module_path(module)
+
+    roclets = list(roxygen2::rd_roclet(), export_roclet())
+    registry = unlist(lapply(roclets, roxygen2::roclet_tags))
+
     parsed = list(env = module,
-                  blocks = roxygen2:::parse_blocks(module_path, module,
-                                                   registry = roxygen2:::default_tags()))
-    roclet = roxygen2::rd_roclet()
-    rdfiles = roxygen2::roclet_process(roclet, parsed, dirname(module_path))
+                  blocks = roxygen2_parse_code(module_path, module, registry))
+    results = lapply(roclets, roxygen2::roclet_process,
+                     parsed = parsed, base_path = dirname(module_path))
+    rdfiles = results[[1]]
 
     # Due to aliases, documentation entries may have more than one name.
-    # Duplicate the relevant documentation entries to get around this.
-    # Unfortunately this makes the relevant code ~7x longer.
     aliases = lapply(rdfiles, function (rd) unique(rd$fields$alias$values))
-    doc_for_name = function (name, aliases)
-        sapply(aliases, function (.) rdfiles[[name]], simplify = FALSE)
-    docs = mapply(doc_for_name, names(aliases), aliases, SIMPLIFY = FALSE)
-    formatted = lapply(unlist(docs, recursive = FALSE, use.names = FALSE),
-                       format, wrap = FALSE)
-    setNames(formatted, unlist(lapply(docs, names)))
+    names = rep(names(aliases), lengths(aliases))
+    docs = setNames(rdfiles[names], unlist(aliases))
+    lapply(docs, format, wrap = FALSE)
 }
 
 #' Display module documentation
@@ -37,9 +40,6 @@ parse_documentation = function (module) {
 #' module_help(mod$func)
 #' }
 module_help = function (topic, help_type = getOption('help_type', 'text')) {
-    if (help_type != 'text')
-        warning('Only help_type == ', sQuote('text'), ' supported for now.')
-
     topic = substitute(topic)
 
     if (! is_module_help_topic(topic, parent.frame()))
@@ -55,25 +55,28 @@ module_help = function (topic, help_type = getOption('help_type', 'text')) {
         stop('No documentation available for ', sQuote(object),
              ' in module ', sQuote(module_name), call. = FALSE)
 
-    rd = tools::parse_Rd(textConnection(doc))
-
-    # Taken from utils:::print.help_files_with_topic
-    temp = tools::Rd2txt(rd, out = tempfile('Rtxt'), package = module_name)
-
-    # Patch header line.
-    doc_text = readLines(temp)
-    doc_text[1] = sub('package:', ' module:', doc_text[1])
-    writeLines(doc_text, temp)
-
-    file.show(temp,
-              title = gettextf('R Help on %s', sQuote(as.character(topic))),
-              delete.file = TRUE)
+    display_help(doc, paste0('module:', module_name), help_type)
 }
 
-is_module_help_topic = function (topic, parent)
-    is.call(topic) && topic[[1]] == '$' &&
-    exists(as.character(topic[[2]]), parent) &&
-    ! is.null(module_name(get(as.character(topic[[2]]), parent)))
+is_module_help_topic = function (topic, parent) {
+    # For nested modules, `topic` looks like this: `a$b$c…`. We need to retrieve
+    # the first part of this (`a`) and check whether it’s a module.
+
+    leftmost_name = function (expr) {
+        if (is.name(expr))
+            expr
+        else if (! is.call(expr) || expr[[1]] != '$')
+            NULL
+        else
+            leftmost_name(expr[[2]])
+    }
+
+    top_module = leftmost_name(topic)
+
+    ! is.null(top_module) &&
+        exists(as.character(top_module), parent) &&
+        ! is.null(module_name(get(as.character(top_module), parent)))
+}
 
 #' @usage
 #' # ?module$function
@@ -102,7 +105,8 @@ is_module_help_topic = function (topic, parent)
 #' }
 help = function (topic, ...) {
     topic = substitute(topic)
-    delegate = if (is_module_help_topic(topic, parent.frame()))
+    delegate = if (! missing(topic) &&
+                   is_module_help_topic(topic, parent.frame()))
         module_help
     else
         utils::help
