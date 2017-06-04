@@ -36,7 +36,7 @@ test-%:
 .PHONY: vignettes
 ## Compile all vignettes and other R Markdown articles
 vignettes: knit_all
-	${rscript} -e "library(knitr); library(devtools); build_vignettes()"
+	${rscript} -e "devtools::build_vignettes()"
 
 rmd_files=$(wildcard vignettes/*.rmd)
 knit_results=$(patsubst vignettes/%.rmd,inst/doc/%.md,${rmd_files})
@@ -50,7 +50,7 @@ inst/doc:
 	mkdir -p $@
 
 inst/doc/%.md: vignettes/%.rmd | inst/doc
-	${rscript} -e "library(knitr); knit('$<', '$@')"
+	${rscript} -e "rmarkdown::render('$<', output_format = 'md_document', output_file = '$@', output_dir = '$(dir $@)')"
 
 .PHONY: doc
 ## Compile the in-line package documentation
