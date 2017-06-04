@@ -74,7 +74,11 @@ save the resulting dynamic library. There’s no straightforward way of doing
 this, but Rcpp wraps `R CMD SHLIB`.
 
 For the time being, we manually need to trigger compilation by executing the
-[`__install__.r`][install.r] file found in the `inst/demo/rcpp` module path.
+[`__install__.r`][install.r] file found in the `inst/doc/rcpp` module path.
+
+```{r echo=FALSE}
+import('rcpp/__install__')
+```
 
 Once that’s done, the actual module code is easy enough:
 
