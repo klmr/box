@@ -15,9 +15,13 @@ file = 'convolve.cpp'
 # though: while a dependency on Rcpp is fine, it’s not acceptable to limit
 # external language support to C++.
 
-library(Rcpp)
+cache_dir = getOption("rcpp.cache.dir", tempdir())
+cache_dir = path.expand(cache_dir)
+cache_dir = Rcpp:::.sourceCppPlatformCacheDir(cache_dir)
+cache_dir = normalizePath(cache_dir)
+
 context = .Call('sourceCppContext', PACKAGE = 'Rcpp', file, NULL, TRUE,
-                .Platform)
+                cache_dir, .Platform)
 
 # Compile the code
 local({
