@@ -8,7 +8,7 @@ rxescape = function (str)
 
 # C++ source; could potentially be more than one file.
 
-file = 'convolve.cpp'
+file = modules::module_file('convolve.cpp')
 
 # The following uses Rcpp to compile (and later, load) the code. This isn’t
 # necessary, but it helps quite a bit. Ideally this should be generalisable
@@ -52,7 +52,7 @@ patch_r_binding = function () {
 }
 
 # Copy compiled sources and R wrapper code to module directory.
-context$dynlibFilename = normalizePath(file.path(getwd(), rootname(file, 'so')))
+context$dynlibFilename = normalizePath(rootname(file, 'so'), mustWork = FALSE)
 file.copy(context$dynlibPath, context$dynlibFilename)
 patch_r_binding()
 # Make compiled module meta information available to module.
