@@ -1,18 +1,23 @@
 context('Test that modules works with knitr')
 
+check_knitr = function () skip_if_not_installed('knitr')
+
 test_that('modules are found when knitr is not loaded', {
+    check_knitr()
     # Ensure knitr isn’t loaded
     unloadNamespace('knitr')
     expect_that(script_path(), equals(getwd()))
 })
 
 test_that('modules are found when knitr is loaded', {
+    check_knitr()
     loadNamespace('knitr')
     on.exit(unloadNamespace('knitr'))
     expect_that(script_path(), equals(getwd()))
 })
 
 test_that('modules are found inside a knitr document', {
+    check_knitr()
     on.exit(unloadNamespace('knitr'))
 
     input = 'support/knitr/doc.rmd'
