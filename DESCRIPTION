@@ -16,5 +16,6 @@ LazyData: true
 Encoding: UTF-8
 Suggests:
     knitr,
+    rmarkdown
     testthat
 VignetteBuilder: knitr

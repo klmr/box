@@ -1,7 +1,19 @@
-<!--
-%\VignetteEngine{knitr::knitr}
-%\VignetteIndexEntry{Basic usage}
--->
+---
+title: "Basic Usage"
+author: Konrad Rudolph
+output:
+    rmarkdown::html_document:
+        theme: "cerulean"
+        toc: true
+        toc_float:
+            collapsed: false
+        number_sections: true
+        highlight: "tango"
+vignette: >
+    %\VignetteEngine{knitr::rmarkdown}
+    %\VignetteIndexEntry{Basic usage}
+    %\VignetteEncoding{UTF-8}
+---
 ```{r include=FALSE}
 rm(list = ls())
 
@@ -26,9 +38,9 @@ local({
 library(modules, quietly = TRUE, warn.conflicts = FALSE)
 ```
 
-## Basic module usage
+# Basic module usage
 
-### The `seq` module
+## The `seq` module
 
 For the purpose of this tutorial, we are going to use the toy module
 `utils/seq`, which is implemented in the file [`utils/seq.r`](utils/seq.r).
@@ -73,7 +85,7 @@ Notice how we get a pretty-printed,
 seq$print.seq
 ```
 
-### Attaching modules
+## Attaching modules
 
 That’s it for basic usage. In order to understand more about the module
 mechanism, let’s look at an alternative usage:
@@ -132,7 +144,7 @@ the module by default.
 Nevertheless, the normal, recommended usage of a module is with `attach=FALSE`
 (the default), as this makes it clearer which names we are referring to.
 
-### Nested modules
+## Nested modules
 
 Modules can also be nested in hierarchies. In fact, here is the implementation
 of `utils` (in [`utils/__init__.r`](utils/__init__.r): since `utils` is a
@@ -166,7 +178,7 @@ export_submodule('./seq')
 This would have made all of `seq`’s definitions immediately available in
 `utils`. This is sometimes useful, but should be employed with care.
 
-### Implementing modules
+## Implementing modules
 
 `utils/seq.r` is, by and large, a normal R source file. In fact, there are only
 two things worth mentioning:
