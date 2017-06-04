@@ -39,14 +39,14 @@ knitr::knit_hooks$set(file = function (before, options, envir) {
 devtools::load_all()
 ```
 
-# Using *modules* to generate reusable R components
+# Foreign function interface
 
-## Foreign language interface
+Modules don’t have a built-in foreign function interface yet but it is possible
+to integrate C++ code via the excellent [Rcpp][] package.
 
-Modules don’t have a built-in foreign language interface yet but it is possible
-to effortlessly integrate C++ code via the excellent [Rcpp][] package.
+## Ad-hoc compilation
 
-As an example, take a look at the `rcpp` module found under `inst/demo`; the
+As an example, take a look at the `rcpp` module found under `inst/doc`; the
 module consists of a C++ source file which is loaded inside the `__init__.r`
 file:
 
@@ -66,7 +66,7 @@ ls(rcpp)
 rcpp$convolve(1 : 3, 1 : 5)
 ```
 
----
+## Ahead-of-time compilation
 
 Unfortunately, this has a rather glaring flaw: the code is recompiled for each
 new R session. In order to avoid this, we need to compile the code *once* and
