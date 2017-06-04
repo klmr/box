@@ -45,7 +45,7 @@ is_S3_user_generic = function (function_name, envir = parent.frame()) {
         if (length(b) == 0)
             return(FALSE)
         if (is.call(b)) {
-            if (b[[1]] == 'UseMethod')
+            if (is.name(b[[1]]) && b[[1]] == 'UseMethod')
                 return(TRUE)
             return(is_S3(as.list(b)[-1]))
         }
