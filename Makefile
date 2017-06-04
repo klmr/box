@@ -13,6 +13,7 @@ all: doc vignettes
 deploy: update-master
 	git add --force NAMESPACE
 	git add --force man
+	git add --force inst/doc
 	git commit --message Deployment
 	git push --force ${deploy_remote} ${deploy_branch}
 	git checkout ${deploy_source}
