@@ -1,3 +1,22 @@
+---
+title: "Foreign function interface"
+author: Konrad Rudolph
+date: "`r Sys.Date()`"
+output:
+    rmarkdown::html_document:
+        theme: "cerulean"
+        toc: true
+        toc_float:
+            collapsed: false
+        number_sections: true
+        highlight: "tango"
+    md_document:
+        variant: markdown_github
+vignette: >
+    %\VignetteEngine{knitr::rmarkdown}
+    %\VignetteIndexEntry{Foreign function interface}
+    %\VignetteEncoding{UTF-8}
+---
 ```{r include=FALSE}
 options(import.path = 'inst/demo')
 
@@ -8,10 +27,16 @@ source_file = function (path, language) {
     sprintf('```%s\n%s\n```', language, code)
 }
 
-knit_hooks$set(file = function (before, options, envir)
-    if (! before)
-        source_file(file.path('inst/demo', options$file), options$lang)
-)
+knitr::knit_hooks$set(file = function (before, options, envir) {
+    if (! before) {
+        # Necessary because this file is built both as vignette and
+        # independent, and this happens from different working directories.
+        path_prefix = if (grepl('vignettes$', getwd())) '.' else 'vignettes'
+        source_file(file.path(path_prefix, options$file), options$lang)
+    }
+})
+
+devtools::load_all()
 ```
 
 # Using *modules* to generate reusable R components
