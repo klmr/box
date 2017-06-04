@@ -2,7 +2,7 @@
 # turn, loads the compiled module via `dyn.load`.
 load_dynamic = function (prefix) {
     load(module_file(sprintf('%s.rdata', prefix)))
-    source(context$rSourceFile, local = parent.frame())
+    source(context$rSourceFilename, local = parent.frame())
 }
 
 load_dynamic('convolve')

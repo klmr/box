@@ -41,10 +41,10 @@ local({
 })
 
 patch_r_binding = function () {
-    source_file = file.path(context$buildDirectory, context$rSourceFile)
+    source_file = file.path(context$buildDirectory, context$rSourceFilename)
     source = readLines(source_file)
     source = gsub(rxescape(context$dynlibPath), context$dynlibFilename, source)
-    writeLines(source, context$rSourceFile)
+    writeLines(source, context$rSourceFilename)
 }
 
 # Copy compiled sources and R wrapper code to module directory.
