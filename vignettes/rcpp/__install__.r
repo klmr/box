@@ -56,4 +56,4 @@ context$dynlibFilename = normalizePath(rootname(file, 'so'), mustWork = FALSE)
 file.copy(context$dynlibPath, context$dynlibFilename)
 patch_r_binding()
 # Make compiled module meta information available to module.
-save(context, file = rootname(file, 'rdata'))
+saveRDS(context, file = rootname(file, 'rds'))
