@@ -9,6 +9,8 @@ output:
             collapsed: false
         number_sections: true
         highlight: "tango"
+    md_document:
+        variant: markdown_github
 vignette: >
     %\VignetteEngine{knitr::rmarkdown}
     %\VignetteIndexEntry{Basic usage}
