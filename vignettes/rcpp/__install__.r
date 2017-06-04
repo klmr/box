@@ -8,16 +8,20 @@ rxescape = function (str)
 
 # C++ source; could potentially be more than one file.
 
-file = 'convolve.cpp'
+file = modules::module_file('convolve.cpp')
 
 # The following uses Rcpp to compile (and later, load) the code. This isn’t
 # necessary, but it helps quite a bit. Ideally this should be generalisable
 # though: while a dependency on Rcpp is fine, it’s not acceptable to limit
 # external language support to C++.
 
-library(Rcpp)
+cache_dir = getOption("rcpp.cache.dir", tempdir())
+cache_dir = path.expand(cache_dir)
+cache_dir = Rcpp:::.sourceCppPlatformCacheDir(cache_dir)
+cache_dir = normalizePath(cache_dir)
+
 context = .Call('sourceCppContext', PACKAGE = 'Rcpp', file, NULL, TRUE,
-                .Platform)
+                cache_dir, .Platform)
 
 # Compile the code
 local({
@@ -41,15 +45,15 @@ local({
 })
 
 patch_r_binding = function () {
-    source_file = file.path(context$buildDirectory, context$rSourceFile)
+    source_file = file.path(context$buildDirectory, context$rSourceFilename)
     source = readLines(source_file)
     source = gsub(rxescape(context$dynlibPath), context$dynlibFilename, source)
-    writeLines(source, context$rSourceFile)
+    writeLines(source, context$rSourceFilename)
 }
 
 # Copy compiled sources and R wrapper code to module directory.
-context$dynlibFilename = normalizePath(file.path(getwd(), rootname(file, 'so')))
+context$dynlibFilename = normalizePath(rootname(file, 'so'), mustWork = FALSE)
 file.copy(context$dynlibPath, context$dynlibFilename)
 patch_r_binding()
 # Make compiled module meta information available to module.
-save(context, file = rootname(file, 'rdata'))
+saveRDS(context, file = rootname(file, 'rds'))
