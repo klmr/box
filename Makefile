@@ -1,9 +1,9 @@
 rscript = Rscript --no-save --no-restore
 
 # Deployment configuration
-deploy_remote = origin
-deploy_branch = master
-deploy_source = develop
+deploy_remote ?= origin
+deploy_branch ?= master
+deploy_source ?= develop
 
 .PHONY: all
 all: doc vignettes
