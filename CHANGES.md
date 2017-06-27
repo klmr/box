@@ -1,3 +1,6 @@
+* 0.9.8:
+    * Fix missing S3 methods bug (#117)
+
 * 0.9.7:
     * Support rudimentary HTML help
     * Fix `help(package = …)` (#38, #73)
