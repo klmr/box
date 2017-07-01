@@ -265,7 +265,8 @@ do_import = function (module_name, module_path, doc) {
 export_operators = function (environment, parent, module_name) {
     ops = c('+', '-', '*', '/', '^', '**', '&', '|', ':', '::', ':::', '$',
             '$<-', '=', '<-', '<<-', '==', '<', '<=', '>', '>=', '!=', '~',
-            '&&', '||', '!', '?', '@', '@<-', ':=')
+            '&&', '||', '!', '?', '@', '@<-', ':=', '(', '{', '[', '[[', '(<-',
+            '{<-', '[<-')
 
     is_predefined = function (f) f %in% ops
 
