@@ -41,8 +41,8 @@ interactive_r(code = {
     )
 
     record = RecordReporter$new()
-    test_file('test-basic.r', reporter = record)
-    saveRDS(record$get_events(), 'test_results.rds')
+    tryCatch(test_file('test-basic.r', reporter = record),
+             finally = saveRDS(record$get_events(), 'test_results.rds'))
 })
 
 record_events = readRDS('test_results.rds')
