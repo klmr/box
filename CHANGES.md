@@ -1,5 +1,6 @@
 * 0.9.8:
     * Fix missing S3 methods bug (#117)
+    * Fix missing exported operators (#93)
 
 * 0.9.7:
     * Support rudimentary HTML help
