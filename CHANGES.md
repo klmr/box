@@ -1,3 +1,6 @@
+* 0.9.9:
+    * Fix `module_file` argument check (#90)
+
 * 0.9.8:
     * Fix missing S3 methods bug (#117)
     * Fix missing exported operators (#93)
