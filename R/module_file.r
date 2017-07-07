@@ -18,7 +18,7 @@
 module_file = function (..., module = parent.frame(), mustWork = FALSE) {
     module_path = module_base_path(module)
 
-    if (nargs() == 0)
+    if (length(list(...)) == 0)
         return(module_path)
 
     paths = file.path(module_path, ...)
