@@ -16,7 +16,7 @@
 #' \dontrun{
 #' # In module a:
 #' print.my_class = function (x) {
-#'     cat(sprintf('My class with field %s\n', x$field))
+#'     message(sprintf('My class with field %s\n', x$field))
 #'     invisible(x)
 #' }
 #'

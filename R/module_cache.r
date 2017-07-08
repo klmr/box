@@ -185,11 +185,11 @@ shiny_path = function () {
 #' invoked directly.
 #' @examples
 #' \dontrun{
-#' cat('This code is always executed.\n')
+#' message('This code is always executed.\n')
 #'
 #' if (is.null(module_name())) {
-#'     cat('This code is only executed when the module is run
-#'         as stand-alone code via Rscript or R CMD BATCH.\n')
+#'     message('This code is only executed when the module is run
+#'              as stand-alone code via Rscript or R CMD BATCH.\n')
 #' }
 #' }
 #' @export
