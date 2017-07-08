@@ -13,7 +13,7 @@
 #' This function is similar to \code{system.file} for packages. It is provided
 #' as a separate function rather than overriding \code{system.file} because that
 #' would cause ambiguity when a module and a package share the same name.
-#' @seealso \code{base::system.file}
+#' @seealso \code{\link[base]{system.file}}
 #' @export
 module_file = function (..., module = parent.frame(), mustWork = FALSE) {
     module_path = module_base_path(module)

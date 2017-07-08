@@ -21,7 +21,6 @@ exhibit_namespace = function (objects, name, path, doc, parent) {
     structure(env, name = name, doc = doc, class = class)
 }
 
-#' 
 #' \code{exhibit_module_namespace} exports a namespace for a module.
 #' @rdname exhibit_namespace
 exhibit_module_namespace = function (namespace, name, parent, export_list) {
@@ -42,7 +41,6 @@ exhibit_module_namespace = function (namespace, name, parent, export_list) {
                       parent)
 }
 
-#' 
 #' \code{exhibit_package_namespace} exports a namespace for a package.
 #' @rdname exhibit_namespace
 exhibit_package_namespace = function (namespace, name, parent, export_list) {
