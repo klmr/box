@@ -1,5 +1,6 @@
 * 0.9.9:
     * Fix `module_file` argument check (#90)
+    * Add clickable links to “See also” section in documentation (#56)
 
 * 0.9.8:
     * Fix missing S3 methods bug (#117)
