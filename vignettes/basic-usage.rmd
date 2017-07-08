@@ -19,6 +19,7 @@ vignette: >
 ---
 ```{r include=FALSE}
 devtools::load_all()
+import('source-file')
 ```
 
 # Basic module usage
