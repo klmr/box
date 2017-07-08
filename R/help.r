@@ -91,8 +91,13 @@ is_module_help_topic = function (topic, parent) {
     topic = substitute(e1)
     if (missing(e2) && is_module_help_topic(topic, parent.frame()))
         eval(call('module_help', topic), envir = parent.frame())
-    else
-        eval(`[[<-`(match.call(), 1, utils::`?`), envir = parent.frame())
+    else {
+        delegate = if ('devtools_shims' %in% search())
+            get('?', pos = 'devtools_shims')
+        else
+            utils::`?`
+        eval(`[[<-`(match.call(), 1, delegate), envir = parent.frame())
+    }
 }
 
 #' @usage
@@ -106,9 +111,12 @@ is_module_help_topic = function (topic, parent) {
 help = function (topic, ...) {
     topic = substitute(topic)
     delegate = if (! missing(topic) &&
-                   is_module_help_topic(topic, parent.frame()))
+                   is_module_help_topic(topic, parent.frame())) {
         module_help
-    else
+    } else if ('devtools_shims' %in% search()) {
+        get('help', pos = 'devtools_shims')
+    } else {
         utils::help
+    }
     eval(`[[<-`(match.call(), 1, delegate), envir = parent.frame())
 }

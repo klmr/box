@@ -2,6 +2,7 @@
     * Fix `module_file` argument check (#90)
     * Add clickable links to “See also” section in documentation (#56)
     * Fix a regression in the “basic-usage” vignette (#122)
+    * Dispatch calls to `` `?` `` and `help` to devtools, if necessary (#34)
 
 * 0.9.8:
     * Fix missing S3 methods bug (#117)
