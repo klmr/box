@@ -152,6 +152,9 @@ knitr_path = function () {
 }
 
 shiny_path = function () {
+    if (! 'shiny' %in% loadedNamespaces())
+        return(NULL)
+
     # Look for `runApp` call somewhere in the call stack.
     frames = sys.frames()
     calls = lapply(sys.calls(), `[[`, 1)
