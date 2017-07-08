@@ -65,10 +65,10 @@
 #' f()
 #' g()
 #' }
-#' @seealso \code{unload}
-#' @seealso \code{reload}
-#' @seealso \code{module_name}
-#' @seealso \code{module_help}
+#' @seealso \code{\link{unload}}
+#' @seealso \code{\link{reload}}
+#' @seealso \code{\link{module_name}}
+#' @seealso \code{\link{module_help}}
 #' @export
 #' @rdname import
 import_ = function (module, attach, attach_operators = TRUE, doc) {
@@ -305,8 +305,8 @@ export_operators = function (environment, parent, module_name) {
 #' \code{unload} comes with a few restrictions. It attempts to detach itself
 #' if it was previously attached. This only works if it is called in the same
 #' scope as the original \code{import}.
-#' @seealso \code{import}
-#' @seealso \code{reload}
+#' @seealso \code{\link{import}}
+#' @seealso \code{\link{reload}}
 #' @export
 unload = function (module) {
     stopifnot(inherits(module, 'module'))
@@ -332,8 +332,8 @@ unload = function (module) {
 #' \code{reload} comes with a few restrictions. It attempts to re-attach itself
 #' in parts or whole if it was previously attached in parts or whole. This only
 #' works if it is called in the same scope as the original \code{import}.
-#' @seealso \code{import}
-#' @seealso \code{unload}
+#' @seealso \code{\link{import}}
+#' @seealso \code{\link{unload}}
 #' @export
 reload = function (module) {
     stopifnot(inherits(module, 'module'))

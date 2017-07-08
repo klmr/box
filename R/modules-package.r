@@ -35,13 +35,13 @@
 #'
 #' @name modules
 #' @docType package
-#' @seealso \code{import}
-#' @seealso \code{import_package}
-#' @seealso \code{module_name}
-#' @seealso \code{module_file}
-#' @seealso \code{unload}, \code{reload}
-#' @seealso \code{export_submodule}
-#' @seealso \code{register_S3_method}
+#' @seealso \code{\link{import}}
+#' @seealso \code{\link{import_package}}
+#' @seealso \code{\link{module_name}}
+#' @seealso \code{\link{module_file}}
+#' @seealso \code{\link{unload}}, \code{\link{reload}}
+#' @seealso \code{\link{export_submodule}}
+#' @seealso \code{\link{register_S3_method}}
 #' @importFrom stats setNames
 #' @importFrom utils lsf.str
 NULL
