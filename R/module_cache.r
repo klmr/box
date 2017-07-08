@@ -7,35 +7,30 @@
 #' Yet these may be loaded at the same time and need to be distinguished.
 loaded_modules = new.env(parent = emptyenv())
 
-#' 
 #' \code{is_module_loaded} tests whether a module is already lodaded
 #' @param module_path fully resolved module path
 #' @rdname loaded_modules
 is_module_loaded = function (module_path)
     exists(module_path, envir = loaded_modules, inherits = FALSE)
 
-#' 
 #' \code{cache_module} caches a module namespace and marks the module as loaded.
 #' @param module_ns module namespace environment
 #' @rdname loaded_modules
 cache_module = function (module_ns)
     assign(module_path(module_ns), module_ns, envir = loaded_modules)
 
-#' 
 #' \code{uncache_module} removes a module namespace from the cache, unloading
 #' the module from memory.
 #' @rdname loaded_modules
 uncache_module = function (module_ns)
     rm(list = module_path(module_ns), envir = loaded_modules)
 
-#' 
 #' \code{clear_modules_cache} unloads all loaded modules from the cache.
 #' @rdname loaded_modules
 clear_modules_cache = function ()
     rm(list = ls(envir = loaded_modules, all.names = TRUE),
        envir = loaded_modules)
 
-#' 
 #' \code{get_loaded_module} returns a loaded module, identified by its path,
 #' from cache.
 #' @rdname loaded_modules
@@ -50,7 +45,6 @@ get_loaded_module = function (module_path)
 module_attributes = function (module)
     get('.__module__.', module, mode = 'environment', inherits = TRUE)
 
-#' 
 #' @param value the attributes to assign
 #' @rdname module_attributes
 `module_attributes<-` = function (module, value) {
@@ -58,7 +52,6 @@ module_attributes = function (module)
     module
 }
 
-#' 
 #' \code{module_attr} reads or assigns a single attribute associated with a
 #' module.
 #' @param attr the attribute name
@@ -66,7 +59,6 @@ module_attributes = function (module)
 module_attr = function (module, attr)
     get(attr, module_attributes(module))
 
-#' 
 #' @rdname module_attributes
 `module_attr<-` = function (module, attr, value) {
     if (! exists('.__module__.', module, mode = 'environment', inherits = FALSE))
