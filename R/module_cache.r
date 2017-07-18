@@ -160,22 +160,10 @@ knitr_path = function () {
 }
 
 shiny_path = function () {
-    # Look for `runApp` call somewhere in the call stack.
-    frames = sys.frames()
-    calls = lapply(sys.calls(), `[[`, 1)
-    call_name = function (call)
-        if (is.function(call)) '<closure>' else deparse(call)
-    call_names = vapply(calls, call_name, character(1))
-
-    target_call = grep('^runApp$', call_names)
-
-    if (length(target_call) == 0)
-        return(NULL)
-
-    target_frame = frames[[target_call]]
-    namespace_frame = parent.env(target_frame)
-    if(isNamespace(namespace_frame) && environmentName(namespace_frame) == 'shiny')
+    if ('shiny' %in% loadedNamespaces() && shiny::isRunning())
         getwd()
+    else
+        NULL
 }
 
 #' Get a module’s name
