@@ -58,7 +58,9 @@ inst/doc/%.md: vignettes/%.rmd | inst/doc
 .PHONY: doc
 ## Compile the in-line package documentation
 doc:
-	${rscript} -e "library(devtools); document()"
+# Note: this needs to be run twice to generate correct S3 exports; see
+# <https://github.com/hadley/devtools/issues/1585>
+	${rscript} -e "library(devtools); document(); document()"
 
 ## Clean up all build files
 cleanall:
