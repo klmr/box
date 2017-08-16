@@ -64,6 +64,7 @@ doc:
 cleanall:
 	${RM} -r inst/doc
 	${RM} -r man
+	${RM} NAMESPACE
 
 .DEFAULT_GOAL := show-help
 # See <https://gist.github.com/klmr/575726c7e05d8780505a> for explanation.
