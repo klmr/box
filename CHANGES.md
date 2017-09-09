@@ -3,6 +3,8 @@
     * Add clickable links to “See also” section in documentation (#56)
     * Fix a regression in the “basic-usage” vignette (#122)
     * Dispatch calls to `` `?` `` and `help` to devtools, if necessary (#34)
+    * Run `document` twice to ensure S3 exports are correctly generated (#117,
+      hadley/devtools#1585)
     * Make Shiny runtime test more robust (#69)
 
 * 0.9.8:
