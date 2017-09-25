@@ -152,7 +152,7 @@ knitr_path = function () {
 }
 
 shiny_path = function () {
-    if ('shiny' in loadedNamespaces() && shiny::isRunning())
+    if ('shiny' %in% loadedNamespaces() && shiny::isRunning())
         getwd()
     else
         NULL

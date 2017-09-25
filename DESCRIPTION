@@ -17,5 +17,5 @@ Encoding: UTF-8
 Suggests:
     knitr,
     rmarkdown,
-    testthat
+    testthat (>= 1.0.2.9000)
 VignetteBuilder: knitr
