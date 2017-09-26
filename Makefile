@@ -22,7 +22,7 @@ deploy: update-master
 .PHONY: update-master
 update-master:
 	git checkout ${deploy_source}
-	git branch --delete --force ${deploy_branch}
+	-git branch --delete --force ${deploy_branch}
 	git checkout -b ${deploy_branch}
 	${MAKE} doc vignettes
 
