@@ -5,6 +5,7 @@
     * Dispatch calls to `` `?` `` and `help` to devtools, if necessary (#34)
     * Run `document` twice to ensure S3 exports are correctly generated (#117,
       hadley/devtools#1585)
+    * Make Shiny runtime test more robust (#69)
     * Fix crash in S3 recognition when function bodies have been substituted at
       runtime (#125)
 
