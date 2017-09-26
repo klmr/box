@@ -61,3 +61,7 @@ test_that('Forwarded S3 genetics without methods work', {
     expect_that(s3_b$test(1), equals('test.default'))
     expect_that(s3_b$test('a'), equals('test.character'))
 })
+
+test_that('`is_S3_user_generic` can deal with substituted functions', {
+    expect_error(import('issue125'), regexp = NA)
+})

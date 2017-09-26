@@ -6,6 +6,8 @@
     * Run `document` twice to ensure S3 exports are correctly generated (#117,
       hadley/devtools#1585)
     * Make Shiny runtime test more robust (#69)
+    * Fix crash in S3 recognition when function bodies have been substituted at
+      runtime (#125)
 
 * 0.9.8:
     * Fix missing S3 methods bug (#117)
