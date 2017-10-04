@@ -7,6 +7,7 @@
 #' @return \code{a \%||\% b} returns \code{a}, unless it is \code{NA},
 #' \code{NULL}, \code{FALSE} or \code{""}; in which case \code{b} is returned.
 #' @name default
+#' @keywords internal
 `%||%` = function (a, b) {
     is_false = function (a) is.logical(a) && ! isTRUE(a)
     is_empty = function (a) is.character(a) && ! nzchar(a)
