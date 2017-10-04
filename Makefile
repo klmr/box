@@ -34,6 +34,11 @@ test:
 test-%:
 	${rscript} -e "devtools::test(filter = '$*')"
 
+.PHONY: check
+## Run R CMD CHECK
+check:
+	${rscript} -e "devtools::check()"
+
 .PHONY: vignettes
 ## Compile all vignettes and other R Markdown articles
 vignettes: knit_all
