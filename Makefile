@@ -37,7 +37,8 @@ test-%:
 .PHONY: check
 ## Run R CMD CHECK
 check:
-	${rscript} -e "devtools::check()"
+	mkdir -p check
+	${rscript} -e "devtools::check(check_dir = 'check')"
 
 .PHONY: vignettes
 ## Compile all vignettes and other R Markdown articles
