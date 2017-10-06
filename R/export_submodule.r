@@ -28,6 +28,7 @@ export_submodule_ = function (submodule) {
     invisible(lapply(ls(module), expose_single))
 }
 
+#' @rdname export_submodule
 export_submodule = function (submodule) {
     call = `[[<-`(sys.call(), 1, quote(export_submodule_))
     if (! inherits(substitute(submodule), 'character')) {
