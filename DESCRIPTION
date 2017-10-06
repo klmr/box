@@ -15,7 +15,12 @@ License: Apache License (== 2.0) | file LICENSE
 LazyData: true
 Encoding: UTF-8
 Suggests:
+    devtools,
     knitr,
     rmarkdown,
+    shiny,
     testthat (>= 1.0.2.9000)
+Remotes:
+    hadley/testthat
+    klutometis/roxygen
 VignetteBuilder: knitr

@@ -48,7 +48,7 @@ display_help_file.html_help_format = function (x, file, topic) {
     dir.create(dirname(html_path), recursive = TRUE, showWarnings = FALSE)
     on.exit(unlink(file))
     file.copy(file, html_path, overwrite = TRUE)
-    browseURL(sprintf('http://127.0.0.1:%s/doc/html/%s.html', port, topic))
+    utils::browseURL(sprintf('http://127.0.0.1:%s/doc/html/%s.html', port, topic))
 }
 
 display_help = function (help_text, title, format = c('text', 'html')) {
