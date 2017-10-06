@@ -6,14 +6,14 @@ test_that('modules are found when knitr is not loaded', {
     check_knitr()
     # Ensure knitr isn’t loaded
     unloadNamespace('knitr')
-    expect_that(script_path(), equals(getwd()))
+    expect_paths_equal(script_path(), getwd())
 })
 
 test_that('modules are found when knitr is loaded', {
     check_knitr()
     loadNamespace('knitr')
     on.exit(unloadNamespace('knitr'))
-    expect_that(script_path(), equals(getwd()))
+    expect_paths_equal(script_path(), getwd())
 })
 
 test_that('modules are found inside a knitr document', {
