@@ -23,10 +23,10 @@ test_that('module_base_path works', {
     script_path = 'modules/d.r'
 
     rcmd_result = rcmd(script_path)
-    expect_that(rcmd_result, equals(file.path(getwd(), 'modules')))
+    expect_paths_equal(rcmd_result, file.path(getwd(), 'modules'))
 
     rscript_result = rscript(script_path)
-    expect_that(rscript_result, equals(file.path(getwd(), 'modules')))
+    expect_paths_equal(rscript_result, file.path(getwd(), 'modules'))
 })
 
 test_that('module_file works after attaching modules', {
@@ -34,23 +34,25 @@ test_that('module_file works after attaching modules', {
 
     expected_module_file = module_file()
     import('a', attach = TRUE)
-    expect_that(module_file(), equals(expected_module_file))
+    expect_paths_equal(module_file(), expected_module_file)
 
-    local({
+    modfile = local({
         expected_module_file = module_file()
         a = import('a', attach = TRUE)
         on.exit(unload(a))
-        expect_that(module_file(), equals(expected_module_file))
+        list(actual = module_file(), expected = expected_module_file)
     }, envir = .GlobalEnv)
+
+    expect_paths_equal(modfile$actual, modfile$expected)
 
     x = import('mod_file')
     expected_module_file = file.path(getwd(), 'modules')
-    expect_that(x$this_module_file, equals(expected_module_file))
-    expect_that(x$function_module_file(), equals(expected_module_file))
-    expect_that(x$this_module_file2, equals(expected_module_file))
-    expect_that(x$after_module_attach(), equals(expected_module_file))
-    expect_that(x$after_package_attach(), equals(expected_module_file))
-    expect_that(x$nested_module_file(), equals(expected_module_file))
+    expect_paths_equal(x$this_module_file, expected_module_file)
+    expect_paths_equal(x$function_module_file(), expected_module_file)
+    expect_paths_equal(x$this_module_file2, expected_module_file)
+    expect_paths_equal(x$after_module_attach(), expected_module_file)
+    expect_paths_equal(x$after_package_attach(), expected_module_file)
+    expect_paths_equal(x$nested_module_file(), expected_module_file)
 })
 
 test_that('regression #76 is fixed', {
