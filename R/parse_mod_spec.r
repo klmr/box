@@ -51,6 +51,55 @@ mod_spec = function (...) {
     structure(c(...), class = 'mod$mod_spec')
 }
 
+`print.mod$mod_spec` = function (x, ...) {
+    r_name = function (names) {
+        vapply(
+            names,
+            function (n) deparse(as.name(n), backtick = TRUE),
+            character(1)
+        )
+    }
+
+    format_attach = function (a) {
+        with_alias = function (names, aliases) {
+            mapply(
+                function (n, a) if (identical(n, a)) n else paste(a, '=', n),
+                names, aliases
+            )
+        }
+
+        if (is.null(a)) {
+            ''
+        } else {
+            list = if (isTRUE(a)) {
+                '*'
+            } else {
+                aliased_names = with_alias(r_name(a), r_name(names(a)))
+                paste0('[', toString(aliased_names), ']')
+            }
+            paste(', attach =', list)
+        }
+    }
+
+    mod_or_pkg = function (mod, pkg) {
+        if (is.null(mod)) {
+            sprintf('pkg(%s)', r_name(pkg$name))
+        } else {
+            prefix = paste(r_name(mod$prefix), collapse = ', ')
+            sprintf('mod(%s/%s)', prefix, r_name(mod$name))
+        }
+    }
+
+    cat(sprintf(
+        'mod_spec(%s%s%s)\n',
+        if (x$explicit) paste(r_name(x$alias), '= ') else '',
+        mod_or_pkg(x$mod, x$pkg),
+        format_attach(x$attach)
+    ))
+
+    invisible(x)
+}
+
 parse_mod_spec_impl = function (expr) {
     if (is.name(expr)) {
         c(parse_pkg_name(expr), list(attach = NULL))
