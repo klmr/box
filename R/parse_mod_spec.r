@@ -40,7 +40,15 @@ parse_mod_spec = function (...) {
         cond$call = `[[<-`(expr, quote(use))
         stop(cond)
     }
-    c(mod_spec, alias = alias %||% (mod_spec$mod %||% mod_spec$pkg)$name)
+    mod_spec(
+        mod_spec,
+        alias = alias %||% (mod_spec$mod %||% mod_spec$pkg)$name,
+        explicit = ! is.null(alias)
+    )
+}
+
+mod_spec = function (...) {
+    structure(c(...), class = 'mod$mod_spec')
 }
 
 parse_mod_spec_impl = function (expr) {
