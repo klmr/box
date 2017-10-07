@@ -69,18 +69,15 @@ parse_mod = function (expr) {
 
     if (is.call(mod)) {
         if (identical(mod[[1]], quote(`[`))) {
-            list(
-                mod = c(parse_mod_name(mod[[2]]), prefix),
+            c(
+                list(mod = c(parse_mod_name(mod[[2]]), prefix)),
                 parse_attach_spec(mod)
             )
         } else {
             parse_error('Expected module name or attach list, got ', mod)
         }
     } else if (is.name(mod)) {
-        list(
-            mod = c(parse_mod_name(mod), prefix),
-            attach = NULL
-        )
+        list(mod = c(parse_mod_name(mod), prefix), attach = NULL)
     } else {
         parse_error('Expected module name or attach list, got ', mod)
     }
@@ -122,7 +119,7 @@ parse_attach_list = function (expr) {
     if (length(expr) == 1L && identical(expr[[1]], quote(expr = ))) {
         parse_error('Expected at least one identifier in attach list')
     } else {
-        unlist(lapply(expr, parse_identifier), recursive = FALSE)
+        lapply(expr, parse_identifier)
     }
 }
 
@@ -132,7 +129,7 @@ parse_identifier = function (expr) {
     } else if (identical(expr, quote(expr = ))) {
         parse_error('Expected identifier, got nothing')
     } else {
-        list(deparse(expr))
+        deparse(expr)
     }
 }
 
