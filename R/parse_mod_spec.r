@@ -176,7 +176,7 @@ parse_attach_list = function (expr) {
     if (length(expr) == 1L && identical(expr[[1]], quote(expr = ))) {
         parse_error('Expected at least one identifier in attach list')
     } else {
-        lapply(expr, parse_identifier)
+        vapply(expr, parse_identifier, character(1))
     }
 }
 
