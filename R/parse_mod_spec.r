@@ -47,8 +47,22 @@ parse_mod_spec = function (...) {
     )
 }
 
-mod_spec = function (...) {
-    structure(c(...), class = 'mod$mod_spec')
+mod_spec = function (spec, ...) {
+    is_pkg = 'pkg' %in% names(spec)
+    base_spec = c(spec$mod, spec$pkg)
+    additional_spec = spec[setdiff(names(spec), c('mod', 'pkg'))]
+    structure(
+        c(base_spec, additional_spec, ...),
+        class = paste0('mod$mod_spec', c(if (is_pkg) '$pkg' else '$mod', ''))
+    )
+}
+
+is_mod_spec = function (x) {
+    inherits(x, 'mod$mod_spec$mod')
+}
+
+is_pkg_spec = function (x) {
+    inherits(x, 'mod$mod_spec$pkg')
 }
 
 `print.mod$mod_spec` = function (x, ...) {
