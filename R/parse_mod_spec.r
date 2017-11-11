@@ -22,11 +22,13 @@
 #' @return \code{parse_mod_spec} returns a named list that contains information
 #' about the parsed mod specification. Currently it contains:
 #' \describe{
-#'  \item{\code{mod}}{the module information, if the spec is a module; \emph{or}}
-#'  \item{\code{pkg}}{the package information, if the spec is a package}
-#'  \item{\code{alias}}{the module/package alias}
+#'  \item{\code{name}}{the module or package name}
+#'  \item{\code{prefix}}{the prefix, if the spec is a module}
 #'  \item{\code{attach}}{a named vector of symbols to attach, or
 #'      \code{TRUE} to attach all symbols, or \code{NULL} to attach nothing}
+#'  \item{\code{alias}}{the module or package alias}
+#'  \item{\code{explicit}}{a logical value indicating whether the caller
+#'      provided an explicit alias}
 #' }
 #' @keywords internal
 parse_mod_spec = function (...) {
@@ -95,19 +97,19 @@ is_pkg_spec = function (x) {
         }
     }
 
-    mod_or_pkg = function (mod, pkg) {
-        if (is.null(mod)) {
-            sprintf('pkg(%s)', r_name(pkg$name))
+    mod_or_pkg = function (spec) {
+        if (is_mod_spec(spec)) {
+            prefix = paste(r_name(spec$prefix), collapse = ', ')
+            sprintf('mod(%s/%s)', prefix, r_name(spec$name))
         } else {
-            prefix = paste(r_name(mod$prefix), collapse = ', ')
-            sprintf('mod(%s/%s)', prefix, r_name(mod$name))
+            sprintf('pkg(%s)', r_name(spec$name))
         }
     }
 
     cat(sprintf(
         'mod_spec(%s%s%s)\n',
         if (x$explicit) paste(r_name(x$alias), '= ') else '',
-        mod_or_pkg(x$mod, x$pkg),
+        mod_or_pkg(x),
         format_attach(x$attach)
     ))
 
