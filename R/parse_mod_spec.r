@@ -214,5 +214,5 @@ parse_error = function (...) {
             as.character(x)
         }
     }
-    stop(paste0(vapply(list(...), chr, character(1))))
+    stop(vapply(list(...), chr, character(1)))
 }
