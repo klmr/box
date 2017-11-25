@@ -10,6 +10,13 @@ test_that('modules without attaching can be parsed', {
     expect_null(m$attach)
 })
 
+test_that('parse errors are correctly handled', {
+    expect_error(
+        parse_mod_spec(foo/bar[]),
+        '^Expected at least one identifier in attach list$'
+    )
+})
+
 test_that('fully qualified names can be nested', {
     m = parse_mod_spec(foo/bar/baz)
     expect_true(is_mod_spec(m))

@@ -39,7 +39,7 @@ parse_mod_spec = function (...) {
     if (inherits(mod_spec, 'try-error')) {
         # Pretty-print error call to be informative for the user.
         cond = attr(mod_spec, 'condition')
-        cond$call = `[[<-`(expr, quote(use))
+        cond$call = `[[<-`(expr, 1, quote(use))
         stop(cond)
     }
     mod_spec(
