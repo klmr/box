@@ -55,19 +55,19 @@ mod_spec = function (spec, ...) {
     additional_spec = spec[setdiff(names(spec), c('mod', 'pkg'))]
     structure(
         c(base_spec, additional_spec, ...),
-        class = paste0('mod$mod_spec', c(if (is_pkg) '$pkg' else '$mod', ''))
+        class = c(if (is_pkg) 'pkg_spec' else 'mod_spec', 'spec')
     )
 }
 
 is_mod_spec = function (x) {
-    inherits(x, 'mod$mod_spec$mod')
+    inherits(x, 'mod_spec')
 }
 
 is_pkg_spec = function (x) {
-    inherits(x, 'mod$mod_spec$pkg')
+    inherits(x, 'pkg_spec')
 }
 
-`print.mod$mod_spec` = function (x, ...) {
+print.spec = function (x, ...) {
     r_name = function (names) {
         vapply(
             names,
