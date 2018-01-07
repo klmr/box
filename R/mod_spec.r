@@ -64,6 +64,10 @@ is_pkg_spec = function (x) {
     inherits(x, 'pkg_spec')
 }
 
+mod_name = function (spec) {
+    paste(paste(spec$prefix, collapse = '/'), spec$name, sep = '/')
+}
+
 print.spec = function (x, ...) {
     r_name = function (names) {
         vapply(
