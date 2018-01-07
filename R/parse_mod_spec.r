@@ -33,15 +33,12 @@
 #' @keywords internal
 parse_mod_spec = function (...) {
     expr = substitute(list(...))
-    alias = names(expr[-1])
-    mod_spec = try(parse_mod_spec_impl(expr[[2]]), silent = TRUE)
+    alias = names(expr[-1L])
+    mod_spec = rethrow_on_error(
+        parse_mod_spec_impl(expr[[2L]]),
+        call = sys.call(-1L)
+    )
 
-    if (inherits(mod_spec, 'try-error')) {
-        # Pretty-print error call to be informative for the user.
-        cond = attr(mod_spec, 'condition')
-        cond$call = `[[<-`(expr, 1, quote(use))
-        stop(cond)
-    }
     mod_spec(
         mod_spec,
         alias = alias %||% (mod_spec$mod %||% mod_spec$pkg)$name,
