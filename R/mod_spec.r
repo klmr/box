@@ -65,7 +65,15 @@ is_pkg_spec = function (x) {
 }
 
 mod_name = function (spec) {
+    UseMethod('mod_name')
+}
+
+mod_name.mod_spec = function (spec) {
     paste(paste(spec$prefix, collapse = '/'), spec$name, sep = '/')
+}
+
+mod_name.pkg_spec = function (spec) {
+    spec$name
 }
 
 print.spec = function (x, ...) {
