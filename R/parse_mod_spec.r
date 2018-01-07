@@ -71,7 +71,7 @@ print.spec = function (x, ...) {
     r_name = function (names) {
         vapply(
             names,
-            function (n) deparse(as.name(n), backtick = TRUE),
+            function (n) sprintf('\x1b[33m%s\x1b[0m', deparse(as.name(n), backtick = TRUE)),
             character(1)
         )
     }
@@ -99,10 +99,10 @@ print.spec = function (x, ...) {
 
     mod_or_pkg = function (spec) {
         if (is_mod_spec(spec)) {
-            prefix = paste(r_name(spec$prefix), collapse = ', ')
-            sprintf('mod(%s/%s)', prefix, r_name(spec$name))
+            prefix = paste(r_name(spec$prefix), collapse = '/')
+            sprintf('mod(%s/\x1b[4;33m%s\x1b[0m)', prefix, r_name(spec$name))
         } else {
-            sprintf('pkg(%s)', r_name(spec$name))
+            sprintf('pkg(\x1b[4;33m%s\x1b[0m)', r_name(spec$name))
         }
     }
 
