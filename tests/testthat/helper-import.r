@@ -6,8 +6,8 @@ options(import.path = 'modules',
 
 #' Opposite of \code{is_identical_to}
 expect_not_identical = function (object, expected, info = NULL, label = NULL, expected.label = NULL) {
-    lab_act = testthat::make_label(object, label)
-    lab_exp = testthat::make_label(expected, expected.label)
+    lab_act = testthat::quasi_label(rlang::enquo(object), label)
+    lab_exp = testthat::quasi_label(rlang::enquo(expected), expected.label)
     ident = identical(object, expected)
 
     msg = if (ident) 'Objects identical' else ''

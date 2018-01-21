@@ -19,7 +19,7 @@ Suggests:
     knitr,
     rmarkdown,
     shiny,
-    testthat (>= 1.0.2.9000)
+    testthat (>= 2.0.0)
 Remotes:
     hadley/testthat
     klutometis/roxygen
