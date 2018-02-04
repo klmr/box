@@ -11,6 +11,7 @@ play_back_results = function (record_events, onto) {
 
 interactive_r(code = {
     library(testthat)
+    devtools::load_all()
 
     RecordReporter = R6::R6Class('RecordReporter', inherit = Reporter,
         public = list(
