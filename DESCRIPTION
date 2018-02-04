@@ -1,6 +1,6 @@
-Package: modules
+Package: mod
 Title: Modules for R
-Version: 0.9.9
+Version: 1.0.0.9000
 Author: Konrad Rudolph <konrad.rudolph@gmail.com>
 Maintainer: Konrad Rudolph <konrad.rudolph@gmail.com>
 Description: Create reusable code modules in R. An alternative package

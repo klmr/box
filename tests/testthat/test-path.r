@@ -72,7 +72,7 @@ test_that('regression #79 is fixed', {
 
 test_that('‹modules› is attached inside modules', {
     # Detach ‹modules› temporarily.
-    modules_name = 'package:modules'
+    modules_name = 'package:mod'
     modules_env = as.environment(modules_name)
     on.exit(attach(modules_env, name = modules_name))
     detach(modules_name, character.only = TRUE)

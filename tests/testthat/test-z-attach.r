@@ -30,7 +30,7 @@ test_that('unloading a module detaches it', {
     expect_that(search()[2], equals('module:a'))
     expect_false(identical(as.environment(2), parent))
 
-    modules::unload(a)
+    mod::unload(a)
     expect_true(identical(as.environment(2), parent))
 })
 
@@ -40,7 +40,7 @@ test_that('unloading a module detaches operators', {
     expect_that(search()[2], equals('operators:a'))
     expect_false(identical(as.environment(2), parent))
 
-    modules::unload(a)
+    mod::unload(a)
     expect_true(identical(as.environment(2), parent))
 })
 

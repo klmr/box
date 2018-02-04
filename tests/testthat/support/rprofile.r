@@ -12,7 +12,7 @@ if (file.exists(user_profile)) {
 # Next, ensure that the ‹modules› that’s loaded is the source version we’re
 # currently testing, rather than something loaded by the user configuration.
 
-unloadNamespace('modules')
+unloadNamespace('mod')
 devtools::load_all(quiet = TRUE)
 
 # This is required by `interactive_r` to verify that invocation succeeded.
