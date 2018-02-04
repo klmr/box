@@ -21,6 +21,5 @@ Suggests:
     shiny,
     testthat (>= 2.0.0)
 Remotes:
-    hadley/testthat
     klutometis/roxygen
 VignetteBuilder: knitr
