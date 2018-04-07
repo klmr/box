@@ -8,7 +8,7 @@ rxescape = function (str)
 
 # C++ source; could potentially be more than one file.
 
-file = modules::module_file('convolve.cpp')
+file = module_file('convolve.cpp')
 
 # The following uses Rcpp to compile (and later, load) the code. This isn’t
 # necessary, but it helps quite a bit. Ideally this should be generalisable
