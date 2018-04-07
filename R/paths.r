@@ -6,7 +6,8 @@
 #' There are two ways of modifying the module search path: by default,
 #' \code{options('import.path')} specifies the search path. If and only if that
 #' is unset, R also considers the environment variable \code{R_IMPORT_PATH}.
-import_search_path = function () {
+#' @keywords internal
+mod_search_path = function () {
     path_env = strsplit(Sys.getenv('R_IMPORT_PATH'), ':')[[1]]
     if (length(path_env) == 0) {
         path_env = NULL
@@ -21,6 +22,7 @@ import_search_path = function () {
 #' @param path the path to split
 #' @return \code{split_path} returns a character vector of path components that
 #' logically represent \code{path}.
+#' @keywords internal
 split_path = function (path) {
     if (identical(path, dirname(path)))
         path
@@ -38,6 +40,7 @@ split_path = function (path) {
 #' original path. Instead, it is only guaranteed that it will refer to the same
 #' logical path given the same working directory.
 #' @rdname split_path
+#' @keywords internal
 merge_path = function (components) {
     do.call(file.path, as.list(components))
 }

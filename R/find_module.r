@@ -15,10 +15,11 @@ find_module = function (module) {
     module_path = merge_path(prefix)
     file_pattern = sprintf('^%s\\.[rR]$', suffix)
 
-    search_path = if (parts[1] %in% c('.', '..'))
+    search_path = if (parts[1] %in% c('.', '..')) {
         calling_module_path()
-    else
-        import_search_path()
+    } else {
+        mod_search_path()
+    }
     candidate_paths = file.path(search_path, module_path)
 
     # For each candidate, try finding a module file. A module file is either
