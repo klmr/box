@@ -24,11 +24,11 @@ module_file = function (..., module = parent.frame(), mustWork = FALSE) {
     paths = file.path(module_path, ...)
     existing = paths[file.exists(paths)]
 
-    if (length(existing) != 0)
-        existing
-    else
-        if (mustWork)
+    existing %||% {
+        if (mustWork) {
             stop('File not found: ', sQuote(paths))
-        else
+        } else {
             ''
+        }
+    }
 }
