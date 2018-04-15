@@ -8,7 +8,7 @@
 #' is unset, R also considers the environment variable \code{R_IMPORT_PATH}.
 #' @keywords internal
 mod_search_path = function () {
-    path_env = strsplit(Sys.getenv('R_IMPORT_PATH'), ':')[[1]] %||% NULL
+    path_env = strsplit(Sys.getenv('R_IMPORT_PATH'), .Platform$path.sep)[[1]] %||% NULL
     c(getOption('import.path', path_env), module_base_path(parent.frame()))
 }
 
