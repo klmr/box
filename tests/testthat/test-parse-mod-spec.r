@@ -1,4 +1,4 @@
-context('Tests of the mod spec parser')
+context('mod spec parser test')
 
 test_that('modules without attaching can be parsed', {
     m = parse_mod_spec(foo/bar)
