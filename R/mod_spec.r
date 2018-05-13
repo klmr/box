@@ -77,6 +77,11 @@ mod_name.pkg_spec = function (spec) {
 }
 
 print.spec = function (x, ...) {
+    cat(format(x, ...), '\n', sep = '')
+    invisible(x)
+}
+
+format.spec = function (x, ...) {
     r_name = function (names) {
         vapply(
             names,
@@ -115,14 +120,12 @@ print.spec = function (x, ...) {
         }
     }
 
-    cat(sprintf(
-        'mod_spec(%s%s%s)\n',
+    sprintf(
+        'mod_spec(%s%s%s)',
         if (x$explicit) paste(r_name(x$alias), '= ') else '',
         mod_or_pkg(x),
         format_attach(x$attach)
-    ))
-
-    invisible(x)
+    )
 }
 
 parse_mod_spec_impl = function (expr) {
