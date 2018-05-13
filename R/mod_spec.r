@@ -77,11 +77,11 @@ mod_name.pkg_spec = function (spec) {
 }
 
 print.spec = function (x, ...) {
-    cat(format(x, ...), '\n', sep = '')
+    cat(as.character(x, ...), '\n', sep = '')
     invisible(x)
 }
 
-format.spec = function (x, ...) {
+as.character.spec = function (x, ...) {
     r_name = function (names) {
         vapply(
             names,
