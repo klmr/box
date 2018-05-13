@@ -8,8 +8,8 @@
 #' is unset, R also considers the environment variable \code{R_IMPORT_PATH}.
 #' @keywords internal
 mod_search_path = function () {
-    path_env = strsplit(Sys.getenv('R_IMPORT_PATH'), .Platform$path.sep)[[1]] %||% NULL
-    c(getOption('import.path', path_env), module_base_path(parent.frame()))
+    path_env = strsplit(Sys.getenv('R_MOD_PATH'), .Platform$path.sep)[[1]] %||% NULL
+    c(getOption('mod.path', path_env), module_base_path(parent.frame()))
 }
 
 #' Split a path into its components and merge them back together
@@ -21,10 +21,11 @@ mod_search_path = function () {
 #' logically represent \code{path}.
 #' @keywords internal
 split_path = function (path) {
-    if (identical(path, dirname(path)))
+    if (identical(path, dirname(path))) {
         path
-    else
+    } else {
         c(Recall(dirname(path)), basename(path))
+    }
 }
 
 #' \code{merge_path(split_path(path))} is equivalent to \code{path}.
