@@ -100,10 +100,10 @@ mod_init_files = function (path, base_path) {
     }
 
     components = remove_mod_file(split_path(path))
-    base_components = split_path(base_path)
+    ignore_prefix_length = length(split_path(base_path)) + 1L
     init_paths = character()
 
-    while (length(base_components) < length(components)) {
+    while (ignore_prefix_length < length(components)) {
         candidates = file.path(merge_path(components), init_files)
         hits = file.exists(candidates)
         if (! any(hits)) break
