@@ -94,21 +94,39 @@ find_in_path = function (spec, base_paths) {
 mod_init_files = function (path, base_path) {
     init_files = c('__init__.r', '__init__.R')
 
-    remove_mod_file = function (components) {
+    remove_mod_part = function (components) {
         mod_particle = if (tail(components, 1L) %in% init_files) 2L else 1L
         head(components, - mod_particle)
     }
 
-    components = remove_mod_file(split_path(path))
-    ignore_prefix_length = length(split_path(base_path)) + 1L
-    init_paths = character()
+    base_path_length = length(split_path(base_path))
+    components = tail(remove_mod_part(split_path(path)), - base_path_length)
+    mod_parents = lapply(seq_along(components), head, x = components)
+    parent_mod_suffixes = vapply(mod_parents, merge_path, character(1L))
+    parent_mod_paths = file.path(base_path, parent_mod_suffixes)
+    candidate_paths = lapply(parent_mod_paths, file.path, init_files)
 
-    while (ignore_prefix_length < length(components)) {
-        candidates = file.path(merge_path(components), init_files)
-        hits = file.exists(candidates)
-        if (! any(hits)) break
-        init_paths = append(init_paths, candidates[hits][1L])
-        components = head(components, -1L)
-    }
+    path_has_init = lapply(candidate_paths, file.exists)
+    tail = tail_run(vapply(path_has_init, any, logical(1L)))
+    actual_init_files = Map(`[`, candidate_paths[tail], path_has_init[tail])
+    # Both spellings of the init file might exist. Furthermore, on case
+    # insensitive file systems (macOS, Windows), both init files are found;
+    # filter to only report a single one each.
+    init_paths = vapply(actual_init_files, head, character(1L), 1L)
     normalizePath(init_paths)
+}
+
+#' Toggle intermittent \code{TRUE} values before the tail
+#'
+#' \code{tail_run(x)} transforms a vector of logicals by setting all values
+#' before the “tail” to \code{FALSE}. The tail is a sequence of uninterrupted
+#' \code{TRUE} values until the end.
+#'
+#' @param x a logical vector
+#' @param Returns a logical vector \code{c(rep(FALSE, n), rep(TRUE, m)} the same
+#' length as \code{x}, where \code{m} is the length of the tail of uninterrupted
+#' \code{TRUE} values in \code{x}, and \code{n = length(x) - m}.
+#' @keywords internal
+tail_run = function (x) {
+    as.logical(rev(cumprod(rev(x))))
 }
