@@ -66,12 +66,18 @@ find_in_path = function (spec, base_paths) {
     mod_info(spec, normalizePath(path), mod_init_files(path, base_path))
 }
 
-#' Find the `__init__.r` files in all path components of `path`.
+#' Find the \code{__init__.r} files in all path components of \code{path}.
 #'
 #' \code{mod_init_files(path, base_path)` finds all init files for a module file
-#' given by \code{path}. Any `__init__.r` files \emph{upstream} of this path
-#' must be disregarded; e.g. for the following path
+#' given by \code{path}.
+#' @param path the path to the module file.
+#' @param base_path the base path corresponding to the module path, such that
+#' \code{path} starts with \code{base_path}
+#' @details
+#' Any `__init__.r` files \emph{upstream} of this path must be disregarded; e.g.
+#' for the following path
 #'
+#' \preformatted{
 #'   a/
 #'   ├── b/
 #'   │   ├── __init__.r
@@ -79,17 +85,14 @@ find_in_path = function (spec, base_paths) {
 #'   │       ├── __init__.r
 #'   │       └── d.r
 #'   └── __init__.r
-#'
+#' }
 #' and code
-#'
+#' \preformatted{
 #'   options(mod.path = 'a')
 #'   mod::use(b/c/d)
-#'
+#' }
 #' only `a/b/c/__init__.r` and `a/b/__init__.r` get executed, not
 #' `a/__init__.r`.
-#' @param path the path to the module file.
-#' @param base_path the base path corresponding to the module path, such that
-#' \code{path} starts with \code{base_path}
 #' @keywords internal
 mod_init_files = function (path, base_path) {
     init_files = c('__init__.r', '__init__.R')
@@ -123,9 +126,15 @@ mod_init_files = function (path, base_path) {
 #' \code{TRUE} values until the end.
 #'
 #' @param x a logical vector
-#' @param Returns a logical vector \code{c(rep(FALSE, n), rep(TRUE, m)} the same
+#' @return A logical vector \code{c(rep(FALSE, n), rep(TRUE, m))} the same
 #' length as \code{x}, where \code{m} is the length of the tail of uninterrupted
 #' \code{TRUE} values in \code{x}, and \code{n = length(x) - m}.
+#' @examples
+#' tail_run(T)
+#' tail_run(F)
+#' tail_run(c(T, T, F, T))
+#' tail_run(c(T, T, T, F))
+#' tail_run(c(T, F, T, T))
 #' @keywords internal
 tail_run = function (x) {
     as.logical(rev(cumprod(rev(x))))
