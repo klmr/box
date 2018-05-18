@@ -3,8 +3,12 @@
 #' A \code{mod_info} represents an existing, installed module or package and its
 #' runtime physical location (usually in the file system).
 #' @keywords internal
-mod_info = function (spec, source_path, parent_mods) {
+mod_info = function (spec, source_path, parent) {
     structure(as.list(environment()), class = 'mod_info')
+}
+
+mod_parent_info = function (source_path) {
+    mod_info(NULL, source_path, find_mod_parent(source_path))
 }
 
 print.mod_info = function (x, ...) {
@@ -13,17 +17,14 @@ print.mod_info = function (x, ...) {
 }
 
 as.character.mod_info = function (x, ...) {
-    parents = if (length(x$parent_mods) == 0L) '' else {
-        parent_paths = paste(
-            sprintf('\x1B[33m%s\x1B[0m', x$parent_mods),
-            collapse = '\n    '
-        )
-        sprintf('\n  parents:\n    %s', parent_paths)
+    quote = function (x) paste0('\x1B[33m', x, '\x1B[0m')
+
+    if (is.null(x$spec)) { # `x` is a parent module
+        return(paste(c(quote(x$source_path), as.character(x$parent)), collapse = '\n    '))
     }
-    sprintf(
-        '%s:\n  path: \x1B[33m%s\x1B[0m%s',
-        as.character(x$spec, ...), x$source_path, parents
-    )
+
+    parent = if (is.null(x$parent)) '' else sprintf('\n  parents:\n    %s', x$parent)
+    sprintf('%s:\n  path: %s%s', x$spec, quote(x$source_path), parent)
 }
 
 is_absolute = function (spec) {
@@ -43,6 +44,24 @@ find_global_mod = function (spec) {
     find_in_path(spec, mod_search_path())
 }
 
+#' Find a module’s source location
+#'
+#' @param spec a \code{mod_spec}.
+#' @param base_paths a character vector of paths to search the module in, in
+#' order of preference.
+#' @return \code{find_in_path} returns a \code{mod_info} that specifies the
+#' module source location and its parent.
+#' @details
+#' A module is physically represented in the file system either by
+#' \code{‹mod_name(spec)›.r} or by \code{‹mad_name(spec)›/__init__.r}, in that
+#' order of preference in case both exist. File extensions are case insensitive
+#' to allow for R’s obsession with capital-R extensions (but lower-case are
+#' given preference).
+#' A module can have a parent module, which is an \code{__init__.r} file in its
+#' parent folder. This is transitive. Since module parents \emph{emph} always
+#' correspond to \code{__init__.r} files, we can’t just call this function
+#' recursively to find all parents.
+#' @keywords internal
 find_in_path = function (spec, base_paths) {
     mod_path_prefix = merge_path(spec$prefix)
     ext = c('.r', '.R')
@@ -63,79 +82,23 @@ find_in_path = function (spec, base_paths) {
 
     path = candidates[[which_base]][hits[[which_base]]][1L]
     base_path = base_paths[which_base]
-    mod_info(spec, normalizePath(path), mod_init_files(path, base_path))
+    mod_info(spec, normalizePath(path), find_mod_parent(path))
 }
 
-#' Find the \code{__init__.r} files in all path components of \code{path}.
-#'
-#' \code{mod_init_files(path, base_path)` finds all init files for a module file
-#' given by \code{path}.
-#' @param path the path to the module file.
-#' @param base_path the base path corresponding to the module path, such that
-#' \code{path} starts with \code{base_path}
-#' @details
-#' Any `__init__.r` files \emph{upstream} of this path must be disregarded; e.g.
-#' for the following path
-#'
-#' \preformatted{
-#'   a/
-#'   ├── b/
-#'   │   ├── __init__.r
-#'   │   └── c/
-#'   │       ├── __init__.r
-#'   │       └── d.r
-#'   └── __init__.r
-#' }
-#' and code
-#' \preformatted{
-#'   options(mod.path = 'a')
-#'   mod::use(b/c/d)
-#' }
-#' only `a/b/c/__init__.r` and `a/b/__init__.r` get executed, not
-#' `a/__init__.r`.
-#' @keywords internal
-mod_init_files = function (path, base_path) {
-    init_files = c('__init__.r', '__init__.R')
-
+find_mod_parent = function (path) {
     remove_mod_part = function (components) {
         mod_particle = if (tail(components, 1L) %in% init_files) 2L else 1L
         head(components, - mod_particle)
     }
 
-    base_path_length = length(split_path(base_path))
-    components = tail(remove_mod_part(split_path(path)), - base_path_length)
-    mod_parents = lapply(seq_along(components), head, x = components)
-    parent_mod_suffixes = vapply(mod_parents, merge_path, character(1L))
-    parent_mod_paths = file.path(base_path, parent_mod_suffixes)
-    candidate_paths = lapply(parent_mod_paths, file.path, init_files)
+    init_files = c('__init__.r', '__init__.R')
+    parent_mod_path = merge_path(remove_mod_part(split_path(path)))
+    candidate_paths = file.path(parent_mod_path, init_files)
+    parent_mod_file = Filter(file.exists, candidate_paths)
+    if (length(parent_mod_file) == 0L) return()
 
-    path_has_init = lapply(candidate_paths, file.exists)
-    tail = tail_run(vapply(path_has_init, any, logical(1L)))
-    actual_init_files = Map(`[`, candidate_paths[tail], path_has_init[tail])
     # Both spellings of the init file might exist. Furthermore, on case
-    # insensitive file systems (macOS, Windows), both init files are found;
-    # filter to only report a single one each.
-    init_paths = vapply(actual_init_files, head, character(1L), 1L)
-    normalizePath(init_paths)
-}
-
-#' Toggle intermittent \code{TRUE} values before the tail
-#'
-#' \code{tail_run(x)} transforms a vector of logicals by setting all values
-#' before the “tail” to \code{FALSE}. The tail is a sequence of uninterrupted
-#' \code{TRUE} values until the end.
-#'
-#' @param x a logical vector
-#' @return A logical vector \code{c(rep(FALSE, n), rep(TRUE, m))} the same
-#' length as \code{x}, where \code{m} is the length of the tail of uninterrupted
-#' \code{TRUE} values in \code{x}, and \code{n = length(x) - m}.
-#' @examples
-#' tail_run(T)
-#' tail_run(F)
-#' tail_run(c(T, T, F, T))
-#' tail_run(c(T, T, T, F))
-#' tail_run(c(T, F, T, T))
-#' @keywords internal
-tail_run = function (x) {
-    as.logical(rev(cumprod(rev(x))))
+    # insensitive file systems (macOS, Windows), both init files are found. Here
+    # we only report the first hit.
+    mod_parent_info(normalizePath(parent_mod_file[1L]))
 }
