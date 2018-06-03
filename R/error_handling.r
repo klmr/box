@@ -5,8 +5,11 @@
 #' error’s current call object
 #' @keywords internal
 rethrow = function (error, call = sys.call(sys.parent())) {
-    error$call = call
-    stop(error)
+    message = sprintf(
+        '%s\n(inside %s)',
+        conditionMessage(error), dQuote(deparse(conditionCall(error)))
+    )
+    stop(simpleError(message, call))
 }
 
 #' @param expr an expression to evaluate inside \code{tryCatch}
