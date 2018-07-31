@@ -42,27 +42,24 @@ register_S3_method = function (name, class, method) {
 #' @param envir the environment this function is invoked from
 is_S3_user_generic = function (function_name, envir = parent.frame()) {
     is_S3 = function (b) {
-        if (length(b) == 0)
-            return(FALSE)
-        if (is.function(b))
-            b = body(b)
+        if (length(b) == 0L) return(FALSE)
+        if (is.function(b)) b = body(b)
         if (is.call(b)) {
-            if (is.name(b[[1]]) && b[[1]] == 'UseMethod')
-                return(TRUE)
-            return(is_S3(as.list(b)[-1]))
+            is_s3_dispatch = is.name(b[[1L]]) && b[[1L]] == 'UseMethod'
+            return(is_s3_dispatch || is_S3(as.list(b)[-1L]))
         }
-        is.recursive(b) && (is_S3(b[[1]]) || is_S3(b[-1]))
+        is.recursive(b) && (is_S3(b[[1L]]) || is_S3(b[-1L]))
     }
 
     is_S3(body(get(function_name, envir = envir, mode = 'function')))
 }
 
-#' Return a list of functions in an environment
+#' Return a list of function names in an environment
 #'
 #' @param envir the environment to search in
-lsf = function (envir)
-    Filter(function (n) exists(n, envir, mode = 'function', inherits = FALSE),
-           ls(envir))
+lsf = function (envir) {
+    names(which(eapply(envir, class, all.names = TRUE) == 'function'))
+}
 
 #' Find and register S3 methods inside a module
 #'
@@ -77,34 +74,27 @@ make_S3_methods_known = function (module) {
     # automatically here. To avoid such ambiguities it is highly recommended
     # not to use dots in function and class names. Use underscores instead.
 
-    # First step: find generics defined in module
-
     functions = lsf(module)
-    generics = functions[vapply(functions, is_S3_user_generic, logical(1),
-                                envir = module)]
-
-    # Second step: register known methods for those generics
+    generics = Filter(function (f) is_S3_user_generic(f, module), functions)
 
     find_methods = function (generic)
         grep(sprintf('^%s\\.[^.]', generic), functions, value = TRUE)
 
+    methods = lapply(generics, find_methods)
+
     register_method = function (name, generic) {
         # Ensure we don’t register functions which have already been
         # registered explicitly. This guards against ambiguous cases.
-        if (name %in% attr(module, 'S3'))
-            return()
+        if (name %in% attr(module, 'S3')) return()
 
         # + 1 for dot, + 1 for position after that.
-        class = substr(name, nchar(generic) + 2, nchar(name))
-        method = get(name, envir = module, mode = 'function')
-        registerS3method(generic, class, method, module)
+        class = substr(name, nchar(generic) + 2L, nchar(name))
+        registerS3method(generic, class, module[[name]], module)
     }
 
-    register_methods = function (name)
-        if (length(methods[[name]]) > 0)
-            Map(register_method, methods[[name]], name)
+    register_methods = function (methods, generic_name)
+        lapply(methods, register_method, generic_name)
 
-    methods = sapply(generics, find_methods, simplify = FALSE)
-    Map(register_methods, names(methods))
+    Map(register_methods, methods, generics)
     invisible()
 }
