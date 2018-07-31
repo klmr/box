@@ -2,14 +2,14 @@ context('Submodules test')
 
 setup = function () {
     thispath = 'modules/nested'
-    prev = getOption('import.path')
+    prev = getOption('mod.path')
     if (! identical(prev, thispath))
         previous_import_path <<- prev
-    options(import.path = thispath)
+    options(mod.path = thispath)
 }
 
 teardown = function () {
-    options(import.path = previous_import_path)
+    options(mod.path = previous_import_path)
     # Unload all modules
     rm(list = ls(envir = mod:::loaded_modules),
        envir = mod:::loaded_modules)

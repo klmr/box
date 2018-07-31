@@ -13,7 +13,7 @@ test_that('modules without attaching can be parsed', {
 test_that('parse errors are correctly handled', {
     expect_error(
         parse_mod_spec(foo/bar[]),
-        '^Expected at least one identifier in attach list$'
+        '^Expected at least one identifier in attach list'
     )
 })
 
