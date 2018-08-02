@@ -5,14 +5,12 @@ roxygen2_parse_code = function(file, env, registry) {
 parse_documentation = function (module) {
     module_path = module_path(module)
 
-    roclets = list(roxygen2::rd_roclet(), export_roclet())
-    registry = unlist(lapply(roclets, roxygen2::roclet_tags))
+    roclet = roxygen2::rd_roclet()
+    registry = roxygen2::roclet_tags(roclet)
 
     parsed = list(env = module,
                   blocks = roxygen2_parse_code(module_path, module, registry))
-    results = lapply(roclets, roxygen2::roclet_process,
-                     parsed = parsed, base_path = dirname(module_path))
-    rdfiles = results[[1]]
+    rdfiles = roxygen2::roclet_process(roclet, parsed = parsed, base_path = dirname(module_path))
 
     # Due to aliases, documentation entries may have more than one name.
     aliases = lapply(rdfiles, function (rd) unique(rd$fields$alias$values))
