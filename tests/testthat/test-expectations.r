@@ -13,9 +13,6 @@ test_that('expect_not_identical works', {
 })
 
 test_that('expect_in works', {
-    expect_not_in(1, c())
-    expect_not_in(1, c(2, 3))
-    expect_not_in('A', letters)
     expect_in(1, c(1, 2, 3))
     expect_in(2, c(1, 2, 3))
     expect_in('A', LETTERS)
@@ -23,6 +20,13 @@ test_that('expect_in works', {
     expect_failure(expect_in(1, c()))
     expect_failure(expect_in(1, c(2, 3)))
     expect_failure(expect_in('A', letters))
+})
+
+test_that('expect_not_in works', {
+    expect_not_in(1, c())
+    expect_not_in(1, c(2, 3))
+    expect_not_in('A', letters)
+
     expect_failure(expect_not_in(1, c(1, 2, 3)))
     expect_failure(expect_not_in(2, c(1, 2, 3)))
     expect_failure(expect_not_in('A', LETTERS))
