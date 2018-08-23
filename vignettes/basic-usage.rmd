@@ -78,7 +78,7 @@ mechanism, let’s look at an alternative usage:
 # We can unload loaded modules that we assigned to an identifier:
 unload(seq)
 
-options(import.path = 'utils')
+options(mod.path = 'utils')
 import('seq', attach = TRUE)
 ```
 
