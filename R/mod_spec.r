@@ -86,7 +86,7 @@ as.character.spec = function (x, ...) {
         vapply(
             names,
             function (n) sprintf('\x1b[33m%s\x1b[0m', deparse(as.name(n), backtick = TRUE)),
-            character(1)
+            character(1L)
         )
     }
 
@@ -132,9 +132,9 @@ parse_mod_spec_impl = function (expr) {
     if (is.name(expr)) {
         c(parse_pkg_name(expr), list(attach = NULL))
     } else if (is.call(expr)) {
-        if (identical(expr[[1]], quote(`[`))) {
-            c(parse_pkg_name(expr[[2]]), parse_attach_spec(expr))
-        } else if (identical(expr[[1]], quote(`/`))) {
+        if (identical(expr[[1L]], quote(`[`))) {
+            c(parse_pkg_name(expr[[2L]]), parse_attach_spec(expr))
+        } else if (identical(expr[[1L]], quote(`/`))) {
             parse_mod(expr)
         } else {
             parse_error('Unexpected token in ', expr)
@@ -149,13 +149,13 @@ parse_pkg_name = function (expr) {
 }
 
 parse_mod = function (expr) {
-    prefix = parse_mod_prefix(expr[[2]])
-    mod = expr[[3]]
+    prefix = parse_mod_prefix(expr[[2L]])
+    mod = expr[[3L]]
 
     if (is.call(mod)) {
-        if (identical(mod[[1]], quote(`[`))) {
+        if (identical(mod[[1L]], quote(`[`))) {
             c(
-                list(mod = c(parse_mod_name(mod[[2]]), prefix)),
+                list(mod = c(parse_mod_name(mod[[2L]]), prefix)),
                 parse_attach_spec(mod)
             )
         } else {
@@ -171,12 +171,12 @@ parse_mod = function (expr) {
 parse_mod_prefix = function (expr) {
     if (is.name(expr)) {
         list(prefix = deparse(expr))
-    } else if (is.call(expr) && identical(expr[[1]], quote(`/`))) {
-        if (! is.name(expr[[3]])) {
-            parse_error('Expected identifier in module prefix, got ', expr[[3]])
+    } else if (is.call(expr) && identical(expr[[1L]], quote(`/`))) {
+        if (! is.name(expr[[3L]])) {
+            parse_error('Expected identifier in module prefix, got ', expr[[3L]])
         } else {
-            suffix = deparse(expr[[3]])
-            list(prefix = c(parse_mod_prefix(expr[[2]])$prefix, suffix))
+            suffix = deparse(expr[[3L]])
+            list(prefix = c(parse_mod_prefix(expr[[2L]])$prefix, suffix))
         }
     } else {
         parse_error('Expected module prefix, got ', expr)
@@ -192,8 +192,8 @@ parse_attach_spec = function (expr) {
         setNames(lst, names(lst) %|% unlist(lst))
     }
 
-    items = parse_attach_list(expr[-1][-1])
-    if (length(items) == 1 && identical(items[[1]], '...')) {
+    items = parse_attach_list(expr[-1L][-1L])
+    if (length(items) == 1L && identical(items[[1L]], '...')) {
         list(attach = TRUE)
     } else {
         list(attach = assign_missing_names(items))
@@ -201,10 +201,10 @@ parse_attach_spec = function (expr) {
 }
 
 parse_attach_list = function (expr) {
-    if (length(expr) == 1L && identical(expr[[1]], quote(expr = ))) {
+    if (length(expr) == 1L && identical(expr[[1L]], quote(expr = ))) {
         parse_error('Expected at least one identifier in attach list')
     } else {
-        vapply(expr, parse_identifier, character(1))
+        vapply(expr, parse_identifier, character(1L))
     }
 }
 
@@ -226,5 +226,5 @@ parse_error = function (...) {
             as.character(x)
         }
     }
-    stop(vapply(list(...), chr, character(1)))
+    stop(vapply(list(...), chr, character(1L)))
 }

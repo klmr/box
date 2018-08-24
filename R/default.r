@@ -11,7 +11,7 @@
 `%||%` = function (a, b) {
     is_false = function (a) is.logical(a) && ! isTRUE(a)
     is_empty = function (a) is.character(a) && ! nzchar(a)
-    if (is.null(a) || length(a) == 0 || is_false(a) || is_empty(a)) {
+    if (is.null(a) || length(a) == 0L || is_false(a) || is_empty(a)) {
         b
     } else {
         a

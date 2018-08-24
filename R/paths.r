@@ -8,14 +8,14 @@
 #' is unset, R also considers the environment variable \code{R_IMPORT_PATH}.
 #' @keywords internal
 mod_search_path = function () {
-    path_env = strsplit(Sys.getenv('R_MOD_PATH'), .Platform$path.sep)[[1]] %||% NULL
+    path_env = strsplit(Sys.getenv('R_MOD_PATH'), .Platform$path.sep)[[1L]] %||% NULL
     c(getOption('mod.path', path_env), module_base_path(parent.frame()))
 }
 
 #' Split a path into its components and merge them back together
 #'
 #' \code{split_path(path)} is a platform independent and file system logic
-#' aware alternative to \code{strsplit(path, '/')[[1]]}.
+#' aware alternative to \code{strsplit(path, '/')[[1L]]}.
 #' @param path the path to split
 #' @return \code{split_path} returns a character vector of path components that
 #' logically represent \code{path}.

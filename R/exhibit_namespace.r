@@ -28,7 +28,7 @@ exhibit_module_namespace = function (namespace, name, parent, export_list) {
         export_list = ls(namespace)
     else {
         # Verify correctness.
-        exist = vapply(export_list, exists, logical(1), envir = namespace)
+        exist = vapply(export_list, exists, logical(1L), envir = namespace)
         if (! all(exist))
             stop(sprintf('Non-existent function(s) (%s) specified for import',
                          paste(sQuote(export_list[! exist]), collapse = ', ')))

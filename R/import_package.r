@@ -26,7 +26,7 @@ import_package_ = function (package, attach, attach_operators = TRUE) {
             FALSE
     }
 
-    stopifnot(class(attach) == 'logical' && length(attach) == 1)
+    stopifnot(class(attach) == 'logical' && length(attach) == 1L)
 
     module_parent = parent.frame()
 
@@ -52,9 +52,9 @@ import_package = function (package, attach, attach_operators = TRUE) {
     # ensures that the call works regardless of whether it was bare or
     # qualified (`modules::import_package`).
     call = sys.call()
-    call[[1]] = do.call(substitute,
-                        list(call[[1]],
-                             list(import_package = quote(import_package_))))
+    call[[1L]] = do.call(substitute,
+                         list(call[[1L]],
+                              list(import_package = quote(import_package_))))
     if (! inherits(substitute(package), 'character')) {
         msg = sprintf(paste('Calling %s with a variable will change its',
                             'semantics in version 1.0 of %s. Use %s instead.',

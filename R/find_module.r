@@ -10,12 +10,12 @@ find_module = function (module) {
 
     # Use all-but-last parts to construct module source path, last part to
     # determine name of source file.
-    prefix = if (length(parts) == 1) '' else parts[-length(parts)]
+    prefix = if (length(parts) == 1L) '' else parts[-length(parts)]
     suffix = parts[length(parts)]
     module_path = merge_path(prefix)
     file_pattern = sprintf('^%s\\.[rR]$', suffix)
 
-    search_path = if (parts[1] %in% c('.', '..')) {
+    search_path = if (parts[1L] %in% c('.', '..')) {
         calling_module_path()
     } else {
         mod_search_path()
@@ -29,7 +29,7 @@ find_module = function (module) {
     find_candidate = function (path) {
         candidate = list.files(path, file_pattern, full.names = TRUE)
 
-        if (length(candidate) == 0)
+        if (length(candidate) == 0L)
             list.files(file.path(path, suffix), '^__init__\\.[rR]$',
                        full.names = TRUE)
         else
@@ -42,7 +42,7 @@ find_module = function (module) {
         stop('Unable to load module ', sQuote(module), '; not found in ',
              paste(sQuote(search_path), collapse = ', '))
 
-    normalizePath(unname(hits[1]))
+    normalizePath(unname(hits[1L]))
 }
 
 calling_module_path = function () {
@@ -50,10 +50,10 @@ calling_module_path = function () {
     # longer the same as the `parent.env()` of this function. This indicates
     # that we have reached the actual caller of `import`.
     package_env = parent.env(environment())
-    n = 1
+    n = 1L
 
     while (identical(parent.env(parent.frame(n)), package_env))
-        n = n + 1
+        n = n + 1L
 
     module_base_path(parent.frame(n))
 }
@@ -76,7 +76,7 @@ module_init_files = function (module, module_path) {
     has_children = grepl('/__init__\\.[rR]$', module_path)
     path_parts = split_path(module_path)
     path_prefix_length = length(path_parts) - length(module_parts) -
-        if (has_children) 2 else 1
+        if (has_children) 2L else 1L
 
     base_path = merge_path(path_parts[seq_len(path_prefix_length)])
 

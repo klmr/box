@@ -30,7 +30,7 @@ export_submodule_ = function (submodule) {
 
 #' @rdname export_submodule
 export_submodule = function (submodule) {
-    call = `[[<-`(sys.call(), 1, quote(export_submodule_))
+    call = `[[<-`(sys.call(), 1L, quote(export_submodule_))
     if (! inherits(substitute(submodule), 'character')) {
         msg = sprintf(paste('Calling %s with a variable will change its',
                             'semantics in version 1.0 of %s. Use %s instead.',

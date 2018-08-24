@@ -81,7 +81,7 @@ import_ = function (module, attach, attach_operators = TRUE, doc) {
             FALSE
     }
 
-    stopifnot(class(attach) == 'logical' && length(attach) == 1 ||
+    stopifnot(class(attach) == 'logical' && length(attach) == 1L ||
               class(attach) == 'character')
 
     if (is.character(attach)) {
@@ -122,8 +122,8 @@ import = function (module, attach, attach_operators = TRUE, doc) {
     # call works regardless of whether it was bare or qualified
     # (`modules::import`).
     call = sys.call()
-    call[[1]] = do.call(substitute,
-                        list(call[[1]], list(import = quote(import_))))
+    call[[1L]] = do.call(substitute,
+                         list(call[[1L]], list(import = quote(import_))))
     if (! inherits(substitute(module), 'character')) {
         msg = sprintf(paste('Calling %s with a variable will change its',
                             'semantics in version 1.0 of %s. Use %s instead.',
@@ -278,7 +278,7 @@ export_operators = function (environment, parent, module_name) {
 
     operators = Filter(is_op, lsf.str(environment))
 
-    if (length(operators) == 0)
+    if (length(operators) == 0L)
         return()
 
     # Skip one parent environment because this module is hooked into the chain

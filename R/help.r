@@ -12,7 +12,7 @@ parse_documentation = function (module) {
                   blocks = roxygen2_parse_code(module_path, module, registry))
     results = lapply(roclets, roxygen2::roclet_process,
                      parsed = parsed, base_path = dirname(module_path))
-    rdfiles = results[[1]]
+    rdfiles = results[[1L]]
 
     # Due to aliases, documentation entries may have more than one name.
     aliases = lapply(rdfiles, function (rd) unique(rd$fields$alias$values))
@@ -46,9 +46,9 @@ module_help = function (topic, help_type = getOption('help_type', 'text')) {
         stop(sQuote(deparse(topic)), ' is not a valid module help topic',
              call. = FALSE)
 
-    module = get(as.character(topic[[2]]), parent.frame())
+    module = get(as.character(topic[[2L]]), parent.frame())
     module_name = module_name(module)
-    object = as.character(topic[[3]])
+    object = as.character(topic[[3L]])
 
     doc = attr(module, 'doc')[[object]]
     if (is.null(doc))
@@ -65,10 +65,10 @@ is_module_help_topic = function (topic, parent) {
     leftmost_name = function (expr) {
         if (is.name(expr))
             expr
-        else if (! is.call(expr) || expr[[1]] != '$')
+        else if (! is.call(expr) || expr[[1L]] != '$')
             NULL
         else
-            leftmost_name(expr[[2]])
+            leftmost_name(expr[[2L]])
     }
 
     top_module = leftmost_name(topic)
@@ -96,7 +96,7 @@ is_module_help_topic = function (topic, parent) {
             get('?', pos = 'devtools_shims')
         else
             utils::`?`
-        eval(`[[<-`(match.call(), 1, delegate), envir = parent.frame())
+        eval(`[[<-`(match.call(), 1L, delegate), envir = parent.frame())
     }
 }
 
@@ -118,5 +118,5 @@ help = function (topic, ...) {
     } else {
         utils::help
     }
-    eval(`[[<-`(match.call(), 1, delegate), envir = parent.frame())
+    eval(`[[<-`(match.call(), 1L, delegate), envir = parent.frame())
 }

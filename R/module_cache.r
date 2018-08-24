@@ -132,12 +132,12 @@ script_path = function () {
     args = commandArgs()
 
     file_arg = grep('--file=', args)
-    if (length(file_arg) != 0)
+    if (length(file_arg) != 0L)
         return(dirname(sub('--file=', '', args[file_arg])))
 
     f_arg = grep('-f', args)
-    if (length(f_arg) != 0)
-        return(dirname(args[f_arg + 1]))
+    if (length(f_arg) != 0L)
+        return(dirname(args[f_arg + 1L]))
 
     getwd()
 }
@@ -186,5 +186,5 @@ module_name = function (module = parent.frame()) {
     if (inherits(name, 'try-error'))
         NULL
     else
-        strsplit(name, ':', fixed = TRUE)[[1]][2]
+        strsplit(name, ':', fixed = TRUE)[[1L]][2L]
 }

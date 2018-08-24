@@ -25,7 +25,7 @@ roclet_process.roclet_export = function (x, parsed, base_path, global_options = 
     }
 
     setNames(lapply(parsed$blocks, is_block_exported),
-             vapply(parsed$blocks, block_alias, character(1)))
+             vapply(parsed$blocks, block_alias, character(1L)))
 }
 
 #' @importFrom roxygen2 roclet_output

@@ -28,7 +28,7 @@ as.character.mod_info = function (x, ...) {
 }
 
 is_absolute = function (spec) {
-    spec$prefix[1] %in% c('.', '..')
+    spec$prefix[1L] %in% c('.', '..')
 }
 
 find_mod = function (spec) {
