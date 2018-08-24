@@ -80,6 +80,10 @@ test_that('attached names can have aliases', {
 test_that('exports and aliases can’t be duplicated', {
     expect_error(parse_mod_spec(foo/bar[a, b, a]))
     expect_error(parse_mod_spec(foo/bar[x = a, y = b, x = c]))
+
+    m = parse_mod_spec(foo/bar[x = a, a = b, b])
+    expect_true(is_mod_spec(m))
+    expect_equal(m$attach, c(x = 'a', a = 'b', b = 'b'))
 })
 
 test_that('wildcards can be mixed with aliases', {
@@ -170,4 +174,8 @@ test_that('wildcards can be mixed with aliases', {
 test_that('wildcard can’t have alias', {
     expect_error(parse_mod_spec(foo[x = ...]))
     expect_error(parse_mod_spec(foo[x = a, y = ...]))
+
+    m = parse_mod_spec(foo[x = a, a = b, b])
+    expect_true(is_pkg_spec(m))
+    expect_equal(m$attach, c(x = 'a', a = 'b', b = 'b'))
 })
