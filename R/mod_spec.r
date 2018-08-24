@@ -226,5 +226,8 @@ parse_error = function (...) {
             as.character(x)
         }
     }
-    stop(vapply(list(...), chr, character(1L)))
+    stop(simpleError(
+        paste(vapply(list(...), chr, character(1L)), collapse = ''),
+        call = sys.call(-1L)
+    ))
 }

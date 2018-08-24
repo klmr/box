@@ -7,7 +7,8 @@
 rethrow = function (error, call = sys.call(sys.parent())) {
     message = sprintf(
         '%s\n(inside %s)',
-        conditionMessage(error), dQuote(deparse(conditionCall(error)))
+        conditionMessage(error),
+        paste(dQuote(deparse(conditionCall(error))), collapse = '\n')
     )
     stop(simpleError(message, call))
 }
