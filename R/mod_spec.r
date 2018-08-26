@@ -19,6 +19,7 @@
 #' Parse a mod spec expression passed to \code{use}
 #'
 #' @param expr the mod spec expression to parse
+#' @param alias the mod spec alias as a character, or \code{NULL}
 #' @return \code{parse_mod_spec} returns a named list that contains information
 #' about the parsed mod specification. Currently it contains:
 #' \describe{
@@ -31,13 +32,8 @@
 #'      provided an explicit alias}
 #' }
 #' @keywords internal
-parse_mod_spec = function (...) {
-    expr = substitute(list(...))
-    alias = names(expr[-1L])
-    mod_spec = rethrow_on_error(
-        parse_mod_spec_impl(expr[[2L]]),
-        call = sys.call(-1L)
-    )
+parse_mod_spec = function (expr, alias) {
+    mod_spec = rethrow_on_error(parse_mod_spec_impl(expr), call = sys.call(-2L))
 
     mod_spec(
         mod_spec,
@@ -85,7 +81,12 @@ as.character.spec = function (x, ...) {
     r_name = function (names) {
         vapply(
             names,
-            function (n) sprintf('\x1b[33m%s\x1b[0m', deparse(as.name(n), backtick = TRUE)),
+            function (n) {
+                if (is.na(n)) '…' else sprintf(
+                    '\x1b[33m%s\x1b[0m',
+                    deparse(as.name(n), backtick = TRUE)
+                )
+            },
             character(1L)
         )
     }
@@ -93,7 +94,7 @@ as.character.spec = function (x, ...) {
     format_attach = function (a) {
         with_alias = function (names, aliases) {
             mapply(
-                function (n, a) if (identical(n, a)) n else paste(a, '=', n),
+                function (n, a) if (n == '…' || identical(n, a)) n else paste(a, '=', n),
                 names, aliases
             )
         }
@@ -101,13 +102,8 @@ as.character.spec = function (x, ...) {
         if (is.null(a)) {
             ''
         } else {
-            list = if (isTRUE(a)) {
-                '*'
-            } else {
-                aliased_names = with_alias(r_name(a), r_name(names(a)))
-                paste0('[', toString(aliased_names), ']')
-            }
-            paste(', attach =', list)
+            aliased_names = with_alias(r_name(a), r_name(names(a)))
+            paste(', attach =', paste0('[', toString(aliased_names), ']'))
         }
     }
 
@@ -188,16 +184,24 @@ parse_mod_name = function (expr) {
 }
 
 parse_attach_spec = function (expr) {
-    assign_missing_names = function (lst) {
-        setNames(lst, names(lst) %|% unlist(lst))
-    }
+    syms = parse_attach_list(expr[-1L][-1L])
+    list(attach = assign_missing_names(syms))
+}
 
-    items = parse_attach_list(expr[-1L][-1L])
-    if (length(items) == 1L && identical(items[[1L]], '...')) {
-        list(attach = TRUE)
-    } else {
-        list(attach = assign_missing_names(items))
+assign_missing_names = function (syms) {
+    x = setNames(syms, names(syms) %|% unlist(syms))
+    x[x == '...'] = NA_character_
+
+    if (any((dup = duplicated(names(x))))) {
+        parse_error(
+            'Cannot attach duplicate names, found duplicated ',
+            paste(dQuote(unique(names(x)[dup])), collapse = ', ')
+        )
     }
+    if (any(names(syms)[is.na(x)] != '')) {
+        parse_error('Wildcard imports cannot be aliased')
+    }
+    x
 }
 
 parse_attach_list = function (expr) {

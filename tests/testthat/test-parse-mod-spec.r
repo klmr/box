@@ -1,7 +1,12 @@
 context('mod spec parser test')
 
+test_use = function (...) {
+    call = match.call()
+    parse_mod_spec(call[[2]], names(call[-1L]))
+}
+
 test_that('modules without attaching can be parsed', {
-    m = parse_mod_spec(foo/bar)
+    m = test_use(foo/bar)
     expect_true(is_mod_spec(m))
     expect_equal(m$name, 'bar')
     expect_equal(m$prefix, 'foo')
@@ -12,13 +17,13 @@ test_that('modules without attaching can be parsed', {
 
 test_that('parse errors are correctly handled', {
     expect_error(
-        parse_mod_spec(foo/bar[]),
+        test_use(foo/bar[]),
         '^Expected at least one identifier in attach list'
     )
 })
 
 test_that('fully qualified names can be nested', {
-    m = parse_mod_spec(foo/bar/baz)
+    m = test_use(foo/bar/baz)
     expect_true(is_mod_spec(m))
     expect_equal(m$name, 'baz')
     expect_equal(m$prefix, c('foo', 'bar'))
@@ -28,7 +33,7 @@ test_that('fully qualified names can be nested', {
 })
 
 test_that('modules can have explicit aliases', {
-    m = parse_mod_spec(qux = foo/bar)
+    m = test_use(qux = foo/bar)
     expect_true(is_mod_spec(m))
     expect_equal(m$name, 'bar')
     expect_equal(m$prefix, 'foo')
@@ -38,7 +43,7 @@ test_that('modules can have explicit aliases', {
 })
 
 test_that('modules can have specific exports', {
-    m = parse_mod_spec(foo/bar[sym1, sym2])
+    m = test_use(foo/bar[sym1, sym2])
     expect_true(is_mod_spec(m))
     expect_equal(m$name, 'bar')
     expect_equal(m$prefix, 'foo')
@@ -48,7 +53,7 @@ test_that('modules can have specific exports', {
 })
 
 test_that('modules with alias can have specific exports', {
-    m = parse_mod_spec(baz = foo/bar[sym1, sym2])
+    m = test_use(baz = foo/bar[sym1, sym2])
     expect_true(is_mod_spec(m))
     expect_equal(m$name, 'bar')
     expect_equal(m$prefix, 'foo')
@@ -58,17 +63,17 @@ test_that('modules with alias can have specific exports', {
 })
 
 test_that('modules can export everything', {
-    m = parse_mod_spec(foo/bar[...])
+    m = test_use(foo/bar[...])
     expect_true(is_mod_spec(m))
     expect_equal(m$name, 'bar')
     expect_equal(m$prefix, 'foo')
     expect_equal(m$alias, 'bar')
     expect_false(m$explicit)
-    expect_true(m$attach)
+    expect_true(is.na(m$attach))
 })
 
 test_that('attached names can have aliases', {
-    m = parse_mod_spec(foo/bar[alias1 = sym1, sym2])
+    m = test_use(foo/bar[alias1 = sym1, sym2])
     expect_true(is_mod_spec(m))
     expect_equal(m$name, 'bar')
     expect_equal(m$prefix, 'foo')
@@ -78,33 +83,34 @@ test_that('attached names can have aliases', {
 })
 
 test_that('exports and aliases can’t be duplicated', {
-    expect_error(parse_mod_spec(foo/bar[a, b, a]))
-    expect_error(parse_mod_spec(foo/bar[x = a, y = b, x = c]))
+    expect_error(test_use(foo/bar[a, b, a]), 'duplicate names')
+    expect_error(test_use(foo/bar[x = a, y = b, x = c]), 'duplicate names')
+    expect_error(test_use(foo/bar[..., ...]), 'duplicate names')
 
-    m = parse_mod_spec(foo/bar[x = a, a = b, b])
+    m = test_use(foo/bar[x = a, a = b, b])
     expect_true(is_mod_spec(m))
     expect_equal(m$attach, c(x = 'a', a = 'b', b = 'b'))
 })
 
 test_that('wildcards can be mixed with aliases', {
-    m = parse_mod_spec(foo/bar[x = a, y = b, ...])
+    m = test_use(foo/bar[x = a, y = b, ...])
     expect_true(is_mod_spec(m))
     expect_equal(m$name, 'bar')
     expect_equal(m$prefix, 'foo')
     expect_equal(m$alias, 'bar')
     expect_false(m$explicit)
-    expect_equal(m$attach, c(x = 'a', y = 'b', ... = '...'))
+    expect_equal(m$attach, c(x = 'a', y = 'b', ... = NA_character_))
 })
 
 test_that('wildcard can’t have alias', {
-    expect_error(parse_mod_spec(foo/bar[x = ...]))
-    expect_error(parse_mod_spec(foo/bar[x = a, y = ...]))
+    expect_error(test_use(foo/bar[x = ...]), 'cannot be aliased')
+    expect_error(test_use(foo/bar[x = a, y = ...]), 'cannot be aliased')
 })
 
 # … the same for packages.
 
 test_that('packages without attaching can be parsed', {
-    m = parse_mod_spec(foo)
+    m = test_use(foo)
     expect_true(is_pkg_spec(m))
     expect_equal(m$name, 'foo')
     expect_equal(m$alias, 'foo')
@@ -113,7 +119,7 @@ test_that('packages without attaching can be parsed', {
 })
 
 test_that('packages can have explicit alias', {
-    m = parse_mod_spec(bar = foo)
+    m = test_use(bar = foo)
     expect_true(is_pkg_spec(m))
     expect_equal(m$name, 'foo')
     expect_equal(m$alias, 'bar')
@@ -122,7 +128,7 @@ test_that('packages can have explicit alias', {
 })
 
 test_that('packages can have specific exports', {
-    m = parse_mod_spec(foo[sym1, sym2])
+    m = test_use(foo[sym1, sym2])
     expect_true(is_pkg_spec(m))
     expect_equal(m$name, 'foo')
     expect_equal(m$alias, 'foo')
@@ -131,7 +137,7 @@ test_that('packages can have specific exports', {
 })
 
 test_that('packages with alias can have specific exports', {
-    m = parse_mod_spec(bar = foo[sym1, sym2])
+    m = test_use(bar = foo[sym1, sym2])
     expect_true(is_pkg_spec(m))
     expect_equal(m$name, 'foo')
     expect_equal(m$alias, 'bar')
@@ -140,16 +146,16 @@ test_that('packages with alias can have specific exports', {
 })
 
 test_that('packages can export everything', {
-    m = parse_mod_spec(foo[...])
+    m = test_use(foo[...])
     expect_true(is_pkg_spec(m))
     expect_equal(m$name, 'foo')
     expect_equal(m$alias, 'foo')
     expect_false(m$explicit)
-    expect_true(m$attach)
+    expect_true(is.na(m$attach))
 })
 
 test_that('attached names in packages can have aliases', {
-    m = parse_mod_spec(foo[alias1 = sym1, sym2])
+    m = test_use(foo[alias1 = sym1, sym2])
     expect_true(is_pkg_spec(m))
     expect_equal(m$name, 'foo')
     expect_equal(m$alias, 'foo')
@@ -158,24 +164,25 @@ test_that('attached names in packages can have aliases', {
 })
 
 test_that('exports and aliases can’t be duplicated', {
-    expect_error(parse_mod_spec(foo[a, b, a]))
-    expect_error(parse_mod_spec(foo[x = a, y = b, x = c]))
+    expect_error(test_use(foo[a, b, a]), 'duplicate names')
+    expect_error(test_use(foo[x = a, y = b, x = c]), 'duplicate names')
+    expect_error(test_use(foo[..., ...]), 'duplicate names')
+
+    m = test_use(foo[x = a, a = b, b])
+    expect_true(is_pkg_spec(m))
+    expect_equal(m$attach, c(x = 'a', a = 'b', b = 'b'))
 })
 
 test_that('wildcards can be mixed with aliases', {
-    m = parse_mod_spec(foo[x = a, y = b, ...])
+    m = test_use(foo[x = a, y = b, ...])
     expect_true(is_pkg_spec(m))
     expect_equal(m$name, 'foo')
     expect_equal(m$alias, 'foo')
     expect_false(m$explicit)
-    expect_equal(m$attach, c(x = 'a', y = 'b', ... = '...'))
+    expect_equal(m$attach, c(x = 'a', y = 'b', ... = NA_character_))
 })
 
 test_that('wildcard can’t have alias', {
-    expect_error(parse_mod_spec(foo[x = ...]))
-    expect_error(parse_mod_spec(foo[x = a, y = ...]))
-
-    m = parse_mod_spec(foo[x = a, a = b, b])
-    expect_true(is_pkg_spec(m))
-    expect_equal(m$attach, c(x = 'a', a = 'b', b = 'b'))
+    expect_error(test_use(foo[x = ...]), 'cannot be aliased')
+    expect_error(test_use(foo[x = a, y = ...]), 'cannot be aliased')
 })
