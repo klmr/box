@@ -12,20 +12,17 @@ roclet_tags.roclet_export = function (x) {
 
 #' @importFrom roxygen2 roclet_process
 #' @export
-roclet_process.roclet_export = function (x, parsed, base_path, global_options = list()) {
-    is_block_exported = function (block) {
-        'export' %in% names(block)
-    }
+roclet_process.roclet_export = function (
+    x, blocks, env, base_path, global_options = list()
+) {
+    is_block_exported = function (block) 'export' %in% names(block)
 
     block_alias = function (block) {
-        if ('object' %in% names(block))
-            block$object$alias
-        else
-            ''
+        if ('object' %in% names(block)) block$object$alias else ''
     }
 
-    setNames(lapply(parsed$blocks, is_block_exported),
-             vapply(parsed$blocks, block_alias, character(1L)))
+    setNames(lapply(blocks, is_block_exported),
+             vapply(blocks, block_alias, character(1L)))
 }
 
 #' @importFrom roxygen2 roclet_output
