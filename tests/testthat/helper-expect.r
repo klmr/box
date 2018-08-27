@@ -32,3 +32,13 @@ expect_not_in = function (name, list) {
     )
     invisible(act$val)
 }
+
+in_globalenv = function (expr) {
+    old_ls = ls(.GlobalEnv, all.names = TRUE)
+    on.exit({
+        new_ls = ls(.GlobalEnv, all.names = TRUE)
+        to_delete = setdiff(new_ls, old_ls)
+        rm(list = to_delete, envir = .GlobalEnv)
+    })
+    eval.parent(substitute(eval(quote(expr), .GlobalEnv)))
+}

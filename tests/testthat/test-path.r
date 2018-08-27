@@ -36,12 +36,12 @@ test_that('module_file works after attaching modules', {
     import('a', attach = TRUE)
     expect_paths_equal(module_file(), expected_module_file)
 
-    modfile = local({
+    modfile = in_globalenv({
         expected_module_file = module_file()
         a = import('a', attach = TRUE)
         on.exit(unload(a))
         list(actual = module_file(), expected = expected_module_file)
-    }, envir = .GlobalEnv)
+    })
 
     expect_paths_equal(modfile$actual, modfile$expected)
 

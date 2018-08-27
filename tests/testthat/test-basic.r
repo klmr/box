@@ -7,7 +7,7 @@ test_that('module can be imported', {
 })
 
 test_that('import works in global namespace', {
-    local({
+    in_globalenv({
         # Necessary since private names are not exported to global environment
         # when invoked via `testthat::test_check`.
         mod_ns = getNamespace('mod')
@@ -15,7 +15,7 @@ test_that('import works in global namespace', {
         on.exit(unload(a)) # To get rid of attached operators.
         expect_true(mod_ns$is_module_loaded(mod_ns$module_path(a)))
         expect_true('double' %in% ls(a))
-    }, envir = .GlobalEnv)
+    })
 })
 
 test_that('module is uniquely identified by path', {

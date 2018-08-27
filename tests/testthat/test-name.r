@@ -21,11 +21,11 @@ test_that('module_name works after attaching modules', {
     a = import('a', attach = TRUE)
     expect_null(module_name())
 
-    local({
+    in_globalenv({
         a = import('a', attach = TRUE)
         on.exit(unload(a))
         expect_null(module_name())
-    }, envir = .GlobalEnv)
+    })
 
     x = import('mod_name')
 

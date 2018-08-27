@@ -10,7 +10,7 @@ test_that('attach works locally', {
 
 test_that('module can be attached to global environment', {
     searchlen = length(search())
-    a = local(import('a', attach = TRUE), envir = .GlobalEnv)
+    a = in_globalenv(import('a', attach = TRUE))
     expect_that(length(search()), equals(searchlen + 1))
     message(search())
     expect_true(is_module_loaded(module_path(a)))
@@ -26,7 +26,7 @@ test_that('module can be detached', {
 
 test_that('unloading a module detaches it', {
     parent = as.environment(2)
-    a = local(import('a', attach = TRUE), envir = .GlobalEnv)
+    a = in_globalenv(import('a', attach = TRUE))
     expect_that(search()[2], equals('module:a'))
     expect_false(identical(as.environment(2), parent))
 
@@ -36,7 +36,7 @@ test_that('unloading a module detaches it', {
 
 test_that('unloading a module detaches operators', {
     parent = as.environment(2)
-    a = local(import('a', attach_operators = TRUE), envir = .GlobalEnv)
+    a = in_globalenv(import('a', attach_operators = TRUE))
     expect_that(search()[2], equals('operators:a'))
     expect_false(identical(as.environment(2), parent))
 
@@ -52,8 +52,8 @@ test_that('reloading a module reattaches it', {
     expect_false(identical(as.environment(2), parent), 'Precondition')
     expect_true(identical(as.environment(3), parent), 'Precondition')
 
-    local(reload(a), envir = .GlobalEnv)
+    in_globalenv(reload(a))
     expect_false(identical(as.environment(2), parent))
     expect_true(identical(as.environment(3), parent))
-    local(unload(a), envir = .GlobalEnv)
+    in_globalenv(unload(a))
 })

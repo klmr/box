@@ -10,6 +10,7 @@ setup = function () {
 
 teardown = function () {
     options(mod.path = previous_import_path)
+    rm(previous_import_path, envir = .GlobalEnv)
     # Unload all modules
     rm(list = ls(envir = mod:::loaded_modules),
        envir = mod:::loaded_modules)

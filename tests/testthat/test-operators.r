@@ -19,12 +19,12 @@ test_that('operator attachment can be disabled', {
 })
 
 test_that('it works in the global environment', {
-    local({
+    in_globalenv({
         expect_false(exists('%or%'))
         a = import('a')
         on.exit(unload(a))
         expect_true(exists('%or%'))
-    }, envir = .GlobalEnv)
+    })
 })
 
 test_that('S3 operators work', {
