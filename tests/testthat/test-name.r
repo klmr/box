@@ -1,12 +1,11 @@
 context('Module names')
 
 test_that('the global namespace has no module name', {
-    expect_null(module_name())
+    expect_null(mod::name())
 })
 
 test_that('modules have a name', {
     a = import('a')
-    expect_equal(module_name(a), 'a')
     expect_equal(a$get_modname(), 'a')
 })
 
@@ -19,12 +18,12 @@ test_that('module_name works after attaching modules', {
     # Test that #66 is fixed and that there are no regressions.
 
     a = import('a', attach = TRUE)
-    expect_null(module_name())
+    expect_null(mod::name())
 
     in_globalenv({
         a = import('a', attach = TRUE)
         on.exit(unload(a))
-        expect_null(module_name())
+        expect_null(mod::name())
     })
 
     x = import('mod_name')

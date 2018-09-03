@@ -1,21 +1,36 @@
-parse_documentation = function (module) {
-    module_path = module_path(module)
+# NOTE: if this is a variable assignment rather than a function, the tests fail
+# with:
+#
+#  Error in UseMethod("roclet_tags") :
+#     no applicable method for 'roclet_tags' applied to an object of class "c('roclet_export', 'roclet')"
+known_tags = local(function () {
+    if (! exists('cached_tags')) {
+        roclets = list(roxygen2::rd_roclet(), mod_export_roclet())
+        tags = unlist(lapply(roclets, roxygen2::roclet_tags))
+        assign('cached_tags', tags, parent.env(environment()))
+    }
 
-    roclets = list(roxygen2::rd_roclet(), export_roclet())
-    registry = unlist(lapply(roclets, roxygen2::roclet_tags))
-    blocks = roxygen2::parse_file(module_path, module, registry)
-    results = lapply(
-        roclets,
-        roxygen2::roclet_process,
-        blocks = blocks, env = module, base_path = dirname(module_path)
-    )
-    rdfiles = results[[1L]]
+    cached_tags
+})
 
+parse_documentation = function (info, mod_ns) {
+    rdfiles = parse_roxygen_tags(info, mod_ns, roxygen2::rd_roclet())
     # Due to aliases, documentation entries may have more than one name.
     aliases = lapply(rdfiles, function (rd) unique(rd$fields$alias$values))
     names = rep(names(aliases), lengths(aliases))
     docs = setNames(rdfiles[names], unlist(aliases))
     lapply(docs, format, wrap = FALSE)
+}
+
+parse_export_specs = function (info, mod_ns) {
+    is_exported = parse_roxygen_tags(info, mod_ns, mod_export_roclet())
+    names(is_exported)[unlist(is_exported)]
+}
+
+parse_roxygen_tags = function (info, mod_ns, roclet) {
+    mod_path = info$source_path
+    blocks = roxygen2::parse_file(mod_path, mod_ns, known_tags())
+    roxygen2::roclet_process(roclet, blocks, mod_ns, dirname(mod_path))
 }
 
 #' Display module documentation

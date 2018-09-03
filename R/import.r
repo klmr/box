@@ -220,7 +220,7 @@ do_import = function (module_name, module_path, doc) {
     # A good resource for this is:
     # <http://obeautifulcode.com/R/How-R-Searches-And-Finds-Stuff/>
     namespace = structure(new.env(parent = helper_env),
-                          name = paste('namespace', module_name, sep = ':'),
+                          name = module_name,
                           class = c('namespace', 'environment'))
 
     module_attr(namespace, 'name') = environmentName(namespace)
@@ -240,8 +240,10 @@ do_import = function (module_name, module_path, doc) {
 
     make_S3_methods_known(namespace)
 
-    if (doc)
-        attr(namespace, 'doc') = parse_documentation(namespace)
+    if (doc) {
+        info = mod_info(NULL, module_path, NULL)
+        attr(namespace, 'doc') = parse_documentation(info, namespace)
+    }
 
     # No error occured — prevent unloading.
     on.exit()
