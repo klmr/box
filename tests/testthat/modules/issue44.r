@@ -1,1 +1,0 @@
-cat(module_name())

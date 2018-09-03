@@ -70,25 +70,6 @@ test_that('regression #79 is fixed', {
     expect_that(result[3], equals('NULL'))
 })
 
-test_that('‹modules› is attached inside modules', {
-    # Detach ‹modules› temporarily.
-    modules_name = 'package:mod'
-    modules_env = as.environment(modules_name)
-    on.exit(attach(modules_env, name = modules_name))
-    detach(modules_name, character.only = TRUE)
-
-    # Verify that package is no longer attached.
-    expect_false(modules_name %in% search())
-
-    # Verify that trying to call ‹modules› functions fails.
-    expect_that(source('modules/issue44.r'),
-                throws_error('could not find function "module_name"'))
-
-    # Verify that using ‹modules› functions inside module still works.
-    expect_error((result = capture.output(import('issue44'))), NA)
-    expect_that(result, equals('issue44'))
-})
-
 test_that('common split_path operations are working', {
     expect_correct_path_split('foo')
     expect_correct_path_split('foo/')
