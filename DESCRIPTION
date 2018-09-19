@@ -20,6 +20,4 @@ Suggests:
     rmarkdown,
     shiny,
     testthat (>= 2.0.0)
-Remotes:
-    klutometis/roxygen
 VignetteBuilder: knitr
