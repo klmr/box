@@ -126,10 +126,28 @@ as.character.spec = function (x, ...) {
 
 parse_mod_spec_impl = function (expr) {
     if (is.name(expr)) {
-        c(parse_pkg_name(expr), list(attach = NULL))
+        if (identical(expr, quote(.))) {
+            parse_error('Incomplete module name: ', dQuote('.'))
+        } else if (identical(expr, quote(..))) {
+            # parse_mod(quote(../.))
+            list(prefix = '..', name = '.')
+        } else {
+            c(parse_pkg_name(expr), list(attach = NULL))
+        }
     } else if (is.call(expr)) {
         if (identical(expr[[1L]], quote(`[`))) {
-            c(parse_pkg_name(expr[[2L]]), parse_attach_spec(expr))
+            if (is.name((name = expr[[2L]]))) {
+                if (identical(name, quote(.))) {
+                    parse_error('Incomplete module name: ', dQuote('.'))
+                } else if (identical(name, quote(..))) {
+                    # parse_mod(bquote(../.(`[[<-`(expr, 2L, quote(.)))))
+                    c(list(prefix = '..', name = '.'), parse_attach_spec(expr))
+                } else {
+                    c(parse_pkg_name(name), parse_attach_spec(expr))
+                }
+            } else {
+                parse_error('Unexpected token in ', expr)
+            }
         } else if (identical(expr[[1L]], quote(`/`))) {
             parse_mod(expr)
         } else {
@@ -148,17 +166,28 @@ parse_mod = function (expr) {
     prefix = parse_mod_prefix(expr[[2L]])
     mod = expr[[3L]]
 
+    # Runs of `..` from the start are valid; `..` in the middle is not:
+
+    if (any(diff(which(c(TRUE, prefix$prefix == '..'))) > 1L)) {
+        # At least one gap in the sequence of `..` from the start
+        parse_error('Token ', dQuote('..'), ' can only be used as a prefix')
+    }
+
+    if (any(prefix$prefix[-1L] == '.')) {
+        parse_error('Token ', dQuote('.'), ' can only be used as a prefix')
+    }
+
     if (is.call(mod)) {
         if (identical(mod[[1L]], quote(`[`))) {
             c(
-                list(mod = c(parse_mod_name(mod[[2L]]), prefix)),
+                list(mod = c(parse_mod_name(mod[[2L]], prefix), prefix)),
                 parse_attach_spec(mod)
             )
         } else {
             parse_error('Expected module name or attach list, got ', mod)
         }
     } else if (is.name(mod)) {
-        list(mod = c(parse_mod_name(mod), prefix), attach = NULL)
+        list(mod = c(parse_mod_name(mod, prefix), prefix), attach = NULL)
     } else {
         parse_error('Expected module name or attach list, got ', mod)
     }
@@ -179,8 +208,19 @@ parse_mod_prefix = function (expr) {
     }
 }
 
-parse_mod_name = function (expr) {
-    list(name = parse_identifier(expr))
+parse_mod_name = function (expr, prefix) {
+    name = parse_identifier(expr)
+
+    if (length((prefix = prefix$prefix)) > 0L) {
+        dot_after_prefix = name == '.'
+        back_inside_path = ! all(prefix == '..') && name == '..'
+
+        if (dot_after_prefix || back_inside_path) {
+            parse_error('Token ', expr, ' can only be used as a prefix')
+        }
+    }
+
+    list(name = name)
 }
 
 parse_attach_spec = function (expr) {

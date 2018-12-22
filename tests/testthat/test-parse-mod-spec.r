@@ -2,7 +2,7 @@ context('mod spec parser test')
 
 test_use = function (...) {
     call = match.call()
-    parse_mod_spec(call[[2]], names(call[-1L]))
+    parse_mod_spec(call[[2L]], names(call[-1L]))
 }
 
 test_that('modules without attaching can be parsed', {
@@ -30,6 +30,73 @@ test_that('fully qualified names can be nested', {
     expect_equal(m$alias, 'baz')
     expect_false(m$explicit)
     expect_null(m$attach)
+})
+
+test_that('imports can be relative', {
+    expect_error(test_use(.), 'Incomplete module name')
+    expect_error(test_use(.[foo]), 'Incomplete module name')
+
+    m = test_use(./foo)
+    expect_true(is_mod_spec(m))
+    expect_equal(m$name, 'foo')
+    expect_equal(m$prefix, '.')
+    expect_null(m$attach)
+
+    m = test_use(./foo[bar])
+    expect_true(is_mod_spec(m))
+    expect_equal(m$name, 'foo')
+    expect_equal(m$prefix, '.')
+    expect_equal(m$attach, c(bar = 'bar'))
+
+    m = test_use(..)
+    expect_true(is_mod_spec(m))
+    expect_equal(m$name, '.')
+    expect_equal(m$prefix, '..')
+    expect_null(m$attach)
+
+    m = test_use(..[foo])
+    expect_true(is_mod_spec(m))
+    expect_equal(m$name, '.')
+    expect_equal(m$prefix, '..')
+    expect_equal(m$attach, c(foo = 'foo'))
+
+    m = test_use(../foo)
+    expect_true(is_mod_spec(m))
+    expect_equal(m$name, 'foo')
+    expect_equal(m$prefix, '..')
+    expect_null(m$attach)
+
+    m = test_use(../foo[bar])
+    expect_true(is_mod_spec(m))
+    expect_equal(m$name, 'foo')
+    expect_equal(m$prefix, '..')
+    expect_equal(m$attach, c(bar = 'bar'))
+})
+
+test_that('`./` can only be used as a prefix', {
+    expect_error(test_use(a/./b), 'can only be used as a prefix')
+    expect_error(test_use(././b), 'can only be used as a prefix')
+    expect_error(test_use(a/b/.), 'can only be used as a prefix')
+    expect_error(test_use(a/./b[foo]), 'can only be used as a prefix')
+    expect_error(test_use(././b[foo]), 'can only be used as a prefix')
+    expect_error(test_use(a/b/.[foo]), 'can only be used as a prefix')
+
+    expect_error(test_use(../../b), NA)
+    expect_error(test_use(.././b), 'can only be used as a prefix')
+    expect_error(test_use(../.), 'can only be used as a prefix')
+    expect_error(test_use(../../b[foo]), NA)
+    expect_error(test_use(.././b[foo]), 'can only be used as a prefix')
+    expect_error(test_use(../.[foo]), 'can only be used as a prefix')
+
+    expect_error(test_use(a/../b), 'can only be used as a prefix')
+    expect_error(test_use(a/b/..), 'can only be used as a prefix')
+    expect_error(test_use(a/../b[foo]), 'can only be used as a prefix')
+    expect_error(test_use(a/b/..[foo]), 'can only be used as a prefix')
+
+    expect_error(test_use(./../b), 'can only be used as a prefix')
+    expect_error(test_use(./..), 'can only be used as a prefix')
+    expect_error(test_use(./../b[foo]), 'can only be used as a prefix')
+    expect_error(test_use(./..[foo]), 'can only be used as a prefix')
 })
 
 test_that('modules can have explicit aliases', {
