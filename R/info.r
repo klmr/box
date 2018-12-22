@@ -83,7 +83,7 @@ find_global_mod = function (spec) {
 #' module source location and its parent.
 #' @details
 #' A module is physically represented in the file system either by
-#' \code{‹mod_name(spec)›.r} or by \code{‹mad_name(spec)›/__init__.r}, in that
+#' \code{‹spec_name(spec)›.r} or by \code{‹spec_name(spec)›/__init__.r}, in that
 #' order of preference in case both exist. File extensions are case insensitive
 #' to allow for R’s obsession with capital-R extensions (but lower-case are
 #' given preference).
@@ -105,8 +105,8 @@ find_in_path = function (spec, base_paths) {
 
     if (is.na(which_base)) {
         stop(
-            'Unable to load module ', sQuote(mod_name(spec)), '; not found in ',
-            paste(sQuote(base_paths), collapse = ', ')
+            'Unable to load module ', sQuote(spec_name(spec)),
+            '; not found in ', paste(sQuote(base_paths), collapse = ', ')
         )
     }
 
