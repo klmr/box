@@ -1,7 +1,7 @@
 # Module/package specification expression grammar as a PEG, approximating the R
 # parse tree:
 #
-# mod_spec    → pkg_name (“[” attach_spec “]”)? !“/” /
+# spec        → pkg_name (“[” attach_spec “]”)? !“/” /
 #               mod
 # pkg_name    → identifier
 # mod         → mod_prefix “/” mod_name (“[” attach_spec “]”)?
@@ -16,11 +16,11 @@
 # Note: This is missing the alias declaration, since that is not captured in the
 # AST provided by R. It is instead handled separately.
 
-#' Parse a mod spec expression passed to \code{use}
+#' Parse a mod or pkg spec expression passed to \code{use}
 #'
-#' @param expr the mod spec expression to parse
-#' @param alias the mod spec alias as a character, or \code{NULL}
-#' @return \code{parse_mod_spec} returns a named list that contains information
+#' @param expr the mod or pkg spec expression to parse
+#' @param alias the mod or pkg spec alias as a character, or \code{NULL}
+#' @return \code{parse_spec} returns a named list that contains information
 #' about the parsed mod specification. Currently it contains:
 #' \describe{
 #'  \item{\code{name}}{the module or package name}
@@ -32,43 +32,45 @@
 #'      provided an explicit alias}
 #' }
 #' @keywords internal
-parse_mod_spec = function (expr, alias) {
-    mod_spec = rethrow_on_error(parse_mod_spec_impl(expr), call = sys.call(-2L))
+#' @name spec
+parse_spec = function (expr, alias) {
+    spec = rethrow_on_error(parse_spec_impl(expr), call = sys.call(-2L))
 
-    mod_spec(
-        mod_spec,
-        alias = alias %||% (mod_spec$mod %||% mod_spec$pkg)$name,
-        explicit = ! is.null(alias)
-    )
-}
-
-mod_spec = function (spec, ...) {
     is_pkg = 'pkg' %in% names(spec)
-    base_spec = c(spec$mod, spec$pkg)
-    additional_spec = spec[setdiff(names(spec), c('mod', 'pkg'))]
-    structure(
-        c(base_spec, additional_spec, ...),
-        class = c(if (is_pkg) 'pkg_spec' else 'mod_spec', 'spec')
-    )
+    spec_type = if (is_pkg) pkg_spec else mod_spec
+    name = spec[[if (is_pkg) 'pkg' else 'mod']]$name
+    spec_type(spec, alias = alias %||% name, explicit = ! is.null(alias))
 }
 
-is_mod_spec = function (x) {
-    inherits(x, 'mod_spec')
+#' @param spec named list of information the parser constructed from a given
+#' spec expression
+#' @param ... further information about a spec, not represented by the spec
+#' expression parse tree
+#' @keywords internal
+#' @name spec
+mod_spec = function (spec, ...) {
+    extra_spec = spec[setdiff(names(spec), 'mod')]
+    structure(c(spec$mod, extra_spec, ...), class = c('mod_spec', 'spec'))
 }
 
-is_pkg_spec = function (x) {
-    inherits(x, 'pkg_spec')
+#' @keywords internal
+#' @name spec
+pkg_spec = function (spec, ...) {
+    extra_spec = spec[setdiff(names(spec), 'pkg')]
+    structure(c(spec$pkg, extra_spec, ...), class = c('pkg_spec', 'spec'))
 }
 
-mod_name = function (spec) {
-    UseMethod('mod_name')
+#' @keywords internal
+#' @name spec
+spec_name = function (spec) {
+    UseMethod('spec_name')
 }
 
-mod_name.mod_spec = function (spec) {
+spec_name.mod_spec = function (spec) {
     paste(paste(spec$prefix, collapse = '/'), spec$name, sep = '/')
 }
 
-mod_name.pkg_spec = function (spec) {
+spec_name.pkg_spec = function (spec) {
     spec$name
 }
 
@@ -124,7 +126,7 @@ as.character.spec = function (x, ...) {
     )
 }
 
-parse_mod_spec_impl = function (expr) {
+parse_spec_impl = function (expr) {
     if (is.name(expr)) {
         if (identical(expr, quote(.))) {
             parse_error('Incomplete module name: ', dQuote('.'))

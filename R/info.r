@@ -1,17 +1,34 @@
 #' Information about a physical module or package
 #'
-#' A \code{mod_info} represents an existing, installed module or package and its
-#' runtime physical location (usually in the file system).
+#' A \code{mod_info} represents an existing, installed module and its runtime
+#' physical location (usually in the file system).
+#' @param mod_spec a \code{mod_spec}
+#' @param source_path character string full path to the physical module location
+#' @param parent FIXME: figure out.
 #' @keywords internal
-mod_info = function (spec, source_path, parent) {
-    structure(as.list(environment()), class = 'mod_info')
+#' @name info
+mod_info = function (mod_spec, source_path, parent) {
+    structure(
+        list(spec = mod_spec, source_path = source_path, parent = parent),
+        class = c('mod_info', 'info')
+    )
 }
 
+#' A \code{pkg_info} represents an existing, installed package.
+#' @param pkg_spec a \code{pkg_spec}
+#' @keywords internal
+#' @name info
+pkg_info = function (pkg_spec) {
+    structure(list(spec = pkg_spec), class = c('pkg_info', 'info'))
+}
+
+#' @keywords internal
+#' @name info
 mod_parent_info = function (source_path) {
     mod_info(NULL, source_path, find_mod_parent(source_path))
 }
 
-print.mod_info = function (x, ...) {
+print.info = function (x, ...) {
     cat(as.character(x, ...), '\n', sep = '')
     invisible(x)
 }
@@ -27,12 +44,25 @@ as.character.mod_info = function (x, ...) {
     sprintf('%s:\n  path: %s%s', x$spec, quote(x$source_path), parent)
 }
 
+as.character.pkg_info = function (x, ...) {
+    path = getNamespaceInfo(x$spec$name, 'path')
+    sprintf('%s:\n  path: \x1B[33m%s\x1B[0m', x$spec, path)
+}
+
 is_absolute = function (spec) {
     spec$prefix[1L] %in% c('.', '..')
 }
 
 find_mod = function (spec) {
+    UseMethod('find_mod')
+}
+
+find_mod.mod_spec = function (spec) {
     if (is_absolute(spec)) find_local_mod(spec) else find_global_mod(spec)
+}
+
+find_mod.pkg_spec = function (spec) {
+    pkg_info(spec)
 }
 
 find_local_mod = function (spec) {
