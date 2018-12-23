@@ -12,6 +12,21 @@ mod_search_path = function () {
     c(getOption('mod.path', path_env), module_base_path(parent.frame()))
 }
 
+calling_mod_path = function () {
+    # Go up chain of function calls until the first call that is no longer in
+    # the {mod} package.
+    n = 1L
+    pkg_ns_env = parent.env(environment())
+    while (identical((env = mod_topenv(parent.frame(n))), pkg_ns_env)) n = n + 1L
+
+    # FIXME: Make work for modules imported inside package, if necessary.
+    if (is_namespace(env)) {
+        dirname(get_namespace_info(env, 'info')$source_path)
+    } else {
+        script_path()
+    }
+}
+
 #' Split a path into its components and merge them back together
 #'
 #' \code{split_path(path)} is a platform independent and file system logic
