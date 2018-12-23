@@ -6,4 +6,8 @@
 ^README\.md$
 ^printenv\.r$
 ^\.travis\.yml$
-CONTRIBUTING.md
+^CONTRIBUTING.md^
+^_pkgdown\.yml$
+^doc$
+^.*\.Rproj$
+^\.Rproj\.user$
