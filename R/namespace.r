@@ -24,12 +24,12 @@ is_namespace = function (env) {
     # inherits(get0('.__module__.', env, inherits = FALSE), 'mod_info')
 }
 
-#' @name namespace
+#' @rdname namespace
 get_namespace_info = function (ns, which) {
     get0(which, ns$.__module__., inherits = FALSE)
 }
 
-#' @name namespace
+#' @rdname namespace
 set_namespace_info = function (ns, which, value) {
     assign(which, value, envir = ns$.__module__.)
 }

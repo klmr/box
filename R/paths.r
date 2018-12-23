@@ -4,12 +4,15 @@
 #' The current module’s path always has the lowest priority.
 #'
 #' There are two ways of modifying the module search path: by default,
-#' \code{options('import.path')} specifies the search path. If and only if that
-#' is unset, R also considers the environment variable \code{R_IMPORT_PATH}.
+#' \code{options('mod')$path} specifies the search path as a character vector.
+#' Users can override its value by separately setting the environment variable
+#' \code{R_MOD_PATH} to one or more paths, separated by the platform’s path
+#' separator.
 #' @keywords internal
 mod_search_path = function () {
-    path_env = strsplit(Sys.getenv('R_MOD_PATH'), .Platform$path.sep)[[1L]] %||% NULL
-    c(getOption('mod.path', path_env), module_base_path(parent.frame()))
+    option_value = get_option('path')
+    env_value = strsplit(Sys.getenv('R_MOD_PATH'), .Platform$path.sep)[[1L]]
+    c(option_value, env_value, module_base_path(parent.frame()))
 }
 
 calling_mod_path = function () {

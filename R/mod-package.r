@@ -45,3 +45,24 @@
 #' @importFrom stats setNames
 #' @importFrom utils lsf.str
 NULL
+
+#' Return mod option settings
+#'
+#' \code{get_option(which)} returns a {mod} related R option given by
+#' \code{which}.
+#' @param which name of the option to return
+#' @param default value to return if option is not set (default: \code{NULL})
+get_option = function (which, default = NULL) {
+    opts = getOption('mod', list())
+    opts[[which]] %||% default
+}
+
+#' \code{set_option(which, value)} sets a {mod} related R option.
+#' @param value new value to set the option to.
+#' @rdname get_option
+set_options = function (...) {
+    opts = getOption('mod', list())
+    args = list(...)
+    opts[names(args)] = args
+    options(mod = opts)
+}

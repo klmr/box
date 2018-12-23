@@ -2,18 +2,17 @@ context('Submodules test')
 
 setup = function () {
     thispath = 'modules/nested'
-    prev = getOption('mod.path')
+    prev = mod::get_option('path')
     if (! identical(prev, thispath))
         previous_import_path <<- prev
-    options(mod.path = thispath)
+    mod::set_options(path = thispath)
 }
 
 teardown = function () {
-    options(mod.path = previous_import_path)
+    mod::set_options(path = previous_import_path)
     rm(previous_import_path, envir = .GlobalEnv)
     # Unload all modules
-    rm(list = ls(envir = mod:::loaded_modules),
-       envir = mod:::loaded_modules)
+    rm(list = ls(envir = mod:::loaded_modules), envir = mod:::loaded_modules)
 }
 
 test_that('submodules can be loaded one by one', {
