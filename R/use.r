@@ -26,7 +26,7 @@ use_one = function (declaration, alias, caller) {
     spec = parse_spec(declaration, alias)
     info = rethrow_on_error(find_mod(spec), sys.call(-1L))
     mod_ns = load_mod(info)
-    mod_env = export(info, mod_ns, caller)
+    mod_env = import_symbols(info, mod_ns, caller)
     attach_to_caller(spec, mod_env, caller)
     assign_alias(spec, mod_env, caller)
 }
@@ -99,26 +99,22 @@ load_mod.pkg_info = function (info) {
     loadNamespace(info$spec$name)
 }
 
-# FIXME: Can we make `export` nongeneric? Bulk (all?) of the implementation is
-# identical,  since the starting point is the same type (namespace).
-export = function (info, ns, caller) UseMethod('export')
-
-export.mod_info = function (info, ns, caller) {
+import_symbols = function (info, ns, caller) {
     env = make_mod_env(info, caller)
-    exports = get_namespace_info(ns, 'exports')
+    exports = get_exports(ns)
     list2env(mget(exports, ns, inherits = FALSE), envir = env)
     # TODO: Lock namespace and/or ~-bindings?
+    # FIXME: Handle lazydata & depends
     lockEnvironment(env, bindings = TRUE)
     env
 }
 
-export.pkg_info = function (info, ns, caller) {
-    env = make_mod_env(info, caller)
-    exports = getNamespaceExports(ns)
-    importIntoEnv(env, exports, ns, exports)
-    # FIXME: Handle lazydata & depends
-    lockEnvironment(env, bindings = TRUE)
-    env
+get_exports = function (ns) {
+    if (is_namespace(ns)) {
+        get_namespace_info(ns, 'exports')
+    } else {
+        getNamespaceExports(ns)
+    }
 }
 
 attach_to_caller = function (spec, mod_env, caller) {
