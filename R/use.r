@@ -69,7 +69,6 @@ load_from_source = function (info, mod_ns) {
     # TODO: When do we load the documentation?
     # set_namespace_info(mod_ns, 'doc', parse_documentation(info, mod_ns))
     make_S3_methods_known(mod_ns)
-    execute_hooks(info, mod_ns, 'on_load')
     # TODO: Lock environment? Lock bindings?! The latter breaks some tests.
     lockEnvironment(mod_ns, bindings = FALSE)
 }
