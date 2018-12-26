@@ -1,1 +1,1 @@
-export_submodule('./a')
+mod::export(./a[...])
