@@ -110,12 +110,12 @@ test_that('wildcard attachments can contain aliases', {
     # Attach everything, and give some names aliases
     devtools_exports = getNamespaceExports('devtools')
     expected = c(
-        setdiff(devtools_exports, c('test', 'load_data')),
-        'test_alias', 'ld',
+        setdiff(devtools_exports, c('test', 'r_env_vars')),
+        'test_alias', 'ev',
         'devtools_exports', 'expected'
     )
     expect_length(ls(), 2L) # = `devtools_exports`, `expected`
-    mod::use(devtools[..., test_alias = test, ld = load_data])
+    mod::use(devtools[..., test_alias = test, ev = r_env_vars])
     expect_equal(length(ls()), length(expected))
     expect_false(any(is.na(match(ls(), expected))))
 })
@@ -127,8 +127,8 @@ test_that('non-existent aliases raise error', {
 })
 
 test_that('only exported things can be attached', {
-    expect_in('register_s3', ls(getNamespace('devtools')))
-    expect_error(mod::use(devtools[register_s3]), 'not exported')
+    expect_in('indent', ls(getNamespace('devtools')))
+    expect_error(mod::use(devtools[indent]), 'not exported')
 })
 
 test_that('packages that attach things are not aliased', {
