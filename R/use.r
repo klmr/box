@@ -19,7 +19,6 @@ use = function (...) {
     for (i in seq_along(call)[-1L]) {
         use_one(call[[i]], aliases[[i]], caller)
     }
-    invisible()
 }
 
 use_one = function (declaration, alias, caller) {
