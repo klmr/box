@@ -1,1 +1,2 @@
+#' @export
 answer = 42
