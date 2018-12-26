@@ -15,6 +15,7 @@ double = function (x) x * 2
 modname = mod::name()
 
 #' Counter for testing
+#' @export
 counter = 1
 
 #' The module’s name

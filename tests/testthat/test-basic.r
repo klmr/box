@@ -1,61 +1,65 @@
 context('Basic import test')
 
+is_module_loaded = function (mod) {
+    mod:::is_mod_loaded(attr(mod, 'info'))
+}
+
+module_path = function (mod) {
+    attr(mod, 'info')$source_path
+}
+
 test_that('module can be imported', {
-    a = import('a')
-    expect_true(is_module_loaded(module_path(a)))
+    mod::use(./modules/a)
+    expect_true(is_module_loaded(a))
     expect_true('double' %in% ls(a))
 })
 
 test_that('import works in global namespace', {
     in_globalenv({
-        # Necessary since private names are not exported to global environment
-        # when invoked via `testthat::test_check`.
-        mod_ns = getNamespace('mod')
-        a = import('a')
-        on.exit(unload(a)) # To get rid of attached operators.
-        expect_true(mod_ns$is_module_loaded(mod_ns$module_path(a)))
+        mod::use(./modules/a)
+        expect_true(mod:::is_mod_loaded(attr(a, 'info')))
         expect_true('double' %in% ls(a))
     })
 })
 
 test_that('module is uniquely identified by path', {
-    a = import('a')
-    ba = import('b/a')
-    expect_true(is_module_loaded(module_path(a)))
-    expect_true(is_module_loaded(module_path(ba)))
+    mod::use(./modules/a)
+    mod::use(ba = ./modules/b/a)
+    expect_true(is_module_loaded(a))
+    expect_true(is_module_loaded(ba))
     expect_not_identical(module_path(a), module_path(ba))
     expect_true('double' %in% ls(a))
     expect_false('double' %in% ls(ba))
 })
 
 test_that('can use imported function', {
-    a = import('a')
+    mod::use(./modules/a)
     expect_that(a$double(42), equals(42 * 2))
 })
 
 test_that('modules export all objects', {
-    a = import('a')
+    mod::use(./modules/a)
     expect_gt(length(lsf.str(a)), 0)
     expect_gt(length(ls(a)), length(lsf.str(a)))
     a_namespace = environment(a$double)
-    expect_that(a$counter, equals(1))
+    expect_equal(a$counter, 1)
 })
 
 test_that('module can modify its variables', {
-    a = import('a')
+    mod::use(./modules/a)
     counter = a$get_counter()
     a$inc()
-    expect_that(a$get_counter(), equals(counter + 1))
+    expect_equal(a$get_counter(), counter + 1)
 })
 
 test_that('hidden objects are not exported', {
-    a = import('a')
+    mod::use(./modules/a)
     expect_true(exists('counter', envir = a))
     expect_false(exists('.modname', envir = a))
 })
 
 test_that('module bindings are locked', {
-    a = import('a')
+    mod::use(./modules/a)
 
     expect_true(environmentIsLocked(a))
     expect_true(bindingIsLocked('get_counter', a))
