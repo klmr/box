@@ -25,6 +25,11 @@ use_one = function (declaration, alias, caller) {
     spec = parse_spec(declaration, alias)
     info = rethrow_on_error(find_mod(spec), sys.call(-1L))
     mod_ns = load_mod(info)
+    if (is_namespace(caller)) {
+        import_decl = structure(mod_ns, expr = declaration, spec = spec)
+        existing_imports = get_namespace_info(caller, 'imports', list())
+        set_namespace_info(caller, 'imports', c(existing_imports, import_decl))
+    }
     mod_env = import_symbols(info, mod_ns, caller)
     attach_to_caller(spec, mod_env, caller)
     assign_alias(spec, mod_env, caller)
@@ -98,21 +103,44 @@ load_mod.pkg_info = function (info) {
 }
 
 import_symbols = function (info, ns, caller) {
-    env = make_mod_env(info, caller)
-    exports = get_exports(ns)
-    list2env(mget(exports, ns, inherits = FALSE), envir = env)
+    UseMethod('import_symbols')
+}
+
+import_symbols.mod_info = function (info, ns, caller) {
+    mod_env = make_mod_env(info, caller)
+    exports = get_namespace_info(ns, 'exports')
+    direct_exports = exports[attr(exports, 'assignments')]
+    list2env(mget(names(direct_exports), ns, inherits = FALSE), envir = mod_env)
+
+    reexports = exports[attr(exports, 'imports')]
+    imports = get_namespace_info(ns, 'imports')
+
+    find_matching_import = function (imports, reexport) {
+        reexport_expr = attr(reexport, 'call')[[-1L]]
+        for (import in imports) {
+            if (identical(attr(import, 'expr'), reexport_expr)) return(import)
+        }
+    }
+
+    for (reexport in reexports) {
+        import_ns = find_matching_import(imports, reexport)
+        import_spec = attr(import_ns, 'spec')
+        attach_to_caller(import_spec, import_ns, mod_env)
+        assign_alias(import_spec, import_ns, mod_env)
+    }
+
     # TODO: Lock namespace and/or ~-bindings?
+    lockEnvironment(mod_env, bindings = TRUE)
+    mod_env
+}
+
+import_symbols.pkg_info = function (info, ns, caller) {
+    env = make_mod_env(info, caller)
+    exports = getNamespaceExports(ns)
+    list2env(mget(exports, ns, inherits = FALSE), envir = env)
     # FIXME: Handle lazydata & depends
     lockEnvironment(env, bindings = TRUE)
     env
-}
-
-get_exports = function (ns) {
-    if (is_namespace(ns)) {
-        get_namespace_info(ns, 'exports')
-    } else {
-        getNamespaceExports(ns)
-    }
 }
 
 attach_to_caller = function (spec, mod_env, caller) {
@@ -130,7 +158,10 @@ attach_to_caller = function (spec, mod_env, caller) {
     }
 
     if (any(is_wildcard)) {
+        # BUG (CRITICAL): This attaches all, not just *exported* names.
         attach_list = ls(mod_env)
+        if (length(attach_list) == 0L) return()
+
         aliases = attach_list
         if (length(spec$attach) > 1L) {
             # Substitute aliased names in export list
