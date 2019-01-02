@@ -5,28 +5,28 @@ test_that('the global namespace has no module name', {
 })
 
 test_that('modules have a name', {
-    a = import('a')
+    mod::use(modules/a)
     expect_equal(a$get_modname(), 'a')
 })
 
 test_that('module names can be read inside functions', {
-    a = import('a')
+    mod::use(modules/a)
     expect_equal(a$get_modname2(), 'a')
 })
 
 test_that('module_name works after attaching modules', {
     # Test that #66 is fixed and that there are no regressions.
 
-    a = import('a', attach = TRUE)
+    mod::use(a = modules/a[...])
     expect_null(mod::name())
 
     in_globalenv({
-        a = import('a', attach = TRUE)
-        on.exit(unload(a))
+        mod::use(a = modules/a[...])
+        on.exit(mod::unload(a))
         expect_null(mod::name())
     })
 
-    x = import('mod_name')
+    mod::use(x = modules/mod_name)
 
     expect_that(x$this_module_name, equals('mod_name'))
     expect_that(x$function_module_name(), equals('mod_name'))
