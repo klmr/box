@@ -33,7 +33,7 @@
 #'     in interactive mode. The option defaults to \code{TRUE}.
 #' }
 #'
-#' @name modules
+#' @name mod
 #' @docType package
 #' @seealso \code{\link{import}}
 #' @seealso \code{\link{import_package}}
