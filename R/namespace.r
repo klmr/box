@@ -17,9 +17,12 @@ make_namespace = function (info) {
     ns_env
 }
 
+#' \code{is_namespace} checks whether a given environment corresponds to a
+#' module namespace.
+#' @param env Environment that may be a module namespace.
 #' @rdname namespace
 is_namespace = function (env) {
-    ! is.null(get0('.__module__.', env, inherits = FALSE))
+    exists('.__module__.', env, mode = 'environment', inherits = FALSE)
 }
 
 #' @rdname namespace
