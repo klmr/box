@@ -12,8 +12,9 @@ vignette: >
 ## Preliminaries
 
 To ensure that module environments are properly isolates from each other, and to
-enable fine-grained control over imports and exports, loaded modules correspond
-to a mesh of several interconnected environments.
+enable fine-grained control over imports and exports, loaded modules (as well as
+packages loaded via `mod::use`) correspond to a mesh of several interconnected
+environments.
 
 Unfortunately the exact relationship between these environments isn’t trivial,
 so the following document aims at explaining the gist.
@@ -24,6 +25,10 @@ package environments, see [How R Searches and Finds Stuff](http://blog.obeautifu
 by Suraj Gupta, and [*Environments*](http://adv-r.had.co.nz/Environments.html)
 in *Advanced R* by Hadley Wickham. The following assumes that the reader has a
 more than passing familiarity with these concepts.
+
+When speaking of “package environments” above and in the following, this refers
+to packages as handled by base R and the R package namespace functionality. For
+packages that are loaded by `mod::use`, the rules are the same as for modules.
 
 Let’s now consider an example of several loaded modules, and how they interact.
 
@@ -130,3 +135,8 @@ this environment.
 
 Similarly, attached symbols are selected as a subset from the module export
 environment (then copied into the imports environment).
+
+There is no direct equivalent to this environment in R packages, because R
+packages do not distinguish between exported names and names imported by the
+code that loaded the package. By contrast, {mod} needs to distinguish the set of
+exports from the set of names that are imported (= “attached”) by client code.
