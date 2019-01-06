@@ -1,0 +1,132 @@
+---
+title: "The hierarchy of module environments explained"
+author: Konrad Rudolph
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Preliminaries
+
+To ensure that module environments are properly isolates from each other, and to
+enable fine-grained control over imports and exports, loaded modules correspond
+to a mesh of several interconnected environments.
+
+Unfortunately the exact relationship between these environments isn’t trivial,
+so the following document aims at explaining the gist.
+
+Fundamentally, module environments follow a similar architecture to package
+environments, but they deviate in crucial ways. For a good explanation of
+package environments, see [How R Searches and Finds Stuff](http://blog.obeautifulcode.com/R/How-R-Searches-And-Finds-Stuff/)
+by Suraj Gupta, and [*Environments*](http://adv-r.had.co.nz/Environments.html)
+in *Advanced R* by Hadley Wickham. The following assumes that the reader has a
+more than passing familiarity with these concepts.
+
+Let’s now consider an example of several loaded modules, and how they interact.
+
+## An example
+
+This example will use three modules — the minimum number necessary to show some
+of the interactions of the module environments. Let’s define these three
+modules. We’ll do so in inverse order of their usage:
+
+### <code><span style="background: #1DB100; color: white; padding: 0 5px; border-radius: 2px;">c.r</span></code>
+
+```{r}
+#' @export
+f = function () "c$f"
+```
+
+Module `c` defines and exports one symbol, the function `f`.
+
+### <code><span style="background: #FF9300; color: white; padding: 0 5px; border-radius: 2px;">b.r</span></code>
+
+```{r eval = FALSE}
+#' @export
+g = function () "b$g"
+
+a = "b$a"
+```
+
+Module `b` defines and exports the function `g`, and in addition defines the
+name `a`.
+
+### <code><span style="background: #00A2FF; color: white; padding: 0 5px; border-radius: 2px;">a.r</span></code>
+
+```{r eval = FALSE}
+#' @export
+mod::use(./b[...])
+
+mod::use(./c[...])
+
+#' @export
+mod::use(./c)
+
+#' @export
+f = function () "b$f"
+
+f_of_c1 = c$f
+f_of_c2 = get('f', parent.env(enironment()))
+stopifnot(identical(f_of_c1, f_of_c2))
+```
+
+Module `a` imports and re-exports all names from `b`; it also imports, but does
+not re-export, all names from `c` (and, additionally, defines an alias for the
+module).
+
+It further defines and exports the function `f` and defines, but does not
+export, the functions `f_of_c1` and `f_of_c2` (which are defined in such a way
+that they are identical to each other — hopefully it will become clear why
+later).
+
+Finally, let’s use the modules by executing the following code:
+
+```{r eval = FALSE}
+mod::use(./a[f])
+```
+
+Now the name `a` is defined in `.GlobalEnv` and refers to the module environment
+of module `a`. The exported names of `a` are also available in `.GlobalEnv` (but
+not defined *inside* `.GlobalEnv`).
+
+The loaded modules can be represented by the following schematic:
+
+![](environment-schema.png)
+
+Let’s go over the different types of environment associated with each module,
+and how they are connected.
+
+## Environments
+
+### Module namespace
+
+Modules are loaded into their own dedicated environment, the *module namespace*.
+Every name that is defined by a module is defined inside it. It is thus also the
+enclosing environment of the module’s functions. Lastly, the module namespace
+also stores meta-information about the module in a hidden member named
+`.__module__.`.
+
+This corresponds to the package namespace.
+
+### Module imports environment
+
+The parent environment of the module namespace is the imports environment, which
+contains all the names that a module imports via attachment declarations in
+`mod::use` expressions.
+
+The parent environment of the imports environment is the R `base` namespace
+environment. The module imports environment thus corresponds to the package
+imports environment.
+
+### Module export environment
+
+The module export environment, also called just “module environment” in the code
+base, contains all names that are marked as exported by a module. If users
+create a module alias in their `mod::use` call, the alias will be a reference to
+this environment.
+
+Similarly, attached symbols are selected as a subset from the module export
+environment (then copied into the imports environment).
