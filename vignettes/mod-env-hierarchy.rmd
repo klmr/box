@@ -71,10 +71,10 @@ mod::use(./c[...])
 mod::use(./c)
 
 #' @export
-f = function () "b$f"
+f = function () "a$f"
 
 f_of_c1 = c$f
-f_of_c2 = get('f', parent.env(enironment()))
+f_of_c2 = get('f', parent.env(environment()))
 stopifnot(identical(f_of_c1, f_of_c2))
 ```
 
