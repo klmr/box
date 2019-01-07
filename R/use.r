@@ -26,13 +26,15 @@ use_one = function (declaration, alias, caller) {
     info = rethrow_on_error(find_mod(spec), sys.call(-1L))
     mod_ns = load_mod(info)
     if (is_namespace(caller)) {
-        import_decl = structure(mod_ns, expr = declaration, spec = spec)
+        # Import declarations are stored in a list in the module metadata
+        # dictionary. They are looked up by their `mod::use` call signature.
+        import_decl = structure(mod_ns, expr = declaration, info = info)
         existing_imports = get_namespace_info(caller, 'imports', list())
         set_namespace_info(caller, 'imports', c(existing_imports, import_decl))
     }
-    mod_env = import_symbols(info, mod_ns, caller)
-    attach_to_caller(spec, mod_env, caller)
-    assign_alias(spec, mod_env, caller)
+    mod_exports = get_mod_exports(info, mod_ns, caller)
+    attach_to_caller(spec, mod_exports, caller)
+    assign_alias(spec, mod_exports, caller)
 }
 
 load_mod = function (info) {
@@ -89,28 +91,25 @@ load_mod.mod_info = function (info) {
 
     mod_ns = make_namespace(info)
     register_mod(info, mod_ns)
-    load_mod(info$parent)
     load_from_source(info, mod_ns)
 
     on.exit()
     mod_ns
 }
 
-load_mod.NULL = invisible
-
 load_mod.pkg_info = function (info) {
     loadNamespace(info$spec$name)
 }
 
-import_symbols = function (info, ns, caller) {
-    UseMethod('import_symbols')
+get_mod_exports = function (info, ns, caller) {
+    UseMethod('get_mod_exports')
 }
 
-import_symbols.mod_info = function (info, ns, caller) {
-    mod_env = make_mod_env(info, caller)
+get_mod_exports.mod_info = function (info, ns, caller) {
+    env = make_export_env(info)
     exports = get_namespace_info(ns, 'exports')
     direct_exports = exports[attr(exports, 'assignments')]
-    list2env(mget(names(direct_exports), ns, inherits = FALSE), envir = mod_env)
+    list2env(mget(names(direct_exports), ns, inherits = FALSE), envir = env)
 
     reexports = exports[attr(exports, 'imports')]
     imports = get_namespace_info(ns, 'imports')
@@ -124,18 +123,20 @@ import_symbols.mod_info = function (info, ns, caller) {
 
     for (reexport in reexports) {
         import_ns = find_matching_import(imports, reexport)
-        import_spec = attr(import_ns, 'spec')
-        attach_to_caller(import_spec, import_ns, mod_env)
-        assign_alias(import_spec, import_ns, mod_env)
+        import_info = attr(import_ns, 'info')
+        import_spec = import_info$spec
+        import_exports = get_mod_exports(import_info, import_ns, env)
+        attach_to_caller(import_spec, import_exports, env)
+        assign_alias(import_spec, import_exports, env)
     }
 
     # TODO: Lock namespace and/or ~-bindings?
-    lockEnvironment(mod_env, bindings = TRUE)
-    mod_env
+    lockEnvironment(env, bindings = TRUE)
+    env
 }
 
-import_symbols.pkg_info = function (info, ns, caller) {
-    env = make_mod_env(info, caller)
+get_mod_exports.pkg_info = function (info, ns, caller) {
+    env = make_export_env(info)
     exports = getNamespaceExports(ns)
     list2env(mget(exports, ns, inherits = FALSE), envir = env)
     # FIXME: Handle lazydata & depends
@@ -143,12 +144,13 @@ import_symbols.pkg_info = function (info, ns, caller) {
     env
 }
 
-attach_to_caller = function (spec, mod_env, caller) {
+attach_to_caller = function (spec, mod_exports, caller) {
     if (is.null(spec$attach)) return()
     is_wildcard = is.na(spec$attach)
     name_spec = spec$attach[! is_wildcard]
+    import_env = find_import_env(caller)
 
-    if (! all(is_wildcard) && any((missing = ! name_spec %in% ls(mod_env)))) {
+    if (! all(is_wildcard) && any((missing = ! name_spec %in% ls(mod_exports)))) {
         stop(sprintf(
             'Name%s %s not exported by %s',
             if (length(name_spec[missing]) > 1L) 's' else '',
@@ -158,8 +160,7 @@ attach_to_caller = function (spec, mod_env, caller) {
     }
 
     if (any(is_wildcard)) {
-        # BUG (CRITICAL): This attaches all, not just *exported* names.
-        attach_list = ls(mod_env)
+        attach_list = ls(mod_exports)
         if (length(attach_list) == 0L) return()
 
         aliases = attach_list
@@ -173,15 +174,48 @@ attach_to_caller = function (spec, mod_env, caller) {
         aliases = names(attach_list)
     }
 
-    Map(assign, aliases, mget(attach_list, mod_env), envir = list(caller))
+    list2env(setNames(mget(attach_list, mod_exports), aliases), envir = import_env)
+    do_attach(caller, import_env, spec)
+}
+
+find_import_env = function (x) {
+    UseMethod('find_import_env')
+}
+
+`find_import_env.mod$ns` = function (x) {
+    parent.env(x)
+}
+
+`find_import_env.mod$mod` = function (x) {
+    x
+}
+
+find_import_env.environment = function (x) {
+    structure(new.env(parent = parent.env(x)))
+}
+
+do_attach = function (base, env, spec) {
+    UseMethod('do_attach')
+}
+
+`do_attach.mod$ns` = function (base, env, spec) {}
+
+`do_attach.mod$mod` = function (base, env, spec) {}
+
+do_attach.environment = function (base, env, spec) {
+    if (identical(base, .GlobalEnv)) {
+        attach(env, name = paste0('mod:', spec_name(spec)))
+    } else {
+        parent.env(base) = env
+    }
 }
 
 #' Assign module/package object in calling environment, unless attached, and
 #' no explicit alias given.
 #' @keywords internal
-assign_alias = function (spec, mod_env, caller) {
+assign_alias = function (spec, mod_exports, caller) {
     create_mod_alias = is.null(spec$attach) || spec$explicit
     if (! create_mod_alias) return()
 
-    assign(spec$alias, mod_env, caller)
+    assign(spec$alias, mod_exports, caller)
 }

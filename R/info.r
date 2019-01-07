@@ -4,12 +4,11 @@
 #' physical location (usually in the file system).
 #' @param mod_spec a \code{mod_spec}
 #' @param source_path character string full path to the physical module location
-#' @param parent FIXME: figure out.
 #' @keywords internal
 #' @name info
 mod_info = function (mod_spec, source_path, parent) {
     structure(
-        list(spec = mod_spec, source_path = source_path, parent = parent),
+        list(spec = mod_spec, source_path = source_path),
         class = c('mod_info', 'info')
     )
 }
@@ -34,14 +33,7 @@ print.info = function (x, ...) {
 }
 
 as.character.mod_info = function (x, ...) {
-    quote = function (x) paste0('\x1B[33m', x, '\x1B[0m')
-
-    if (is.null(x$spec)) { # `x` is a parent module
-        return(paste(c(quote(x$source_path), as.character(x$parent)), collapse = '\n    '))
-    }
-
-    parent = if (is.null(x$parent)) '' else sprintf('\n  parents:\n    %s', x$parent)
-    sprintf('%s:\n  path: %s%s', x$spec, quote(x$source_path), parent)
+    sprintf('%s:\n  path: \x1B[33m%s\x1B[0m', x$spec, x$source_path)
 }
 
 as.character.pkg_info = function (x, ...) {
@@ -113,22 +105,4 @@ find_in_path = function (spec, base_paths) {
     path = candidates[[which_base]][hits[[which_base]]][1L]
     base_path = base_paths[which_base]
     mod_info(spec, normalizePath(path), find_mod_parent(path))
-}
-
-find_mod_parent = function (path) {
-    remove_mod_part = function (components) {
-        mod_particle = if (tail(components, 1L) %in% init_files) 2L else 1L
-        head(components, - mod_particle)
-    }
-
-    init_files = c('__init__.r', '__init__.R')
-    parent_mod_path = merge_path(remove_mod_part(split_path(path)))
-    candidate_paths = file.path(parent_mod_path, init_files)
-    parent_mod_file = Filter(file.exists, candidate_paths)
-    if (length(parent_mod_file) == 0L) return()
-
-    # Both spellings of the init file might exist. Furthermore, on case
-    # insensitive file systems (macOS, Windows), both init files are found. Here
-    # we only report the first hit.
-    mod_parent_info(normalizePath(parent_mod_file[1L]))
 }
