@@ -90,12 +90,12 @@ later).
 Finally, let’s use the modules by executing the following code:
 
 ```{r eval = FALSE}
-mod::use(./a[f])
+mod::use(a = ./a[f, g])
 ```
 
 Now the name `a` is defined in `.GlobalEnv` and refers to the module environment
-of module `a`. The exported names of `a` are also available in `.GlobalEnv` (but
-not defined *inside* `.GlobalEnv`).
+of module `a`. The exported names `f` and `g` of `a` are also available in
+`.GlobalEnv` (but not defined *inside* `.GlobalEnv`).
 
 The loaded modules can be represented by the following schematic:
 
@@ -140,3 +140,5 @@ There is no direct equivalent to this environment in R packages, because R
 packages do not distinguish between exported names and names imported by the
 code that loaded the package. By contrast, {mod} needs to distinguish the set of
 exports from the set of names that are imported (= “attached”) by client code.
+
+### Importing into other environments
