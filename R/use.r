@@ -148,7 +148,7 @@ attach_to_caller = function (spec, mod_exports, caller) {
     if (is.null(spec$attach)) return()
     is_wildcard = is.na(spec$attach)
     name_spec = spec$attach[! is_wildcard]
-    import_env = find_import_env(caller)
+    import_env = find_import_env(caller, spec)
 
     if (! all(is_wildcard) && any((missing = ! name_spec %in% ls(mod_exports)))) {
         stop(sprintf(
@@ -175,38 +175,25 @@ attach_to_caller = function (spec, mod_exports, caller) {
     }
 
     list2env(setNames(mget(attach_list, mod_exports), aliases), envir = import_env)
-    do_attach(caller, import_env, spec)
 }
 
-find_import_env = function (x) {
+find_import_env = function (x, spec) {
     UseMethod('find_import_env')
 }
 
-`find_import_env.mod$ns` = function (x) {
+`find_import_env.mod$ns` = function (x, spec) {
     parent.env(x)
 }
 
-`find_import_env.mod$mod` = function (x) {
+`find_import_env.mod$mod` = function (x, spec) {
     x
 }
 
-find_import_env.environment = function (x) {
-    structure(new.env(parent = parent.env(x)))
-}
-
-do_attach = function (base, env, spec) {
-    UseMethod('do_attach')
-}
-
-`do_attach.mod$ns` = function (base, env, spec) {}
-
-`do_attach.mod$mod` = function (base, env, spec) {}
-
-do_attach.environment = function (base, env, spec) {
-    if (identical(base, .GlobalEnv)) {
-        attach(env, name = paste0('mod:', spec_name(spec)))
+find_import_env.environment = function (x, spec) {
+    if (identical(x, .GlobalEnv)) {
+        attach(NULL, name = paste0('mod:', spec_name(spec)))
     } else {
-        parent.env(base) = env
+        parent.env(x) = structure(new.env(parent = parent.env(x)))
     }
 }
 
