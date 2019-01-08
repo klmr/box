@@ -51,19 +51,19 @@ Module `c` defines and exports one symbol, the function `f`.
 
 ```{r eval = FALSE}
 #' @export
-g = function () "b$g"
+f = function () "b$f"
 
-a = "b$a"
+g = function () "b$g"
 ```
 
-Module `b` defines and exports the function `g`, and in addition defines the
-name `a`.
+Module `b` defines and exports the function `f`, and in addition defines the
+function `g`.
 
 ### <code><span style="background: #00A2FF; color: white; padding: 0 5px; border-radius: 2px;">a.r</span></code>
 
 ```{r eval = FALSE}
 #' @export
-mod::use(./b[...])
+mod::use(./b[g = f, ...])
 
 mod::use(./c[...])
 
@@ -78,14 +78,13 @@ f_of_c2 = get('f', parent.env(environment()))
 stopifnot(identical(f_of_c1, f_of_c2))
 ```
 
-Module `a` imports and re-exports all names from `b`; it also imports, but does
-not re-export, all names from `c` (and, additionally, defines an alias for the
-module).
+Module `a` imports and re-exports all names from `b` (changing the name of `b$f`
+to `g`); it also imports, but does not re-export, all names from `c` (and,
+additionally, defines an alias for the module, which it exports).
 
 It further defines and exports the function `f` and defines, but does not
-export, the functions `f_of_c1` and `f_of_c2` (which are defined in such a way
-that they are identical to each other — hopefully it will become clear why
-later).
+export, the functions `f_of_c1` and `f_of_c2` (which are defined such that they
+are identical to each other — hopefully it will become clear why later).
 
 Finally, let’s use the modules by executing the following code:
 
