@@ -21,7 +21,7 @@ so the following document aims at explaining the gist.
 
 Fundamentally, module environments follow a similar architecture to package
 environments, but they deviate in crucial ways. For a good explanation of
-package environments, see [How R Searches and Finds Stuff](http://blog.obeautifulcode.com/R/How-R-Searches-And-Finds-Stuff/)
+package environments, see [*How R Searches and Finds Stuff*](http://blog.obeautifulcode.com/R/How-R-Searches-And-Finds-Stuff/)
 by Suraj Gupta, and [*Environments*](http://adv-r.had.co.nz/Environments.html)
 in *Advanced R* by Hadley Wickham. The following assumes that the reader has a
 more than passing familiarity with these concepts.
@@ -141,3 +141,13 @@ code that loaded the package. By contrast, {mod} needs to distinguish the set of
 exports from the set of names that are imported (= “attached”) by client code.
 
 ### Importing into other environments
+
+Module import environments store imports from one or more module into another.
+However, modules can also be imported from inside the global environment, or
+from inside functions, which have their own local execution environment (the
+stack frame). When this happens, a new imports environment is created on the
+fly, and attached to the importing environment’s `parent.env` chain. Calling
+`mod::use` with a non-empty attach list in `.GlobalEnv` is therefore similar to
+calling `library`. In particular, inside `.GlobalEnv` the call
+`mod::use(pkg[...])` in pretty much equivalent to calling `library(pkg)`, and is
+discouraged for the same reason that `library(pkg)` is discouraged.
