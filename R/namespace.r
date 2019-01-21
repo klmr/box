@@ -37,13 +37,14 @@ is_namespace = function (env) {
 }
 
 #' @rdname namespace
-get_namespace_info = function (ns, which, default = NULL) {
+namespace_info = function (ns, which, default = NULL) {
     get0(which, ns$.__module__., inherits = FALSE, ifnotfound = default)
 }
 
 #' @rdname namespace
-set_namespace_info = function (ns, which, value) {
+`namespace_info<-` = function (ns, which, value) {
     assign(which, value, envir = ns$.__module__.)
+    ns
 }
 
 #' @export
@@ -51,7 +52,7 @@ name = function () {
     mod_ns = current_mod()
     if (! is_namespace(mod_ns)) return(NULL)
     # FIXME: Remove legacy code.
-    mod_ns$.__module__.$name %||% get_namespace_info(mod_ns, 'info')$spec$name
+    mod_ns$.__module__.$name %||% namespace_info(mod_ns, 'info')$spec$name
 }
 
 # FIXME: Export?

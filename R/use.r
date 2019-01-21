@@ -49,8 +49,8 @@ register_as_import = function (info, mod_ns, declaration, caller) {
         # Import declarations are stored in a list in the module metadata
         # dictionary. They are looked up by their `mod::use` call signature.
         import_decl = structure(mod_ns, expr = declaration, info = info)
-        existing_imports = get_namespace_info(caller, 'imports', list())
-        set_namespace_info(caller, 'imports', c(existing_imports, import_decl))
+        existing_imports = namespace_info(caller, 'imports', list())
+        namespace_info(caller, 'imports') = c(existing_imports, import_decl)
     }
 }
 
@@ -79,7 +79,7 @@ finalize_deferred = function (info) {
 }
 
 export_and_attach = function (declaration, spec, info, mod_ns, caller) {
-    mod_exports = get_mod_exports(info, mod_ns)
+    mod_exports = mod_exports(info, mod_ns)
     attach_to_caller(spec, mod_exports, caller)
     assign_alias(spec, mod_exports, caller)
 }
@@ -129,9 +129,9 @@ deregister_mod = function (info, mod_ns) {
 load_from_source = function (info, mod_ns) {
     exprs = parse(info$source_path, encoding = 'UTF-8')
     eval(exprs, mod_ns)
-    set_namespace_info(mod_ns, 'exports', parse_export_specs(info, mod_ns))
+    namespace_info(mod_ns, 'exports') = parse_export_specs(info, mod_ns)
     # TODO: When do we load the documentation?
-    # set_namespace_info(mod_ns, 'doc', parse_documentation(info, mod_ns))
+    # namespace_info(mod_ns, 'doc') = parse_documentation(info, mod_ns)
     make_S3_methods_known(mod_ns)
 }
 
@@ -157,17 +157,17 @@ load_mod.pkg_info = function (info) {
     loadNamespace(info$spec$name)
 }
 
-get_mod_exports = function (info, ns) {
-    UseMethod('get_mod_exports')
+mod_exports = function (info, ns) {
+    UseMethod('mod_exports')
 }
 
-get_mod_exports.mod_info = function (info, ns) {
+mod_exports.mod_info = function (info, ns) {
     # TODO: Create copy instead of reusing the identical mod export environment?
-    if (! is.null((mod = get_namespace_info(ns, 'mod')))) return(mod)
+    if (! is.null((mod = namespace_info(ns, 'mod')))) return(mod)
 
     env = make_export_env(info)
-    set_namespace_info(ns, 'mod', env)
-    exports = get_namespace_info(ns, 'exports')
+    namespace_info(ns, 'mod') = env
+    exports = namespace_info(ns, 'exports')
 
     export_names_into(exports, ns, env)
     reexport_names_into(exports, ns, env)
@@ -177,7 +177,7 @@ get_mod_exports.mod_info = function (info, ns) {
     env
 }
 
-get_mod_exports.pkg_info = function (info, ns) {
+mod_exports.pkg_info = function (info, ns) {
     env = make_export_env(info)
     exports = getNamespaceExports(ns)
     list2env(mget(exports, ns, inherits = FALSE), envir = env)
@@ -200,7 +200,7 @@ find_matching_import = function (imports, reexport) {
 
 reexport_names_into = function (exports, ns, env) {
     reexports = exports[attr(exports, 'imports')]
-    imports = get_namespace_info(ns, 'imports')
+    imports = namespace_info(ns, 'imports')
 
     for (reexport in reexports) {
         import_ns = find_matching_import(imports, reexport)
@@ -213,7 +213,7 @@ reexport_names_into = function (exports, ns, env) {
             next
         }
 
-        import_exports = get_mod_exports(import_info, import_ns)
+        import_exports = mod_exports(import_info, import_ns)
         attach_to_caller(import_spec, import_exports, env)
         assign_alias(import_spec, import_exports, env)
     }
