@@ -1,5 +1,13 @@
 context('packages')
 
+# Helper function to check for existence of an attached name (which is expected
+# to be found in the parent environment of the calling environment).
+local({
+    pls = function () {
+        ls(envir = parent.env(parent.frame()))
+    }
+}, .GlobalEnv)
+
 test_that('R core packages can be used', {
     expect_not_in('methods', ls())
     mod::use(methods)
@@ -52,58 +60,57 @@ test_that('packages can be used with aliases', {
 })
 
 test_that('things can be attached locally', {
-    expect_not_in('load_all', ls())
+    expect_not_in('load_all', pls())
     mod::use(devtools[load_all])
-    expect_in('load_all', ls())
+    expect_in('load_all', pls())
 
-    expect_not_in('unload', ls())
-    expect_not_in('reload', ls())
+    expect_not_in('unload', pls())
+    expect_not_in('reload', pls())
     mod::use(devtools[unload, reload])
-    expect_in('unload', ls())
-    expect_in('reload', ls())
+    expect_in('unload', pls())
+    expect_in('reload', pls())
 })
 
 test_that('all things can be attached locally', {
-    # Mark this name invisible to make the comparison simpler
-    .devtools_exports = getNamespaceExports('devtools')
-    expect_gt(length(.devtools_exports), 0L) # Sanity check …
+    devtools_exports = getNamespaceExports('devtools')
+    expect_gt(length(devtools_exports), 0L) # Sanity check …
     mod::use(devtools[...])
-    expect_false(any(is.na(match(ls(), .devtools_exports))))
+    expect_false(any(is.na(match(pls(), devtools_exports))))
 })
 
 test_that('things can be attached globally', {
     in_globalenv({
-        expect_not_in('load_all', ls())
+        expect_not_in('load_all', pls())
         mod::use(devtools[load_all])
-        expect_in('load_all', ls())
+        expect_in('load_all', pls())
 
-        expect_not_in('unload', ls())
-        expect_not_in('reload', ls())
+        expect_not_in('unload', pls())
+        expect_not_in('reload', pls())
         mod::use(devtools[unload, reload])
-        expect_in('unload', ls())
-        expect_in('reload', ls())
+        expect_in('unload', pls())
+        expect_in('reload', pls())
     })
 })
 
 test_that('all things can be attached globally', {
     in_globalenv({
-        .devtools_exports = getNamespaceExports('devtools')
-        expect_gt(length(.devtools_exports), 0L) # Sanity check …
+        devtools_exports = getNamespaceExports('devtools')
+        expect_gt(length(devtools_exports), 0L) # Sanity check …
         mod::use(devtools[...])
-        expect_false(any(is.na(match(ls(), .devtools_exports))))
+        expect_false(any(is.na(match(pls(), devtools_exports))))
     })
 })
 
 test_that('attachments can be aliased', {
-    expect_not_in('u', ls())
-    expect_not_in('reload', ls())
-    expect_not_in('la', ls())
+    expect_not_in('u', pls())
+    expect_not_in('reload', pls())
+    expect_not_in('la', pls())
     mod::use(devtools[u = unload, reload, la = load_all])
-    expect_in('u', ls())
-    expect_in('reload', ls())
-    expect_in('la', ls())
-    expect_not_in('unload', ls())
-    expect_not_in('load_all', ls())
+    expect_in('u', pls())
+    expect_in('reload', pls())
+    expect_in('la', pls())
+    expect_not_in('unload', pls())
+    expect_not_in('load_all', pls())
 })
 
 test_that('wildcard attachments can contain aliases', {
@@ -111,13 +118,11 @@ test_that('wildcard attachments can contain aliases', {
     devtools_exports = getNamespaceExports('devtools')
     expected = c(
         setdiff(devtools_exports, c('test', 'r_env_vars')),
-        'test_alias', 'ev',
-        'devtools_exports', 'expected'
+        'test_alias', 'ev'
     )
-    expect_length(ls(), 2L) # = `devtools_exports`, `expected`
     mod::use(devtools[..., test_alias = test, ev = r_env_vars])
-    expect_equal(length(ls()), length(expected))
-    expect_false(any(is.na(match(ls(), expected))))
+    expect_equal(length(pls()), length(expected))
+    expect_false(any(is.na(match(pls(), expected))))
 })
 
 test_that('non-existent aliases raise error', {
@@ -134,14 +139,14 @@ test_that('only exported things can be attached', {
 test_that('packages that attach things are not aliased', {
     mod::use(devtools[load_all])
     expect_not_in('devtools', ls())
-    expect_in('load_all', ls())
+    expect_in('load_all', pls())
 })
 
 test_that('packages that attach things are can be aliased', {
     expect_not_in('dev', ls())
     mod::use(dev = devtools[load_all])
-    expect_in('load_all', ls())
     expect_in('dev', ls())
+    expect_in('load_all', pls())
 })
 
 test_that('S3 lookup works for partial exports', {

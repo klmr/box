@@ -194,7 +194,7 @@ mod_exports.mod_info = function (info, ns) {
 mod_exports.pkg_info = function (info, ns) {
     env = make_export_env(info)
     exports = getNamespaceExports(ns)
-    list2env(mget(exports, ns, inherits = FALSE), envir = env)
+    list2env(mget(exports, ns, inherits = TRUE), envir = env)
     # FIXME: Handle lazydata & depends
     lockEnvironment(env, bindings = TRUE)
     env

@@ -19,7 +19,7 @@ after_module_attach = function () {
         sink(file)
         expr
     }
-    a = silently(mod::use(./nested/a[...]))
+    silently(mod::use(a = ./nested/a[...]))
     on.exit(mod::unload(a))
     mod::name()
 }
