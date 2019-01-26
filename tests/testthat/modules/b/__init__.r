@@ -1,1 +1,5 @@
-mod::export(./a[...])
+#' @export
+mod::use(./a[...])
+
+#' @export
+z = 1

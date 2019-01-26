@@ -7,14 +7,14 @@
 #' The current module’s path always has the lowest priority.
 #'
 #' There are two ways of modifying the module search path: by default,
-#' \code{mod::get_option('path')} specifies the search path as a character
-#' vector. Users can override its value by separately setting the environment
-#' variable \code{R_MOD_PATH} to one or more paths, separated by the platform’s
-#' path separator.
+#' \code{mod::option('path')} specifies the search path as a character vector.
+#' Users can override its value by separately setting the environment variable
+#' \code{R_MOD_PATH} to one or more paths, separated by the platform’s path
+#' separator.
 #' @keywords internal
 #' @name paths
 mod_search_path = function () {
-    option_value = get_option('path')
+    option_value = option('path')
     env_value = strsplit(Sys.getenv('R_MOD_PATH'), .Platform$path.sep)[[1L]]
     c(option_value, env_value, module_base_path(parent.frame()))
 }
@@ -31,7 +31,7 @@ calling_mod_path = function () {
 
     # FIXME: Make work for modules imported inside package, if necessary.
     if (is_namespace(env)) {
-        dirname(get_namespace_info(env, 'info')$source_path)
+        dirname(namespace_info(env, 'info')$source_path)
     } else {
         script_path()
     }

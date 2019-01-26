@@ -23,8 +23,7 @@ parse_documentation = function (info, mod_ns) {
 }
 
 parse_export_specs = function (info, mod_ns) {
-    is_exported = parse_roxygen_tags(info, mod_ns, mod_export_roclet())
-    names(is_exported)[unlist(is_exported)]
+    parse_roxygen_tags(info, mod_ns, mod_export_roclet())
 }
 
 parse_roxygen_tags = function (info, mod_ns, roclet) {

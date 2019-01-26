@@ -6,30 +6,45 @@
 #' @name namespace
 #' @keywords internal
 make_namespace = function (info) {
-    ns_attr = new.env(parent = baseenv())
+    # Packages use `baseenv()` instead of `emptyenv()` for the parent
+    # environment of `.__NAMESPACE__.`. I don’t know why: there should never be
+    # any need for inherited name lookup. We’re only using an environment for
+    # `.__module__.` to get efficient name lookup and a mutable value store.
+    ns_attr = new.env(parent = emptyenv())
     ns_attr$info = info
-    # FIXME: Should the parent be an import environment instead, as for packages?
-    ns_env = new.env(parent = .BaseNamespaceEnv)
+    ns_env = new.env(parent = make_imports_env(info))
     # FIXME: Why not use `.__NAMESPACE__.` here?
     ns_env$.__module__. = ns_attr
     # FIXME: Set exports here!
     # FIXME: Create S3 methods table
-    ns_env
+    structure(ns_env, class = 'mod$ns')
 }
 
+make_imports_env = function (info) {
+    structure(
+        new.env(parent = .BaseNamespaceEnv),
+        name = paste0('imports:', spec_name(info$spec)),
+        class = 'mod$imports'
+    )
+}
+
+#' \code{is_namespace} checks whether a given environment corresponds to a
+#' module namespace.
+#' @param env Environment that may be a module namespace.
 #' @rdname namespace
 is_namespace = function (env) {
-    ! is.null(get0('.__module__.', env, inherits = FALSE))
+    exists('.__module__.', env, mode = 'environment', inherits = FALSE)
 }
 
 #' @rdname namespace
-get_namespace_info = function (ns, which, default = NULL) {
+namespace_info = function (ns, which, default = NULL) {
     get0(which, ns$.__module__., inherits = FALSE, ifnotfound = default)
 }
 
 #' @rdname namespace
-set_namespace_info = function (ns, which, value) {
+`namespace_info<-` = function (ns, which, value) {
     assign(which, value, envir = ns$.__module__.)
+    ns
 }
 
 #' @export
@@ -37,7 +52,7 @@ name = function () {
     mod_ns = current_mod()
     if (! is_namespace(mod_ns)) return(NULL)
     # FIXME: Remove legacy code.
-    mod_ns$.__module__.$name %||% get_namespace_info(mod_ns, 'info')$spec$name
+    mod_ns$.__module__.$name %||% namespace_info(mod_ns, 'info')$spec$name
 }
 
 # FIXME: Export?
@@ -58,9 +73,10 @@ mod_topenv = function (env = parent.frame()) {
 
 
 #' @keywords internal
-make_mod_env = function (info, caller) {
+make_export_env = function (info) {
     structure(
-        new.env(parent = parent.env(caller)),
+        new.env(parent = emptyenv()),
+        name = paste0('mod:', spec_name(info$spec)),
         class = 'mod$mod',
         info = info
     )

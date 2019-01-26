@@ -48,19 +48,19 @@ NULL
 
 #' Return mod option settings
 #'
-#' \code{get_option(which)} returns a {mod} related R option given by
-#' \code{which}.
+#' \code{option(which)} returns a {mod} related R option given by \code{which}.
 #' @param which name of the option to return
 #' @param default value to return if option is not set (default: \code{NULL})
 #' @export
-get_option = function (which, default = NULL) {
+option = function (which, default = NULL) {
     opts = getOption('mod', list())
     opts[[which]] %||% default
 }
 
-#' \code{set_option(which, value)} sets a {mod} related R option.
-#' @param value new value to set the option to.
-#' @rdname get_option
+#' \code{set_options(which = value, ...)} sets one or more {mod} related R
+#' options.
+#' @param ... one or more key-value pairs in the form \code{key = value}.
+#' @rdname option
 #' @export
 set_options = function (...) {
     opts = getOption('mod', list())
