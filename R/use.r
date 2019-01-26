@@ -249,6 +249,7 @@ attach_to_caller = function (spec, mod_exports, caller) {
         aliases = names(attach_list)
     }
 
+    attr(mod_exports, 'attached') = environmentName(import_env)
     list2env(setNames(mget(attach_list, mod_exports), aliases), envir = import_env)
 }
 

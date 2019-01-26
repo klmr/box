@@ -297,29 +297,29 @@ export_operators = function (environment, parent, module_name) {
 #'
 #' Unset the module variable that is being passed as a parameter, and remove the
 #' loaded module from cache.
-#' @param module reference to the module which should be unloaded
+#' @param mod reference to the module which should be unloaded
 #' @note Any other references to the loaded modules remain unchanged, and will
 #' still work. However, subsequently importing the module again will reload its
-#' source files, which would not have happened without \code{unload}.
+#' source files, which would not have happened without \code{mod::unload}.
 #' Unloading modules is primarily useful for testing during development, and
 #' should not be used in production code.
 #'
-#' \code{unload} comes with a few restrictions. It attempts to detach itself
-#' if it was previously attached. This only works if it is called in the same
-#' scope as the original \code{import}.
-#' @seealso \code{\link{import}}
+#' \code{mod::unload} comes with a few restrictions. It attempts to detach
+#' itself if it was previously attached. This only works if it is called in the
+#' same scope as the original \code{mod::use} call, or an inherited scope.
+#' @seealso \code{\link{use}}
 #' @seealso \code{\link{reload}}
 #' @export
-unload = function (module) {
-    stopifnot(inherits(module, 'module'))
-    module_ref = as.character(substitute(module))
-    uncache_module(module)
-    attached = attr(module, 'attached')
+unload = function (mod) {
+    stopifnot(inherits(mod, 'mod$mod'))
+    deregister_mod(attr(mod, 'info'))
+    attached = attr(mod, 'attached')
     if (! is.null(attached) && ! is.na(match(attached, search())))
         detach(attached, character.only = TRUE)
-    # Unset the module reference in its scope, i.e. the caller’s environment or
+    # Unset the mod reference in its scope, i.e. the caller’s environment or
     # some parent thereof.
-    rm(list = module_ref, envir = parent.frame(), inherits = TRUE)
+    mod_ref = as.character(substitute(mod))
+    rm(list = mod_ref, envir = parent.frame(), inherits = TRUE)
 }
 
 #' Reload a given module
