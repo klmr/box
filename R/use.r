@@ -1,17 +1,64 @@
 #' Import a module or package
 #'
-#' @param ... one or more module import declarations
 #' @usage
-#' mod::use(prefix/mod_name, ...)
-#' mod::use(pkg_name, ...)
+#' mod::use(prefix/mod, ...)
+#' mod::use(pkg, ...)
 #'
-#' mod::use(mod_alias = prefix/mod_name, ...)
+#' mod::use(alias = prefix/mod, ...)
 #'
-#' mod::use(prefix/mod_name[attach_list], ...)
-#' @param prefix/mod_name foo
-#' @param pkg_name bar
-#' @param mod_alias baz
+#' mod::use(prefix/mod[attach_list], ...)
+#' @param ... one or more module import declarations, of the following form:
+#' @param prefix/mod foo
+#' @param pkg bar
+#' @param alias baz
 #' @param prefix/mod_name[attach_list] qux
+#' @return \code{mod::use} is called for its side-effect.
+#'
+#' @details Modules and packages are loaded into a dedicated namespace
+#' environment. Names from a module can be selectively attached to the current
+#' scope.
+#'
+#' Modules are searched in the module search path \code{mod::option('path')}.
+#' This is a vector of paths to consider, from the highest to the lowest
+#' priority. The current directory is \emph{always} considered last. That is,
+#' if a file \code{a.r} exists both in the current directory and in a module
+#' search path, the local file \code{./a.r} will not be loaded, unless the
+#' import is explicitly specified as \code{mod::use(./a)}.
+#'
+#' Module names can be fully qualified to refer to nested paths. See
+#' \emph{Examples}.
+#'
+#' Module source code files are assumed to be encoded in UTF-8 without BOM.
+#' Ensure that this is the case when using an extended character set.
+#'
+#' @note Unlike for \code{\link{library}}, attaching happens \emph{locally}: If
+#' \code{mod::use} is executed in the global environment, the effect is the
+#' same. Otherwise, the imported module is inserted as the parent of the current
+#' \code{environment()}. When used (globally) \emph{inside} a module, the newly
+#' imported module is only available inside the module’s scope, not outside it
+#' (nor in other modules which might be loaded).
+#'
+#' @examples
+#' \dontrun{
+#' # `a.r` is a file in the local directory containing a function `f`.
+#' a = mod::use(./a)
+#' a$f()
+#'
+#' # b/c.r is a file in path `b`, containing functions `f` and `g`.
+#' mod::use(b/c[f])
+#' # No module name qualification necessary
+#' f()
+#' g() # Error: could not find function "g"
+#'
+#' mod::use(b/c[...])
+#' f()
+#' g()
+#' }
+#' @seealso \code{\link{unload}}
+#' @seealso \code{\link{reload}}
+#' @seealso \code{\link{name}}
+#' @seealso \code{\link{help}}
+#' @export
 use = function (...) {
     caller = parent.frame()
     call = match.call()
@@ -88,45 +135,10 @@ load_mod = function (info) {
     UseMethod('load_mod')
 }
 
-########### FIXME: Move this block into its own file.
-
-loaded_mods = new.env(parent = emptyenv())
-
-is_mod_loaded = function (info) {
-    # TODO: Use
-    #   exists(info$source_path, envir = loaded_mods, inherits = FALSE)
-    # instead?
-    info$source_path %in% names(loaded_mods)
-}
-
-loaded_mod = function (info) {
-    loaded_mods[[info$source_path]]
-}
-
-register_mod = function (info, mod_ns) {
-    # TODO: use
-    #   assign(info$source_path, mod_ns, envir = loaded_mods)
-    # instead?
-    loaded_mods[[info$source_path]] = mod_ns
-    attr(loaded_mods[[info$source_path]], 'loading') = TRUE
-}
-
-is_mod_still_loading = function (info) {
-    # pkg_info has no `source_path` but already finished loading anyway.
-    ! is.null(info$source_path) && attr(loaded_mods[[info$source_path]], 'loading')
-}
-
-mod_loading_finished = function (info, mod_ns) {
-    attr(loaded_mods[[info$source_path]], 'loading') = FALSE
-}
-
-deregister_mod = function (info, mod_ns) {
-    rm(list = info$source_path, envir = loaded_mods)
-}
-
-###########
-
 load_from_source = function (info, mod_ns) {
+    # R, Windows and Unicode don’t play together. `source` does not work here.
+    # See http://developer.r-project.org/Encodings_and_R.html and
+    # http://stackoverflow.com/q/5031630/1968 for a discussion of this.
     exprs = parse(info$source_path, encoding = 'UTF-8')
     eval(exprs, mod_ns)
     namespace_info(mod_ns, 'exports') = parse_export_specs(info, mod_ns)
@@ -140,7 +152,8 @@ load_mod.mod_info = function (info) {
 
     if (is_mod_loaded(info)) return(loaded_mod(info))
 
-    # Load module/package and dependencies; register — but deregister upon
+    # Load module/package and dependencies; register the module now, to allow
+    # cyclic imports without recursing indefinitely — but deregister upon
     # failure to load.
     on.exit(deregister_mod(info))
 
@@ -154,7 +167,8 @@ load_mod.mod_info = function (info) {
 }
 
 load_mod.pkg_info = function (info) {
-    loadNamespace(info$spec$name)
+    pkg = info$spec$name
+    base::.getNamespace(pkg) %||% loadNamespace(pkg)
 }
 
 mod_exports = function (info, ns) {

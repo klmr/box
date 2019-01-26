@@ -1,70 +1,61 @@
 #' Environment of loaded modules
 #'
-#' Each module is stored as an environment inside \code{loaded_modules} with
-#' the module’s code location path as its identifier. The path rather than the
+#' Each module is stored as an environment inside \code{loaded_mods} with the
+#' module’s code location path as its identifier. The path rather than the
 #' module name is used because module names are not unique: two modules called
 #' \code{a} can exist nested inside modules \code{b} and \code{c}, respectively.
 #' Yet these may be loaded at the same time and need to be distinguished.
-loaded_modules = new.env(parent = emptyenv())
+#' @keywords internal
+#' @name loaded
+loaded_mods = new.env(parent = emptyenv())
 
-#' \code{is_module_loaded} tests whether a module is already lodaded
-#' @param module_path fully resolved module path
-#' @rdname loaded_modules
-is_module_loaded = function (module_path)
-    exists(module_path, envir = loaded_modules, inherits = FALSE)
-
-#' \code{cache_module} caches a module namespace and marks the module as loaded.
-#' @param module_ns module namespace environment
-#' @rdname loaded_modules
-cache_module = function (module_ns)
-    assign(module_path(module_ns), module_ns, envir = loaded_modules)
-
-#' \code{uncache_module} removes a module namespace from the cache, unloading
-#' the module from memory.
-#' @rdname loaded_modules
-uncache_module = function (module_ns)
-    rm(list = module_path(module_ns), envir = loaded_modules)
-
-#' \code{clear_modules_cache} unloads all loaded modules from the cache.
-#' @rdname loaded_modules
-clear_modules_cache = function ()
-    rm(list = ls(envir = loaded_modules, all.names = TRUE),
-       envir = loaded_modules)
-
-#' \code{get_loaded_module} returns a loaded module, identified by its path,
-#' from cache.
-#' @rdname loaded_modules
-get_loaded_module = function (module_path)
-    get(module_path, envir = loaded_modules, inherits = FALSE)
-
-#' Module attributes
-#'
-#' \code{module_attributes} returns or assigns the attributes associated with
-#' a module.
-#' @param module a module
-module_attributes = function (module)
-    get('.__module__.', module, mode = 'environment', inherits = TRUE)
-
-#' @param value the attributes to assign
-#' @rdname module_attributes
-`module_attributes<-` = function (module, value) {
-    module$.__module__. = value
-    module
+#' \code{is_mod_loaded} tests whether a module is already loaded
+#' @param info the mod info of a module
+#' @rdname loaded
+is_mod_loaded = function (info) {
+    # TODO: Use
+    #   exists(info$source_path, envir = loaded_mods, inherits = FALSE)
+    # instead?
+    info$source_path %in% names(loaded_mods)
 }
 
-#' \code{module_attr} reads or assigns a single attribute associated with a
-#' module.
-#' @param attr the attribute name
-#' @rdname module_attributes
-module_attr = function (module, attr)
-    get(attr, module_attributes(module))
+#' \code{register_mod} caches a module namespace and marks the module as loaded.
+#' @param mod_ns module namespace environment
+#' @rdname loaded
+register_mod = function (info, mod_ns) {
+    # TODO: use
+    #   assign(info$source_path, mod_ns, envir = loaded_mods)
+    # instead?
+    loaded_mods[[info$source_path]] = mod_ns
+    attr(loaded_mods[[info$source_path]], 'loading') = TRUE
+}
 
-#' @rdname module_attributes
-`module_attr<-` = function (module, attr, value) {
-    if (! exists('.__module__.', module, mode = 'environment', inherits = FALSE))
-        module_attributes(module) = new.env(parent = emptyenv())
-    module$.__module__.[[attr]] = value
-    module
+#' \code{deregister_mod} removes a module namespace from the cache, unloading
+#' the module from memory.
+#' @rdname loaded
+deregister_mod = function (info, mod_ns) {
+    rm(list = info$source_path, envir = loaded_mods)
+}
+
+#' \code{loaded_mod} retrieves a loaded module namespace given its info
+#' @rdname loaded
+loaded_mod = function (info) {
+    loaded_mods[[info$source_path]]
+}
+
+#' \code{is_mod_still_loading} tests whether a module is still being loaded.
+#' @note \code{is_mod_still_loading} and \code{mod_loading_finished} are used to
+#' break cycles during the loading of modules with cyclic dependencies.
+#' @rdname loading
+is_mod_still_loading = function (info) {
+    # pkg_info has no `source_path` but already finished loading anyway.
+    ! is.null(info$source_path) && attr(loaded_mods[[info$source_path]], 'loading')
+}
+
+#' \code{mod_loading_finished} signals that a module has been completely loaded.
+#' @rdname loading
+mod_loading_finished = function (info, mod_ns) {
+    attr(loaded_mods[[info$source_path]], 'loading') = FALSE
 }
 
 #' Get a module’s path
@@ -104,9 +95,9 @@ set_script_path = function (path) {
     if (is.null(path))
         # Use `list = '.'` instead of `.` to work around bug in `R CMD CHECK`,
         # which thinks that `.` refers to a non-existent global symbol.
-        rm(list = '.', envir = loaded_modules)
+        rm(list = '.', envir = loaded_mods)
     else
-        assign('.', dirname(path), loaded_modules)
+        assign('.', dirname(path), loaded_mods)
 }
 
 #' Return an R script’s path
@@ -120,8 +111,8 @@ script_path = function () {
     # 4. R CMD BATCH script.r
     # 5. Script run interactively (give up, use `getwd()`)
 
-    if (exists('.', envir = loaded_modules, inherits = FALSE))
-        return(get('.', envir = loaded_modules, inherits = FALSE))
+    if (exists('.', envir = loaded_mods, inherits = FALSE))
+        return(get('.', envir = loaded_mods, inherits = FALSE))
 
     if (! is.null((knitr_path = knitr_path())))
         return(knitr_path)
