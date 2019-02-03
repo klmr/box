@@ -6,7 +6,7 @@
 #' @param source_path character string full path to the physical module location
 #' @keywords internal
 #' @name info
-mod_info = function (mod_spec, source_path, parent) {
+mod_info = function (mod_spec, source_path) {
     structure(
         list(spec = mod_spec, source_path = source_path),
         class = c('mod_info', 'info')
@@ -19,12 +19,6 @@ mod_info = function (mod_spec, source_path, parent) {
 #' @name info
 pkg_info = function (pkg_spec) {
     structure(list(spec = pkg_spec), class = c('pkg_info', 'info'))
-}
-
-#' @keywords internal
-#' @name info
-mod_parent_info = function (source_path) {
-    mod_info(NULL, source_path, find_mod_parent(source_path))
 }
 
 print.info = function (x, ...) {
@@ -72,17 +66,13 @@ find_global_mod = function (spec) {
 #' @param base_paths a character vector of paths to search the module in, in
 #' order of preference.
 #' @return \code{find_in_path} returns a \code{mod_info} that specifies the
-#' module source location and its parent.
+#' module source location.
 #' @details
 #' A module is physically represented in the file system either by
 #' \code{‹spec_name(spec)›.r} or by \code{‹spec_name(spec)›/__init__.r}, in that
 #' order of preference in case both exist. File extensions are case insensitive
 #' to allow for R’s obsession with capital-R extensions (but lower-case are
-#' given preference).
-#' A module can have a parent module, which is an \code{__init__.r} file in its
-#' parent folder. This is transitive. Since module parents \emph{emph} always
-#' correspond to \code{__init__.r} files, we can’t just call this function
-#' recursively to find all parents.
+#' given preference, and upper-case file extensions are discouraged).
 #' @keywords internal
 find_in_path = function (spec, base_paths) {
     mod_path_prefix = merge_path(spec$prefix)
@@ -104,5 +94,5 @@ find_in_path = function (spec, base_paths) {
 
     path = candidates[[which_base]][hits[[which_base]]][1L]
     base_path = base_paths[which_base]
-    mod_info(spec, normalizePath(path), find_mod_parent(path))
+    mod_info(spec, normalizePath(path))
 }
