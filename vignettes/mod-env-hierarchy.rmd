@@ -1,5 +1,5 @@
 ---
-title: "The hierarchy of module environments explained"
+title: "The hierarchy of module environments"
 author: Konrad Rudolph
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -8,6 +8,9 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
+
+> **Note:** This document describes internal implementation details. They are
+> not required knowledge for users of the {mod} package and module authors.
 
 ## Preliminaries
 
@@ -45,7 +48,7 @@ modules. We’ll do so in inverse order of their usage:
 f = function () "c$f"
 ```
 
-Module `c` defines and exports one symbol, the function `f`.
+Module `c` defines and exports one name, the function `f`.
 
 ### <code><span style="background: #FF9300; color: white; padding: 0 5px; border-radius: 2px;">b.r</span></code>
 
@@ -96,7 +99,8 @@ Now the name `a` is defined in `.GlobalEnv` and refers to the module environment
 of module `a`. The exported names `f` and `g` of `a` are also available in
 `.GlobalEnv` (but not defined *inside* `.GlobalEnv`).
 
-The loaded modules can be represented by the following schematic:
+The loaded modules can be represented by the following schematic, with each box
+corresponding to an environment:
 
 ![](environment-schema.png)
 
@@ -132,7 +136,7 @@ base, contains all names that are marked as exported by a module. If users
 create a module alias in their `mod::use` call, the alias will be a reference to
 this environment.
 
-Similarly, attached symbols are selected as a subset from the module export
+Similarly, attached names are selected as a subset from the module export
 environment (then copied into the imports environment).
 
 There is no direct equivalent to this environment in R packages, because R
