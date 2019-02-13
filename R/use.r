@@ -106,7 +106,7 @@ defer_import_finalization = function (declaration, spec, info, mod_ns, caller) {
     # Double quote “declaration” arg, since `eval`, `do.call` and equivalent R
     # functions evaluate the first level of quoted arguments:
     #   do.call(class, alist(1 + 2)) == 'numeric'
-    defer_args$declaration = bquote(quote(.(declaration)))
+    defer_args$declaration = enquote(declaration)
 
     existing_deferred = attr(loaded_mods[[info$source_path]], 'deferred')
     attr(loaded_mods[[info$source_path]], 'deferred') =
@@ -114,7 +114,10 @@ defer_import_finalization = function (declaration, spec, info, mod_ns, caller) {
 }
 
 finalize_deferred = function (info) {
-    if (is.null(info$source_path)) return()
+    UseMethod('finalize_deferred')
+}
+
+finalize_deferred.mod_info = function (info) {
     deferred = attr(loaded_mods[[info$source_path]], 'deferred')
     if (is.null(deferred)) return()
 
@@ -123,6 +126,9 @@ finalize_deferred = function (info) {
     for (defer_args in deferred) {
         do.call(export_and_attach, defer_args)
     }
+}
+
+finalize_deferred.pkg_info = function (info) {
 }
 
 export_and_attach = function (declaration, spec, info, mod_ns, caller) {
