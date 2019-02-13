@@ -132,13 +132,9 @@ finalize_deferred.pkg_info = function (info) {
 }
 
 export_and_attach = function (declaration, spec, info, mod_ns, caller) {
-    mod_exports = mod_exports(info, mod_ns)
+    mod_exports = mod_exports(info, spec, mod_ns)
     attach_to_caller(spec, mod_exports, caller)
     assign_alias(spec, mod_exports, caller)
-}
-
-load_mod = function (info) {
-    UseMethod('load_mod')
 }
 
 load_from_source = function (info, mod_ns) {
@@ -151,6 +147,10 @@ load_from_source = function (info, mod_ns) {
     # TODO: When do we load the documentation?
     # namespace_info(mod_ns, 'doc') = parse_documentation(info, mod_ns)
     make_S3_methods_known(mod_ns)
+}
+
+load_mod = function (info) {
+    UseMethod('load_mod')
 }
 
 load_mod.mod_info = function (info) {
@@ -173,19 +173,19 @@ load_mod.mod_info = function (info) {
 }
 
 load_mod.pkg_info = function (info) {
-    pkg = info$spec$name
+    pkg = info$name
     base::.getNamespace(pkg) %||% loadNamespace(pkg)
 }
 
-mod_exports = function (info, ns) {
+mod_exports = function (info, spec, ns) {
     UseMethod('mod_exports')
 }
 
-mod_exports.mod_info = function (info, ns) {
+mod_exports.mod_info = function (info, spec, ns) {
     # TODO: Create copy instead of reusing the identical mod export environment?
     if (! is.null((mod = namespace_info(ns, 'mod')))) return(mod)
 
-    env = make_export_env(info)
+    env = make_export_env(info, spec, ns)
     namespace_info(ns, 'mod') = env
     exports = namespace_info(ns, 'exports')
 
@@ -197,8 +197,8 @@ mod_exports.mod_info = function (info, ns) {
     env
 }
 
-mod_exports.pkg_info = function (info, ns) {
-    env = make_export_env(info)
+mod_exports.pkg_info = function (info, spec, ns) {
+    env = make_export_env(info, spec, ns)
     exports = getNamespaceExports(ns)
     list2env(mget(exports, ns, inherits = TRUE), envir = env)
     # FIXME: Handle lazydata & depends

@@ -6,9 +6,9 @@
 #' @param source_path character string full path to the physical module location
 #' @keywords internal
 #' @name info
-mod_info = function (mod_spec, source_path) {
+mod_info = function (spec, source_path) {
     structure(
-        list(spec = mod_spec, source_path = source_path),
+        list(name = spec$name, source_path = source_path),
         class = c('mod_info', 'info')
     )
 }
@@ -17,8 +17,8 @@ mod_info = function (mod_spec, source_path) {
 #' @param pkg_spec a \code{pkg_spec}
 #' @keywords internal
 #' @name info
-pkg_info = function (pkg_spec) {
-    structure(list(spec = pkg_spec), class = c('pkg_info', 'info'))
+pkg_info = function (spec) {
+    structure(list(name = spec$name), class = c('pkg_info', 'info'))
 }
 
 print.info = function (x, ...) {
@@ -27,12 +27,15 @@ print.info = function (x, ...) {
 }
 
 as.character.mod_info = function (x, ...) {
-    sprintf('%s:\n  path: \x1B[33m%s\x1B[0m', x$spec, x$source_path)
+    sprintf(
+        '<mod_info: \x1B[33m%s\x1B[0m at \x1B[33m%s\x1B[0m>',
+        x$name, x$source_path
+    )
 }
 
 as.character.pkg_info = function (x, ...) {
-    path = getNamespaceInfo(x$spec$name, 'path')
-    sprintf('%s:\n  path: \x1B[33m%s\x1B[0m', x$spec, path)
+    path = getNamespaceInfo(x$name, 'path')
+    sprintf('<mod_info: \x1B[33m%s\x1B[0m>', path)
 }
 
 is_absolute = function (spec) {

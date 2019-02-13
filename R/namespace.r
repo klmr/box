@@ -15,15 +15,15 @@ make_namespace = function (info) {
     ns_env = new.env(parent = make_imports_env(info))
     # FIXME: Why not use `.__NAMESPACE__.` here?
     ns_env$.__module__. = ns_attr
-    # FIXME: Set exports here!
-    # FIXME: Create S3 methods table
+    # TODO: Set exports here!
+    # TODO: Create S3 methods table
     structure(ns_env, class = 'mod$ns')
 }
 
 make_imports_env = function (info) {
     structure(
         new.env(parent = .BaseNamespaceEnv),
-        name = paste0('imports:', spec_name(info$spec)),
+        name = paste0('imports:', info$name),
         class = 'mod$imports'
     )
 }
@@ -51,8 +51,7 @@ namespace_info = function (ns, which, default = NULL) {
 name = function () {
     mod_ns = current_mod()
     if (! is_namespace(mod_ns)) return(NULL)
-    # FIXME: Remove legacy code.
-    mod_ns$.__module__.$name %||% namespace_info(mod_ns, 'info')$spec$name
+    namespace_info(mod_ns, 'info')$name
 }
 
 # FIXME: Export?
@@ -73,12 +72,14 @@ mod_topenv = function (env = parent.frame()) {
 
 
 #' @keywords internal
-make_export_env = function (info) {
+make_export_env = function (info, spec, ns) {
     structure(
         new.env(parent = emptyenv()),
-        name = paste0('mod:', spec_name(info$spec)),
+        name = paste0('mod:', spec_name(spec)),
         class = 'mod$mod',
-        info = info
+        spec = spec,
+        info = info,
+        namespace = ns
     )
 }
 
@@ -87,7 +88,7 @@ make_export_env = function (info) {
 }
 
 `print.mod$mod` = function (x, ...) {
-    spec = attr(x, 'info')$spec
+    spec = attr(x, 'spec')
     type = if (inherits(spec, 'pkg_spec')) 'package' else 'module'
     cat(sprintf('<%s: %s>\n', type, spec_name(spec)))
     invisible(x)
