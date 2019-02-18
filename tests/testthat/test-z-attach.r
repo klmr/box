@@ -2,58 +2,50 @@ context('Test attach')
 
 # File name starts with `z` so that the test is executed last.
 
+test_mod_envname = 'mod:mod/a'
+
 test_that('attach works locally', {
-    c = import('c')
+    mod::use(mod/c)
     # c attaches `a`. So check that `a` is *not* attached here.
-    expect_that(length(grep('^module:a$', search())), equals(0))
+    expect_false(test_mod_envname %in% search())
 })
 
 test_that('module can be attached to global environment', {
     searchlen = length(search())
-    a = in_globalenv(import('a', attach = TRUE))
-    expect_that(length(search()), equals(searchlen + 1))
-    message(search())
-    expect_true(is_module_loaded(module_path(a)))
-    expect_that(search()[2], equals(environmentName(a)))
+    local(mod::use(a = mod/a[...]), .GlobalEnv)
+    mod_path = in_globalenv(mod::path(a))
+    expect_equal(length(search()), searchlen + 1L)
+    expect_true(mod_path %in% names(mod:::loaded_mods))
+    expect_equal(search()[2L], environmentName(a))
 })
 
 test_that('module can be detached', {
-    expect_that(search()[2], equals('module:a'))
-    parent = as.environment(3)
-    detach('module:a')
-    expect_that(as.environment(2), is_identical_to(parent))
+    expect_equal(search()[2L], test_mod_envname)
+    parent = as.environment(3L)
+    detach(test_mod_envname, character.only = TRUE)
+    expect_identical(as.environment(2L), parent)
 })
 
 test_that('unloading a module detaches it', {
-    parent = as.environment(2)
-    a = in_globalenv(import('a', attach = TRUE))
-    expect_that(search()[2], equals('module:a'))
-    expect_false(identical(as.environment(2), parent))
+    parent = as.environment(2L)
+    local(mod::use(a = mod/a[...]), .GlobalEnv)
+    expect_equal(search()[2L], test_mod_envname)
+    expect_not_identical(as.environment(2L), parent)
 
-    mod::unload(a)
-    expect_true(identical(as.environment(2), parent))
-})
-
-test_that('unloading a module detaches operators', {
-    parent = as.environment(2)
-    a = in_globalenv(import('a', attach_operators = TRUE))
-    expect_that(search()[2], equals('operators:a'))
-    expect_false(identical(as.environment(2), parent))
-
-    mod::unload(a)
-    expect_true(identical(as.environment(2), parent))
+    in_globalenv(mod::unload(a))
+    expect_identical(as.environment(2L), parent)
 })
 
 test_that('reloading a module reattaches it', {
-    parent = as.environment(2)
-    local({a = import('a', attach = TRUE)}, envir = .GlobalEnv)
+    parent = as.environment(2L)
+    local(mod::use(a = mod/a[...]), .GlobalEnv)
 
-    expect_that(search()[2], equals('module:a'))
-    expect_false(identical(as.environment(2), parent), 'Precondition')
-    expect_true(identical(as.environment(3), parent), 'Precondition')
+    expect_equal(search()[2L], test_mod_envname)
+    expect_not_identical(as.environment(2L), parent, 'Precondition')
+    expect_identical(as.environment(3L), parent, 'Precondition')
 
-    in_globalenv(reload(a))
-    expect_false(identical(as.environment(2), parent))
-    expect_true(identical(as.environment(3), parent))
-    in_globalenv(unload(a))
+    in_globalenv(mod::reload(a))
+    expect_not_identical(as.environment(2L), parent)
+    expect_identical(as.environment(3L), parent)
+    in_globalenv(mod::unload(a))
 })

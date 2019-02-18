@@ -1,11 +1,11 @@
-context('Relative imports test')
+context('relative imports')
 
 test_that('Imports are absolute by default', {
-    ra = import('./modules/nested/relative_a')
-    expect_that(ra$a_which(), equals('/a'))
+    mod::use(mod/nested/relative_a)
+    expect_equal(relative_a$a_which(), '/a')
 })
 
 test_that('Relative import are always local', {
-    ra = import('./modules/nested/relative_a')
-    expect_that(ra$local_a_which(), equals('nested/a'))
+    mod::use(mod/nested/relative_a)
+    expect_equal(relative_a$local_a_which(), 'nested/a')
 })

@@ -1,21 +1,22 @@
 f = function() {
-    import('a', attach = TRUE)
+    mod::use(./a[...])
     helper()
 }
 
 g = function() {
-    import('a', attach = FALSE, attach_operators = FALSE)
+    mod::use(./a)
     helper()
 }
 
 h = function() {
-    import('a', attach = FALSE, attach_operators = TRUE)
+    mod::use(./a[`%.%`])
     helper()
 }
 
-helper_var = 0
+#' @export
+helper_var = 0L
 
-helper = function() { helper_var <<- helper_var + 1 }
+helper = function() { helper_var <<- helper_var + 1L }
 
 f()
 g()

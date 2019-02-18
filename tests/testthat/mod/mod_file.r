@@ -1,12 +1,16 @@
-this_module_file = module_file()
+#' @export
+this_module_file = mod::file()
 
-function_module_file = function () module_file()
+#' @export
+function_module_file = function () mod::file()
 
-import('a', attach = TRUE)
+mod::use(./a[...])
 
 # Is this changed by the previous import/attach?
-this_module_file2 = module_file()
+#' @export
+this_module_file2 = mod::file()
 
+#' @export
 after_module_attach = function () {
     # Muffle message
     silently = function (expr) {
@@ -15,19 +19,21 @@ after_module_attach = function () {
         sink(file)
         expr
     }
-    a = silently(import('nested/a', attach = TRUE))
+    silently(mod::use(a = ./nested/a[...]))
     on.exit(unload(a))
-    module_file()
+    mod::file()
 }
 
+#' @export
 after_package_attach = function () {
-    import_package('datasets', attach = TRUE)
-    module_file()
+    mod::use(datasets[...])
+    mod::file()
 }
 
+#' @export
 nested_module_file = function () {
     local({
-        import_package('datasets', attach = TRUE)
-        module_file()
+        mod::use(datasets[...])
+        mod::file()
     })
 }

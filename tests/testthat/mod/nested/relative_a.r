@@ -1,4 +1,4 @@
-a = import('a')
+mod::use(mod/a)
 
 # Muffle message
 silently = function (expr) {
@@ -8,8 +8,10 @@ silently = function (expr) {
     expr
 }
 
-local_a = silently(import('./a'))
+silently(mod::use(local_a = ./a))
 
+#' @export
 a_which = function () a$which()
 
+#' @export
 local_a_which = function () local_a$which()

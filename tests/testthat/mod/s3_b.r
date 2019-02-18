@@ -1,2 +1,4 @@
-s3 = import('s3')
+mod::use(./s3)
+
+#' @export
 test = s3$test

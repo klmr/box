@@ -1,7 +1,7 @@
 context('Module reloading')
 
 unload_all = function () {
-    modenv = mod:::loaded_modules
+    modenv = mod:::loaded_mods
     rm(list = ls(modenv), envir = modenv)
 }
 
@@ -10,14 +10,14 @@ test_that('module can be reloaded', {
     # Tear-down would be helpful here, but not supported by testthat.
     unload_all()
 
-    a = import('a')
-    expect_that(length(mod:::loaded_modules), equals(1))
+    mod::use(mod/a)
+    expect_equal(length(mod:::loaded_mods), 1)
     counter = a$get_counter()
     a$inc()
-    expect_that(a$get_counter(), equals(counter + 1))
+    expect_equal(a$get_counter(), counter + 1)
 
-    reload(a)
+    mod::reload(a)
     expect_true(is_module_loaded(module_path(a)))
-    expect_that(length(mod:::loaded_modules), equals(1))
-    expect_that(a$get_counter(), equals(counter))
+    expect_equal(length(mod:::loaded_modules), 1)
+    expect_equal(a$get_counter(), counter)
 })

@@ -6,6 +6,7 @@ test_that('module reexport exposes the correct names', {
     expect_true('a' %in% ls(x))
     expect_true('b' %in% ls(x))
     expect_true('c' %in% ls(x))
+    expect_true('sub' %in% ls(x))
     expect_false('d' %in% ls(x))
 
     expect_equal(x$a, 'sub$c')

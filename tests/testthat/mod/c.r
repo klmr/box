@@ -1,4 +1,4 @@
-import('a', attach = TRUE)
+mod::use(./a[...])
 
 double = function (x) c(x, x)
 

@@ -1,49 +1,37 @@
-context('Submodules test')
-
-setup = function () {
-    thispath = 'modules/nested'
-    prev = mod::get_option('path')
-    if (! identical(prev, thispath))
-        previous_import_path <<- prev
-    mod::set_options(path = thispath)
-}
+context('submodules')
 
 teardown = function () {
-    mod::set_options(path = previous_import_path)
-    rm(previous_import_path, envir = .GlobalEnv)
     # Unload all modules
-    rm(list = ls(envir = mod:::loaded_modules), envir = mod:::loaded_modules)
+    rm(list = ls(envir = mod:::loaded_mods), envir = mod:::loaded_mods)
 }
 
 test_that('submodules can be loaded one by one', {
-    setup()
     on.exit(teardown())
 
-    result = capture.output(import('a/b'))
+    result = capture.output(mod::use(mod/nested/a/b))
     expect_that(result, equals(c('a/__init__.r', 'a/b/__init__.r')))
 
-    result = capture.output(import('a/b/c'))
+    result = capture.output(mod::use(mod/nested/a/b/c))
     expect_that(result, equals('a/b/c/__init__.r'))
 
-    result = capture.output(import('a/b/d'))
+    result = capture.output(mod::use(mod/nested/a/b/d))
     expect_that(result, equals('a/b/d/__init__.r'))
 
-    result = capture.output(import('a/b/c/e'))
+    result = capture.output(mod::use(mod/nested/a/b/c/e))
     expect_that(result, equals('a/b/c/e.r'))
 })
 
 test_that('module can export nested submodules', {
-    b = import('b')
-    expect_that(b$answer, equals(42))
+    b = mod::use(mod/b)
+    expect_equal(b$answer, 42L)
 })
 
 test_that('submodules load all relevant init files', {
-    setup()
     on.exit(teardown())
 
-    result = capture.output(import('a/b/d'))
+    result = capture.output(mod::use(mod/nested/a/b/d))
     expect_that(result, equals(c('a/__init__.r', 'a/b/__init__.r', 'a/b/d/__init__.r')))
 
-    result = capture.output(import('a/b/c/e'))
+    result = capture.output(mod::use(mod/nested/a/b/c/e))
     expect_that(result, equals(c('a/b/c/__init__.r', 'a/b/c/e.r')))
 })

@@ -1,52 +1,54 @@
-context('Find module path relative files')
+context('files relative to module')
 
-test_that('module_file works in global namespace', {
-    expect_that(module_file(), equals(getwd()))
+test_that('mod::file works in global namespace', {
+    expect_that(mod::file(), equals(getwd()))
     this_file = (function() getSrcFilename(sys.call(sys.nframe())))()
     expect_true(nzchar(this_file)) # Just to make sure.
-    expect_true(nchar(module_file(this_file)) > 0)
-    expect_that(module_file('XXX-does-not-exist', mustWork = TRUE),
-                throws_error('File not found'))
+    expect_true(nzchar(mod::file(this_file)))
+    expect_error(
+        mod::file('XXX-does-not-exist', must_work = TRUE),
+        'File not found'
+    )
 })
 
-test_that('module_file works for module', {
-    a = import('a')
-    expect_true(grepl('/b$', module_file('b', module = a)))
-    expect_true(grepl('/c\\.r$', module_file('c.r', module = a)))
-    expect_that(length(module_file(c('b', 'c.r'), module = a)), equals(2))
+test_that('mod::file works for module', {
+    mod::use(mod/a)
+    expect_true(grepl('/b$', mod::file('b', module = a)))
+    expect_true(grepl('/c\\.r$', mod::file('c.r', module = a)))
+    expect_that(length(mod::file(c('b', 'c.r'), module = a)), equals(2))
 })
 
-test_that('module_base_path works', {
+test_that('mod::base_path works', {
     # On earlier versions of “devtools”, this test reproducibly segfaulted due
     # to the call to `load_all` from within a script. This seems to be fixed now
     # with version 1.9.1.9000.
-    script_path = 'modules/d.r'
+    script_path = 'mod/d.r'
 
     rcmd_result = rcmd(script_path)
-    expect_paths_equal(rcmd_result, file.path(getwd(), 'modules'))
+    expect_paths_equal(rcmd_result, file.path(getwd(), 'mod'))
 
     rscript_result = rscript(script_path)
-    expect_paths_equal(rscript_result, file.path(getwd(), 'modules'))
+    expect_paths_equal(rscript_result, file.path(getwd(), 'mod'))
 })
 
-test_that('module_file works after attaching modules', {
+test_that('mod::file works after attaching modules', {
     # Test that #66 is fixed and that there are no regressions.
 
-    expected_module_file = module_file()
-    import('a', attach = TRUE)
-    expect_paths_equal(module_file(), expected_module_file)
+    expected_module_file = mod::file()
+    mod::use(mod/a[...])
+    expect_paths_equal(mod::file(), expected_module_file)
 
     modfile = in_globalenv({
-        expected_module_file = module_file()
-        a = import('a', attach = TRUE)
+        expected_module_file = mod::file()
+        mod::use(a = mod/a[...])
         on.exit(unload(a))
-        list(actual = module_file(), expected = expected_module_file)
+        list(actual = mod::file(), expected = expected_module_file)
     })
 
     expect_paths_equal(modfile$actual, modfile$expected)
 
-    x = import('mod_file')
-    expected_module_file = file.path(getwd(), 'modules')
+    mod::use(x = mod/mod_file)
+    expected_module_file = file.path(getwd(), 'mod')
     expect_paths_equal(x$this_module_file, expected_module_file)
     expect_paths_equal(x$function_module_file(), expected_module_file)
     expect_paths_equal(x$this_module_file2, expected_module_file)
@@ -56,18 +58,18 @@ test_that('module_file works after attaching modules', {
 })
 
 test_that('regression #76 is fixed', {
-    expect_error((x = import('issue76')), NA)
-    expect_that(x$helper_var, equals(3))
+    mod::use(x = mod/issue76)
+    expect_equal(x$helper_var, 3)
 })
 
 test_that('regression #79 is fixed', {
-    script_path = 'modules/issue79.r'
-    result = tail(interactive_r(script_path), 3)
+    script_path = 'mod/issue79.r'
+    result = tail(interactive_r(script_path), 3L)
 
-    expect_that(result[1], equals('> before; after'))
-    expect_that(result[2], equals('NULL'))
+    expect_equal(result[1L], '> before; after')
+    expect_equal(result[2L], 'NULL')
     # The following assertion in particular should not fail.
-    expect_that(result[3], equals('NULL'))
+    expect_equal(result[3L], 'NULL')
 })
 
 test_that('common split_path operations are working', {
@@ -85,8 +87,7 @@ test_that('common split_path operations are working', {
 })
 
 test_that('split_path is working on Unix', {
-    if (.Platform$OS.type != 'unix')
-        skip('Only run on Unix')
+    skip_on_os('windows')
 
     expect_correct_path_split('/foo/bar')
     expect_correct_path_split('/foo/bar/')
@@ -94,8 +95,7 @@ test_that('split_path is working on Unix', {
 })
 
 test_that('split_path is working on Windows', {
-    if (.Platform$OS.type != 'windows')
-        skip('Only run on Windows')
+    if (.Platform$OS.type != 'windows') skip('Only run on Windows')
 
     # Standard paths
     # UNC paths
