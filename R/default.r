@@ -9,9 +9,7 @@
 #' @name default
 #' @keywords internal
 `%||%` = function (a, b) {
-    is_false = function (a) is.logical(a) && ! isTRUE(a)
-    is_empty = function (a) is.character(a) && ! nzchar(a)
-    if (is.null(a) || length(a) == 0L || is_false(a) || is_empty(a)) {
+    if (length(a) == 0L || identical(a, FALSE) || identical(a, "")) {
         b
     } else {
         a
