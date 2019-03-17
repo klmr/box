@@ -17,7 +17,7 @@ make_namespace = function (info) {
     ns_env$.__module__. = ns_attr
     # TODO: Set exports here!
     # TODO: Create S3 methods table
-    structure(ns_env, class = 'mod$ns')
+    structure(ns_env, name = paste0('namespace:', info$name), class = 'mod$ns')
 }
 
 make_imports_env = function (info) {
