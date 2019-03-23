@@ -62,14 +62,16 @@ current_mod = function (env = parent.frame(2L)) {
 #' \code{mod_topenv} is the same as \code{topenv} for module namespaces.
 #' @name namespace
 mod_topenv = function (env = parent.frame()) {
-    is_topenv = function (env) {
-        is_namespace(env) || isNamespace(env) || identical(env, .GlobalEnv)
-    }
-
-    while (! is_topenv(env)) env = parent.env(env)
+    while (! is_mod_topenv(env)) env = parent.env(env)
     env
 }
 
+#' \code{is_topenv} returns a logical determining if \code{env} is a top level
+#' environment.
+#' @name namespace
+is_mod_topenv = function (env) {
+    is_namespace(env) || identical(env, topenv(env)) || identical(env, emptyenv())
+}
 
 #' @keywords internal
 make_export_env = function (info, spec, ns) {

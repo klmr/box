@@ -24,6 +24,87 @@ roclet_tags.roclet_mod_export = function (x) {
     list(export = roxygen2::tag_toggle)
 }
 
+#' @importFrom roxygen2 roclet_process
+#' @export
+roclet_process.roclet_mod_export = function (
+    x, blocks, env, base_path, global_options = list()
+) {
+    blocks[vapply(blocks, block_is_exported, logical(1L))]
+}
+
+#' @importFrom roxygen2 roclet_output
+#' @export
+roclet_output.roclet_mod_export = function (x, ...) {}
+
+#' @importFrom roxygen2 roclet_clean
+#' @export
+roclet_clean.roclet_mod_export = function (x, base_path) {}
+
+parse_export_specs = function (info, mod_ns) {
+    parse_export = function (export) {
+        if (block_is_assign(export)) {
+            block_name(export)
+        } else if (block_is_use_call(export)) {
+            # imports = attr(export, 'call')[-1L]
+            # aliases = names(imports) %||% rep(list(NULL), length(imports))
+            # Map(reexport_names, imports, aliases)
+
+            call = attr(export, 'call')
+            aliases = names(call) %||% rep(list(NULL), length(call))
+            Map(reexport_names, call[-1L], aliases[-1L], USE.NAMES = FALSE)
+        } else {
+            block_error(export)
+        }
+    }
+
+    reexport_names = function (declaration, alias) {
+        spec = parse_spec(declaration, alias)
+        import_ns = find_matching_import(namespace_info(mod_ns, 'imports'), spec)
+        info = attr(import_ns, 'info')
+
+        if (is_mod_still_loading(info)) {
+            caller = parent.frame()
+            defer(spec, info, import_ns, caller)
+        }
+
+        exports = mod_exports(info, spec, import_ns)
+        real_alias = if (is.null(spec$attach) || spec$explicit) spec$alias
+        c(names(attach_list(spec, exports)), real_alias)
+    }
+
+    find_matching_import = function (imports, reexport) {
+        for (import in imports) {
+            if (identical(attr(import, 'spec'), reexport)) return(import)
+        }
+    }
+
+    block_error = function (export) {
+        code = deparse(attr(export, 'call'), backtick = TRUE)
+        location = attr(export, 'location')[1L]
+        msg = paste0(
+            'The %s tag may only be applied to assignments or use ',
+            'statements.\nUsed incorrectly in line %d:\n    %s'
+        )
+        stop(sprintf(msg, dQuote('@export'), location, code))
+    }
+
+    exports = parse_roxygen_tags(info, mod_ns, mod_export_roclet())
+    tryCatch(
+        unique(unlist(lapply(exports, parse_export))),
+        defer = function (e) {
+            # do.call(defer_import_finalization, e$args)
+            NULL
+        }
+    )
+    # tryCatch(
+    #     withRestarts(
+    #         unlist(lapply(exports, parse_export)),
+    #         defer = defer_import_finalization_and_stop
+    #     ),
+    #     deferred = function (.) NULL
+    # )
+}
+
 use_call = quote(mod::use)
 
 assignment_calls = c('<-', '=', 'assign', '<<-')
@@ -36,7 +117,7 @@ block_is_assign = function (block) {
     is_assign_call(attr(block, 'call')[[1L]])
 }
 
-block_is_import = function (block) {
+block_is_use_call = function (block) {
     identical(attr(block, 'call')[[1L]], use_call)
 }
 
@@ -45,56 +126,11 @@ block_is_exported = function (block) {
 }
 
 block_name = function (block) {
-    attr(block, 'object')$alias %||% ''
+    attr(block, 'object')$alias
 }
 
-#' @importFrom roxygen2 roclet_process
-#' @export
-roclet_process.roclet_mod_export = function (
-    x, blocks, env, base_path, global_options = list()
-) {
-    exports = vapply(blocks, block_is_exported, logical(1L))
-    assignments = vapply(blocks, block_is_assign, logical(1L)) & exports
-    imports = vapply(blocks, block_is_import, logical(1L)) & exports
-
-    if (sum(assignments) + sum(imports) != sum(exports)) {
-        block_is_invalid = function (block) {
-            ! block_is_assign(block) && ! block_is_import(block)
-        }
-        first_invalid = Filter(block_is_invalid, blocks)[[1L]]
-        first_invalid_call = deparse(attr(first_invalid, 'call'), backtick = TRUE)
-        location = attr(first_invalid, 'location')[1L]
-        msg = paste0(
-            'The %s tag may only be applied to assignments or import ',
-            'statements.\nUsed incorrectly in line %d:\n    %s'
-        )
-        stop(sprintf(msg, dQuote('@export'), location, first_invalid_call))
-    }
-
-    structure(
-        blocks,
-        assignments = assignments,
-        imports = imports,
-        names = vapply(blocks, block_name, character(1L)),
-        class = 'mod_export_spec'
-    )
+defer = function (...) {
+    nullcond = list(message = NULL, call = NULL, args = list(...))
+    defer_condition = structure(nullcond, class = c('defer', 'condition'))
+    signalCondition(defer_condition)
 }
-
-print.mod_export_spec = function (x, ...) {
-    exported_names = names(x[attr(x, 'assignments')])
-    exported_imports = x[attr(x, 'imports')]
-    cat('Exported names:', paste(exported_names, collapse = ', '))
-    cat('\n\n')
-    cat('Re-exported declarations:\n')
-    import_code = vapply(exported_imports, function (i) deparse(attr(i, 'call')), character(1L))
-    cat(paste('*', import_code, collapse = '\n'))
-    cat('\n')
-}
-
-#' @importFrom roxygen2 roclet_output
-#' @export
-roclet_output.roclet_mod_export = function (x, ...) { }
-
-#' @importFrom roxygen2 roclet_clean
-#' @export
-roclet_clean.roclet_mod_export = function (x, base_path) { }

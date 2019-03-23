@@ -22,10 +22,6 @@ parse_documentation = function (info, mod_ns) {
     lapply(docs, format, wrap = FALSE)
 }
 
-parse_export_specs = function (info, mod_ns) {
-    parse_roxygen_tags(info, mod_ns, mod_export_roclet())
-}
-
 parse_roxygen_tags = function (info, mod_ns, roclet) {
     mod_path = info$source_path
     blocks = roxygen2::parse_file(mod_path, mod_ns, known_tags())

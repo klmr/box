@@ -20,3 +20,10 @@ test_that('unloaded module can be reloaded', {
     expect_true(is_module_loaded(mod::path(a)))
     expect_true(exists('a', inherits = FALSE))
 })
+
+test_that('unload checks its arguments', {
+    expect_error(mod::unload(123))
+    expect_error(mod::unload(foo))
+    mod::use(mod/a)
+    expect_error(mod::unload((a)))
+})

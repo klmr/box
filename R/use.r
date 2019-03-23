@@ -57,57 +57,56 @@
 #' @seealso \code{\link{unload}}
 #' @seealso \code{\link{reload}}
 #' @seealso \code{\link{name}}
+#' @seealso \code{\link{path}}
+#' @seealso \code{\link{file}}
 #' @seealso \code{\link{help}}
 #' @export
 use = function (...) {
     caller = parent.frame()
     call = match.call()
-    aliases = names(call)
-    for (i in seq_along(call)[-1L]) {
-        use_one(call[[i]], aliases[[i]], caller)
-    }
+    imports = call[-1L]
+    aliases = names(imports) %||% rep(list(NULL), length(imports))
+    invisible(Map(use_one, imports, aliases, list(caller)))
 }
 
 use_one = function (declaration, alias, caller) {
     spec = parse_spec(declaration, alias)
     info = rethrow_on_error(find_mod(spec), sys.call(-1L))
-    mod_ns = load_mod(info)
+    load_and_register(spec, info, caller)
+}
 
-    register_as_import(info, mod_ns, declaration, caller)
+load_and_register = function (spec, info, caller) {
+    mod_ns = load_mod(info)
+    register_as_import(spec, info, mod_ns, caller)
 
     if (is_mod_still_loading(info)) {
         # Module was cached but hasn’t fully loaded yet. This happens for
         # circular imports (1. A -> 2. B -> 3. A)) in step (3). To proceed, we
         # take note of the issue and wait until we bounce back to step (1) to
         # perform deferred finalization.
-        defer_import_finalization(declaration, spec, info, mod_ns, caller)
+        defer_import_finalization(spec, info, mod_ns, caller)
         return()
     }
 
     finalize_deferred(info)
-    export_and_attach(declaration, spec, info, mod_ns, caller)
+    export_and_attach(spec, info, mod_ns, caller)
 
     # TODO: Lock environment? Lock bindings?! The latter breaks some tests.
     # lockEnvironment(mod_ns, bindings = FALSE)
 }
 
-register_as_import = function (info, mod_ns, declaration, caller) {
+register_as_import = function (spec, info, mod_ns, caller) {
     if (is_namespace(caller)) {
         # Import declarations are stored in a list in the module metadata
-        # dictionary. They are looked up by their `mod::use` call signature.
-        import_decl = structure(mod_ns, expr = declaration, info = info)
+        # dictionary. They are looked up by their spec.
+        import_decl = structure(mod_ns, spec = spec, info = info)
         existing_imports = namespace_info(caller, 'imports', list())
         namespace_info(caller, 'imports') = c(existing_imports, import_decl)
     }
 }
 
-defer_import_finalization = function (declaration, spec, info, mod_ns, caller) {
+defer_import_finalization = function (spec, info, mod_ns, caller) {
     defer_args = as.list(environment())
-    # Double quote “declaration” arg, since `eval`, `do.call` and equivalent R
-    # functions evaluate the first level of quoted arguments:
-    #   do.call(class, alist(1 + 2)) == 'numeric'
-    defer_args$declaration = enquote(declaration)
-
     existing_deferred = attr(loaded_mods[[info$source_path]], 'deferred')
     attr(loaded_mods[[info$source_path]], 'deferred') =
         c(existing_deferred, list(defer_args))
@@ -131,8 +130,10 @@ finalize_deferred.mod_info = function (info) {
 finalize_deferred.pkg_info = function (info) {
 }
 
-export_and_attach = function (declaration, spec, info, mod_ns, caller) {
+# FIXME: Why do we need declaration here?
+export_and_attach = function (spec, info, mod_ns, caller) {
     mod_exports = mod_exports(info, spec, mod_ns)
+    if (is.null(mod_exports)) return()
     attach_to_caller(spec, mod_exports, caller)
     assign_alias(spec, mod_exports, caller)
 }
@@ -178,74 +179,41 @@ load_mod.pkg_info = function (info) {
 }
 
 mod_exports = function (info, spec, ns) {
-    UseMethod('mod_exports')
-}
+    exports = if (inherits(info, 'pkg_info'))
+        getNamespaceExports(ns) else
+        namespace_info(ns, 'exports')
 
-mod_exports.mod_info = function (info, spec, ns) {
-    # TODO: Create copy instead of reusing the identical mod export environment?
-    if (! is.null((mod = namespace_info(ns, 'mod')))) return(mod)
+    # BUG: This fails to distinguish between deferred exporting and a genuinely
+    # empty export list, which can happen.
+    if (is.null(exports)) {
+        # FIXME: defer
+        return()
+    }
 
     env = make_export_env(info, spec, ns)
-    namespace_info(ns, 'mod') = env
-    exports = namespace_info(ns, 'exports')
-
-    export_names_into(exports, ns, env)
-    reexport_names_into(exports, ns, env)
+    list2env(mget(exports, ns, inherits = TRUE), envir = env)
 
     # FIXME: Lock namespace and/or ~-bindings?
     # lockEnvironment(env, bindings = TRUE)
     env
 }
 
-mod_exports.pkg_info = function (info, spec, ns) {
-    env = make_export_env(info, spec, ns)
-    exports = getNamespaceExports(ns)
-    list2env(mget(exports, ns, inherits = TRUE), envir = env)
-    # FIXME: Handle lazydata & depends
-    lockEnvironment(env, bindings = TRUE)
-    env
-}
-
-export_names_into = function (exports, ns, env) {
-    direct_exports = exports[attr(exports, 'assignments')]
-    list2env(mget(names(direct_exports), ns, inherits = FALSE), envir = env)
-}
-
-find_matching_import = function (imports, reexport) {
-    reexport_expr = attr(reexport, 'call')[[-1L]]
-    for (import in imports) {
-        if (identical(attr(import, 'expr'), reexport_expr)) return(import)
-    }
-}
-
-reexport_names_into = function (exports, ns, env) {
-    reexports = exports[attr(exports, 'imports')]
-    imports = namespace_info(ns, 'imports')
-
-    for (reexport in reexports) {
-        import_ns = find_matching_import(imports, reexport)
-        import_info = attr(import_ns, 'info')
-        import_spec = import_info$spec
-
-        if (is_mod_still_loading(import_info)) {
-            declaration = attr(reexport, 'call')[[-1L]]
-            defer_import_finalization(declaration, import_spec, import_info, import_ns, env)
-            next
-        }
-
-        import_exports = mod_exports(import_info, import_ns)
-        attach_to_caller(import_spec, import_exports, env)
-        assign_alias(import_spec, import_exports, env)
-    }
-}
-
 attach_to_caller = function (spec, mod_exports, caller) {
+    attach_list = attach_list(spec, mod_exports)
+    if (is.null(attach_list)) return()
+
+    import_env = find_import_env(caller, spec)
+    attr(mod_exports, 'attached') = environmentName(import_env)
+    imports = setNames(mget(attach_list, mod_exports), names(attach_list))
+    list2env(imports, envir = import_env)
+}
+
+attach_list = function (spec, exports) {
     if (is.null(spec$attach)) return()
     is_wildcard = is.na(spec$attach)
     name_spec = spec$attach[! is_wildcard]
-    import_env = find_import_env(caller, spec)
 
-    if (! all(is_wildcard) && any((missing = ! name_spec %in% ls(mod_exports)))) {
+    if (! all(is_wildcard) && any((missing = ! name_spec %in% ls(exports)))) {
         stop(sprintf(
             'Name%s %s not exported by %s',
             if (length(name_spec[missing]) > 1L) 's' else '',
@@ -255,7 +223,7 @@ attach_to_caller = function (spec, mod_exports, caller) {
     }
 
     if (any(is_wildcard)) {
-        attach_list = ls(mod_exports)
+        attach_list = ls(exports)
         if (length(attach_list) == 0L) return()
 
         aliases = attach_list
@@ -264,13 +232,11 @@ attach_to_caller = function (spec, mod_exports, caller) {
             to_replace = match(name_spec, attach_list)
             aliases[to_replace] = names(name_spec)
         }
-    } else {
-        attach_list = spec$attach
-        aliases = names(attach_list)
-    }
 
-    attr(mod_exports, 'attached') = environmentName(import_env)
-    list2env(setNames(mget(attach_list, mod_exports), aliases), envir = import_env)
+        setNames(attach_list, aliases)
+    } else {
+        name_spec
+    }
 }
 
 find_import_env = function (x, spec) {
@@ -289,7 +255,7 @@ find_import_env.environment = function (x, spec) {
     if (identical(x, .GlobalEnv)) {
         attach(NULL, name = paste0('mod:', spec_name(spec)))
     } else {
-        parent.env(x) = structure(new.env(parent = parent.env(x)))
+        parent.env(x) = new.env(parent = parent.env(x))
     }
 }
 

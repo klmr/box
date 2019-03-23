@@ -15,20 +15,13 @@
 #' would cause ambiguity when a module and a package share the same name.
 #' @seealso \code{\link[base]{system.file}}
 #' @export
-module_file = function (..., module = parent.frame(), mustWork = FALSE) {
-    module_path = module_base_path(module)
+file = function (..., module = current_mod(), must_work = FALSE) {
+    path = base_path(module)
 
-    if (length(list(...)) == 0L)
-        return(module_path)
+    if (length(list(...)) == 0L) return(path)
 
-    paths = file.path(module_path, ...)
+    paths = file.path(path, ...)
     existing = paths[file.exists(paths)]
 
-    existing %||% {
-        if (mustWork) {
-            stop('File not found: ', sQuote(paths))
-        } else {
-            ''
-        }
-    }
+    existing %||% if (must_work) stop('File not found: ', sQuote(paths)) else ''
 }
