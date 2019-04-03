@@ -7,7 +7,7 @@ r_cmdline = function (cmd, args = '') {
 }
 
 rcmd = function (script_path) {
-    cmd = r_cmdline('R CMD BATCH', c('--slave', '--no-timing'))
+    cmd = r_cmdline('"$R_HOME/bin/R" CMD BATCH', c('--slave', '--no-timing'))
     output_file = tempfile(fileext = '.rout')
     on.exit(unlink(output_file))
     system(paste(cmd, script_path, output_file))
@@ -15,14 +15,14 @@ rcmd = function (script_path) {
 }
 
 rscript = function (script_path) {
-    cmd = r_cmdline('Rscript', '--slave')
+    cmd = r_cmdline('"$R_HOME/bin/Rscript"', '--slave')
     p = pipe(paste(cmd, script_path))
     on.exit(close(p))
     readLines(p)
 }
 
 interactive_r = function (script_path, text, code) {
-    cmd = r_cmdline('R --interactive')
+    cmd = r_cmdline('"$R_HOME/bin/R"', '--interactive')
     output_file = tempfile(fileext = '.rout')
     on.exit(unlink(output_file))
 
