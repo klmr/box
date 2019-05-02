@@ -179,16 +179,8 @@ load_mod.pkg_info = function (info) {
 }
 
 mod_exports = function (info, spec, ns) {
-    exports = if (inherits(info, 'pkg_info'))
-        getNamespaceExports(ns) else
-        namespace_info(ns, 'exports')
-
-    # BUG: This fails to distinguish between deferred exporting and a genuinely
-    # empty export list, which can happen.
-    if (is.null(exports)) {
-        # FIXME: defer
-        return()
-    }
+    exports = mod_export_names(info, ns)
+    if (is.null(exports)) return()
 
     env = make_export_env(info, spec, ns)
     list2env(mget(exports, ns, inherits = TRUE), envir = env)
@@ -196,6 +188,22 @@ mod_exports = function (info, spec, ns) {
     # FIXME: Lock namespace and/or ~-bindings?
     # lockEnvironment(env, bindings = TRUE)
     env
+}
+
+#' @return \code{mode_export_names} returns the same as
+#' \code{names(mod_exports(info, spec, ns))} and does not create an export environment.
+#' @name mod_exports
+#' @keywords internal
+mod_export_names = function (info, ns) {
+    UseMethod('mod_export_names')
+}
+
+mod_export_names.mod_info = function (info, ns) {
+    namespace_info(ns, 'exports')
+}
+
+mod_export_names.pkg_info = function (info, ns) {
+    getNamespaceExports(ns)
 }
 
 attach_to_caller = function (spec, mod_exports, caller) {

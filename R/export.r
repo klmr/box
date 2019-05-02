@@ -70,9 +70,9 @@ parse_export_specs = function (info, mod_ns) {
             return(spec$alias)
         }
 
-        exports = mod_exports(info, spec, import_ns)
+        export_names = mod_export_names(info, import_ns)
         real_alias = if (is.null(spec$attach) || spec$explicit) spec$alias
-        c(names(attach_list(spec, exports)), real_alias)
+        c(names(attach_list(spec, export_names)), real_alias)
     }
 
     find_matching_import = function (imports, reexport) {
