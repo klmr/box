@@ -47,20 +47,27 @@ parse_export_specs = function (info, mod_ns) {
         } else if (block_is_use_call(export)) {
             call = attr(export, 'call')
             aliases = names(call) %||% rep(list(NULL), length(call))
-            Map(reexport_names, call[-1L], aliases[-1L], USE.NAMES = FALSE)
+            Map(reexport_names, call[-1L], aliases[-1L], list(export), USE.NAMES = FALSE)
         } else {
             block_error(export)
         }
     }
 
-    reexport_names = function (declaration, alias) {
+    reexport_names = function (declaration, alias, export) {
         spec = parse_spec(declaration, alias)
         import_ns = find_matching_import(namespace_info(mod_ns, 'imports'), spec)
         info = attr(import_ns, 'info')
 
         if (is_mod_still_loading(info)) {
-            caller = parent.frame()
-            defer(spec, info, import_ns, caller)
+            if (! is.null(spec$attach)) {
+                msg = paste0(
+                    'Invalid attempt to export names from an incompletely ',
+                    'loaded, cyclic import (module %s) in line %d.'
+                )
+                stop(sprintf(msg, dQuote(spec$name), attr(export, 'location')[1L]))
+            }
+
+            return(spec$alias)
         }
 
         exports = mod_exports(info, spec, import_ns)
