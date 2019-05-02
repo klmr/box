@@ -88,7 +88,6 @@ load_and_register = function (spec, info, caller) {
         return()
     }
 
-    finalize_deferred(info)
     export_and_attach(spec, info, mod_ns, caller)
 
     # TODO: Lock environment? Lock bindings?! The latter breaks some tests.
@@ -127,11 +126,10 @@ finalize_deferred.mod_info = function (info) {
     }
 }
 
-finalize_deferred.pkg_info = function (info) {
-}
+finalize_deferred.pkg_info = function (info) {}
 
-# FIXME: Why do we need declaration here?
 export_and_attach = function (spec, info, mod_ns, caller) {
+    finalize_deferred(info)
     mod_exports = mod_exports(info, spec, mod_ns)
     if (is.null(mod_exports)) return()
     attach_to_caller(spec, mod_exports, caller)
