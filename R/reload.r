@@ -22,7 +22,7 @@ reload = function (mod) {
     info = attr(mod, 'info')
 
     ns = loaded_mod(info)
-    deregister_mod(info, ns)
+    deregister_mod(info)
     # If loading fails, restore old module.
     on.exit(register_mod(info, ns))
 

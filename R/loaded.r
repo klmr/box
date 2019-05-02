@@ -33,7 +33,7 @@ register_mod = function (info, mod_ns) {
 #' \code{deregister_mod} removes a module namespace from the cache, unloading
 #' the module from memory.
 #' @rdname loaded
-deregister_mod = function (info, mod_ns) {
+deregister_mod = function (info) {
     rm(list = info$source_path, envir = loaded_mods)
 }
 
