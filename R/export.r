@@ -45,10 +45,6 @@ parse_export_specs = function (info, mod_ns) {
         if (block_is_assign(export)) {
             block_name(export)
         } else if (block_is_use_call(export)) {
-            # imports = attr(export, 'call')[-1L]
-            # aliases = names(imports) %||% rep(list(NULL), length(imports))
-            # Map(reexport_names, imports, aliases)
-
             call = attr(export, 'call')
             aliases = names(call) %||% rep(list(NULL), length(call))
             Map(reexport_names, call[-1L], aliases[-1L], USE.NAMES = FALSE)
