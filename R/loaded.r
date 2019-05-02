@@ -33,7 +33,7 @@ register_mod = function (info, mod_ns) {
 #' \code{deregister_mod} removes a module namespace from the cache, unloading
 #' the module from memory.
 #' @rdname loaded
-deregister_mod = function (info, mod_ns) {
+deregister_mod = function (info) {
     rm(list = info$source_path, envir = loaded_mods)
 }
 
@@ -60,22 +60,28 @@ mod_loading_finished = function (info, mod_ns) {
 
 #' Get a module’s path
 #'
-#' @param module a module environment or namespace
+#' @param mod a module environment or namespace
 #' @return A character string containing the module’s full path.
-module_path = function (module)
-    module_attr(module, 'path')
+path = function (mod) {
+    UseMethod('path')
+}
+
+`path.mod$mod` = function (mod) {
+    attr(mod, 'info')$source_path
+}
+
+`path.mod$ns` = function (mod) {
+    namespace_info(mod, 'info')$source_path
+}
 
 #' Get a module’s base directory
 #'
-#' @param module a module environment or namespace
+#' @param mod a module environment or namespace
 #' @return A character string containing the module’s base directory,
 #'  or the current working directory if not invoked on a module.
-module_base_path = function (module) {
-    path = try(module_attr(module, 'path'), silent = TRUE)
-    if (inherits(path, 'try-error'))
-        normalizePath(script_path(), winslash = '/')
-    else
-        normalizePath(dirname(path), winslash = '/')
+base_path = function (mod) {
+    path = tryCatch(dirname(path(mod)), error = function (e) script_path())
+    normalizePath(path, winslash = '/')
 }
 
 #' Set the base path of the script.
@@ -92,12 +98,13 @@ module_base_path = function (module) {
 #' path manually.
 #' @export
 set_script_path = function (path) {
-    if (is.null(path))
+    if (is.null(path)) {
         # Use `list = '.'` instead of `.` to work around bug in `R CMD CHECK`,
         # which thinks that `.` refers to a non-existent global symbol.
         rm(list = '.', envir = loaded_mods)
-    else
+    } else {
         assign('.', dirname(path), loaded_mods)
+    }
 }
 
 #' Return an R script’s path
@@ -111,42 +118,36 @@ script_path = function () {
     # 4. R CMD BATCH script.r
     # 5. Script run interactively (give up, use `getwd()`)
 
-    if (exists('.', envir = loaded_mods, inherits = FALSE))
+    if (exists('.', envir = loaded_mods, inherits = FALSE)) {
         return(get('.', envir = loaded_mods, inherits = FALSE))
+    }
 
-    if (! is.null((knitr_path = knitr_path())))
-        return(knitr_path)
+    if (! is.null((knitr_path = knitr_path()))) return(knitr_path)
 
-    if (! is.null((shiny_path = shiny_path())))
-        return(shiny_path)
+    if (! is.null((shiny_path = shiny_path()))) return(shiny_path)
 
     args = commandArgs()
 
     file_arg = grep('--file=', args)
-    if (length(file_arg) != 0L)
+    if (length(file_arg) != 0L) {
         return(dirname(sub('--file=', '', args[file_arg])))
+    }
 
     f_arg = grep('-f', args)
-    if (length(f_arg) != 0L)
-        return(dirname(args[f_arg + 1L]))
+    if (length(f_arg) != 0L) return(dirname(args[f_arg + 1L]))
 
     getwd()
 }
 
 knitr_path = function () {
-    if (! 'knitr' %in% loadedNamespaces())
-        return(NULL)
+    if (! 'knitr' %in% loadedNamespaces()) return(NULL)
 
     knitr_input = suppressWarnings(knitr::current_input(dir = TRUE))
-    if (! is.null(knitr_input))
-        dirname(knitr_input)
+    if (! is.null(knitr_input)) dirname(knitr_input)
 }
 
 shiny_path = function () {
-    if ('shiny' %in% loadedNamespaces() && shiny::isRunning())
-        getwd()
-    else
-        NULL
+    if ('shiny' %in% loadedNamespaces() && shiny::isRunning()) getwd()
 }
 
 #' Get a module’s name

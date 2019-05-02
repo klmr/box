@@ -36,6 +36,20 @@ test_that('unloading a module detaches it', {
     expect_identical(as.environment(2L), parent)
 })
 
+test_that('unloading a local module detaches it', {
+    (function () {
+        old_parent = parent.env(environment())
+        mod::use(a = mod/a[...])
+        new_parent = parent.env(environment())
+        expect_not_identical(old_parent, new_parent)
+        expect_identical(old_parent, parent.env(new_parent))
+        mod::reload(a)
+        expect_not_identical(old_parent, parent.env(environment()))
+        expect_not_identical(new_parent, parent.env(environment()))
+        expect_identical(old_parent, parent.env(parent.env(environment())))
+    })()
+})
+
 test_that('reloading a module reattaches it', {
     parent = as.environment(2L)
     local(mod::use(a = mod/a[...]), .GlobalEnv)

@@ -41,7 +41,7 @@ test_that('mod::file works after attaching modules', {
     modfile = in_globalenv({
         expected_module_file = mod::file()
         mod::use(a = mod/a[...])
-        on.exit(unload(a))
+        on.exit(mod::unload(a))
         list(actual = mod::file(), expected = expected_module_file)
     })
 

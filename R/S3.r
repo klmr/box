@@ -51,7 +51,8 @@ is_S3_user_generic = function (function_name, envir = parent.frame()) {
         is.recursive(b) && (is_S3(b[[1L]]) || is_S3(b[-1L]))
     }
 
-    is_S3(body(get(function_name, envir = envir, mode = 'function')))
+    ! bindingIsActive(function_name, envir) &&
+        is_S3(body(get(function_name, envir = envir, mode = 'function')))
 }
 
 #' Return a list of function names in an environment

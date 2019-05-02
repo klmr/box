@@ -16,7 +16,7 @@
 mod_search_path = function () {
     option_value = option('path')
     env_value = strsplit(Sys.getenv('R_MOD_PATH'), .Platform$path.sep)[[1L]]
-    c(option_value, env_value, module_base_path(parent.frame()))
+    c(option_value, env_value, base_path(parent.frame()))
 }
 
 #' \code{calling_mod_path} determines the path of the module code that is
@@ -25,13 +25,16 @@ mod_search_path = function () {
 calling_mod_path = function () {
     # Go up chain of function calls until the first call that is no longer in
     # the {mod} package.
-    n = 1L
-    pkg_ns_env = parent.env(environment())
-    while (identical((env = mod_topenv(parent.frame(n))), pkg_ns_env)) n = n + 1L
+
+    frame_nss = lapply(sys.frames(), mod_topenv)
+    this_mod_frames = vapply(frame_nss, identical, logical(1L), topenv())
+    base_frames = vapply(frame_nss, identical, logical(1L), .BaseNamespaceEnv)
+    other_frame_nss = frame_nss[! this_mod_frames & ! base_frames]
+    calling_ns = other_frame_nss[[length(other_frame_nss)]]
 
     # FIXME: Make work for modules imported inside package, if necessary.
-    if (is_namespace(env)) {
-        dirname(namespace_info(env, 'info')$source_path)
+    if (is_namespace(calling_ns)) {
+        dirname(namespace_info(calling_ns, 'info')$source_path)
     } else {
         script_path()
     }
