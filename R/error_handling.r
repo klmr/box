@@ -18,5 +18,5 @@ rethrow = function (error, call = sys.call(sys.parent())) {
 #' value of evaluating \code{expr}.
 #' @rdname rethrow
 rethrow_on_error = function (expr, call = sys.call(sys.parent())) {
-    expr # tryCatch(expr, error = function (error) rethrow(error, call))
+    tryCatch(expr, error = function (error) rethrow(error, call))
 }
