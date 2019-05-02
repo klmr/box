@@ -84,6 +84,8 @@ load_and_register = function (spec, info, caller) {
         # circular imports (1. A -> 2. B -> 3. A)) in step (3). To proceed, we
         # take note of the issue and wait until we bounce back to step (1) to
         # perform deferred finalization.
+
+        assign_temp_alias(spec, caller)
         defer_import_finalization(spec, info, mod_ns, caller)
         return()
     }
@@ -132,8 +134,8 @@ export_and_attach = function (spec, info, mod_ns, caller) {
     finalize_deferred(info)
     mod_exports = mod_exports(info, spec, mod_ns)
     if (is.null(mod_exports)) return()
-    attach_to_caller(spec, mod_exports, caller)
     assign_alias(spec, mod_exports, caller)
+    attach_to_caller(spec, mod_exports, caller)
 }
 
 load_from_source = function (info, mod_ns) {
@@ -273,4 +275,38 @@ assign_alias = function (spec, mod_exports, caller) {
     if (! create_mod_alias) return()
 
     assign(spec$alias, mod_exports, caller)
+}
+
+assign_temp_alias = function (spec, caller) {
+    create_mod_alias = is.null(spec$attach) || spec$explicit
+    if (! create_mod_alias) return()
+
+    callers = list()
+
+    binding = function (mod_exports) {
+        if (missing(mod_exports)) {
+            # Find from where I’m called, and infer the target of the export.
+            mod_exports_frame_index = tail(which(vapply(
+                sys.calls(),
+                function (call) identical(call[[1L]], quote(mod_exports)),
+                logical(1L)
+            )), 1L)
+            frame = sys.frame(mod_exports_frame_index)
+            env = frame$env
+            assign('callers', append(callers, env), envir = parent.env(environment()))
+
+            # FIXME: Do we need to create transitive placeholder active bindings?
+            structure(list(), class = 'placeholder')
+        } else {
+            # Resolve assignments
+            for (env in callers) {
+                assign(spec$alias, mod_exports, envir = env)
+            }
+            # Replace myself
+            rm(list = spec$alias, envir = caller)
+            assign(spec$alias, mod_exports, envir = caller)
+        }
+    }
+
+    makeActiveBinding(spec$alias, binding, caller)
 }
