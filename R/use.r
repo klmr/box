@@ -92,8 +92,8 @@ load_and_register = function (spec, info, caller) {
 
     export_and_attach(spec, info, mod_ns, caller)
 
-    # TODO: Lock environment? Lock bindings?! The latter breaks some tests.
-    # lockEnvironment(mod_ns, bindings = FALSE)
+    # TODO: Lock bindings?! This breaks some tests.
+    lockEnvironment(mod_ns, bindings = FALSE)
 }
 
 register_as_import = function (spec, info, mod_ns, caller) {
@@ -189,8 +189,7 @@ mod_exports = function (info, spec, ns) {
     env = make_export_env(info, spec, ns)
     list2env(mget(exports, ns, inherits = TRUE), envir = env)
 
-    # FIXME: Lock namespace and/or ~-bindings?
-    # lockEnvironment(env, bindings = TRUE)
+    lockEnvironment(env, bindings = TRUE)
     env
 }
 
