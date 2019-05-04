@@ -178,6 +178,10 @@ load_mod.pkg_info = function (info) {
     base::.getNamespace(pkg) %||% loadNamespace(pkg)
 }
 
+#' Exported module objects
+#'
+#' \code{mod_exports} returns an export environment containing a copy of the
+#' module’s exported objects.
 mod_exports = function (info, spec, ns) {
     exports = mod_export_names(info, ns)
     if (is.null(exports)) return()
