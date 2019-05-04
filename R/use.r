@@ -91,9 +91,6 @@ load_and_register = function (spec, info, caller) {
     }
 
     export_and_attach(spec, info, mod_ns, caller)
-
-    # TODO: Lock bindings?! This breaks some tests.
-    lockEnvironment(mod_ns, bindings = FALSE)
 }
 
 register_as_import = function (spec, info, mod_ns, caller) {
@@ -136,6 +133,9 @@ export_and_attach = function (spec, info, mod_ns, caller) {
     if (is.null(mod_exports)) return()
     assign_alias(spec, mod_exports, caller)
     attach_to_caller(spec, mod_exports, caller)
+
+    # TODO: Lock bindings?! This breaks some tests.
+    lockEnvironment(mod_ns, bindings = FALSE)
 }
 
 load_from_source = function (info, mod_ns) {
@@ -303,11 +303,15 @@ assign_temp_alias = function (spec, caller) {
         } else {
             # Resolve assignments
             for (env in callers) {
+                unlockBinding(spec$alias, env)
                 assign(spec$alias, mod_exports, envir = env)
+                lockBinding(spec$alias, env)
             }
             # Replace myself
+            unlock_environment(caller)
             rm(list = spec$alias, envir = caller)
             assign(spec$alias, mod_exports, envir = caller)
+            lockEnvironment(caller)
         }
     }
 
