@@ -95,3 +95,8 @@ make_export_env = function (info, spec, ns) {
     cat(sprintf('<%s: %s>\n', type, spec_name(spec)))
     invisible(x)
 }
+
+#' @useDynLib mod, unlock_env, .registration = TRUE
+unlock_environment = function (env) {
+    invisible(.Call(unlock_env, env))
+}
