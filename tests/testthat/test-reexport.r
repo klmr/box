@@ -21,7 +21,9 @@ test_that('module reexports the correct names', {
 test_that('module reexport names refer to correct objects', {
     mod::use(x = mod/reexport)
 
+    expect_equal(x$sub$a, 'sub$c')
     expect_equal(x$a, 'sub$c')
+    expect_equal(x$sub$b, 'sub$b')
     expect_equal(x$b, 'sub$b')
     expect_equal(x$c, 'reexport$c')
 })
