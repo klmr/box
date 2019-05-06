@@ -210,7 +210,7 @@ mod_export_names.pkg_info = function (info, ns) {
 }
 
 attach_to_caller = function (spec, mod_exports, caller) {
-    attach_list = attach_list(spec, mod_exports)
+    attach_list = attach_list(spec, ls(mod_exports))
     if (is.null(attach_list)) return()
 
     import_env = find_import_env(caller, spec)
@@ -224,7 +224,7 @@ attach_list = function (spec, exports) {
     is_wildcard = is.na(spec$attach)
     name_spec = spec$attach[! is_wildcard]
 
-    if (! all(is_wildcard) && any((missing = ! name_spec %in% ls(exports)))) {
+    if (! all(is_wildcard) && any((missing = ! name_spec %in% exports))) {
         stop(sprintf(
             'Name%s %s not exported by %s',
             if (length(name_spec[missing]) > 1L) 's' else '',
@@ -234,17 +234,16 @@ attach_list = function (spec, exports) {
     }
 
     if (any(is_wildcard)) {
-        attach_list = ls(exports)
-        if (length(attach_list) == 0L) return()
+        if (length(exports) == 0L) return()
 
-        aliases = attach_list
+        aliases = exports
         if (length(spec$attach) > 1L) {
             # Substitute aliased names in export list
-            to_replace = match(name_spec, attach_list)
+            to_replace = match(name_spec, exports)
             aliases[to_replace] = names(name_spec)
         }
 
-        setNames(attach_list, aliases)
+        setNames(exports, aliases)
     } else {
         name_spec
     }
