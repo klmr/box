@@ -70,3 +70,17 @@ test_that('module bindings are locked', {
     err = try({a$counter = 2}, silent = TRUE)
     expect_that(class(err), equals('try-error'))
 })
+
+test_that('modules don’t need exports', {
+    num_loaded_mods = function () length(ls(mod:::loaded_mods))
+
+    num_before = num_loaded_mods()
+    expect_error(mod::use(mod/c), NA)
+    num_between = num_loaded_mods()
+    expect_error(mod::use(mod/d), NA)
+    num_after = num_loaded_mods()
+
+    expect_equal(ls(), c('c', 'd'))
+    expect_lt(num_before, num_between)
+    expect_lt(num_between, num_after)
+})
