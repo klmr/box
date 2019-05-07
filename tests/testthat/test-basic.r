@@ -4,6 +4,8 @@ is_module_loaded = function (mod) {
     mod:::is_mod_loaded(attr(mod, 'info'))
 }
 
+test_teardown(clear_mods())
+
 module_path = function (mod) {
     attr(mod, 'info')$source_path
 }
