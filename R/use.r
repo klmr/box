@@ -155,8 +155,6 @@ load_mod = function (info) {
 }
 
 load_mod.mod_info = function (info) {
-    message(glue::glue('load_module({info})\n'))
-
     if (is_mod_loaded(info)) return(loaded_mod(info))
 
     # Load module/package and dependencies; register the module now, to allow
