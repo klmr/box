@@ -165,6 +165,27 @@ the module by default.
 Nevertheless, the normal, recommended usage of a module is without an attach
 specification, as this makes it clearer which names are being referring to.
 
+# Implementing modules
+
+The module `bio/seq`, which we have used in the previous section, is implemented
+in the file [`bio/seq.r`](bio/seq.r). The file `seq.r` is, by and large, a
+normal R source file, which happens to live in a directory named `bio`.
+
+In fact, there are only two things worth mentioning:
+
+1. Documentation. Each function in the module file is documented using the
+   [roxygen2](http://cran.r-project.org/web/packages/roxygen2/index.html)
+   syntax. It works the same as for packages. The *modules* package parses the
+   documentation and makes it available via `module_help` and `?`.
+
+2. The module exports [S3 functions](http://adv-r.had.co.nz/S3.html). The
+   *modules* package takes care to register such functions automatically but
+   this only works for *user generics* that are defined inside the same module.
+   When overriding “known generics” (such as `print`), we need to register
+   these manually via `register_S3_method` (this is necessary since these
+   functions are inherently ambiguous and there is no automatic way of finding
+   them).
+
 ## Nested modules
 
 Modules can also be nested in hierarchies. In fact, here is the implementation
@@ -200,23 +221,6 @@ mod::use(./seq[...])
 This would have made all of `seq`’s definitions immediately available in
 `bio`. This is sometimes useful, but should be employed with care.
 
-## Implementing modules
-
-`bio/seq.r` is, by and large, a normal R source file. In fact, there are only
-two things worth mentioning:
-
-1. Documentation. Each function in the module file is documented using the
-   [roxygen2](http://cran.r-project.org/web/packages/roxygen2/index.html)
-   syntax. It works the same as for packages. The *modules* package parses the
-   documentation and makes it available via `module_help` and `?`.
-
-2. The module exports [S3 functions](http://adv-r.had.co.nz/S3.html). The
-   *modules* package takes care to register such functions automatically but
-   this only works for *user generics* that are defined inside the same module.
-   When overriding “known generics” (such as `print`), we need to register
-   these manually via `register_S3_method` (this is necessary since these
-   functions are inherently ambiguous and there is no automatic way of finding
-   them).
 
 Module files can contain arbitrary code. It is executed when loaded for the
 first time: subsequent `import`s in the same session, regardless of whether they
