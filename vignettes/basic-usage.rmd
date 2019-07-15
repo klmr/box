@@ -34,16 +34,25 @@ First, we load the module:
 
 ```{r}
 mod::use(./bio/seq)
+```
+
+The function `mod::use` accepts a list of *unquoted*, *qualified* module names.
+Each of these module names will load a single module and make it available to
+the caller in some form. In the code above, we’ve loaded a single module,
+`seq/seq`. `bio` serves as a *parent module* that may group several submodules.
+Since the module name inside `mod::use` starts with `./`, the module location is
+resolved *locally*, i.e. relative to the path of the currently running code.
+
+To see the effect of this `use` declaration, let’s inspect our workspace:
+
+```{r}
 ls()
 seq
 ```
 
-`bio` serves as a parent module that may group several submodules. Since the
-module name inside `mod::use` starts with `./`, the module location is resolved
-*locally*, i.e. relative to the path of the currently running code. Furthermore,
-we use a module’s *fully qualified name* to load it. But, as shown by `ls`,
-loading the module this way only introduces a single new name into the current
-scope, the module itself, identified by its proper (non-qualified) name.
+We have used the module’s *fully qualified name* to load it. But, as shown by
+`ls`, loading the module this way only introduces a single new name into the
+current scope, the module itself, identified by its proper (non-qualified) name.
 
 To see which names a module exports, we use `ls` again, this time on the module
 itself:
@@ -52,9 +61,11 @@ itself:
 ls(seq)
 ```
 
-And to access exported names, we use the `$` operator: `seq$revcomp` allows us
-to use the first function in the list of exported names. And we can display
-interactive help for individual names, e.g.:
+It appears that `seq` exports `r length(ls(seq))` different names. To access
+exported names, we use the `$` operator:
+<code>`r paste0('seq$', lsf.str(seq)[[1L]])`</code> allows us to use the first
+function in the list of exported names. We can also display the interactive help
+for individual names, e.g.:
 
 ```{r eval=FALSE}
 ? seq$revcomp
