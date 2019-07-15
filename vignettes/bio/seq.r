@@ -18,16 +18,15 @@ is_valid_seq.default = function (seq) {
 
 #' Create a biological sequence
 #'
-#' Create a nucleotide sequence consisting of \code{A}, \code{C}, \code{G} and
-#' \code{T}
-#' @param x character vector
-#' @param validate logical to indicate whether to validate the input
-#'  (default: \code{TRUE}), via \code{\link{is_valid_seq}}
-#' @return Biological sequence equivalent to the input string
+#' \code{seq()} creates a set of nucleotide sequences from one or several
+#' character vectors consisting of \code{A}, \code{C}, \code{G} and \code{T}.
+#' @param ... optionally named character vectors representing DNA sequences.
+#' @return Biological sequence equivalent to the input string.
 #' @export
-seq = function (x, validate = TRUE) {
-    if (validate) stopifnot(is_valid_seq(x))
-    structure(toupper(x), class = 'bio/seq')
+seq = function (...) {
+    x = toupper(c(...))
+    stopifnot(is_valid_seq(x))
+    structure(x, class = 'bio/seq')
 }
 
 #' Print one or more biological sequences

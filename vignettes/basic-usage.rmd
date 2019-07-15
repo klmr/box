@@ -64,14 +64,14 @@ Now let’s actually *use* the module. The `seq` function inside the `dna/seq`
 module constructs a set of (optionally named) biological sequences:
 
 ```{r}
-s = seq$seq(c(
-    foo = 'GATTACAGATCAGCTCAGCACCTAGCACTATCAGCAAC',
-    bar = 'CATAGCAACTGACATCACAGCG'
-))
-
-s
+s = seq$seq(
+    gene1 = 'GATTACAGATCAGCTCAGCACCTAGCACTATCAGCAAC',
+    gene2 = 'CATAGCAACTGACATCACAGCG'
+)
 
 seq$is_valid_seq(s)
+
+s
 ```
 
 Note how we automatically get pretty-printed
