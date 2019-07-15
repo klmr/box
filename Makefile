@@ -40,6 +40,14 @@ check:
 	mkdir -p check
 	${rscript} -e "devtools::check(check_dir = 'check')"
 
+.PHONY: site
+## Create package website
+site:
+	${rscript} -e "pkgdown::build_site()"
+
+article-%:
+	${rscript} -e "pkgdown::build_article('$*')"
+
 # NOTE: In the following, the vignettes are built TWICE: once via the
 # conventional route, to result in HTML output. And once to create MD output for
 # hosting on GitHub, because the standard knitr RMarkdown vignette template
