@@ -1,5 +1,6 @@
 #' Test whether input is valid biological sequence
 #' @param seq a character vector or \code{seq} object
+#' @name seq
 #' @export
 is_valid_seq = function (seq) {
     UseMethod('is_valid_seq')
@@ -49,6 +50,7 @@ mod::register_S3_method('print', 'bio/seq', `print.bio/seq`)
 #' The reverse complement of a sequence is its reverse, with all nucleotides
 #' substituted by their base complement.
 #' @param seq character vector of biological sequences
+#' @name seq
 #' @export
 revcomp = function (seq) {
     nucleotides = strsplit(seq, '')
@@ -61,6 +63,7 @@ revcomp = function (seq) {
 #' @param seq sequences
 #' @return A \code{\link[base::table]{table}} for the nucleotides of each
 #'  sequence in the input.
+#' @name seq
 #' @export
 table = function (seq) {
     nucleotides = lapply(strsplit(seq, ''), factor, c('A', 'C', 'G', 'T'))
