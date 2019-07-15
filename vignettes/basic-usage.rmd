@@ -22,14 +22,13 @@ devtools::load_all()
 mod::use(./`source-file`)
 ```
 
-# Basic module usage
+# Working with modules
 
 ## The `seq` module
 
 For the purpose of this tutorial, we are going to use the example module
-`bio/seq`, which is implemented in the file [`bio/seq.r`](bio/seq.r). The module
-implements some very basic mechanisms for dealing with DNA sequences (=
-character strings consisting of the letters `A`, `C`, `G` and `T`).
+`bio/seq`. The module implements some very basic mechanisms for dealing with DNA
+sequences (= character strings consisting of the letters `A`, `C`, `G` and `T`).
 
 First, we load the module:
 
@@ -76,10 +75,10 @@ seq$is_valid_seq(s)
 ```
 
 Note how we automatically get pretty-printed
-[FASTA](http://en.wikipedia.org/wiki/FASTA_format) output because the
-`print` method is specialised for the `'bio/seq'` class in the `bio/seq` module
-(prefixing S3 classes inside modules with the full module name is a convention
-to avoid name clashes of S3 classes).
+[FASTA](http://en.wikipedia.org/wiki/FASTA_format) output because the `print`
+method (which gets called implicitly here) is specialised for the `'bio/seq'`
+class in the `bio/seq` module (prefixing S3 classes inside modules with the full
+module name is a convention to avoid name clashes of S3 classes):
 
 ```{r}
 getS3method('print', 'bio/seq')
