@@ -30,16 +30,14 @@ seq = function (...) {
 }
 
 #' Print one or more biological sequences
-#' @param seq biological sequences
-`print.bio/seq` = function (seq, columns = 60) {
-    lines = strsplit(seq, sprintf('(?<=.{%s})', columns), perl = TRUE)
-    print_single = function (seq, name) {
-        if (! is.null(name)) cat(sprintf('>%s\n', name))
-        cat(seq, sep = '\n')
-    }
-    names = if (is.null(names(seq))) list(NULL) else names(seq)
-    Map(print_single, lines, names)
-    invisible(seq)
+`print.bio/seq` = function (x) {
+    mod::use(stringr[str_trunc])
+    cat(
+        sprintf('%d DNA sequences:', length(x)),
+        sprintf('  >%s\n  %s', names(x), str_trunc(x, 30)),
+        sep = '\n'
+    )
+    invisible(x)
 }
 
 mod::register_S3_method('print', 'bio/seq', `print.bio/seq`)
