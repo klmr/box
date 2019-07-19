@@ -3,7 +3,9 @@
 ^\.gitignore$
 ^CHANGES\.md$
 ^Makefile$
+^Meta$
 ^README\.md$
+^doc$
 ^printenv\.r$
 ^\.travis\.yml$
-CONTRIBUTING.md
+^CONTRIBUTING\.md$

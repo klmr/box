@@ -1,3 +1,5 @@
 .Rprofile
-man
+doc
+Meta
 NAMESPACE
+man
