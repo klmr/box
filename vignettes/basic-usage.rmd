@@ -97,19 +97,19 @@ getS3method('print', 'bio/seq')
 
 ## Attaching modules
 
-So much for the most common usage pattern. In order to understand more about the
-module mechanism, let’s look at an alternative usage.
+Let’s now look at an alternative way of using modules.
 
-To start, let’s unload the `bio/seq` module and load it again, via a different
-route.
+To start, let’s unload the `bio/seq` module …
 
 ```{r}
 mod::unload(seq)
 ```
 
+… and load it again, via a different route:
+
 ```{r}
 mod::set_options(path = getwd())
-mod::use(bio/seq[...])
+mod::use(bio/seq[revcomp, is_valid])
 ```
 
 After unloading the already loaded module, the `mod::set_options` function call
@@ -118,24 +118,30 @@ more than one path is given, `mod::use` searches them all until a module of
 matching name is found.
 
 The `mod::use` directive can now use `bio/seq` instead of `./bio/seq` as the
-module name: Instead of a relative module we specify a *global* module. Instead
-of the current working directory this would normally be a global library
-location, e.g. (following the [XDG base directory specification][XDG])
-`~/.local/R/modules`.
+module name: rather than a relative name we specify a *global* name. In this
+example we set the search path to the current working directory but in normal
+usage it would be a global library location, e.g. (following the [XDG base
+directory specification][XDG]) `~/.local/R/modules`.
 
 [XDG]: https://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
 
-Note that non-local module names must be fully qualified, nested modules:
-`mod::use(foo/bar)` works, `mod::use(bar)` does not (instead, mod assumes that
-`bar` is a *package* name).
+Note that non-local module names *must* be fully qualified, nested modules:
+`mod::use(foo/bar)` works, `mod::use(bar)` does not (instead, it is assumed that
+`bar` refers to a *package*).
 
-In the command above we also specify that all exported names in the module
-should be attached, via `[...]`. The `[…]` part is an *attach specification*. A
-comma-separated list of names inside the parentheses specifies which names to
-attach. The special symbol `...` specifies that all exported names should be
-attached. This has an effect similar to conventional package loading via
-`library` (or `attach`ing an environment): all the module’s names are now
-available for direct use without necessitating the `seq$` qualifier.
+In the command above we use `[revcomp]` to specify that the `revcomp` name from
+the `bio/seq` module should be attached in the calling environment. The `[…]`
+part is an *attach specification*. A comma-separated list of names inside the
+parentheses specifies which names to attach. The special symbol `...` specifies
+that *all exported names* should be attached. This has an effect similar to
+conventional package loading via `library` (or `attach`ing an environment): all
+the attached names are now available for direct use without necessitating the
+`seq$` qualifier:
+
+```{r}
+is_valid(s)
+revcomp(s)
+```
 
 However, unlike the `attach` function, module attachment happens *in local
 scope* only. Since the above code was executed in global scope, there’s no
@@ -145,33 +151,34 @@ distinction between local and global scope:
 search()
 ```
 
-Note the second item, which reads “`r search()[2]`”. But let’s now undo that,
-and attach (and use) the module locally instead (normally this would be inside a
-function; but `local` serves the same purpose of creating a new scope):
+Note the second item, which reads “<code>`r search()[2]`</code>”. But let’s now
+undo that, and attach (and use) the module locally instead:
 
 ```{r}
 detach()
 
-local({
-    mod::use(./bio/seq[table])
-    table('GATTACA')
-})
+seq_table = function (s) {
+    mod::use(./bio/seq[...])
+    table(s)
+}
+
+seq_table('GATTACA')
 ```
 
-Unlike above, we are only attaching a single name (`tables`) instead of
-everything. The subsequent line of code uses `seq`’s `table` function rather
-than `base::table` (which would have a different output). Furthermore, note that
-*outside* the local scope, the `seq` module’s `table` is not attached:
+Unlike above, we are now attaching *all* exported names instead of specifying
+individual names. The subsequent line of code uses the `seq$table` function
+rather than `base::table` (which would have a different output). And note that
+the `seq` module’s `table` function is *not* attached outside the local scope:
 
 ```{r}
 search()
 table('GATTACA')
 ```
 
-This is very powerful, as it isolates separate scopes more effectively than
-the `attach` function. What is more, modules which are imported and attached
-inside another module *remain* inside that module and are not visible outside
-the module by default.
+This is very powerful, as it isolates separate scopes more effectively than the
+`attach` function. What is more, modules which are used and attached inside
+another module *remain* inside that module and are not visible outside the
+module by default.
 
 Nevertheless, the normal, recommended usage of a module is without an attach
 specification, as this makes it clearer which names are being referring to.
@@ -207,10 +214,10 @@ file `__init__.r`):
 ```{r file='bio/__init__.r'}
 ```
 
-The submodule is specified as `'./seq'` rather than `'seq'`: the
-explicitly provided relative path prevents lookup in the import search path
-(that we set via `options(import.path=…)` earlier); instead, only the current
-directory is considered.
+The submodule is specified as `./seq` rather than `seq`: the explicitly provided
+relative path prevents lookup in the import search path (that we set via
+`mod::set_options(path = …)`); instead, only the current directory is
+considered.
 
 We can now use the `bio` module:
 
@@ -232,11 +239,12 @@ mod::use(./seq[...])
 This would have made all of `seq`’s definitions immediately available in
 `bio`. This is sometimes useful, but should be employed with care.
 
+## Obsolete information
 
 Module files can contain arbitrary code. It is executed when loaded for the
-first time: subsequent `import`s in the same session, regardless of whether they
-occur in a different scope, will refer to the loaded, cached module, and will
-*not* reload a module.
+first time: subsequent `mod::use`s in the same session, regardless of whether
+they occur in a different scope, will refer to the loaded, cached module, and
+will *not* reload a module.
 
 We can illustrate this by loading a module which has side-effects, `'info'`.
 
