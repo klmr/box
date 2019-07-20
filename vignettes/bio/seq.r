@@ -2,17 +2,17 @@
 #' @param seq a character vector or \code{seq} object
 #' @name seq
 #' @export
-is_valid_seq = function (seq) {
-    UseMethod('is_valid_seq')
+is_valid = function (seq) {
+    UseMethod('is_valid')
 }
 
-is_valid_seq.default = function (seq) {
+is_valid.default = function (seq) {
     nucleotides = unlist(strsplit(seq, ''))
     nuc_index = match(nucleotides, c('A', 'C', 'G', 'T'))
     ! any(is.na(nuc_index))
 }
 
-`is_valid_seq.bio/seq` = function (seq) {
+`is_valid.bio/seq` = function (seq) {
     TRUE
 }
 
@@ -25,7 +25,7 @@ is_valid_seq.default = function (seq) {
 #' @export
 seq = function (...) {
     x = toupper(c(...))
-    stopifnot(is_valid_seq(x))
+    stopifnot(is_valid(x))
     structure(x, class = 'bio/seq')
 }
 

@@ -80,7 +80,7 @@ s = seq$seq(
     gene2 = 'CATAGCAACTGACATCACAGCG'
 )
 
-seq$is_valid_seq(s)
+seq$is_valid(s)
 
 s
 ```
