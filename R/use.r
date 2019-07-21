@@ -71,7 +71,7 @@ use = function (...) {
 
 use_one = function (declaration, alias, caller) {
     spec = parse_spec(declaration, alias)
-    info = rethrow_on_error(find_mod(spec), sys.call(-1L))
+    info = rethrow_on_error(find_mod(spec, caller), sys.call(-1L))
     load_and_register(spec, info, caller)
 }
 

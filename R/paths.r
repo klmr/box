@@ -21,16 +21,13 @@ mod_search_path = function () {
 
 #' \code{calling_mod_path} determines the path of the module code that is
 #' currently calling into the {mod} package.
+#'
+#' @param caller the environment from which \code{mod::use} was invoked.
+#' @return \code{calling_mod_path} the path of the source module that is calling
+#' \code{mod::use}, or the script’s path if the calling code is not a module.
 #' @rdname paths
-calling_mod_path = function () {
-    # Go up chain of function calls until the first call that is no longer in
-    # the {mod} package.
-
-    frame_nss = lapply(sys.frames(), mod_topenv)
-    this_mod_frames = vapply(frame_nss, identical, logical(1L), topenv())
-    base_frames = vapply(frame_nss, identical, logical(1L), .BaseNamespaceEnv)
-    other_frame_nss = frame_nss[! this_mod_frames & ! base_frames]
-    calling_ns = other_frame_nss[[length(other_frame_nss)]]
+calling_mod_path = function (caller) {
+    calling_ns = mod_topenv(caller)
 
     # FIXME: Make work for modules imported inside package, if necessary.
     if (is_namespace(calling_ns)) {
