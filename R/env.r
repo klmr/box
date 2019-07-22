@@ -100,3 +100,23 @@ make_export_env = function (info, spec, ns) {
 unlock_environment = function (env) {
     invisible(.Call(unlock_env, env))
 }
+
+find_import_env = function (x, spec) {
+    UseMethod('find_import_env')
+}
+
+`find_import_env.mod$ns` = function (x, spec) {
+    parent.env(x)
+}
+
+`find_import_env.mod$mod` = function (x, spec) {
+    x
+}
+
+find_import_env.environment = function (x, spec) {
+    if (identical(x, .GlobalEnv)) {
+        attach(NULL, name = paste0('mod:', spec_name(spec)))
+    } else {
+        parent.env(x) = new.env(parent = parent.env(x))
+    }
+}
