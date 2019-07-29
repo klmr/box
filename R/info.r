@@ -42,23 +42,23 @@ is_absolute = function (spec) {
     spec$prefix[1L] %in% c('.', '..')
 }
 
-find_mod = function (spec) {
+find_mod = function (spec, caller) {
     UseMethod('find_mod')
 }
 
-find_mod.mod_spec = function (spec) {
-    if (is_absolute(spec)) find_local_mod(spec) else find_global_mod(spec)
+find_mod.mod_spec = function (spec, caller) {
+    if (is_absolute(spec)) find_local_mod(spec, caller) else find_global_mod(spec, caller)
 }
 
-find_mod.pkg_spec = function (spec) {
+find_mod.pkg_spec = function (spec, caller) {
     pkg_info(spec)
 }
 
-find_local_mod = function (spec) {
-    find_in_path(spec, calling_mod_path())
+find_local_mod = function (spec, caller) {
+    find_in_path(spec, calling_mod_path(caller))
 }
 
-find_global_mod = function (spec) {
+find_global_mod = function (spec, caller) {
     # In the future, this may be augmented by pluggable ways of loading modules.
     find_in_path(spec, mod_search_path())
 }

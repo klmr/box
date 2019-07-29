@@ -69,19 +69,78 @@ use = function (...) {
     invisible(Map(use_one, imports, aliases, list(caller)))
 }
 
+#' Import a module or package
+#'
+#' @description
+#' \code{use_one} performs the actual import. It is invoked by \code{use} given
+#' the calling context and unevaluated expressions as arguments, and only uses
+#' standard evaluation.
+#'
+#' \code{load_and_register} performs the loading, attaching and exporting of a
+#' module identified by its spec and info.
+#'
+#' \code{register_as_import} registers a \code{use} declaration in the calling
+#' module so that it can be found later on, if the declaration is reexported by
+#' the calling module.
+#'
+#' \code{defer_import_finalization} is called by \code{load_and_register} to
+#' earmark a module for deferred initialization if it hasn’t been fully loaded
+#' yet.
+#'
+#' \code{finalize_deferred} exports and attaches names from a module use
+#' declaration which has been deferred due to being part of a cyclic loading
+#' chain.
+#'
+#' \code{export_and_attach} exports and attaches names from a given module use
+#' declaration.
+#'
+#' \code{load_from_source} loads a module source file into its newly created,
+#' empty module namespace.
+#'
+#' \code{load_mod} tests whether a module or package was already loaded and, if
+#' not, loads it.
+#'
+#' \code{mod_exports} returns an export environment containing a copy of the
+#' module’s exported objects.
+#'
+#' \code{attach_to_caller} attaches the listed names of an attach specification
+#' for a given use declaration to the calling environment.
+#'
+#' \code{assign_alias} creates a module/package object in calling environment,
+#' unless it contains an attach declaration, and no explicit alias is given.
+#'
+#' \code{assign_temp_alias} creates a placeholder object for the module in the
+#' calling environment, to be replaced by the actual module export environment
+#' once the module is completely loaded (which happens in the case of cyclic
+#' imports).
+#' @param declaration an unevaluated use declaration expression without the
+#' surrounding \code{use} call
+#' @param alias the use alias, if given, otherwise \code{NULL}
+#' @param caller the client’s calling environment (parent frame)
+#' @return \code{use_one} does not currently return a value. — This might change
+#' in the future.
+#' @details If a module is still being loaded (because it is part of a cyclic
+#' import chain), \code{load_and_register} earmarks the module for deferred
+#' registration and holds off on attaching and exporting for now, since not all
+#' its names are available yet.
+#' @keywords internal
+#' @name importing
 use_one = function (declaration, alias, caller) {
     spec = parse_spec(declaration, alias)
-    info = rethrow_on_error(find_mod(spec), sys.call(-1L))
+    info = rethrow_on_error(find_mod(spec, caller), sys.call(-1L))
     load_and_register(spec, info, caller)
 }
 
+#' @param spec a module use declaration specification
+#' @param info the physical module information
+#' @rdname importing
 load_and_register = function (spec, info, caller) {
     mod_ns = load_mod(info)
     register_as_import(spec, info, mod_ns, caller)
 
     if (is_mod_still_loading(info)) {
         # Module was cached but hasn’t fully loaded yet. This happens for
-        # circular imports (1. A -> 2. B -> 3. A)) in step (3). To proceed, we
+        # cyclic imports (1. A -> 2. B -> 3. A)) in step (3). To proceed, we
         # take note of the issue and wait until we bounce back to step (1) to
         # perform deferred finalization.
 
@@ -93,6 +152,8 @@ load_and_register = function (spec, info, caller) {
     export_and_attach(spec, info, mod_ns, caller)
 }
 
+#' @param mod_ns the module namespace environment of the newly loaded module
+#' @rdname importing
 register_as_import = function (spec, info, mod_ns, caller) {
     if (is_namespace(caller)) {
         # Import declarations are stored in a list in the module metadata
@@ -103,6 +164,7 @@ register_as_import = function (spec, info, mod_ns, caller) {
     }
 }
 
+#' @rdname importing
 defer_import_finalization = function (spec, info, mod_ns, caller) {
     defer_args = as.list(environment())
     existing_deferred = attr(loaded_mods[[info$source_path]], 'deferred')
@@ -110,6 +172,7 @@ defer_import_finalization = function (spec, info, mod_ns, caller) {
         c(existing_deferred, list(defer_args))
 }
 
+#' @rdname importing
 finalize_deferred = function (info) {
     UseMethod('finalize_deferred')
 }
@@ -127,6 +190,7 @@ finalize_deferred.mod_info = function (info) {
 
 finalize_deferred.pkg_info = function (info) {}
 
+#' @rdname importing
 export_and_attach = function (spec, info, mod_ns, caller) {
     finalize_deferred(info)
     mod_exports = mod_exports(info, spec, mod_ns)
@@ -138,6 +202,7 @@ export_and_attach = function (spec, info, mod_ns, caller) {
     lockEnvironment(mod_ns, bindings = FALSE)
 }
 
+#' @rdname importing
 load_from_source = function (info, mod_ns) {
     # R, Windows and Unicode don’t play together. `source` does not work here.
     # See http://developer.r-project.org/Encodings_and_R.html and
@@ -150,6 +215,9 @@ load_from_source = function (info, mod_ns) {
     make_S3_methods_known(mod_ns)
 }
 
+#' @return \code{load_mod} returns the module or package namespace environment
+#' of the specified module or package info.
+#' @rdname importing
 load_mod = function (info) {
     UseMethod('load_mod')
 }
@@ -176,37 +244,37 @@ load_mod.pkg_info = function (info) {
     base::.getNamespace(pkg) %||% loadNamespace(pkg)
 }
 
-#' Exported module objects
-#'
-#' \code{mod_exports} returns an export environment containing a copy of the
-#' module’s exported objects.
-mod_exports = function (info, spec, ns) {
-    exports = mod_export_names(info, ns)
+#' @return \code{mod_exports} returns an export environment containing the
+#' exported names of a given module.
+#' @rdname importing
+mod_exports = function (info, spec, mod_ns) {
+    exports = mod_export_names(info, mod_ns)
     if (is.null(exports)) return()
 
-    env = make_export_env(info, spec, ns)
-    list2env(mget(exports, ns, inherits = TRUE), envir = env)
+    env = make_export_env(info, spec, mod_ns)
+    list2env(mget(exports, mod_ns, inherits = TRUE), envir = env)
 
     lockEnvironment(env, bindings = TRUE)
     env
 }
 
-#' @return \code{mode_export_names} returns the same as
-#' \code{names(mod_exports(info, spec, ns))} and does not create an export environment.
-#' @name mod_exports
-#' @keywords internal
-mod_export_names = function (info, ns) {
+#' @return \code{mode_export_names} returns a vector containing the same names as
+#' \code{names(mod_exports(info, spec, mod_ns))} but does not create an export
+#' environment.
+#' @rdname importing
+mod_export_names = function (info, mod_ns) {
     UseMethod('mod_export_names')
 }
 
-mod_export_names.mod_info = function (info, ns) {
-    namespace_info(ns, 'exports')
+mod_export_names.mod_info = function (info, mod_ns) {
+    namespace_info(mod_ns, 'exports')
 }
 
-mod_export_names.pkg_info = function (info, ns) {
-    getNamespaceExports(ns)
+mod_export_names.pkg_info = function (info, mod_ns) {
+    getNamespaceExports(mod_ns)
 }
 
+#' @rdname importing
 attach_to_caller = function (spec, mod_exports, caller) {
     attach_list = attach_list(spec, ls(mod_exports))
     if (is.null(attach_list)) return()
@@ -217,6 +285,10 @@ attach_to_caller = function (spec, mod_exports, caller) {
     list2env(imports, envir = import_env)
 }
 
+#' @return \code{attach_list} returns a named character vector of the names in
+#' an attach specification. The vector’s names are the aliases, if provided, or
+#' the attach specification names themselves otherwise.
+#' @rdname importing
 attach_list = function (spec, exports) {
     if (is.null(spec$attach)) return()
     is_wildcard = is.na(spec$attach)
@@ -247,29 +319,7 @@ attach_list = function (spec, exports) {
     }
 }
 
-find_import_env = function (x, spec) {
-    UseMethod('find_import_env')
-}
-
-`find_import_env.mod$ns` = function (x, spec) {
-    parent.env(x)
-}
-
-`find_import_env.mod$mod` = function (x, spec) {
-    x
-}
-
-find_import_env.environment = function (x, spec) {
-    if (identical(x, .GlobalEnv)) {
-        attach(NULL, name = paste0('mod:', spec_name(spec)))
-    } else {
-        parent.env(x) = new.env(parent = parent.env(x))
-    }
-}
-
-#' Assign module/package object in calling environment, unless attached, and
-#' no explicit alias given.
-#' @keywords internal
+#' @rdname importing
 assign_alias = function (spec, mod_exports, caller) {
     create_mod_alias = is.null(spec$attach) || spec$explicit
     if (! create_mod_alias) return()
@@ -277,6 +327,7 @@ assign_alias = function (spec, mod_exports, caller) {
     assign(spec$alias, mod_exports, caller)
 }
 
+#' @rdname importing
 assign_temp_alias = function (spec, caller) {
     create_mod_alias = is.null(spec$attach) || spec$explicit
     if (! create_mod_alias) return()
