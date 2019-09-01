@@ -41,6 +41,9 @@ the caller in some form. In the code above, we’ve loaded a single module,
 Since the module name inside `mod::use` starts with `./`, the module location is
 resolved *locally*, i.e. relative to the path of the currently running code.
 
+In the above, `seq` is the module’s *proper name*. `bio/seq` is its *fully
+qualified name*. And `./bio/seq` is its *`use` declaration*.
+
 To see the effect of this `use` declaration, let’s inspect our workspace:
 
 ```{r}
@@ -48,7 +51,7 @@ ls()
 seq
 ```
 
-We have used the module’s *fully qualified name* to load it. But, as shown by
+We have used the module’s fully qualified name to load it. But, as shown by
 `ls`, loading the module this way only introduces a single new name into the
 current scope, the module itself, identified by its proper (non-qualified) name.
 
@@ -85,7 +88,7 @@ s
 
 Note how we automatically get pretty-printed
 [FASTA](http://en.wikipedia.org/wiki/FASTA_format) output because the `print`
-method (which gets called implicitly here) is specialised for the `'bio/seq'`
+method (which gets called implicitly here) is specialised for the `'bio/seq'` S3
 class in the `bio/seq` module (prefixing S3 classes inside modules with the full
 module name is a convention to avoid name clashes of S3 classes):
 
@@ -93,9 +96,13 @@ module name is a convention to avoid name clashes of S3 classes):
 getS3method('print', 'bio/seq')
 ```
 
+The source code for `print.bio/seq` contains an interesting `use` declaration.
+It show-cases an alternative way of invoking `mod::use`, which we’ll explore
+now.
+
 ## Attaching modules
 
-Let’s now look at an alternative way of using modules.
+Let’s have a look at alternative ways of using modules.
 
 To start, let’s unload the `bio/seq` module …
 
@@ -113,7 +120,8 @@ mod::use(bio/seq[revcomp, is_valid])
 After unloading the already loaded module, the `mod::set_options` function call
 sets the module search path: this is where `mod::use` searches for modules. If
 more than one path is given, `mod::use` searches them all until a module of
-matching name is found.
+matching name is found. This works analogously to how `.libPaths()` operates on
+R packages.
 
 The `mod::use` directive can now use `bio/seq` instead of `./bio/seq` as the
 module name: rather than a relative name we specify a *global* name. In this
@@ -127,14 +135,14 @@ Note that non-local module names *must* be fully qualified, nested modules:
 `mod::use(foo/bar)` works, `mod::use(bar)` does not (instead, it is assumed that
 `bar` refers to a *package*).
 
-In the command above we use `[revcomp]` to specify that the `revcomp` name from
-the `bio/seq` module should be attached in the calling environment. The `[…]`
-part is an *attach specification*. A comma-separated list of names inside the
-parentheses specifies which names to attach. The special symbol `...` specifies
-that *all exported names* should be attached. This has an effect similar to
-conventional package loading via `library` (or `attach`ing an environment): all
-the attached names are now available for direct use without necessitating the
-`seq$` qualifier:
+In the declaration above we use `[revcomp]` to specify that the `revcomp` name
+from the `bio/seq` module should be attached in the calling environment. The
+`[…]` part is an *attach specification*. A comma-separated list of names inside
+the parentheses specifies which names to attach. The special symbol `...`
+specifies that *all exported names* should be attached. This has an effect
+similar to conventional package loading via `library` (or `attach`ing an
+environment): all the attached names are now available for direct use without
+necessitating the `seq$` qualifier:
 
 ```{r}
 is_valid(s)
@@ -142,7 +150,9 @@ revcomp(s)
 ```
 
 However, unlike the `attach` function, module attachment happens *in local
-scope* only. Since the above code was executed in global scope, there’s no
+scope* only.
+
+Since the above code was executed in the global environment, there’s no
 distinction between local and global scope:
 
 ```{r}
@@ -150,7 +160,7 @@ search()
 ```
 
 Note the second item, which reads “<code>`r search()[2]`</code>”. But let’s now
-undo that, and attach (and use) the module locally instead:
+undo that, to attach (and use) the module locally instead:
 
 ```{r}
 detach()
