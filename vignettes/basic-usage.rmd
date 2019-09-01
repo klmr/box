@@ -22,9 +22,7 @@ devtools::load_all()
 mod::use(./`source-file`)
 ```
 
-# Working with modules
-
-## The `seq` module
+## Using modules
 
 For the purpose of this tutorial, we are going to use the example module
 `bio/seq`. The module implements some very basic mechanisms for dealing with DNA
@@ -183,7 +181,7 @@ module by default.
 Nevertheless, the normal, recommended usage of a module is without an attach
 specification, as this makes it clearer which names are being referring to.
 
-# Implementing modules
+## Writing modules
 
 The module `bio/seq`, which we have used in the previous section, is implemented
 in the file [`bio/seq.r`](bio/seq.r). The file `seq.r` is, by and large, a
@@ -204,12 +202,11 @@ In fact, there are only two things worth mentioning:
    functions are inherently ambiguous and there is no automatic way of finding
    them).
 
-## Nested modules
+## Nesting modules
 
-Modules can also be nested in hierarchies. In fact, here is the implementation
-of `bio` (in [`bio/__init__.r`](bio/__init__.r): since `bio` is a
-directory rather than a file, the module implementation resides in the nested
-file `__init__.r`):
+Modules can also form nested hierarchies. In fact, here is the implementation of
+`bio` (in [`bio/__init__.r`](bio/__init__.r): since `bio` is a directory rather
+than a file, the module implementation resides in the nested file `__init__.r`):
 
 ```{r file='bio/__init__.r'}
 ```
