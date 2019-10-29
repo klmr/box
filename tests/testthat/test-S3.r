@@ -34,7 +34,6 @@ test_that('S3 methods are found', {
     expect_that(print, equals(s3$print.test))
 })
 
-
 test_that('can call S3 methods without attaching', {
     s3 = import('s3')
     expect_that(s3$test(1), equals('test.default'))

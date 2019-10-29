@@ -223,6 +223,9 @@ do_import = function (module_name, module_path, doc) {
                           name = paste('namespace', module_name, sep = ':'),
                           class = c('namespace', 'environment'))
 
+    # Necessary as of R 3.6.0; works around #147.
+    namespace$.packageName = module_name
+
     module_attr(namespace, 'name') = environmentName(namespace)
     module_attr(namespace, 'path') = module_path
 
