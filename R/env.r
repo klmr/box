@@ -16,8 +16,13 @@ make_namespace = function (info) {
     # FIXME: Why not use `.__NAMESPACE__.` here?
     ns_env$.__module__. = ns_attr
     # TODO: Set exports here!
-    # TODO: Create S3 methods table
+    enable_s3_lookup(ns_env, info)
     structure(ns_env, name = paste0('namespace:', info$name), class = 'mod$ns')
+}
+
+enable_s3_lookup = function (ns_env, info) {
+    ns_env$.packageName = info$name
+    # TODO: Create S3 methods table
 }
 
 make_imports_env = function (info) {
