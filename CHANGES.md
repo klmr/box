@@ -1,5 +1,6 @@
 * 0.9.11:
     * Fix `script_path` when R arguments contain certain valid patterns (#148)
+    * Fix S3 modules on R 3.6.0 (#147)
 
 * 0.9.10:
     * Fix incompatibility with roxygen2 v6.1.0
