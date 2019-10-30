@@ -6,7 +6,7 @@ deploy_branch ?= master
 deploy_source ?= develop
 
 .PHONY: all
-all: doc vignettes
+all: documentation vignettes
 
 .PHONY: deploy
 ## Deploy the code with documentation to Github
@@ -24,7 +24,7 @@ update-master:
 	git checkout ${deploy_source}
 	-git branch --delete --force ${deploy_branch}
 	git checkout -b ${deploy_branch}
-	${MAKE} doc vignettes
+	${MAKE} documentation vignettes
 
 .PHONY: test
 ## Run unit tests
@@ -55,9 +55,9 @@ doc:
 doc/%.md: vignettes/%.rmd | doc
 	${rscript} -e "rmarkdown::render('$<', output_format = 'md_document', output_file = '$@', output_dir = '$(dir $@)')"
 
-.PHONY: doc
+.PHONY: documentation
 ## Compile the in-line package documentation
-doc:
+documentation:
 # Note: this needs to be run twice to generate correct S3 exports; see
 # <https://github.com/hadley/devtools/issues/1585>
 	${rscript} -e "library(devtools); document(); document()"
