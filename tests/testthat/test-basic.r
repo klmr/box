@@ -74,6 +74,6 @@ test_that('module bindings are locked', {
 test_that('modules don’t need exports', {
     expect_equal(ls(), character(0L))
     expect_error(mod::use(mod/c), NA)
-    expect_error(mod::use(mod/d), NA)
+    expect_error(capture.output(mod::use(mod/d)), NA)
     expect_equal(ls(), c('c', 'd'))
 })
