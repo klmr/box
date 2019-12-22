@@ -2,7 +2,7 @@ context('mod spec parser test')
 
 test_use = function (...) {
     call = match.call()
-    parse_spec(call[[2L]], names(call[-1L]))
+    parse_spec(call[[2L]], names(call)[[2L]] %||% '')
 }
 
 is_mod_spec = function (x) {

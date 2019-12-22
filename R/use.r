@@ -65,7 +65,7 @@ use = function (...) {
     caller = parent.frame()
     call = match.call()
     imports = call[-1L]
-    aliases = names(imports) %||% rep(list(NULL), length(imports))
+    aliases = names(imports) %||% character(length(imports))
     invisible(Map(use_one, imports, aliases, list(caller)))
 }
 
@@ -194,7 +194,6 @@ finalize_deferred.pkg_info = function (info) {}
 export_and_attach = function (spec, info, mod_ns, caller) {
     finalize_deferred(info)
     mod_exports = mod_exports(info, spec, mod_ns)
-    if (is.null(mod_exports)) return()
     assign_alias(spec, mod_exports, caller)
     attach_to_caller(spec, mod_exports, caller)
 
@@ -249,7 +248,6 @@ load_mod.pkg_info = function (info) {
 #' @rdname importing
 mod_exports = function (info, spec, mod_ns) {
     exports = mod_export_names(info, mod_ns)
-    if (is.null(exports)) return()
 
     env = make_export_env(info, spec, mod_ns)
     list2env(mget(exports, mod_ns, inherits = TRUE), envir = env)

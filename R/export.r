@@ -45,9 +45,9 @@ parse_export_specs = function (info, mod_ns) {
         if (block_is_assign(export)) {
             block_name(export)
         } else if (block_is_use_call(export)) {
-            call = attr(export, 'call')
-            aliases = names(call) %||% rep(list(NULL), length(call))
-            Map(reexport_names, call[-1L], aliases[-1L], list(export), USE.NAMES = FALSE)
+            imports = attr(export, 'call')[-1L]
+            aliases = names(imports) %||% character(length(imports))
+            Map(reexport_names, imports, aliases, list(export), USE.NAMES = FALSE)
         } else {
             block_error(export)
         }
@@ -92,20 +92,7 @@ parse_export_specs = function (info, mod_ns) {
     }
 
     exports = parse_roxygen_tags(info, mod_ns, mod_export_roclet())
-    tryCatch(
-        unique(unlist(lapply(exports, parse_export))),
-        defer = function (e) {
-            # do.call(defer_import_finalization, e$args)
-            NULL
-        }
-    )
-    # tryCatch(
-    #     withRestarts(
-    #         unlist(lapply(exports, parse_export)),
-    #         defer = defer_import_finalization_and_stop
-    #     ),
-    #     deferred = function (.) NULL
-    # )
+    unique(as.character(unlist(lapply(exports, parse_export))))
 }
 
 use_call = quote(mod::use)
@@ -130,10 +117,4 @@ block_is_exported = function (block) {
 
 block_name = function (block) {
     attr(block, 'object')$alias
-}
-
-defer = function (...) {
-    nullcond = list(message = NULL, call = NULL, args = list(...))
-    defer_condition = structure(nullcond, class = c('defer', 'condition'))
-    signalCondition(defer_condition)
 }

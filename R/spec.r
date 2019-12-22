@@ -39,7 +39,7 @@ parse_spec = function (expr, alias) {
     is_pkg = 'pkg' %in% names(spec)
     spec_type = if (is_pkg) pkg_spec else mod_spec
     name = spec[[if (is_pkg) 'pkg' else 'mod']]$name
-    spec_type(spec, alias = alias %||% name, explicit = ! is.null(alias))
+    spec_type(spec, alias = alias %||% name, explicit = nzchar(alias))
 }
 
 #' @param spec named list of information the parser constructed from a given
