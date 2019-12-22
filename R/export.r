@@ -47,7 +47,7 @@ parse_export_specs = function (info, mod_ns) {
         } else if (block_is_use_call(export)) {
             imports = attr(export, 'call')[-1L]
             aliases = names(imports) %||% character(length(imports))
-            Map(reexport_names, imports, aliases, list(export), USE.NAMES = FALSE)
+            flatmap_chr(reexport_names, imports, aliases, list(export))
         } else {
             block_error(export)
         }
@@ -92,7 +92,7 @@ parse_export_specs = function (info, mod_ns) {
     }
 
     exports = parse_roxygen_tags(info, mod_ns, mod_export_roclet())
-    unique(as.character(unlist(lapply(exports, parse_export))))
+    unique(flatmap_chr(parse_export, exports))
 }
 
 use_call = quote(mod::use)
