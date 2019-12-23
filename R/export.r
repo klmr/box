@@ -97,10 +97,10 @@ parse_export_specs = function (info, mod_ns) {
 
 use_call = quote(mod::use)
 
-assignment_calls = c('<-', '=', 'assign', '<<-')
+assignment_calls = c(quote(`<-`), quote(`=`), quote(assign), quote(`<<-`))
 
 is_assign_call = function (call) {
-    deparse(call) %in% assignment_calls
+    any(vapply(assignment_calls, identical, logical(1L), call))
 }
 
 block_is_assign = function (block) {
