@@ -206,9 +206,9 @@ load_from_source = function (info, mod_ns) {
     # R, Windows and Unicode don’t play together. `source` does not work here.
     # See http://developer.r-project.org/Encodings_and_R.html and
     # http://stackoverflow.com/q/5031630/1968 for a discussion of this.
-    exprs = parse(info$source_path, encoding = 'UTF-8')
+    exprs = parse(info$source_path, keep.source = TRUE, encoding = 'UTF-8')
     eval(exprs, mod_ns)
-    namespace_info(mod_ns, 'exports') = parse_export_specs(info, mod_ns)
+    namespace_info(mod_ns, 'exports') = parse_export_specs(info, exprs, mod_ns)
     # TODO: When do we load the documentation?
     # namespace_info(mod_ns, 'doc') = parse_documentation(info, mod_ns)
     make_S3_methods_known(mod_ns)

@@ -1,4 +1,10 @@
-#' Mark module names to be exported
+#' Find exported names in parsed module source
+#'
+#' @param info The module info.
+#' @param exprs The list of expressions of the parsed module.
+#' @param mod_ns The module namespace after evaluating the expressions.
+#' @return \code{parse_export_specs} returns a potentially empty character
+#' vector of exported names.
 #'
 #' @note
 #' There are two situations in which the \code{@export} tag can be applied:
@@ -12,35 +18,7 @@
 #' }
 #' In any other situation, applying the \code{@export} tag is an error.
 #' @keywords internal
-mod_export_roclet = function () {
-    roxygen2::roclet('mod_export')
-}
-
-#' @importFrom roxygen2 roclet_tags
-#' @export
-roclet_tags.roclet_mod_export = function (x) {
-    # This is different from Roxygen2’s definition of an export tag. This is
-    # intentional: modules has a different export mechanism.
-    list(export = roxygen2::tag_toggle)
-}
-
-#' @importFrom roxygen2 roclet_process
-#' @export
-roclet_process.roclet_mod_export = function (
-    x, blocks, env, base_path, global_options = list()
-) {
-    blocks[vapply(blocks, block_is_exported, logical(1L))]
-}
-
-#' @importFrom roxygen2 roclet_output
-#' @export
-roclet_output.roclet_mod_export = function (x, ...) {}
-
-#' @importFrom roxygen2 roclet_clean
-#' @export
-roclet_clean.roclet_mod_export = function (x, base_path) {}
-
-parse_export_specs = function (info, mod_ns) {
+parse_export_specs = function (info, exprs, mod_ns) {
     parse_export = function (export) {
         if (block_is_assign(export)) {
             block_name(export)
@@ -91,30 +69,196 @@ parse_export_specs = function (info, mod_ns) {
         stop(sprintf(msg, dQuote('@export'), location, code))
     }
 
-    exports = parse_roxygen_tags(info, mod_ns, mod_export_roclet())
+    exports = parse_export_tags(info, exprs, mod_ns)
     unique(flatmap_chr(parse_export, exports))
 }
 
+#' @keywords internal
+#' @rdname parse_export_specs
 use_call = quote(mod::use)
 
+#' @keywords internal
+#' @rdname parse_export_specs
 assignment_calls = c(quote(`<-`), quote(`=`), quote(assign), quote(`<<-`))
 
+#' @param call A call to test.
+#' @keywords internal
+#' @rdname parse_export_specs
 is_assign_call = function (call) {
-    any(vapply(assignment_calls, identical, logical(1L), call))
+    any(map_lgl(identical, assignment_calls, call))
 }
 
+#' @param block A roxygen2 block to inspect.
+#' @keywords internal
+#' @rdname parse_export_specs
 block_is_assign = function (block) {
     is_assign_call(attr(block, 'call')[[1L]])
 }
 
+#' @keywords internal
+#' @rdname parse_export_specs
 block_is_use_call = function (block) {
     identical(attr(block, 'call')[[1L]], use_call)
 }
 
+#' @keywords internal
+#' @rdname parse_export_specs
 block_is_exported = function (block) {
     'export' %in% names(block)
 }
 
+#' @keywords internal
+#' @rdname parse_export_specs
 block_name = function (block) {
     attr(block, 'object')$alias
+}
+
+#' Extract comment tags from Roxygen block comments
+#'
+#' @param exprs The unevaluated expressions to parse.
+#' @note The following code performs the same function as roxygen2 with a custom
+#' \code{@} tag roclet. Unfortunately roxygen2 itself pulls in many
+#' dependencies, making it less suitable for an infrastructure package such as
+#' this one. Furthermore, the code license of roxygen2 is incompatible with
+#' ours, so we cannot simply copy and paste the relevant code out. Luckily the
+#' logic is straightforward to reimplement.
+#' @keywords internal
+parse_export_tags = function (info, exprs, mod_ns) {
+    refs = utils::getSrcref(exprs)
+    comment_refs = add_comments(refs)
+    is_exported = map_lgl(has_export_tag, comment_refs)
+    map(create_export_block, exprs[is_exported], refs[is_exported], list(info), list(mod_ns))
+}
+
+#' Collect export tag information
+#'
+#' @param expr The unevaluated expression represented by the tag.
+#' @param ref The code reference \code{srcref} represented by the tag.
+#' @note This could be represented much simpler but we keep compatibility with
+#' roxygen2 — at least for the time being — to make integration with the
+#' roxygen2 API easier, should it become necessary.
+#' @keywords internal
+create_export_block = function (expr, ref, info, mod_ns) {
+    structure(
+        list(export = ''),
+        filename = attr(ref, 'srcfile')$filename,
+        location = as.vector(ref),
+        call = expr,
+        object = parse_object(info, expr, mod_ns),
+        class = 'roxy_block'
+    )
+}
+
+#' @keywords internal
+#' @rdname create_export_block
+parse_object = function (info, expr, mod_ns) {
+    if (is.character(expr)) {
+        if (identical(expr, '_PACKAGE')) {
+            value = list(path = info$source_path)
+            roxygen2_object(value, expr, 'package')
+        } else {
+            roxygen2_object(expr, expr, 'data')
+        }
+    } else if (is.call(expr)) {
+        if (any(map_lgl(identical, assignment_calls, expr[[1L]]))) {
+            name = as.character(expr[[2L]])
+            value = get(name, mod_ns)
+            # FIXME: Add handling for S3
+            roxygen2_object(value, name, 'function')
+        } else if (identical(expr[[1L]], use_call)) {
+            roxygen2_object(list(pkg = 'mod', fun = 'use'), 'use', 'import')
+        } else {
+            # We do not care about the rest.
+            NULL
+        }
+    } else {
+        NULL
+    }
+}
+
+#' @param value The object value.
+#' @param alias The object name.
+#' @param type The object type.
+#' @keywords internal
+#' @rdname create_export_block
+roxygen2_object = function (value, alias, type) {
+    structure(
+        list(alias = alias, value = value, methods = NULL, topic = alias),
+        class = paste0('roxygen2_', c(type, 'object'))
+    )
+}
+
+#' Extend code regions to include leading comments and whitespace
+#'
+#' @param refs The code region \code{srcref}s to extend.
+#' @keywords internal
+add_comments = function (refs) {
+    block_end_lines = map_int(`[[`, refs, 3L)
+    block_end_bytes = map_int(`[[`, refs, 4L)
+    block_start_lines = c(1L, block_end_lines[-length(block_end_lines)] + 1L)
+    srcfile = attr(refs[[1L]], 'srcfile')
+    llocs = map(c, block_start_lines, list(1L), block_end_lines, block_end_bytes)
+    map(srcref, list(srcfile), llocs)
+}
+
+#' Find \code{@export} tags in code regions
+#'
+#' @param ref The code region \code{srcref} to search.
+#' @return \code{TRUE} if the given region is annotated with a \code{@export}
+#' tag, \code{FALSE} otherwise.
+#' @keywords internal
+has_export_tag = function (ref) {
+    next_char = function () {
+        pos <<- pos + 1L
+        substr(line, pos, pos)
+    }
+
+    consume_char = function (chars) {
+        matched = next_char() %in% chars
+        if (! matched) pos <<- pos - 1L
+        matched
+    }
+
+    consume_chars = function (chars) {
+        while (pos != nchar(line) && consume_char(chars)) {}
+    }
+
+    consume_whitespace = function () {
+        consume_chars(c(' ', '\t'))
+    }
+
+    is_roxygen_comment = function () {
+        prev = pos
+        consume_whitespace()
+        if (! consume_char('#')) return(FALSE)
+        consume_chars('#')
+        if (! consume_char("'")) {
+            pos <<- prev
+            return(FALSE)
+        }
+        consume_whitespace()
+        TRUE
+    }
+
+    is_empty_line = function () {
+        consume_whitespace()
+        pos == nchar(line) || consume_char('#')
+    }
+
+    is_export = function () {
+        pos <<- pos + 1L
+        len = nchar('@export')
+        substr(line, pos, pos + len) == '@export' &&
+            (pos + len > nchar(line) || substr(line, pos + len, pos + len) %in% c(' ', '\t'))
+    }
+
+    block = as.character(ref)
+    for (line in block) {
+        pos = 0L
+        if (! is_roxygen_comment()) {
+            if (is_empty_line()) next else return(FALSE)
+        }
+        if (is_export()) return(TRUE)
+    }
+    FALSE
 }
