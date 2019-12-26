@@ -81,15 +81,14 @@ print.spec = function (x, ...) {
 
 as.character.spec = function (x, ...) {
     r_name = function (names) {
-        vapply(
-            names,
+        map_chr(
             function (n) {
                 if (is.na(n)) '…' else sprintf(
                     '\x1b[33m%s\x1b[0m',
                     deparse(as.name(n), backtick = TRUE)
                 )
             },
-            character(1L)
+            names
         )
     }
 
@@ -273,7 +272,7 @@ parse_error = function (...) {
         }
     }
     stop(simpleError(
-        paste(vapply(list(...), chr, character(1L)), collapse = ''),
+        paste(map_chr(chr, list(...)), collapse = ''),
         call = sys.call(-1L)
     ))
 }

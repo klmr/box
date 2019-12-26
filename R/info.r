@@ -84,9 +84,9 @@ find_in_path = function (spec, base_paths) {
     # order of preference of paths, when multiple possibilities exist.
     simple_mod = file.path(mod_path_prefix, paste0(spec$name, ext))
     nested_mod = file.path(mod_path_prefix, spec$name, paste0('__init__', ext))
-    candidates = lapply(base_paths, file.path, c(simple_mod, nested_mod))
-    hits = lapply(candidates, file.exists)
-    which_base = which(vapply(hits, any, logical(1L)))[1L]
+    candidates = map(file.path, base_paths, c(simple_mod, nested_mod))
+    hits = map(file.exists, candidates)
+    which_base = which(map_lgl(any, hits))[1L]
 
     if (is.na(which_base)) {
         stop(

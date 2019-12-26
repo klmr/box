@@ -81,7 +81,7 @@ make_S3_methods_known = function (module) {
     find_methods = function (generic)
         grep(sprintf('^%s\\.[^.]', generic), functions, value = TRUE)
 
-    methods = lapply(generics, find_methods)
+    methods = map(find_methods, generics)
 
     register_method = function (name, generic) {
         # Ensure we don’t register functions which have already been
@@ -94,8 +94,8 @@ make_S3_methods_known = function (module) {
     }
 
     register_methods = function (methods, generic_name)
-        lapply(methods, register_method, generic_name)
+        map(register_method, methods, list(generic_name))
 
-    Map(register_methods, methods, generics)
+    map(register_methods, methods, generics)
     invisible()
 }

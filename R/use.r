@@ -66,7 +66,7 @@ use = function (...) {
     call = match.call()
     imports = call[-1L]
     aliases = names(imports) %||% character(length(imports))
-    invisible(Map(use_one, imports, aliases, list(caller)))
+    invisible(map(use_one, imports, aliases, list(caller)))
 }
 
 #' Import a module or package
@@ -335,10 +335,9 @@ assign_temp_alias = function (spec, caller) {
     binding = function (mod_exports) {
         if (missing(mod_exports)) {
             # Find from where I’m called, and infer the target of the export.
-            mod_exports_frame_index = tail(which(vapply(
-                sys.calls(),
+            mod_exports_frame_index = tail(which(map_lgl(
                 function (call) identical(call[[1L]], quote(mod_exports)),
-                logical(1L)
+                sys.calls()
             )), 1L)
             frame = sys.frame(mod_exports_frame_index)
             env = frame$env
