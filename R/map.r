@@ -22,7 +22,7 @@
 #' flatmap_chr(identity, list(c('a', 'b'), 'c'))
 #' # [1] "a" "b" "c"
 map = function (.f, ...) {
-    Map(.f, ..., USE.NAMES = FALSE)
+    if (length(..1) == 0L) list() else Map(.f, ..., USE.NAMES = FALSE)
 }
 
 #' @rdname map
@@ -47,4 +47,8 @@ map_int = function (.f, ...) {
 
 map_lgl = function (.f, ...) {
     vmap(.f = .f, ..., .default = logical(0L))
+}
+
+map_chr = function (.f, ...) {
+    vmap(.f = .f, ..., .default = character(0L))
 }
