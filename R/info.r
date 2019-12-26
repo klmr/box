@@ -90,8 +90,8 @@ find_in_path = function (spec, base_paths) {
 
     if (is.na(which_base)) {
         stop(
-            'Unable to load module ', sQuote(spec_name(spec)),
-            '; not found in ', paste(sQuote(base_paths), collapse = ', ')
+            'Unable to load module ', dQuote(spec_name(spec)),
+            '; not found in ', paste(dQuote(base_paths), collapse = ', ')
         )
     }
 

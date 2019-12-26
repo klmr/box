@@ -296,7 +296,7 @@ attach_list = function (spec, exports) {
         stop(sprintf(
             'Name%s %s not exported by %s',
             if (length(name_spec[missing]) > 1L) 's' else '',
-            paste(sQuote(name_spec[missing]), collapse = ', '),
+            paste(dQuote(name_spec[missing]), collapse = ', '),
             spec_name(spec)
         ))
     }

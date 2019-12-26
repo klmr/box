@@ -49,18 +49,20 @@ parse_roxygen_tags = function (info, mod_ns, roclet) {
 module_help = function (topic, help_type = getOption('help_type', 'text')) {
     topic = substitute(topic)
 
-    if (! is_module_help_topic(topic, parent.frame()))
-        stop(sQuote(deparse(topic)), ' is not a valid module help topic',
+    if (! is_module_help_topic(topic, parent.frame())) {
+        stop(dQuote(deparse(topic)), ' is not a valid module help topic',
              call. = FALSE)
+    }
 
     module = get(as.character(topic[[2L]]), parent.frame())
     module_name = module_name(module)
     object = as.character(topic[[3L]])
 
     doc = attr(module, 'doc')[[object]]
-    if (is.null(doc))
-        stop('No documentation available for ', sQuote(object),
-             ' in module ', sQuote(module_name), call. = FALSE)
+    if (is.null(doc)) {
+        stop('No documentation available for ', dQuote(object),
+             ' in module ', dQuote(module_name), call. = FALSE)
+    }
 
     display_help(doc, paste0('module:', module_name), help_type)
 }
