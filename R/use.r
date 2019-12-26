@@ -209,8 +209,6 @@ load_from_source = function (info, mod_ns) {
     exprs = parse(info$source_path, keep.source = TRUE, encoding = 'UTF-8')
     eval(exprs, mod_ns)
     namespace_info(mod_ns, 'exports') = parse_export_specs(info, exprs, mod_ns)
-    # TODO: When do we load the documentation?
-    # namespace_info(mod_ns, 'doc') = parse_documentation(info, mod_ns)
     make_S3_methods_known(mod_ns)
 }
 

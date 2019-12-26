@@ -9,8 +9,7 @@ Description: Create reusable code modules in R. An alternative package
 Depends:
     R (>= 3.0.2)
 Imports:
-    tools,
-    roxygen2 (>= 6.1.0)
+    tools
 License: Apache License (== 2.0) | file LICENSE
 LazyData: true
 Encoding: UTF-8
@@ -18,6 +17,7 @@ Suggests:
     devtools,
     knitr,
     rmarkdown,
+    roxygen2 (>= 6.1.0),
     shiny,
     testthat (>= 2.0.0)
 VignetteBuilder: knitr
