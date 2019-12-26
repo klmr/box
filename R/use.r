@@ -66,7 +66,7 @@ use = function (...) {
     call = match.call()
     imports = call[-1L]
     aliases = names(imports) %||% character(length(imports))
-    invisible(Map(use_one, imports, aliases, list(caller)))
+    invisible(map(use_one, imports, aliases, list(caller)))
 }
 
 #' Import a module or package
@@ -206,11 +206,9 @@ load_from_source = function (info, mod_ns) {
     # R, Windows and Unicode don’t play together. `source` does not work here.
     # See http://developer.r-project.org/Encodings_and_R.html and
     # http://stackoverflow.com/q/5031630/1968 for a discussion of this.
-    exprs = parse(info$source_path, encoding = 'UTF-8')
+    exprs = parse(info$source_path, keep.source = TRUE, encoding = 'UTF-8')
     eval(exprs, mod_ns)
-    namespace_info(mod_ns, 'exports') = parse_export_specs(info, mod_ns)
-    # TODO: When do we load the documentation?
-    # namespace_info(mod_ns, 'doc') = parse_documentation(info, mod_ns)
+    namespace_info(mod_ns, 'exports') = parse_export_specs(info, exprs, mod_ns)
     make_S3_methods_known(mod_ns)
 }
 
@@ -296,7 +294,7 @@ attach_list = function (spec, exports) {
         stop(sprintf(
             'Name%s %s not exported by %s',
             if (length(name_spec[missing]) > 1L) 's' else '',
-            paste(sQuote(name_spec[missing]), collapse = ', '),
+            paste(dQuote(name_spec[missing]), collapse = ', '),
             spec_name(spec)
         ))
     }
@@ -335,10 +333,9 @@ assign_temp_alias = function (spec, caller) {
     binding = function (mod_exports) {
         if (missing(mod_exports)) {
             # Find from where I’m called, and infer the target of the export.
-            mod_exports_frame_index = tail(which(vapply(
-                sys.calls(),
+            mod_exports_frame_index = tail(which(map_lgl(
                 function (call) identical(call[[1L]], quote(mod_exports)),
-                logical(1L)
+                sys.calls()
             )), 1L)
             frame = sys.frame(mod_exports_frame_index)
             env = frame$env
