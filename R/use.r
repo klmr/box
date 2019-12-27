@@ -177,7 +177,7 @@ finalize_deferred = function (info) {
     UseMethod('finalize_deferred')
 }
 
-finalize_deferred.mod_info = function (info) {
+`finalize_deferred.mod$mod_info` = function (info) {
     deferred = attr(loaded_mods[[info$source_path]], 'deferred')
     if (is.null(deferred)) return()
 
@@ -188,7 +188,7 @@ finalize_deferred.mod_info = function (info) {
     }
 }
 
-finalize_deferred.pkg_info = function (info) {}
+`finalize_deferred.mod$pkg_info` = function (info) {}
 
 #' @rdname importing
 export_and_attach = function (spec, info, mod_ns, caller) {
@@ -219,7 +219,7 @@ load_mod = function (info) {
     UseMethod('load_mod')
 }
 
-load_mod.mod_info = function (info) {
+`load_mod.mod$mod_info` = function (info) {
     if (is_mod_loaded(info)) return(loaded_mod(info))
 
     # Load module/package and dependencies; register the module now, to allow
@@ -236,7 +236,7 @@ load_mod.mod_info = function (info) {
     mod_ns
 }
 
-load_mod.pkg_info = function (info) {
+`load_mod.mod$pkg_info` = function (info) {
     pkg = info$name
     base::.getNamespace(pkg) %||% loadNamespace(pkg)
 }
@@ -262,11 +262,11 @@ mod_export_names = function (info, mod_ns) {
     UseMethod('mod_export_names')
 }
 
-mod_export_names.mod_info = function (info, mod_ns) {
+`mod_export_names.mod$mod_info` = function (info, mod_ns) {
     namespace_info(mod_ns, 'exports')
 }
 
-mod_export_names.pkg_info = function (info, mod_ns) {
+`mod_export_names.mod$pkg_info` = function (info, mod_ns) {
     getNamespaceExports(mod_ns)
 }
 

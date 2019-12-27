@@ -6,11 +6,11 @@ test_use = function (...) {
 }
 
 is_mod_spec = function (x) {
-    inherits(x, 'mod_spec')
+    inherits(x, 'mod$mod_spec')
 }
 
 is_pkg_spec = function (x) {
-    inherits(x, 'pkg_spec')
+    inherits(x, 'mod$pkg_spec')
 }
 
 test_that('modules without attaching can be parsed', {

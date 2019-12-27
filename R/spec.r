@@ -50,14 +50,14 @@ parse_spec = function (expr, alias) {
 #' @name spec
 mod_spec = function (spec, ...) {
     extra_spec = spec[setdiff(names(spec), 'mod')]
-    structure(c(spec$mod, extra_spec, ...), class = c('mod_spec', 'spec'))
+    structure(c(spec$mod, extra_spec, ...), class = c('mod$mod_spec', 'mod$spec'))
 }
 
 #' @keywords internal
 #' @name spec
 pkg_spec = function (spec, ...) {
     extra_spec = spec[setdiff(names(spec), 'pkg')]
-    structure(c(spec$pkg, extra_spec, ...), class = c('pkg_spec', 'spec'))
+    structure(c(spec$pkg, extra_spec, ...), class = c('mod$pkg_spec', 'mod$spec'))
 }
 
 #' @keywords internal
@@ -66,20 +66,20 @@ spec_name = function (spec) {
     UseMethod('spec_name')
 }
 
-spec_name.mod_spec = function (spec) {
+`spec_name.mod$mod_spec` = function (spec) {
     paste(paste(spec$prefix, collapse = '/'), spec$name, sep = '/')
 }
 
-spec_name.pkg_spec = function (spec) {
+`spec_name.mod$pkg_spec` = function (spec) {
     spec$name
 }
 
-print.spec = function (x, ...) {
+`print.mod$spec` = function (x, ...) {
     cat(as.character(x, ...), '\n', sep = '')
     invisible(x)
 }
 
-as.character.spec = function (x, ...) {
+`as.character.mod$spec` = function (x, ...) {
     r_name = function (names) {
         map_chr(
             function (n) {
