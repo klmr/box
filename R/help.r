@@ -41,22 +41,34 @@ parse_roxygen_tags = function (info, mod_ns) {
 #' module_help(mod$func)
 #' }
 module_help = function (topic, help_type = getOption('help_type', 'text')) {
-    if (! requireNamespace('roxygen2')) {
-        stop('Displaying documentation requires roxygen2 installed.')
-    }
-
     topic = substitute(topic)
+    top_module = help_topic_leftmost_name(topic)
 
-    if (! is_module_help_topic(topic, parent.frame())) {
+    if (is.null(top_module) || ! exists(top_module, parent.frame())) {
         stop(
             dQuote(deparse(topic)), ' is not a valid module help topic',
             call. = FALSE
         )
     }
 
-    mod_exports = get(as.character(topic[[2L]]), parent.frame())
-    module_name = module_name(mod_exports)
-    object = as.character(topic[[3L]])
+    mod_exports = get(top_module, parent.frame())
+    info = attr(mod_exports, 'info')
+    mod_name = strsplit(attr(mod_exports, 'name'), ':')[[1L]][2L]
+    subject = as.character(topic[[3L]])
+
+    if (inherits(info, 'mod$pkg_info')) {
+        help_call = bquote(help(topic = .(subject), package = .(mod_name)))
+        return(call_help(help_call, parent.frame()))
+    } else if (! inherits(info, 'mod$mod_info')) {
+        stop(
+            dQuote(deparse(topic)), ' is not a valid module help topic',
+            call. = FALSE
+        )
+    }
+
+    if (! requireNamespace('roxygen2')) {
+        stop('Displaying documentation requires roxygen2 installed.')
+    }
 
     mod_ns = attr(mod_exports, 'namespace')
     all_docs = namespace_info(mod_ns, 'doc')
@@ -66,35 +78,35 @@ module_help = function (topic, help_type = getOption('help_type', 'text')) {
         namespace_info(mod_ns, 'doc') = all_docs
     }
 
-    doc = all_docs[[object]]
+    doc = all_docs[[subject]]
     if (is.null(doc)) {
         stop(
-            'No documentation available for ', dQuote(object),
-            ' in module ', dQuote(module_name),
+            'No documentation available for ', dQuote(subject),
+            ' in module ', dQuote(mod_name),
             call. = FALSE
         )
     }
 
-    display_help(doc, paste0('module:', module_name), help_type)
+    display_help(doc, paste0('module:', mod_name), help_type)
 }
 
-is_module_help_topic = function (topic, parent) {
+help_topic_leftmost_name = function (expr) {
     # For nested modules, `topic` looks like this: `a$b$c…`. We need to retrieve
     # the first part of this (`a`) and check whether it’s a module.
 
-    leftmost_name = function (expr) {
-        if (is.name(expr)) {
-            expr
-        } else if (! is.call(expr) || expr[[1L]] != '$') {
-            NULL
-        } else {
-            Recall(expr[[2L]])
-        }
+    if (is.name(expr)) {
+        as.character(expr)
+    } else if (! is.call(expr) || expr[[1L]] != '$') {
+        NULL
+    } else {
+        Recall(expr[[2L]])
     }
+}
 
-    top_module = as.character(leftmost_name(topic))
+is_module_help_topic = function (topic, parent) {
+    top_module = help_topic_leftmost_name(topic)
 
-    length(top_module) == 1L &&
+    ! is.null(top_module) &&
         exists(top_module, parent) &&
         inherits(get(top_module, parent), 'mod$mod')
 }
@@ -116,12 +128,7 @@ is_module_help_topic = function (topic, parent) {
     ) {
         eval.parent(call('module_help', topic))
     } else {
-        delegate = if ('devtools_shims' %in% search()) {
-            get('?', pos = 'devtools_shims')
-        } else {
-            utils::`?`
-        }
-        eval.parent(`[[<-`(match.call(), 1L, delegate))
+        call_help(match.call(), parent.frame())
     }
 }
 
@@ -135,14 +142,21 @@ is_module_help_topic = function (topic, parent) {
 #' }
 help = function (topic, ...) {
     topic = substitute(topic)
-    delegate = if (
+    if (
         ! missing(topic) && is_module_help_topic(topic, parent.frame())
     ) {
-        module_help
-    } else if ('devtools_shims' %in% search()) {
-        get('help', pos = 'devtools_shims')
+        eval.parent(call('module_help', topic))
     } else {
-        utils::help
+        call_help(match.call(), parent.frame())
     }
-    eval.parent(`[[<-`(match.call(), 1L, delegate))
+}
+
+call_help = function (call, parent) {
+    type = as.character(call[[1L]])
+    call[[1L]] = if ('devtools_shims' %in% search()) {
+        get(type, pos = 'devtools_shims')
+    } else {
+        get(type, pos = 'utils')
+    }
+    eval(call, envir = parent)
 }
