@@ -9,4 +9,4 @@ b = 'reexport$b'
 c = 'reexport$c'
 
 #' @export
-mod::use(sub = ./reexport_sub[a = c, b])
+mod::use(sub = ./reexport_sub[d = c, e = b])

@@ -38,7 +38,7 @@ patch_topic_name.html_help_format = function (x, file, topic) {
 }
 
 display_help_file.text_help_format = function (x, file, topic) {
-    file.show(file, title = gettextf('R Help on %s', sQuote(topic)),
+    file.show(file, title = gettextf('R Help on %s', dQuote(topic)),
               delete.file = TRUE)
 }
 

@@ -39,7 +39,7 @@ parse_spec = function (expr, alias) {
     is_pkg = 'pkg' %in% names(spec)
     spec_type = if (is_pkg) pkg_spec else mod_spec
     name = spec[[if (is_pkg) 'pkg' else 'mod']]$name
-    spec_type(spec, alias = alias %||% name, explicit = ! is.null(alias))
+    spec_type(spec, alias = alias %||% name, explicit = nzchar(alias))
 }
 
 #' @param spec named list of information the parser constructed from a given
@@ -50,14 +50,14 @@ parse_spec = function (expr, alias) {
 #' @name spec
 mod_spec = function (spec, ...) {
     extra_spec = spec[setdiff(names(spec), 'mod')]
-    structure(c(spec$mod, extra_spec, ...), class = c('mod_spec', 'spec'))
+    structure(c(spec$mod, extra_spec, ...), class = c('mod$mod_spec', 'mod$spec'))
 }
 
 #' @keywords internal
 #' @name spec
 pkg_spec = function (spec, ...) {
     extra_spec = spec[setdiff(names(spec), 'pkg')]
-    structure(c(spec$pkg, extra_spec, ...), class = c('pkg_spec', 'spec'))
+    structure(c(spec$pkg, extra_spec, ...), class = c('mod$pkg_spec', 'mod$spec'))
 }
 
 #' @keywords internal
@@ -66,30 +66,29 @@ spec_name = function (spec) {
     UseMethod('spec_name')
 }
 
-spec_name.mod_spec = function (spec) {
+`spec_name.mod$mod_spec` = function (spec) {
     paste(paste(spec$prefix, collapse = '/'), spec$name, sep = '/')
 }
 
-spec_name.pkg_spec = function (spec) {
+`spec_name.mod$pkg_spec` = function (spec) {
     spec$name
 }
 
-print.spec = function (x, ...) {
+`print.mod$spec` = function (x, ...) {
     cat(as.character(x, ...), '\n', sep = '')
     invisible(x)
 }
 
-as.character.spec = function (x, ...) {
+`as.character.mod$spec` = function (x, ...) {
     r_name = function (names) {
-        vapply(
-            names,
+        map_chr(
             function (n) {
                 if (is.na(n)) '…' else sprintf(
                     '\x1b[33m%s\x1b[0m',
                     deparse(as.name(n), backtick = TRUE)
                 )
             },
-            character(1L)
+            names
         )
     }
 
@@ -273,7 +272,7 @@ parse_error = function (...) {
         }
     }
     stop(simpleError(
-        paste(vapply(list(...), chr, character(1L)), collapse = ''),
+        paste(map_chr(chr, list(...)), collapse = ''),
         call = sys.call(-1L)
     ))
 }

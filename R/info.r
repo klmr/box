@@ -9,7 +9,7 @@
 mod_info = function (spec, source_path) {
     structure(
         list(name = spec$name, source_path = source_path),
-        class = c('mod_info', 'info')
+        class = c('mod$mod_info', 'mod$info')
     )
 }
 
@@ -18,22 +18,22 @@ mod_info = function (spec, source_path) {
 #' @keywords internal
 #' @name info
 pkg_info = function (spec) {
-    structure(list(name = spec$name), class = c('pkg_info', 'info'))
+    structure(list(name = spec$name), class = c('mod$pkg_info', 'mod$info'))
 }
 
-print.info = function (x, ...) {
+`print.mod$info` = function (x, ...) {
     cat(as.character(x, ...), '\n', sep = '')
     invisible(x)
 }
 
-as.character.mod_info = function (x, ...) {
+`as.character.mod$mod_info` = function (x, ...) {
     sprintf(
         '<mod_info: \x1B[33m%s\x1B[0m at \x1B[33m%s\x1B[0m>',
         x$name, x$source_path
     )
 }
 
-as.character.pkg_info = function (x, ...) {
+`as.character.mod$pkg_info` = function (x, ...) {
     path = getNamespaceInfo(x$name, 'path')
     sprintf('<mod_info: \x1B[33m%s\x1B[0m>', path)
 }
@@ -46,11 +46,11 @@ find_mod = function (spec, caller) {
     UseMethod('find_mod')
 }
 
-find_mod.mod_spec = function (spec, caller) {
+`find_mod.mod$mod_spec` = function (spec, caller) {
     if (is_absolute(spec)) find_local_mod(spec, caller) else find_global_mod(spec, caller)
 }
 
-find_mod.pkg_spec = function (spec, caller) {
+`find_mod.mod$pkg_spec` = function (spec, caller) {
     pkg_info(spec)
 }
 
@@ -84,14 +84,14 @@ find_in_path = function (spec, base_paths) {
     # order of preference of paths, when multiple possibilities exist.
     simple_mod = file.path(mod_path_prefix, paste0(spec$name, ext))
     nested_mod = file.path(mod_path_prefix, spec$name, paste0('__init__', ext))
-    candidates = lapply(base_paths, file.path, c(simple_mod, nested_mod))
-    hits = lapply(candidates, file.exists)
-    which_base = which(vapply(hits, any, logical(1L)))[1L]
+    candidates = map(file.path, base_paths, c(simple_mod, nested_mod))
+    hits = map(file.exists, candidates)
+    which_base = which(map_lgl(any, hits))[1L]
 
     if (is.na(which_base)) {
         stop(
-            'Unable to load module ', sQuote(spec_name(spec)),
-            '; not found in ', paste(sQuote(base_paths), collapse = ', ')
+            'Unable to load module ', dQuote(spec_name(spec)),
+            '; not found in ', paste(dQuote(base_paths), collapse = ', ')
         )
     }
 

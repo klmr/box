@@ -43,7 +43,6 @@ test_that('S3 methods are found', {
     expect_identical(print, print_dot_test)
 })
 
-
 test_that('can call S3 methods without attaching', {
     mod::use(mod/s3)
     expect_equal(s3$test(1), 'test.default')

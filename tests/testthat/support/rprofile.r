@@ -4,6 +4,9 @@
 # set by the test code calling R to the value of `R_PROFILE_USER`.
 
 user_profile = Sys.getenv('R_ORIGINAL_PROFILE_USER', '~/.Rprofile')
+if (identical(user_profile, '')) {
+    user_profile = '~/.Rprofile'
+}
 
 if (file.exists(user_profile)) {
     source(user_profile)

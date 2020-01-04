@@ -65,8 +65,8 @@ use = function (...) {
     caller = parent.frame()
     call = match.call()
     imports = call[-1L]
-    aliases = names(imports) %||% rep(list(NULL), length(imports))
-    invisible(Map(use_one, imports, aliases, list(caller)))
+    aliases = names(imports) %||% character(length(imports))
+    invisible(map(use_one, imports, aliases, list(caller)))
 }
 
 #' Import a module or package
@@ -177,7 +177,7 @@ finalize_deferred = function (info) {
     UseMethod('finalize_deferred')
 }
 
-finalize_deferred.mod_info = function (info) {
+`finalize_deferred.mod$mod_info` = function (info) {
     deferred = attr(loaded_mods[[info$source_path]], 'deferred')
     if (is.null(deferred)) return()
 
@@ -188,13 +188,12 @@ finalize_deferred.mod_info = function (info) {
     }
 }
 
-finalize_deferred.pkg_info = function (info) {}
+`finalize_deferred.mod$pkg_info` = function (info) {}
 
 #' @rdname importing
 export_and_attach = function (spec, info, mod_ns, caller) {
     finalize_deferred(info)
     mod_exports = mod_exports(info, spec, mod_ns)
-    if (is.null(mod_exports)) return()
     assign_alias(spec, mod_exports, caller)
     attach_to_caller(spec, mod_exports, caller)
 
@@ -207,11 +206,9 @@ load_from_source = function (info, mod_ns) {
     # R, Windows and Unicode don’t play together. `source` does not work here.
     # See http://developer.r-project.org/Encodings_and_R.html and
     # http://stackoverflow.com/q/5031630/1968 for a discussion of this.
-    exprs = parse(info$source_path, encoding = 'UTF-8')
+    exprs = parse(info$source_path, keep.source = TRUE, encoding = 'UTF-8')
     eval(exprs, mod_ns)
-    namespace_info(mod_ns, 'exports') = parse_export_specs(info, mod_ns)
-    # TODO: When do we load the documentation?
-    # namespace_info(mod_ns, 'doc') = parse_documentation(info, mod_ns)
+    namespace_info(mod_ns, 'exports') = parse_export_specs(info, exprs, mod_ns)
     make_S3_methods_known(mod_ns)
 }
 
@@ -222,7 +219,7 @@ load_mod = function (info) {
     UseMethod('load_mod')
 }
 
-load_mod.mod_info = function (info) {
+`load_mod.mod$mod_info` = function (info) {
     if (is_mod_loaded(info)) return(loaded_mod(info))
 
     # Load module/package and dependencies; register the module now, to allow
@@ -239,7 +236,7 @@ load_mod.mod_info = function (info) {
     mod_ns
 }
 
-load_mod.pkg_info = function (info) {
+`load_mod.mod$pkg_info` = function (info) {
     pkg = info$name
     base::.getNamespace(pkg) %||% loadNamespace(pkg)
 }
@@ -249,7 +246,6 @@ load_mod.pkg_info = function (info) {
 #' @rdname importing
 mod_exports = function (info, spec, mod_ns) {
     exports = mod_export_names(info, mod_ns)
-    if (is.null(exports)) return()
 
     env = make_export_env(info, spec, mod_ns)
     list2env(mget(exports, mod_ns, inherits = TRUE), envir = env)
@@ -266,11 +262,11 @@ mod_export_names = function (info, mod_ns) {
     UseMethod('mod_export_names')
 }
 
-mod_export_names.mod_info = function (info, mod_ns) {
+`mod_export_names.mod$mod_info` = function (info, mod_ns) {
     namespace_info(mod_ns, 'exports')
 }
 
-mod_export_names.pkg_info = function (info, mod_ns) {
+`mod_export_names.mod$pkg_info` = function (info, mod_ns) {
     getNamespaceExports(mod_ns)
 }
 
@@ -298,7 +294,7 @@ attach_list = function (spec, exports) {
         stop(sprintf(
             'Name%s %s not exported by %s',
             if (length(name_spec[missing]) > 1L) 's' else '',
-            paste(sQuote(name_spec[missing]), collapse = ', '),
+            paste(dQuote(name_spec[missing]), collapse = ', '),
             spec_name(spec)
         ))
     }
@@ -337,10 +333,9 @@ assign_temp_alias = function (spec, caller) {
     binding = function (mod_exports) {
         if (missing(mod_exports)) {
             # Find from where I’m called, and infer the target of the export.
-            mod_exports_frame_index = tail(which(vapply(
-                sys.calls(),
+            mod_exports_frame_index = tail(which(map_lgl(
                 function (call) identical(call[[1L]], quote(mod_exports)),
-                logical(1L)
+                sys.calls()
             )), 1L)
             frame = sys.frame(mod_exports_frame_index)
             env = frame$env
