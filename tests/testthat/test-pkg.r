@@ -153,9 +153,9 @@ test_that('S3 lookup works for partial exports', {
     # {devtools} has no S3 exports at the time of writing but {roxygen2} does,
     # and is also needed to compile this package — and hence likely available
     # when running these tests.
-    mod::use(roxygen2[tags = roclet_tags, roclet])
-    actual = tags(roclet('rd'))
-    expected = roxygen2::roclet_tags(roxygen2::roclet('rd'))
-    expect_gt(length(actual), 0L)
+    mod::use(roxygen2[parse = roxy_tag_parse])
+    x = structure(list(raw = '{}'), class = 'roxy_tag_usage')
+    actual = parse(x)
+    expected = roxygen2::roxy_tag_parse(x)
     expect_equal(actual, expected)
 })
