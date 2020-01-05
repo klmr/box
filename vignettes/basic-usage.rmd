@@ -19,153 +19,188 @@ vignette: >
 ---
 ```{r include=FALSE}
 devtools::load_all()
-import('source-file')
+# The module does not export any symbols. We use `[...]` solely to prevent the
+# declaration to create a module alias in the calling environment, so this
+# implementation detail isn’t shown in subsequent `ls()` calls.
+mod::use(./`source-file`[...])
 ```
 
-# Basic module usage
+## Using modules
 
-## The `seq` module
+For the purpose of this tutorial, we are going to use the example module
+`bio/seq`. The module implements some very basic mechanisms for dealing with DNA
+sequences (= character strings consisting of the letters `A`, `C`, `G` and `T`).
 
-For the purpose of this tutorial, we are going to use the toy module
-`utils/seq`, which is implemented in the file [`utils/seq.r`](utils/seq.r).
-The module implements some very basic mechanisms to deal with DNA sequences
-(character strings consisting entirely of the letters `A`, `C`, `G` and `T`).
-
-First, we load the module.
+First, we load the module:
 
 ```{r}
-seq = import('utils/seq')
-ls()
+mod::use(./bio/seq)
 ```
 
-`utils` serves as a supermodule here, which groups several submodules (but for
-now, `seq` is the only one).
+The function `mod::use` accepts a list of *unquoted*, *qualified* module names.
+Each of these module names will load a single module and make it available to
+the caller in some form. In the code above, we’ve loaded a single module,
+`seq/seq`. `bio` serves as a *parent module* that may group several submodules.
+Since the module name inside `mod::use` starts with `./`, the module location is
+resolved *locally*, i.e. relative to the path of the currently running code.
 
-To see which functions a module exports, use `ls`:
+In the above, `seq` is the module’s *proper name*. `bio/seq` is its *fully
+qualified name*. And `./bio/seq` is its *`use` declaration*.
+
+To see the effect of this `use` declaration, let’s inspect our workspace:
+
+```{r}
+ls()
+seq
+```
+
+We have used the module’s fully qualified name to load it. But, as shown by
+`ls`, loading the module this way only introduces a single new name into the
+current scope, the module itself, identified by its proper (non-qualified) name.
+
+To see which names a module exports, we use `ls` again, this time on the module
+itself:
 
 ```{r}
 ls(seq)
 ```
 
-And we can display interactive help for individual functions:
+It appears that `seq` exports `r length(ls(seq))` different names. To access
+exported names, we use the `$` operator:
+<code>`r paste0('seq$', lsf.str(seq)[[1L]])`</code> allows us to use the first
+function in the list of exported names. We can also display the interactive help
+for individual names, e.g.:
 
 ```{r eval=FALSE}
-?seq$seq
+? seq$revcomp
 ```
 
-This function creates a biological sequence. We can use it:
+Now let’s actually *use* the module. The `seq` function inside the `dna/seq`
+module constructs a set of (optionally named) biological sequences:
 
 ```{r}
-s = seq$seq(c(foo = 'GATTACAGATCAGCTCAGCACCTAGCACTATCAGCAAC',
-              bar = 'CATAGCAACTGACATCACAGCG'))
+s = seq$seq(
+    gene1 = 'GATTACAGATCAGCTCAGCACCTAGCACTATCAGCAAC',
+    gene2 = 'CATAGCAACTGACATCACAGCG'
+)
+
+seq$is_valid(s)
+
 s
 ```
 
-Notice how we get a pretty-printed,
-[FASTA](http://en.wikipedia.org/wiki/FASTA_format)-like output because the
-`print` method is redefined for the `seq` class in `utils/seq`:
+Note how we automatically get pretty-printed
+[FASTA](http://en.wikipedia.org/wiki/FASTA_format) output because the `print`
+method (which gets called implicitly here) is specialised for the `'bio/seq'` S3
+class in the `bio/seq` module (prefixing S3 classes inside modules with the full
+module name is a convention to avoid name clashes of S3 classes):
 
 ```{r}
-seq$print.seq
+getS3method('print', 'bio/seq')
 ```
+
+The source code for `print.bio/seq` contains an interesting `use` declaration.
+It show-cases an alternative way of invoking `mod::use`, which we’ll explore
+now.
 
 ## Attaching modules
 
-That’s it for basic usage. In order to understand more about the module
-mechanism, let’s look at an alternative usage:
+Let’s have a look at alternative ways of using modules.
+
+To start, let’s unload the `bio/seq` module …
 
 ```{r}
-# We can unload loaded modules that we assigned to an identifier:
-unload(seq)
-
-options(mod.path = 'utils')
-import('seq', attach = TRUE)
+mod::unload(seq)
 ```
 
-After unloading the already loaded module, the `options` function call sets
-the module search path: this is where `import` searches for modules. If more
-than one path is given, `import` searches them all until a module of matching
-name is found.
+… and load it again, via a different route:
 
-The `import` statement can now simply specify `seq` instead of `utils/seq` as
-the module name. We also specify `attach=TRUE`. This has an effect similar to
-package loading (or `attach`ing an environment): all the module’s names are
-now available for direct use without necessitating the `seq$` qualifier.
+```{r}
+mod::set_options(path = getwd())
+mod::use(bio/seq[revcomp, is_valid])
+```
+
+After unloading the already loaded module, the `mod::set_options` function call
+sets the module search path: this is where `mod::use` searches for modules. If
+more than one path is given, `mod::use` searches them all until a module of
+matching name is found. This works analogously to how `.libPaths()` operates on
+R packages.
+
+The `mod::use` directive can now use `bio/seq` instead of `./bio/seq` as the
+module name: rather than a relative name we specify a *global* name. In this
+example we set the search path to the current working directory but in normal
+usage it would be a global library location, e.g. (following the [XDG base
+directory specification][XDG]) `~/.local/R/modules`.
+
+[XDG]: https://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
+
+Note that non-local module names *must* be fully qualified, nested modules:
+`mod::use(foo/bar)` works, `mod::use(bar)` does not (instead, it is assumed that
+`bar` refers to a *package*).
+
+In the declaration above we use `[revcomp]` to specify that the `revcomp` name
+from the `bio/seq` module should be attached in the calling environment. The
+`[…]` part is an *attach specification*. A comma-separated list of names inside
+the parentheses specifies which names to attach. The special symbol `...`
+specifies that *all exported names* should be attached. This has an effect
+similar to conventional package loading via `library` (or `attach`ing an
+environment): all the attached names are now available for direct use without
+necessitating the `seq$` qualifier:
+
+```{r}
+is_valid(s)
+revcomp(s)
+```
 
 However, unlike the `attach` function, module attachment happens *in local
-scope* only. Since the above code was executed in global scope, there’s no
+scope* only.
+
+Since the above code was executed in the global environment, there’s no
 distinction between local and global scope:
 
 ```{r}
 search()
 ```
 
-Notice the second position, which reads “`r search()[2]`”. But now let’s undo
-that, and attach (and use) the module locally instead.
+Note the second item, which reads “<code>`r search()[2]`</code>”. But let’s now
+undo that, to attach (and use) the module locally instead:
 
 ```{r}
-detach('module:seq') # Name is optional
-local({
-    import('seq', attach = TRUE)
-    table('GATTACA')
-})
+detach()
+
+seq_table = function (s) {
+    mod::use(./bio/seq[...])
+    table(s)
+}
+
+seq_table('GATTACA')
 ```
 
-Note that this uses `seq`’s `table` function, rather than `base::table` (which
-would have a different output). Furthermore, note that *outside* the local
-scope, the module is not attached:
+Unlike above, we are now attaching *all* exported names instead of specifying
+individual names. The subsequent line of code uses the `seq$table` function
+rather than `base::table` (which would have a different output). And note that
+the `seq` module’s `table` function is *not* attached outside the local scope:
 
 ```{r}
 search()
 table('GATTACA')
 ```
 
-This is very powerful, as it isolates separate scopes more effectively than
-the `attach` function. What is more, modules which are imported and attached
-inside another module *remain* inside that module and are not visible outside
-the module by default.
+This is very powerful, as it isolates separate scopes more effectively than the
+`attach` function. What is more, modules which are used and attached inside
+another module *remain* inside that module and are not visible outside the
+module by default.
 
-Nevertheless, the normal, recommended usage of a module is with `attach=FALSE`
-(the default), as this makes it clearer which names we are referring to.
+Nevertheless, the normal, recommended usage of a module is without an attach
+specification, as this makes it clearer which names are being referring to.
 
-## Nested modules
+## Writing modules
 
-Modules can also be nested in hierarchies. In fact, here is the implementation
-of `utils` (in [`utils/__init__.r`](utils/__init__.r): since `utils` is a
-directory rather than a file, the module implementation resides in the nested
-file `__init__.r`):
+The module `bio/seq`, which we have used in the previous section, is implemented
+in the file [`bio/seq.r`](bio/seq.r). The file `seq.r` is, by and large, a
+normal R source file, which happens to live in a directory named `bio`.
 
-```{r file='utils/__init__.r'}
-```
-
-The submodule is specified as `'./seq'` rather than `'seq'`: the
-explicitly provided relative path prevents lookup in the import search path
-(that we set via `options(import.path=…)` earlier); instead, only the current
-directory is considered.
-
-We can now use the `utils` module:
-
-```{r}
-options(import.path = NULL) # Reset search path
-utils = import('utils')
-ls(utils)
-ls(utils$seq)
-utils$seq$revcomp('CAT')
-```
-
-We could also have implemented `utils` as follows:
-
-```{r eval=FALSE}
-export_submodule('./seq')
-```
-
-This would have made all of `seq`’s definitions immediately available in
-`utils`. This is sometimes useful, but should be employed with care.
-
-## Implementing modules
-
-`utils/seq.r` is, by and large, a normal R source file. In fact, there are only
-two things worth mentioning:
+In fact, there are only two things worth mentioning:
 
 1. Documentation. Each function in the module file is documented using the
    [roxygen2](http://cran.r-project.org/web/packages/roxygen2/index.html)
@@ -180,10 +215,46 @@ two things worth mentioning:
    functions are inherently ambiguous and there is no automatic way of finding
    them).
 
+## Nesting modules
+
+Modules can also form nested hierarchies. In fact, here is the implementation of
+`bio` (in [`bio/__init__.r`](bio/__init__.r): since `bio` is a directory rather
+than a file, the module implementation resides in the nested file `__init__.r`):
+
+```{r file='bio/__init__.r'}
+```
+
+The submodule is specified as `./seq` rather than `seq`: the explicitly provided
+relative path prevents lookup in the import search path (that we set via
+`mod::set_options(path = …)`); instead, only the current directory is
+considered.
+
+We can now use the `bio` module:
+
+```{r}
+mod::set_options(path = NULL) # Reset search path
+mod::use(./bio)
+ls(bio)
+ls(bio$seq)
+bio$seq$revcomp('CAT')
+```
+
+We could also have implemented `bio` as follows:
+
+```{r eval=FALSE}
+#' @export
+mod::use(./seq[...])
+```
+
+This would have made all of `seq`’s definitions immediately available in
+`bio`. This is sometimes useful, but should be employed with care.
+
+## Obsolete information
+
 Module files can contain arbitrary code. It is executed when loaded for the
-first time: subsequent `import`s in the same session, regardless of whether they
-occur in a different scope, will refer to the loaded, cached module, and will
-*not* reload a module.
+first time: subsequent `mod::use`s in the same session, regardless of whether
+they occur in a different scope, will refer to the loaded, cached module, and
+will *not* reload a module.
 
 We can illustrate this by loading a module which has side-effects, `'info'`.
 
@@ -193,21 +264,21 @@ We can illustrate this by loading a module which has side-effects, `'info'`.
 Let’s load it:
 
 ```{r}
-info = import('info')
+mod::use(./info)
 ```
 
 We have imported the module, and get the diagnostic messages. Let’s re-import
 the module:
 
 ```{r}
-import('info')
+mod::use(./info)
 ```
 
 … no messages are displayed. However, we can explicitly *reload* a module. This
 clears the cache, and loads the module again:
 
 ```{r}
-reload(info)
+# mod::reload(info)
 ```
 
 And this displays the messages again. The `reload` function is a shortcut for

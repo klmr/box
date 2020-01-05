@@ -3,7 +3,7 @@
 using Rcpp::NumericVector;
 
 // [[Rcpp::export]]
-NumericVector convolve(NumericVector a, NumericVector b) {
+NumericVector cpp_convolve(NumericVector a, NumericVector b) {
     int na = a.size(), nb = b.size();
     int nab = na + nb - 1;
     NumericVector xab(nab);

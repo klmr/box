@@ -2,8 +2,16 @@
 ^\.Rprofile$
 ^\.gitignore$
 ^CHANGES\.md$
+^CONTRIBUTING.md$
 ^Makefile$
 ^README\.md$
+^README\.rmd$
 ^printenv\.r$
 ^\.travis\.yml$
-CONTRIBUTING.md
+^CONTRIBUTING.md^
+^_pkgdown\.yml$
+^doc$
+^docs$
+^.*\.Rproj$
+^\.Rproj\.user$
+^Meta$
