@@ -32,6 +32,12 @@ test_that('mod::base_path works', {
 })
 
 test_that('mod::file works after attaching modules', {
+    # R CMD CHECK resets the working directory AFTER executing the test helpers.
+    # This throws off the subsequent tests, so we need to re-set the path here
+    # although this shouldn’t be necessary.
+    old_path = mod::option('path')
+    on.exit(mod::set_options(path = old_path))
+    mod::set_options(path = getwd())
     # Test that #66 is fixed and that there are no regressions.
 
     expected_module_file = mod::file()
