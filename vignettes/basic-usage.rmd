@@ -19,7 +19,10 @@ vignette: >
 ---
 ```{r include=FALSE}
 devtools::load_all()
-mod::use(./`source-file`)
+# The module does not export any symbols. We use `[...]` solely to prevent the
+# declaration to create a module alias in the calling environment, so this
+# implementation detail isn’t shown in subsequent `ls()` calls.
+mod::use(./`source-file`[...])
 ```
 
 ## Using modules
