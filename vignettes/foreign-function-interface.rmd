@@ -19,7 +19,7 @@ vignette: >
 ---
 ```{r include=FALSE}
 devtools::load_all()
-import('source-file')
+mod::use(./`source-file`)
 ```
 
 # Foreign function interface
@@ -44,7 +44,7 @@ Here’s the C++ code itself (the example is taken from the Rcpp documentation):
 This module can be used like any normal module:
 
 ```{r}
-rcpp = import('rcpp')
+mod::use(./rcpp)
 ls(rcpp)
 rcpp$convolve(1 : 3, 1 : 5)
 ```
@@ -60,7 +60,7 @@ For the time being, we manually need to trigger compilation by executing the
 [`__install__.r`][install.r] file found in the `inst/doc/rcpp` module path.
 
 ```{r echo=FALSE}
-import('rcpp/__install__')
+mod::use(rcpp/`__install__`)
 ```
 
 Once that’s done, the actual module code is easy enough:
@@ -71,7 +71,7 @@ Once that’s done, the actual module code is easy enough:
 We can use it like any other module:
 
 ```{r}
-compiled = import('rcpp/compiled')
+mod::use(rcpp/compiled)
 compiled$convolve(1 : 3, 1 : 5)
 ```
 
