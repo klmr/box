@@ -83,7 +83,7 @@ spec_name = function (spec) {
     r_name = function (names) {
         map_chr(
             function (n) {
-                if (is.na(n)) '…' else sprintf(
+                if (is.na(n)) '\u2026' else sprintf(
                     '\x1b[33m%s\x1b[0m',
                     deparse(as.name(n), backtick = TRUE)
                 )
@@ -95,7 +95,7 @@ spec_name = function (spec) {
     format_attach = function (a) {
         with_alias = function (names, aliases) {
             mapply(
-                function (n, a) if (n == '…' || identical(n, a)) n else paste(a, '=', n),
+                function (n, a) if (n == '\u2026' || identical(n, a)) n else paste(a, '=', n),
                 names, aliases
             )
         }

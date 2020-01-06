@@ -17,7 +17,9 @@ Suggests:
     devtools,
     knitr,
     rmarkdown,
-    roxygen2 (>= 6.1.0),
+    R6,
+    rlang,
+    roxygen2 (>= 7.0.2),
     shiny,
     testthat (>= 2.0.0)
 VignetteBuilder: knitr

@@ -3,7 +3,7 @@
 #' @param ... character vectors of files or subdirectories inside a module; if
 #'  none is given, return the root directory of the module
 #' @param module a module environment (default: current module)
-#' @param mustWork logical; if \code{TRUE}, an error is raised if the given
+#' @param must_work logical; if \code{TRUE}, an error is raised if the given
 #'  files do not match existing files.
 #' @return A character vector containing the absolute paths to the files
 #'  specified in \code{...}, or an empty string, \code{''}, if no file was

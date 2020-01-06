@@ -15,12 +15,14 @@
 #' empty.
 #' @keywords internal
 #' @examples
+#' \dontrun{
 #' flatmap_chr(identity, NULL)
 #' # character(0)
 #' flatmap_chr(identity, c('a', 'b'))
 #' # [1] "a" "b"
 #' flatmap_chr(identity, list(c('a', 'b'), 'c'))
 #' # [1] "a" "b" "c"
+#' }
 map = function (.f, ...) {
     if (length(..1) == 0L) list() else Map(.f, ..., USE.NAMES = FALSE)
 }

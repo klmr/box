@@ -11,7 +11,7 @@
 #' @param prefix/mod foo
 #' @param pkg bar
 #' @param alias baz
-#' @param prefix/mod_name[attach_list] qux
+#' @param prefix/mod[attach_list] qux
 #' @return \code{mod::use} is called for its side-effect.
 #'
 #' @details Modules and packages are loaded into a dedicated namespace
@@ -333,7 +333,7 @@ assign_temp_alias = function (spec, caller) {
     binding = function (mod_exports) {
         if (missing(mod_exports)) {
             # Find from where I’m called, and infer the target of the export.
-            mod_exports_frame_index = tail(which(map_lgl(
+            mod_exports_frame_index = utils::tail(which(map_lgl(
                 function (call) identical(call[[1L]], quote(mod_exports)),
                 sys.calls()
             )), 1L)

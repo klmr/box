@@ -52,6 +52,13 @@ namespace_info = function (ns, which, default = NULL) {
     ns
 }
 
+#' Get a module’s name
+#'
+#' @return \code{mod::name} returns a character string containing the name of
+#' the module, or \code{NULL} if called from outside a module.
+#' @note Because this function returns \code{NULL} if not invoked inside a
+#' module, the function can be used to check whether a code is being imported as
+#' a module or called directly.
 #' @export
 name = function () {
     mod_ns = current_mod()

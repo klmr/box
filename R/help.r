@@ -31,14 +31,12 @@ parse_roxygen_tags = function (info, mod_ns) {
 #'  in the format \code{module$function}
 #' @param help_type character string specifying the output format; currently,
 #'  only \code{'text'} is supported
-#' @note Help is only available if \code{\link{import}} loaded the help stored
-#' in the module file(s). By default, this happens only in interactive sessions.
 #' @rdname help
 #' @export
 #' @examples
 #' \dontrun{
-#' mod = import('mod')
-#' module_help(mod$func)
+#' mod::use(my/mod)
+#' mod::module_help(mod$func)
 #' }
 module_help = function (topic, help_type = getOption('help_type', 'text')) {
     topic = substitute(topic)
