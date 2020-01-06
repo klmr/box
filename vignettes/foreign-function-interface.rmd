@@ -19,7 +19,7 @@ vignette: >
 ---
 ```{r include=FALSE}
 devtools::load_all()
-mod::use(./`source-file`)
+mod::use(./source_file)
 ```
 
 # Foreign function interface

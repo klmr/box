@@ -22,7 +22,7 @@ devtools::load_all()
 # The module does not export any symbols. We use `[...]` solely to prevent the
 # declaration to create a module alias in the calling environment, so this
 # implementation detail isn’t shown in subsequent `ls()` calls.
-mod::use(./`source-file`[...])
+mod::use(./source_file[...])
 ```
 
 ## Using modules
