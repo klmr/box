@@ -346,7 +346,7 @@ assign_temp_alias = function (spec, caller) {
         } else {
             # Resolve assignments
             for (env in callers) {
-                unlockBinding(spec$alias, env)
+                mod_unlock_binding(spec$alias, env)
                 assign(spec$alias, mod_exports, envir = env)
                 lockBinding(spec$alias, env)
             }

@@ -127,8 +127,32 @@ find_import_env = function (x, spec) {
 
 find_import_env.environment = function (x, spec) {
     if (identical(x, .GlobalEnv)) {
-        attach(NULL, name = paste0('mod:', spec_name(spec)))
+        # We need to use `attach` here: attempting to set
+        # `parent.env(.GlobalEnv)` causes R to segfault.
+        mod_attach(NULL, name = paste0('mod:', spec_name(spec)))
     } else {
         parent.env(x) = new.env(parent = parent.env(x))
     }
 }
+
+#' Wrap “unsafe calls” functions
+#'
+#' \code{wrap_unsafe_function} declares a function wrapper to a function that
+#' causes an \code{R CMD CHECK} NOTE when called directly. We should usually not
+#' call these functions, but we need some of them because we want to explicitly
+#' support features they provide.
+#' @param ns The namespace of the unsafe function.
+#' @param name The name of the unsafe function.
+#' @return \code{wrap_unsafe_calls} returns a wrapper function with the same
+#' argument as the wrapped function that can be called without causing a NOTE.
+#' @keywords internal
+wrap_unsafe_function = function (ns, name) {
+    f = getExportedValue(ns, name)
+    wrapper = function (...) eval.parent(`[[<-`(match.call(), 1L, f))
+    formals(wrapper) = formals(f)
+    wrapper
+}
+
+mod_attach = wrap_unsafe_function(.BaseNamespaceEnv, 'attach')
+
+mod_unlock_binding = wrap_unsafe_function(.BaseNamespaceEnv, 'unlockBinding')
