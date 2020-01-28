@@ -13,8 +13,8 @@
 #'   \item When applied to a \code{mod::use} call, the imported names are
 #'     exported. This can be the module name itself, any attached names, or
 #'     both. All names introduced by the \code{mod::use} call are exported. See
-#'     \code{\link[use]{mod::use}} for the rules governing what names are
-#'     introduced into the scope, and thus exported.
+#'     \code{\link[mod]{use}} for the rules governing what names are introduced
+#'     into the scope, and thus exported.
 #' }
 #' In any other situation, applying the \code{@export} tag is an error.
 #' @keywords internal

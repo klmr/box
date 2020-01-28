@@ -1,58 +1,95 @@
 #' Import a module or package
 #'
-#' @usage
-#' mod::use(prefix/mod, ...)
-#' mod::use(pkg, ...)
+#' \code{mod::use(...)} imports one or more modules and/or packages, and makes
+#' them available in the calling environment.
 #'
-#' mod::use(alias = prefix/mod, ...)
+#' @section Detailed usage:
 #'
-#' mod::use(prefix/mod[attach_list], ...)
-#' @param ... one or more module import declarations, of the following form:
-#' @param prefix/mod foo
-#' @param pkg bar
-#' @param alias baz
-#' @param prefix/mod[attach_list] qux
-#' @return \code{mod::use} is called for its side-effect.
+#' \code{mod::use(...)} specifies a list of one or more import declarations,
+#' given as individual arguments to \code{mod::use}, separated by comma. Each
+#' import declaration takes one of the following forms:
 #'
-#' @details Modules and packages are loaded into a dedicated namespace
-#' environment. Names from a module can be selectively attached to the current
-#' scope.
+#' \describe{
+#' \item{\code{prefix/mod}:}{
+#'      Import a module given the qualified module name \code{prefix/mod} and
+#'      make it available locally using the name \code{mod}. The \code{prefix}
+#'      itself can be a nested name to allow importing specific submodules.
+#' }
+#' \item{\code{pkg}:}{
+#'      Import a package \code{pkg} and make it available locally using its own
+#'      package name.
+#' }
+#' \item{\code{alias = prefix/mod}, \code{alias = pkg}:}{
+#'      Import a module or package, and make it available locally using the name
+#'      \code{alias} instead of its module/package name.
+#' }
+#' \item{\code{prefix/mod[attach_list]}, \code{pkg[attach_list]}:}{
+#'      Import a module or package and attach the exported symbols listed in
+#'      \code{attach_list} locally. This declaration does \emph{not} make the
+#'      module/package itself available locally. To override this, provide an
+#'      alias, that is, use \code{alias = prefix/mod[attach_list]} or
+#'      \code{alias = pkg[attach_list]}.
 #'
-#' Modules are searched in the module search path \code{mod::option('path')}.
+#'      The \code{attach_list} is a comma-separated list of names, optionally
+#'      with names to provide aliases. the list can also contain the special
+#'      symbol \code{...}, which causes all exported names of the module/package
+#'      to be imported.
+#' }
+#' }
+#'
+#' Modules and packages are loaded into a dedicated namespace environment. Names
+#' from a module or package can be selectively attached to the current scope as
+#' shown above.
+#'
+#' Modules are searched in the module search path, \code{mod::option('path')}.
 #' This is a vector of paths to consider, from the highest to the lowest
 #' priority. The current directory is \emph{always} considered last. That is,
 #' if a file \code{a.r} exists both in the current directory and in a module
 #' search path, the local file \code{./a.r} will not be loaded, unless the
 #' import is explicitly specified as \code{mod::use(./a)}.
 #'
-#' Module names can be fully qualified to refer to nested paths. See
-#' \emph{Examples}.
+#' Module source code files are assumed to be UTF-8 encoded.
 #'
-#' Module source code files are assumed to be encoded in UTF-8 without BOM.
-#' Ensure that this is the case when using an extended character set.
+#' @note Unlike for \code{\link{library}}, attaching happens \emph{locally},
+#' i.e. in the caller’s environment: if \code{mod::use} is executed in the
+#' global environment, the effect is the same. Otherwise, the effect of
+#' importing and attaching a module or package is limited to the caller’s local
+#' scope (its \code{environment()}). When used \emph{inside a module} at module
+#' scope, the newly imported module is only available inside the module’s scope,
+#' not outside it (nor in other modules which might be loaded).
 #'
-#' @note Unlike for \code{\link{library}}, attaching happens \emph{locally}: If
-#' \code{mod::use} is executed in the global environment, the effect is the
-#' same. Otherwise, the imported module is inserted as the parent of the current
-#' \code{environment()}. When used (globally) \emph{inside} a module, the newly
-#' imported module is only available inside the module’s scope, not outside it
-#' (nor in other modules which might be loaded).
+#' @param ... one or more module import declarations, see \emph{Detailed usage}
+#' for a description of the format.
 #'
 #' @examples
 #' \dontrun{
+#' # Basic usage
+#'
 #' # `a.r` is a file in the local directory containing a function `f`.
-#' a = mod::use(./a)
+#' mod::use(./a)
 #' a$f()
+#'
+#' # Attaching exported names
 #'
 #' # b/c.r is a file in path `b`, containing functions `f` and `g`.
 #' mod::use(b/c[f])
-#' # No module name qualification necessary
 #' f()
 #' g() # Error: could not find function "g"
+#' b$f() # Error: object 'b' not found
 #'
 #' mod::use(b/c[...])
 #' f()
 #' g()
+#'
+#' # Alias names
+#'
+#' mod::use(
+#'     x = ./a,
+#'     c = b/c[h = g, ...]
+#' )
+#' # Now the module defined in `a.r` is available as `x`, the module defined
+#' # in `b/c.r` is available as `c`, and all exported names in `b/c.r` are
+#' # attached, with the exception of `g`, which is attached under the name `h`.
 #' }
 #' @seealso \code{\link{unload}}
 #' @seealso \code{\link{reload}}
