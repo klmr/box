@@ -36,7 +36,7 @@ test-%:
 
 .PHONY: check
 ## Run R CMD CHECK
-check:
+check: doc
 	mkdir -p check
 	${rscript} -e "devtools::check(check_dir = 'check')"
 
