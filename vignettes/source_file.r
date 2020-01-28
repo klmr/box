@@ -1,6 +1,7 @@
 source_file = function (path, language) {
-    if (missing(language) || is.null(language))
+    if (missing(language) || is.null(language)) {
         language = regmatches(path, regexpr('[^.]*$', path))
+    }
     code = paste(readLines(path), collapse = '\n')
     sprintf('```%s\n%s\n```', language, code)
 }
