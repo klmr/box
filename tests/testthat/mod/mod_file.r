@@ -20,7 +20,7 @@ after_module_attach = function () {
         expr
     }
     silently(mod::use(a = ./nested/a[...]))
-    on.exit(unload(a))
+    on.exit(mod::unload(a))
     mod::file()
 }
 

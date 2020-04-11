@@ -77,3 +77,20 @@ test_that('modules don’t need exports', {
     expect_error(capture.output(mod::use(mod/d)), NA)
     expect_equal(ls(), c('c', 'd'))
 })
+
+test_that('global scope is not leaking into modules', {
+    in_globalenv({
+        x = 1L
+        expect_error(mod::use(mod/issue151), 'object .* not found')
+    })
+})
+
+test_that('package exports do not leak into modules', {
+    expect_true('package:stats' %in% search())
+    mod::use(mod/a)
+    ns_a = attr(a, 'namespace')
+    # First, ensure this is run in the right environment:
+    expect_identical(get0('modname', envir = ns_a, inherits = FALSE), 'a')
+    expect_identical(get0('T', envir = ns_a), TRUE)
+    expect_identical(get0('t.test', envir = ns_a), NULL)
+})

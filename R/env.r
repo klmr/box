@@ -27,7 +27,7 @@ enable_s3_lookup = function (ns_env, info) {
 
 make_imports_env = function (info) {
     structure(
-        new.env(parent = .BaseNamespaceEnv),
+        new.env(parent = baseenv()),
         name = paste0('imports:', info$name),
         class = 'mod$imports'
     )

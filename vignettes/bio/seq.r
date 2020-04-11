@@ -64,5 +64,5 @@ revcomp = function (seq) {
 #' @export
 table = function (seq) {
     nucleotides = lapply(strsplit(seq, ''), factor, c('A', 'C', 'G', 'T'))
-    setNames(lapply(nucleotides, base::table), names(seq))
+    stats::setNames(lapply(nucleotides, base::table), names(seq))
 }
