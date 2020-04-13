@@ -20,6 +20,16 @@ vignette: >
 ```{r include=FALSE}
 devtools::load_all()
 mod::use(./source_file)
+
+# Set up a temporary directory with the module demo. This is necessary for the
+# sole reason that, otherwise, `R CMD check` breaks: vignette building invokes
+# `tools::buildVignette`, which cleans up after itself by checking for new files
+# and removing those. But creating a file inside a folder changes the folder
+# timestamp, and hence the whole folder is removed.
+tmpdir = tempfile('dir')
+dir.create(tmpdir)
+file.copy(file.path(getwd(), 'c'), tmpdir, recursive = TRUE)
+mod::set_script_path(file.path(tmpdir, 'c'))
 ```
 
 ## Current status
