@@ -121,7 +121,7 @@ script_path = function () {
     # 5. Script run interactively (give up, use `getwd()`)
 
     if (exists('.', envir = loaded_mods, inherits = FALSE)) {
-        return(get('.', envir = loaded_mods, inherits = FALSE))
+        return(loaded_mods$.)
     }
 
     if (! is.null((knitr_path = knitr_path()))) return(knitr_path)
