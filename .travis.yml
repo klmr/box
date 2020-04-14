@@ -2,7 +2,7 @@ language: R
 
 cache: packages
 
-before_script: make doc
+before_script: make documentation
 
 notifications:
     email: false
