@@ -9,7 +9,7 @@
 #' @name default
 #' @keywords internal
 `%||%` = function (a, b) {
-    if (length(a) == 0L || identical(a, FALSE) || identical(a, "")) {
+    if (length(a) == 0L || identical(a, FALSE) || identical(a, '')) {
         b
     } else {
         a
