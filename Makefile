@@ -83,6 +83,7 @@ cleanall:
 	${RM} -r doc Meta
 	${RM} -r man
 	${RM} NAMESPACE
+	${RM} src/*.o src/*.so
 
 .DEFAULT_GOAL := show-help
 # See <https://github.com/klmr/maketools/tree/master/doc>.
