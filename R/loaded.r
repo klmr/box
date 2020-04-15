@@ -67,10 +67,12 @@ path = function (mod) {
     UseMethod('path')
 }
 
+#' @export
 `path.mod$mod` = function (mod) {
     attr(mod, 'info')$source_path
 }
 
+#' @export
 `path.mod$ns` = function (mod) {
     namespace_info(mod, 'info')$source_path
 }

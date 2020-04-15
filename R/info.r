@@ -21,11 +21,13 @@ pkg_info = function (spec) {
     structure(list(name = spec$name), class = c('mod$pkg_info', 'mod$info'))
 }
 
+#' @export
 `print.mod$info` = function (x, ...) {
     cat(as.character(x, ...), '\n', sep = '')
     invisible(x)
 }
 
+#' @export
 `as.character.mod$mod_info` = function (x, ...) {
     sprintf(
         '<mod_info: \x1B[33m%s\x1B[0m at \x1B[33m%s\x1B[0m>',
@@ -33,6 +35,7 @@ pkg_info = function (spec) {
     )
 }
 
+#' @export
 `as.character.mod$pkg_info` = function (x, ...) {
     path = getNamespaceInfo(x$name, 'path')
     sprintf('<mod_info: \x1B[33m%s\x1B[0m>', path)

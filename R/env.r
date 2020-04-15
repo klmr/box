@@ -97,10 +97,12 @@ make_export_env = function (info, spec, ns) {
     )
 }
 
+#' @export
 `$.mod$mod` = function (e1, e2) {
     get(as.character(substitute(e2)), envir = e1, inherits = FALSE)
 }
 
+#' @export
 `print.mod$mod` = function (x, ...) {
     spec = attr(x, 'spec')
     type = if (inherits(spec, 'pkg_spec')) 'package' else 'module'

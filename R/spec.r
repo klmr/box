@@ -74,11 +74,13 @@ spec_name = function (spec) {
     spec$name
 }
 
+#' @export
 `print.mod$spec` = function (x, ...) {
     cat(as.character(x, ...), '\n', sep = '')
     invisible(x)
 }
 
+#' @export
 `as.character.mod$spec` = function (x, ...) {
     r_name = function (names) {
         map_chr(
