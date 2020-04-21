@@ -162,7 +162,7 @@ distinction between local and global scope:
 search()
 ```
 
-Note the second item, which reads “<code>`r search()[2]`</code>”. But let’s now
+Note the second item, which reads “<code>`r search()[2L]`</code>”. But let’s now
 undo that, to attach (and use) the module locally instead:
 
 ```{r}
@@ -173,7 +173,7 @@ seq_table = function (s) {
     table(s)
 }
 
-seq_table('GATTACA')
+seq_table(s)
 ```
 
 Unlike above, we are now attaching *all* exported names instead of specifying
@@ -183,7 +183,7 @@ the `seq` module’s `table` function is *not* attached outside the local scope:
 
 ```{r}
 search()
-table('GATTACA')
+table(s)
 ```
 
 This is very powerful, as it isolates separate scopes more effectively than the
@@ -247,7 +247,9 @@ mod::use(./seq[...])
 ```
 
 This would have made all of `seq`’s definitions immediately available in
-`bio`. This is sometimes useful, but should be employed with care.
+`bio`, without having to always write `seq$…`. This is sometimes useful, but
+should be employed with care: being explicit about namespaces generally
+increases code robustness.
 
 ## Obsolete information
 

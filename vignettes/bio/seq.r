@@ -32,8 +32,11 @@ seq = function (...) {
 #' Print one or more biological sequences
 `print.bio/seq` = function (x) {
     mod::use(stringr[str_trunc])
+
+    if (is.null(names(x))) names(x) = paste('seq', seq_along(x))
+
     cat(
-        sprintf('%d DNA sequences:', length(x)),
+        sprintf('%d DNA sequence%s:', length(x), if (length(x) == 1L) '' else 's'),
         sprintf('  >%s\n  %s', names(x), str_trunc(x, 30)),
         sep = '\n'
     )
@@ -53,7 +56,7 @@ revcomp = function (seq) {
     nucleotides = strsplit(seq, '')
     complement = lapply(nucleotides, chartr, old = 'ACGT', new = 'TGCA')
     revcomp = lapply(complement, rev)
-    structure(vapply(revcomp, paste, character(1L), collapse = ''), class = 'bio/seq')
+    seq(vapply(revcomp, paste, character(1L), collapse = ''))
 }
 
 #' Tabulate nucleotides present in sequences
@@ -63,6 +66,7 @@ revcomp = function (seq) {
 #' @name seq
 #' @export
 table = function (seq) {
+    mod::use(stats[set_names = setNames])
     nucleotides = lapply(strsplit(seq, ''), factor, c('A', 'C', 'G', 'T'))
-    stats::setNames(lapply(nucleotides, base::table), names(seq))
+    set_names(lapply(nucleotides, base::table), names(seq))
 }
