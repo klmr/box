@@ -52,13 +52,12 @@ register_S3_method = function (name, class, method) {
 #' @name s3
 is_S3_user_generic = function (function_name, envir = parent.frame()) {
     is_S3 = function (b) {
-        if (length(b) == 0L) return(FALSE)
-        if (is.function(b)) b = body(b)
-        if (is.call(b)) {
+        if (length(b) == 0L) FALSE
+        else if (is.function(b)) b = body(b)
+        else if (is.call(b)) {
             is_s3_dispatch = is.name(b[[1L]]) && b[[1L]] == 'UseMethod'
-            return(is_s3_dispatch || is_S3(as.list(b)[-1L]))
-        }
-        is.recursive(b) && (is_S3(b[[1L]]) || is_S3(b[-1L]))
+            is_s3_dispatch || is_S3(as.list(b)[-1L])
+        } else is.recursive(b) && (is_S3(b[[1L]]) || is_S3(b[-1L]))
     }
 
     ! bindingIsActive(function_name, envir) &&
