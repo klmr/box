@@ -45,8 +45,13 @@ check: documentation
 site:
 	${rscript} -e "pkgdown::build_site()"
 
+## Create just the specified article for the website
 article-%:
 	${rscript} -e "pkgdown::build_article('$*')"
+
+## Create just the references for the website
+reference:
+	${rscript} -e "pkgdown::build_reference()"
 
 # NOTE: In the following, the vignettes are built TWICE: once via the
 # conventional route, to result in HTML output. And once to create MD output for
@@ -56,7 +61,7 @@ article-%:
 .PHONY: vignettes
 ## Compile all vignettes and other R Markdown articles
 vignettes: knit_all
-	${rscript} -e "devtools::build_vignettes()"
+	${rscript} -e "devtools::build_vignettes(dependencies = TRUE)"
 
 rmd_files=$(wildcard vignettes/*.rmd)
 knit_results=$(patsubst vignettes/%.rmd,doc/%.md,${rmd_files})
