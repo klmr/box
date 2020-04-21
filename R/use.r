@@ -103,7 +103,8 @@ use = function (...) {
     call = match.call()
     imports = call[-1L]
     aliases = names(imports) %||% character(length(imports))
-    invisible(map(use_one, imports, aliases, list(caller)))
+    map(use_one, imports, aliases, list(caller))
+    invisible()
 }
 
 #' Import a module or package

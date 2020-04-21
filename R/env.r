@@ -62,8 +62,7 @@ namespace_info = function (ns, which, default = NULL) {
 #' @export
 name = function () {
     mod_ns = current_mod()
-    if (! is_namespace(mod_ns)) return(NULL)
-    namespace_info(mod_ns, 'info')$name
+    if (is_namespace(mod_ns)) namespace_info(mod_ns, 'info')$name
 }
 
 # FIXME: Export?
