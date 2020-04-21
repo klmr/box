@@ -1,10 +1,9 @@
 #' Import a module or package
 #'
-#' \code{mod::use(...)} imports one or more modules and/or packages, and makes
-#' them available in the calling environment.
+#' \code{mod::use} imports one or more modules and/or packages, and makes them
+#' available in the calling environment.
 #'
-#' @section Detailed usage:
-#'
+#' @details
 #' \code{mod::use(...)} specifies a list of one or more import declarations,
 #' given as individual arguments to \code{mod::use}, separated by comma. Each
 #' import declaration takes one of the following forms:
@@ -58,8 +57,8 @@
 #' scope, the newly imported module is only available inside the module’s scope,
 #' not outside it (nor in other modules which might be loaded).
 #'
-#' @param ... one or more module import declarations, see \emph{Detailed usage}
-#' for a description of the format.
+#' @param ... one or more module import declarations, see ‘Details’ for a
+#' description of the format.
 #'
 #' @examples
 #' \dontrun{
@@ -94,7 +93,6 @@
 #' @seealso \code{\link{unload}}
 #' @seealso \code{\link{reload}}
 #' @seealso \code{\link{name}}
-#' @seealso \code{\link{path}}
 #' @seealso \code{\link{file}}
 #' @seealso \code{\link{help}}
 #' @export
