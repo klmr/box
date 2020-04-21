@@ -39,7 +39,7 @@
 #' @importFrom utils lsf.str
 NULL
 
-#' Return mod option settings
+#' Set or return mod option settings
 #'
 #' \code{option(which)} returns a {mod} related R option given by \code{which}.
 #' @param which name of the option to return
