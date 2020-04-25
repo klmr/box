@@ -1,4 +1,4 @@
-context('Same as the basic tests, just in an interactive R shell')
+context('interactive')
 
 play_back_results = function (record_events, onto) {
     for (event in record_events) {

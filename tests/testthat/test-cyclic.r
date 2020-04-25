@@ -1,4 +1,4 @@
-context('Circular dependencies between modules')
+context('circular dependencies')
 
 test_that('cyclic dependencies load in finite time', {
     xyz::use(mod/cyclic_a)

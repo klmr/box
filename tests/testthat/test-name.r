@@ -1,4 +1,4 @@
-context('Module names')
+context('names')
 
 test_that('the global namespace has no module name', {
     expect_null(xyz::name())

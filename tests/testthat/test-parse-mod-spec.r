@@ -1,4 +1,4 @@
-context('mod spec parser test')
+context('spec parser')
 
 test_use = function (...) {
     call = match.call()

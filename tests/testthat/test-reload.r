@@ -1,4 +1,4 @@
-context('Module reloading')
+context('reloading')
 
 is_module_loaded = function (path) {
     path %in% names(xyz:::loaded_mods)

@@ -1,4 +1,4 @@
-context('files relative to module')
+context('relative file paths')
 
 test_that('xyz::file works in global namespace', {
     expect_that(xyz::file(), equals(getwd()))

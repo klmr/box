@@ -1,4 +1,4 @@
-context('Basic import test')
+context('basic')
 
 is_module_loaded = function (mod) {
     xyz:::is_mod_loaded(attr(mod, 'info'))

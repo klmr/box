@@ -1,4 +1,4 @@
-context('Test attach')
+context('attaching')
 
 # File name starts with `z` so that the test is executed last.
 
