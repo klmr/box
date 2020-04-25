@@ -19,7 +19,7 @@
 #' \itemize{
 #'  \item \code{\link{file}}
 #'  \item \code{\link{name}}
-#'  \item \code{\link{register_s3_method}}
+#'  \item \code{register_s3_method}
 #' }
 #'
 #' @section Interactive use:
