@@ -38,12 +38,8 @@ reload = function (mod) {
             if (! is.na(attached_pos)) {
                 detach(attached, character.only = TRUE)
             }
-            # To avoid spurious `R CMD CHECK` warning. ‘xyz’ only uses
-            # `attach` when explicitly prompted by the user, so the use should
-            # be acceptable.
             on.exit(
-                get('attach', .BaseNamespaceEnv, mode = 'function')
-                    (attached_env, pos = attached_pos, name = attached),
+                xyz_attach(attached_env, pos = attached_pos, name = attached),
                 add = TRUE
             )
         }
