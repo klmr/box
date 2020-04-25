@@ -9,47 +9,44 @@
 #' import declaration takes one of the following forms:
 #'
 #' \describe{
-#' \item{\code{prefix/mod}:}{
-#'      Import a module given the qualified module name \code{prefix/mod} and
-#'      make it available locally using the name \code{mod}. The \code{prefix}
-#'      itself can be a nested name to allow importing specific submodules.
+#' \item{\code{\var{prefix}/\var{mod}}:}{
+#'      Import a module given the qualified module name
+#'      \code{\var{prefix}/\var{mod}} and make it available locally using the
+#'      name \code{\var{mod}}. The \code{\var{prefix}} itself can be a nested
+#'      name to allow importing specific submodules. \emph{Local imports} can be
+#'      specified via the prefixes starting with \code{.} and \code{..}, to
+#'      override the search path and use the local path instead. See the
+#'      \sQuote{Search path} below for details.
 #' }
-#' \item{\code{pkg}:}{
-#'      Import a package \code{pkg} and make it available locally using its own
+#' \item{\code{\var{pkg}}:}{
+#'      Import a package \code{\var{pkg}} and make it available locally using its own
 #'      package name.
 #' }
-#' \item{\code{alias = prefix/mod}, \code{alias = pkg}:}{
+#' \item{\code{\var{alias} = \var{prefix}/\var{mod}} or \code{\var{alias} = \var{pkg}}:}{
 #'      Import a module or package, and make it available locally using the name
-#'      \code{alias} instead of its module/package name.
+#'      \code{\var{alias}} instead of its regular module or package name.
 #' }
-#' \item{\code{prefix/mod[attach_list]}, \code{pkg[attach_list]}:}{
+#' \item{\code{\var{prefix}/\var{mod}[\var{attach_list}]} or \code{\var{pkg}[\var{attach_list}]}:}{
 #'      Import a module or package and attach the exported symbols listed in
-#'      \code{attach_list} locally. This declaration does \emph{not} make the
-#'      module/package itself available locally. To override this, provide an
-#'      alias, that is, use \code{alias = prefix/mod[attach_list]} or
-#'      \code{alias = pkg[attach_list]}.
+#'      \code{\var{attach_list}} locally. This declaration does \emph{not} make
+#'      the module/package itself available locally. To override this, provide
+#'      an alias, that is, use \code{\var{alias} =
+#'      \var{prefix}/\var{mod}[\var{attach_list}]} or \code{\var{alias} =
+#'      \var{pkg}[\var{attach_list}]}.
 #'
-#'      The \code{attach_list} is a comma-separated list of names, optionally
-#'      with names to provide aliases. the list can also contain the special
-#'      symbol \code{...}, which causes all exported names of the module/package
-#'      to be imported.
+#'      The \code{\var{attach_list}} is a comma-separated list of names,
+#'      optionally with names to provide aliases. The list can also contain the
+#'      special symbol \code{...}, which causes \emph{all} exported names of the
+#'      module/package to be imported.
 #' }
 #' }
 #'
+#' @section Import semantics:
 #' Modules and packages are loaded into a dedicated namespace environment. Names
 #' from a module or package can be selectively attached to the current scope as
 #' shown above.
 #'
-#' Modules are searched in the module search path, \code{mod::option('path')}.
-#' This is a vector of paths to consider, from the highest to the lowest
-#' priority. The current directory is \emph{always} considered last. That is,
-#' if a file \code{a.r} exists both in the current directory and in a module
-#' search path, the local file \code{./a.r} will not be loaded, unless the
-#' import is explicitly specified as \code{mod::use(./a)}.
-#'
-#' Module source code files are assumed to be UTF-8 encoded.
-#'
-#' @note Unlike for \code{\link{library}}, attaching happens \emph{locally},
+#' Unlike with \code{\link[base]{library}}, attaching happens \emph{locally},
 #' i.e. in the caller’s environment: if \code{mod::use} is executed in the
 #' global environment, the effect is the same. Otherwise, the effect of
 #' importing and attaching a module or package is limited to the caller’s local
@@ -57,7 +54,38 @@
 #' scope, the newly imported module is only available inside the module’s scope,
 #' not outside it (nor in other modules which might be loaded).
 #'
-#' @param ... one or more module import declarations, see ‘Details’ for a
+#' Member access of (non-attached) exported names of modules and packages
+#' happens via the \code{$} operator. This operator does not perform partial
+#' argument matching, in contrast with the behavior of the \code{$} operator in
+#' base R, which matches partial names.
+#'
+#' @section Search path:
+#' Modules are searched in the module search path, \code{mod::option('path')}.
+#' This is a vector of paths to consider, from the highest to the lowest
+#' priority. The current directory is always considered last. That is, if a file
+#' \file{a/b.r} exists both in the current directory and in a module search
+#' path, the local file \file{./a/b.r} will not be loaded, unless the import is
+#' explicitly specified as \code{mod::use(./a/b)}.
+#'
+#' The \emph{current directory} is context-dependent: inside a module, the
+#' directory corresponds to the module’s directory. Inside an R code file
+#' invoked from the command line, it corresponds to the directory containing
+#' that file. If the code is running inside a \pkg{Shiny} application or a
+#' \pkg{knitr} document, the directory of the execution is used. Otherwise (e.g.
+#' in an interactive R session), the current working directory as given by
+#' \code{getwd()} is used.
+#'
+#' @section S3 support:
+#'
+#' Modules can contain S3 generics and methods. To override known generics
+#' (defined outside modules), methods inside a module need to be registered
+#' using \code{\link{register_S3_method}}. See the documentation on that
+#' function for details.
+#'
+#' @section Encoding:
+#' All module source code files are assumed to be UTF-8 encoded.
+#'
+#' @param ... one or more module import declarations, see \sQuote{Details} for a
 #' description of the format.
 #'
 #' @examples
@@ -90,11 +118,12 @@
 #' # in `b/c.r` is available as `c`, and all exported names in `b/c.r` are
 #' # attached, with the exception of `g`, which is attached under the name `h`.
 #' }
-#' @seealso \code{\link{unload}}
-#' @seealso \code{\link{reload}}
-#' @seealso \code{\link{name}}
-#' @seealso \code{\link{file}}
-#' @seealso \code{\link{help}}
+#' @seealso
+#' \code{\link{name}} and \code{\link{file}} give information about loaded
+#' packages.
+#' \code{\link{help}} displays help for a module’s exported names.
+#' \code{\link{unload}} and \code{\link{reload}} provide dynamic unloading and
+#' reloading of modules in a running session.
 #' @export
 use = function (...) {
     caller = parent.frame()
@@ -107,7 +136,9 @@ use = function (...) {
 
 #' Import a module or package
 #'
-#' @description
+#' Actual implementation of the import process
+#'
+#' @details
 #' \code{use_one} performs the actual import. It is invoked by \code{use} given
 #' the calling context and unevaluated expressions as arguments, and only uses
 #' standard evaluation.
@@ -155,7 +186,7 @@ use = function (...) {
 #' @param caller the client’s calling environment (parent frame)
 #' @return \code{use_one} does not currently return a value. — This might change
 #' in the future.
-#' @details If a module is still being loaded (because it is part of a cyclic
+#' @note If a module is still being loaded (because it is part of a cyclic
 #' import chain), \code{load_and_register} earmarks the module for deferred
 #' registration and holds off on attaching and exporting for now, since not all
 #' its names are available yet.

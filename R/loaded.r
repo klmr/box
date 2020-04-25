@@ -117,7 +117,7 @@ set_script_path = function (path) {
 }
 
 #' @return \code{script_path} returns a character string that contains the
-#' directory in which the calling R code is run. See ‘Details’.
+#' directory in which the calling R code is run. See \sQuote{Details}.
 #' @details
 #' \code{script_path} takes a best guess at a script’s path, since R does not
 #' provide a sure-fire way for determining the path of the currently executing
@@ -125,7 +125,7 @@ set_script_path = function (path) {
 #'
 #' \enumerate{
 #'  \item Path explicitly set via \code{set_script_path}
-#'  \item Path of a running document/application (knitr, Shiny)
+#'  \item Path of a running document/application (\pkg{knitr}, \pkg{Shiny})
 #'  \item Code invoked as \code{Rscript script.r}
 #'  \item Code invoked as \code{R CMD BATCH script.r}
 #'  \item Script run interactively (use \code{getwd()})
