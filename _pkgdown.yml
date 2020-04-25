@@ -1,2 +1,27 @@
 title: mod
 url: http://mod.klmr.me
+
+reference:
+    - title: Import
+      desc: Functions for users of packages.
+      contents:
+        - option
+        - set_options
+        - use
+    - title: Writing modules
+      desc: Infrastructure and utility functions that are mainly used inside modules
+      contents:
+        - file
+        - name
+        - register_S3_method
+    - title: Interactive use
+      desc: Functions for use in interactive sessions and for testing.
+      contents:
+        - help
+        - reload
+        - set_script_path
+        - unload
+
+template:
+    params:
+        bootswatch: simplex
