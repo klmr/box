@@ -24,7 +24,7 @@ parse_roxygen_tags = function (info, mod_ns) {
 
 #' Display module documentation
 #'
-#' \code{module_help} displays help on a module’s objects and functions in much
+#' \code{help} displays help on a module’s objects and functions in much
 #' the same way \code{\link[utils]{help}} does for package contents.
 #'
 #' @param topic fully-qualified name of the object or function to get help for,
@@ -36,9 +36,9 @@ parse_roxygen_tags = function (info, mod_ns) {
 #' @examples
 #' \dontrun{
 #' mod::use(my/mod)
-#' mod::module_help(mod$func)
+#' mod::help(mod$func)
 #' }
-module_help = function (topic, help_type = getOption('help_type', 'text')) {
+help = function (topic, help_type = getOption('help_type', 'text')) {
     topic = substitute(topic)
     top_module = help_topic_leftmost_name(topic)
 
@@ -110,7 +110,7 @@ is_module_help_topic = function (topic, parent) {
 }
 
 #' @usage
-#' # ?module$function
+#' \special{?topic}
 #' @inheritParams utils::`?`
 #' @rdname help
 #' @export
@@ -123,25 +123,6 @@ is_module_help_topic = function (topic, parent) {
     if (
         missing(e2) && ! missing(e1) &&
         is_module_help_topic(topic, parent.frame())
-    ) {
-        eval.parent(call('module_help', topic))
-    } else {
-        call_help(match.call(), parent.frame())
-    }
-}
-
-#' @usage
-#' # help(module$function)
-#' @inheritParams utils::help
-#' @export
-#' @examples
-#' \dontrun{
-#' help(mod$func)
-#' }
-help = function (topic, ...) {
-    topic = substitute(topic)
-    if (
-        ! missing(topic) && is_module_help_topic(topic, parent.frame())
     ) {
         eval.parent(call('module_help', topic))
     } else {
