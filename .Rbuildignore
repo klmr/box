@@ -1,3 +1,4 @@
+^\.lintr$
 ^\.Rprofile_develop$
 ^\.Rprofile$
 ^\.gitignore$
@@ -9,8 +10,11 @@
 ^printenv\.r$
 ^\.travis\.yml$
 ^_pkgdown\.yml$
+^pkgdown$
 ^doc$
 ^docs$
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^Meta$
+^renv$
+^renv\.lock$

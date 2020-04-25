@@ -1,4 +1,4 @@
-context('Test that modules works with knitr')
+context('Test that ‘xyz’ works with knitr')
 
 check_knitr = function () skip_if_not_installed('knitr')
 

@@ -22,7 +22,7 @@ devtools::load_all()
 # The module does not export any symbols. We use `[...]` solely to prevent the
 # declaration to create a module alias in the calling environment, so this
 # implementation detail isn’t shown in subsequent `ls()` calls.
-mod::use(./source_file[...])
+xyz::use(./source_file[...])
 ```
 
 ## Using modules
@@ -34,14 +34,14 @@ sequences (= character strings consisting of the letters `A`, `C`, `G` and `T`).
 First, we load the module:
 
 ```{r}
-mod::use(./bio/seq)
+xyz::use(./bio/seq)
 ```
 
-The function `mod::use` accepts a list of *unquoted*, *qualified* module names.
+The function `xyz::use` accepts a list of *unquoted*, *qualified* module names.
 Each of these module names will load a single module and make it available to
 the caller in some form. In the code above, we’ve loaded a single module,
 `seq/seq`. `bio` serves as a *parent module* that may group several submodules.
-Since the module name inside `mod::use` starts with `./`, the module location is
+Since the module name inside `xyz::use` starts with `./`, the module location is
 resolved *locally*, i.e. relative to the path of the currently running code.
 
 In the above, `seq` is the module’s *proper name*. `bio/seq` is its *fully
@@ -100,7 +100,7 @@ getS3method('print', 'bio/seq')
 ```
 
 The source code for `print.bio/seq` contains an interesting `use` declaration.
-It show-cases an alternative way of invoking `mod::use`, which we’ll explore
+It show-cases an alternative way of invoking `xyz::use`, which we’ll explore
 now.
 
 ## Attaching modules
@@ -110,23 +110,23 @@ Let’s have a look at alternative ways of using modules.
 To start, let’s unload the `bio/seq` module …
 
 ```{r}
-mod::unload(seq)
+xyz::unload(seq)
 ```
 
 … and load it again, via a different route:
 
 ```{r}
-mod::set_options(path = getwd())
-mod::use(bio/seq[revcomp, is_valid])
+xyz::set_options(path = getwd())
+xyz::use(bio/seq[revcomp, is_valid])
 ```
 
-After unloading the already loaded module, the `mod::set_options` function call
-sets the module search path: this is where `mod::use` searches for modules. If
-more than one path is given, `mod::use` searches them all until a module of
+After unloading the already loaded module, the `xyz::set_options` function call
+sets the module search path: this is where `xyz::use` searches for modules. If
+more than one path is given, `xyz::use` searches them all until a module of
 matching name is found. This works analogously to how `.libPaths()` operates on
 R packages.
 
-The `mod::use` directive can now use `bio/seq` instead of `./bio/seq` as the
+The `xyz::use` directive can now use `bio/seq` instead of `./bio/seq` as the
 module name: rather than a relative name we specify a *global* name. In this
 example we set the search path to the current working directory but in normal
 usage it would be a global library location, e.g. (following the [XDG base
@@ -135,7 +135,7 @@ directory specification][XDG]) `~/.local/R/modules`.
 [XDG]: https://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
 
 Note that non-local module names *must* be fully qualified, nested modules:
-`mod::use(foo/bar)` works, `mod::use(bar)` does not (instead, it is assumed that
+`xyz::use(foo/bar)` works, `xyz::use(bar)` does not (instead, it is assumed that
 `bar` refers to a *package*).
 
 In the declaration above we use `[revcomp]` to specify that the `revcomp` name
@@ -169,7 +169,7 @@ undo that, to attach (and use) the module locally instead:
 detach()
 
 seq_table = function (s) {
-    mod::use(./bio/seq[...])
+    xyz::use(./bio/seq[...])
     table(s)
 }
 
@@ -204,11 +204,11 @@ In fact, there are only two things worth mentioning:
 
 1. Documentation. Each function in the module file is documented using the
    [roxygen2](http://cran.r-project.org/web/packages/roxygen2/index.html)
-   syntax. It works the same as for packages. The *modules* package parses the
+   syntax. It works the same as for packages. The ‘xyz’ package parses the
    documentation and makes it available via `module_help` and `?`.
 
 2. The module exports [S3 functions](http://adv-r.had.co.nz/S3.html). The
-   *modules* package takes care to register such functions automatically but
+   ‘xyz’ package takes care to register such functions automatically but
    this only works for *user generics* that are defined inside the same module.
    When overriding “known generics” (such as `print`), we need to register
    these manually via `register_S3_method` (this is necessary since these
@@ -226,14 +226,14 @@ than a file, the module implementation resides in the nested file `__init__.r`):
 
 The submodule is specified as `./seq` rather than `seq`: the explicitly provided
 relative path prevents lookup in the import search path (that we set via
-`mod::set_options(path = …)`); instead, only the current directory is
+`xyz::set_options(path = …)`); instead, only the current directory is
 considered.
 
 We can now use the `bio` module:
 
 ```{r}
-mod::set_options(path = NULL) # Reset search path
-mod::use(./bio)
+xyz::set_options(path = NULL) # Reset search path
+xyz::use(./bio)
 ls(bio)
 ls(bio$seq)
 bio$seq$revcomp('CAT')
@@ -243,7 +243,7 @@ We could also have implemented `bio` as follows:
 
 ```{r eval=FALSE}
 #' @export
-mod::use(./seq[...])
+xyz::use(./seq[...])
 ```
 
 This would have made all of `seq`’s definitions immediately available in
@@ -254,7 +254,7 @@ increases code robustness.
 ## Obsolete information
 
 Module files can contain arbitrary code. It is executed when loaded for the
-first time: subsequent `mod::use`s in the same session, regardless of whether
+first time: subsequent `xyz::use`s in the same session, regardless of whether
 they occur in a different scope, will refer to the loaded, cached module, and
 will *not* reload a module.
 
@@ -266,21 +266,21 @@ We can illustrate this by loading a module which has side-effects, `'info'`.
 Let’s load it:
 
 ```{r}
-mod::use(./info)
+xyz::use(./info)
 ```
 
 We have imported the module, and get the diagnostic messages. Let’s re-import
 the module:
 
 ```{r}
-mod::use(./info)
+xyz::use(./info)
 ```
 
 … no messages are displayed. However, we can explicitly *reload* a module. This
 clears the cache, and loads the module again:
 
 ```{r}
-# mod::reload(info)
+# xyz::reload(info)
 ```
 
 And this displays the messages again. The `reload` function is a shortcut for

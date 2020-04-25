@@ -1,4 +1,4 @@
-mod::use(./s3)
+xyz::use(./s3)
 
 #' @export
 test = s3$test

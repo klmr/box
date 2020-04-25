@@ -1,7 +1,7 @@
 #' @export
 a = 'reexport$a'
 
-mod::use(./reexport_sub[a, b, c, d])
+xyz::use(./reexport_sub[a, b, c, d])
 
 b = 'reexport$b'
 
@@ -9,4 +9,4 @@ b = 'reexport$b'
 c = 'reexport$c'
 
 #' @export
-mod::use(sub = ./reexport_sub[d = c, e = b])
+xyz::use(sub = ./reexport_sub[d = c, e = b])

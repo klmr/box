@@ -1,6 +1,6 @@
 #' An alternative module system for R
 #'
-#' Use \code{mod::use(prefix/mod)} to import a module, or \code{mod::use(pkg)}
+#' Use \code{xyz::use(prefix/mod)} to import a module, or \code{xyz::use(pkg)}
 #' to import a package. Fully qualified names are supported for nested modules,
 #' reminiscent of module systems in many other modern languages.
 #'
@@ -33,7 +33,7 @@
 #'  \item \code{\link{unload}}
 #' }
 #'
-#' @name mod
+#' @name xyz
 #' @docType package
 #' @importFrom stats setNames
 #' @importFrom utils lsf.str

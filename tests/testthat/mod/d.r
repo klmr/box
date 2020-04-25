@@ -1,2 +1,2 @@
 devtools::load_all(quiet = TRUE)
-cat(paste0(mod::base_path(environment()), '\n'))
+cat(paste0(xyz::base_path(environment()), '\n'))

@@ -1,5 +1,5 @@
 #' @export
-mod::use(./a[...])
+xyz::use(./a[...])
 
 #' @export
 z = 1

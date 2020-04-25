@@ -35,8 +35,8 @@ parse_roxygen_tags = function (info, mod_ns) {
 #' @export
 #' @examples
 #' \dontrun{
-#' mod::use(my/mod)
-#' mod::help(mod$func)
+#' xyz::use(my/mod)
+#' xyz::help(mod$func)
 #' }
 help = function (topic, help_type = getOption('help_type', 'text')) {
     topic = substitute(topic)
@@ -54,10 +54,10 @@ help = function (topic, help_type = getOption('help_type', 'text')) {
     mod_name = strsplit(attr(mod_exports, 'name'), ':')[[1L]][2L]
     subject = as.character(topic[[3L]])
 
-    if (inherits(info, 'mod$pkg_info')) {
+    if (inherits(info, 'xyz$pkg_info')) {
         help_call = bquote(help(topic = .(subject), package = .(mod_name)))
         return(call_help(help_call, parent.frame()))
-    } else if (! inherits(info, 'mod$mod_info')) {
+    } else if (! inherits(info, 'xyz$mod_info')) {
         stop(
             dQuote(deparse(topic)), ' is not a valid module help topic',
             call. = FALSE
@@ -106,7 +106,7 @@ is_module_help_topic = function (topic, parent) {
 
     ! is.null(top_module) &&
         exists(top_module, parent) &&
-        inherits(get(top_module, parent), 'mod$mod')
+        inherits(get(top_module, parent), 'xyz$mod')
 }
 
 #' @usage

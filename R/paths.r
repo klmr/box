@@ -1,13 +1,13 @@
 #' Path related functions
 #'
 #' \code{mod_search_path} returns the character vector of paths where module
-#' code can be located and will be found by {mod}.
+#' code can be located and will be found by \pkg{xyz}.
 #'
 #' @note The search paths are ordered from highest to lowest priority.
 #' The current module’s path always has the lowest priority.
 #'
 #' There are two ways of modifying the module search path: by default,
-#' \code{mod::option('path')} specifies the search path as a character vector.
+#' \code{xyz::option('path')} specifies the search path as a character vector.
 #' Users can override its value by separately setting the environment variable
 #' \code{R_MOD_PATH} to one or more paths, separated by the platform’s path
 #' separator.
@@ -20,11 +20,11 @@ mod_search_path = function () {
 }
 
 #' \code{calling_mod_path} determines the path of the module code that is
-#' currently calling into the {mod} package.
+#' currently calling into the \pkg{xyz} package.
 #'
-#' @param caller the environment from which \code{mod::use} was invoked.
+#' @param caller the environment from which \code{xyz::use} was invoked.
 #' @return \code{calling_mod_path} the path of the source module that is calling
-#' \code{mod::use}, or the script’s path if the calling code is not a module.
+#' \code{xyz::use}, or the script’s path if the calling code is not a module.
 #' @rdname paths
 calling_mod_path = function (caller) {
     calling_ns = mod_topenv(caller)

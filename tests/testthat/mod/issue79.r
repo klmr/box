@@ -1,7 +1,7 @@
 devtools::load_all(quiet = TRUE)
 
-before = mod::name()
-mod::use(./a)
-after = mod::name()
+before = xyz::name()
+xyz::use(./a)
+after = xyz::name()
 
 before; after

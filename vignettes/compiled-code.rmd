@@ -19,7 +19,7 @@ vignette: >
 ---
 ```{r include=FALSE}
 devtools::load_all()
-mod::use(./source_file)
+xyz::use(./source_file)
 
 # Set up a temporary directory with the module demo. This is necessary for the
 # sole reason that, otherwise, `R CMD check` breaks: vignette building invokes
@@ -29,14 +29,14 @@ mod::use(./source_file)
 tmpdir = tempfile('dir')
 dir.create(tmpdir)
 file.copy(file.path(getwd(), 'c'), tmpdir, recursive = TRUE)
-mod::set_script_path(file.path(tmpdir, 'c'))
+xyz::set_script_path(file.path(tmpdir, 'c'))
 ```
 
 ## Current status
 
-Modules don’t have a built-in foreign function interface yet but it is possible
-to integrate compiled code via R’s `SHLIB` mechanism for building shared
-objects. In particular, this also works with packages such as [Rcpp][].
+The ‘xyz’ package doesn’t have a built-in foreign function interface yet but it
+is possible to integrate compiled code via R’s `SHLIB` mechanism for building
+shared objects. In particular, this also works with packages such as [Rcpp][].
 
 For the time being, the following steps unfortunately require manual work:
 
@@ -84,7 +84,7 @@ With this in place, we can invoke the compilation by loading the `c/__install__`
 submodule:
 
 ```{r}
-mod::use(c/`__install__`)
+xyz::use(c/`__install__`)
 ```
 
 The result of the compilation will be a single file, `hello.so` (on Unix and
@@ -102,7 +102,7 @@ function that gives us this name:
 
 ```{r eval=FALSE}
 soname = function (name) {
-    mod::file(paste0(name, .Platform$dynlib.ext))
+    xyz::file(paste0(name, .Platform$dynlib.ext))
 }
 ```
 
@@ -127,7 +127,7 @@ hello_world = function (name) {
 To use the code, we load the module and call the `hello_world` function:
 
 ```{r}
-mod::use(./c)
+xyz::use(./c)
 c$hello_world('Rthur')
 ```
 

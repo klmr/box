@@ -1,15 +1,15 @@
 f = function() {
-    mod::use(./a[...])
+    xyz::use(./a[...])
     helper()
 }
 
 g = function() {
-    mod::use(./a)
+    xyz::use(./a)
     helper()
 }
 
 h = function() {
-    mod::use(./a[`%.%`])
+    xyz::use(./a[`%.%`])
     helper()
 }
 

@@ -75,12 +75,12 @@ path = function (mod) {
 }
 
 #' @export
-`path.mod$mod` = function (mod) {
+`path.xyz$mod` = function (mod) {
     attr(mod, 'info')$source_path
 }
 
 #' @export
-`path.mod$ns` = function (mod) {
+`path.xyz$ns` = function (mod) {
     namespace_info(mod, 'info')$source_path
 }
 
@@ -99,11 +99,11 @@ base_path = function (mod) {
 #' \code{NULL} to reset the path
 #'
 #' @details
-#' \emph{modules} needs to know the base path of the topmost calling R script
-#' to find relative import locations. In most cases, it can figure the path out
+#' \pkg{xyz} needs to know the base path of the topmost calling R script to find
+#' relative import locations. In most cases, it can figure the path out
 #' automatically. However, in some cases third party packages load files in such
-#' a way that \emph{modules} cannot find out the correct path of the script any
-#' more. \code{set_script_path} can be used in these cases to set the script
+#' a way that \pkg{xyz} cannot find out the correct path of the script any more.
+#' \code{set_script_path} can be used in these cases to set the script
 #' path manually.
 #' @export
 set_script_path = function (path) {

@@ -1,9 +1,9 @@
 soname = function (name) {
-    mod::file(paste0(name, .Platform$dynlib.ext))
+    xyz::file(paste0(name, .Platform$dynlib.ext))
 }
 
-# mod::on_install(function () mod::use(./`__install__`))
-# mod::on_load(function () dyn.load(soname('hello')))
+# xyz::on_install(function (...) xyz::use(./`__install__`))
+# xyz::on_load(function (ns) assign('dll', dyn.load(soname('hello')), envir = ns))
 dll = dyn.load(soname('hello'))
 
 #' @export

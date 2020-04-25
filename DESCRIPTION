@@ -1,5 +1,5 @@
-Package: mod
-Title: Modules for R
+Package: xyz
+Title: Write reusable, composable and distributable R code
 Version: 0.9.9.9000
 Author: Konrad Rudolph <konrad.rudolph@gmail.com>
 Maintainer: Konrad Rudolph <konrad.rudolph@gmail.com>
@@ -23,3 +23,4 @@ Suggests:
     shiny,
     testthat (>= 2.0.0)
 VignetteBuilder: knitr
+RoxygenNote: 7.1.0

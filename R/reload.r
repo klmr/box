@@ -10,12 +10,12 @@
 #'
 #' \code{reload} comes with a few restrictions. It attempts to re-attach itself
 #' in parts or whole if it was previously attached in parts or whole. This only
-#' works if it is called in the same scope as the original \code{mod::use}.
+#' works if it is called in the same scope as the original \code{xyz::use}.
 #' @seealso \code{\link{use}}
 #' @seealso \code{\link{unload}}
 #' @export
 reload = function (mod) {
-    stopifnot(inherits(mod, 'mod$mod'))
+    stopifnot(inherits(mod, 'xyz$mod'))
     stopifnot(is.name(substitute(mod)))
     caller = parent.frame()
     spec = attr(mod, 'spec')
@@ -38,7 +38,7 @@ reload = function (mod) {
             if (! is.na(attached_pos)) {
                 detach(attached, character.only = TRUE)
             }
-            # To avoid spurious `R CMD CHECK` warning. Modules only uses
+            # To avoid spurious `R CMD CHECK` warning. ‘xyz’ only uses
             # `attach` when explicitly prompted by the user, so the use should
             # be acceptable.
             on.exit(

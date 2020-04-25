@@ -23,10 +23,10 @@
 #'     invisible(x)
 #' }
 #'
-#' mod::register_S3_method('print', 'my_class', print.my_class)
+#' xyz::register_S3_method('print', 'my_class', print.my_class)
 #'
 #' # Globally:
-#' mod::use(mymod/a)
+#' xyz::use(mymod/a)
 #' obj = structure(list(field = 42), class = 'my_class')
 #' obj # calls `print.my_class`, with output "My class with field 42"
 #' }

@@ -1,2 +1,2 @@
-message('Loading module "', mod::name(), '"')
-message('Module path: "', basename(mod::file()), '"')
+message('Loading module "', xyz::name(), '"')
+message('Module path: "', basename(xyz::file()), '"')

@@ -85,7 +85,7 @@ documentation:
 
 ## Clean up all build files
 cleanall:
-	${RM} -r doc Meta
+	${RM} -r doc docs Meta
 	${RM} -r man
 	${RM} NAMESPACE
 	${RM} src/*.o src/*.so

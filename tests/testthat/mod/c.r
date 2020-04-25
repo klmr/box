@@ -1,4 +1,4 @@
-mod::use(./a[...])
+xyz::use(./a[...])
 
 double = function (x) c(x, x)
 

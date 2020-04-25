@@ -5,18 +5,18 @@
 #' @param mod name of the module which should be unloaded
 #' @note Any other references to the loaded modules remain unchanged, and will
 #' still work. However, subsequently importing the module again will reload its
-#' source files, which would not have happened without \code{mod::unload}.
+#' source files, which would not have happened without \code{xyz::unload}.
 #' Unloading modules is primarily useful for testing during development, and
 #' should not be used in production code.
 #'
-#' \code{mod::unload} comes with a few restrictions. It attempts to detach
+#' \code{xyz::unload} comes with a few restrictions. It attempts to detach
 #' itself if it was previously attached. This only works if it is called in the
-#' same scope as the original \code{mod::use} call, or an inherited scope.
+#' same scope as the original \code{xyz::use} call, or an inherited scope.
 #' @seealso \code{\link{use}}
 #' @seealso \code{\link{reload}}
 #' @export
 unload = function (mod) {
-    stopifnot(inherits(mod, 'mod$mod'))
+    stopifnot(inherits(mod, 'xyz$mod'))
     stopifnot(is.name(substitute(mod)))
     deregister_mod(attr(mod, 'info'))
     attached = attr(mod, 'attached')

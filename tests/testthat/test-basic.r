@@ -1,7 +1,7 @@
 context('Basic import test')
 
 is_module_loaded = function (mod) {
-    mod:::is_mod_loaded(attr(mod, 'info'))
+    xyz:::is_mod_loaded(attr(mod, 'info'))
 }
 
 test_teardown(clear_mods())
@@ -11,22 +11,22 @@ module_path = function (mod) {
 }
 
 test_that('module can be imported', {
-    mod::use(mod/a)
+    xyz::use(mod/a)
     expect_true(is_module_loaded(a))
     expect_true('double' %in% ls(a))
 })
 
 test_that('import works in global namespace', {
     in_globalenv({
-        mod::use(mod/a)
-        expect_true(mod:::is_mod_loaded(attr(a, 'info')))
+        xyz::use(mod/a)
+        expect_true(xyz:::is_mod_loaded(attr(a, 'info')))
         expect_true('double' %in% ls(a))
     })
 })
 
 test_that('module is uniquely identified by path', {
-    mod::use(mod/a)
-    mod::use(ba = mod/b/a)
+    xyz::use(mod/a)
+    xyz::use(ba = mod/b/a)
     expect_true(is_module_loaded(a))
     expect_true(is_module_loaded(ba))
     expect_not_identical(module_path(a), module_path(ba))
@@ -35,12 +35,12 @@ test_that('module is uniquely identified by path', {
 })
 
 test_that('can use imported function', {
-    mod::use(mod/a)
+    xyz::use(mod/a)
     expect_that(a$double(42), equals(42 * 2))
 })
 
 test_that('modules export all objects', {
-    mod::use(mod/a)
+    xyz::use(mod/a)
     expect_gt(length(lsf.str(a)), 0)
     expect_gt(length(ls(a)), length(lsf.str(a)))
     a_namespace = environment(a$double)
@@ -48,20 +48,20 @@ test_that('modules export all objects', {
 })
 
 test_that('module can modify its variables', {
-    mod::use(mod/a)
+    xyz::use(mod/a)
     counter = a$get_counter()
     a$inc()
     expect_equal(a$get_counter(), counter + 1)
 })
 
 test_that('hidden objects are not exported', {
-    mod::use(mod/a)
+    xyz::use(mod/a)
     expect_true(exists('counter', envir = a))
     expect_false(exists('.modname', envir = a))
 })
 
 test_that('module bindings are locked', {
-    mod::use(mod/a)
+    xyz::use(mod/a)
 
     expect_true(environmentIsLocked(a))
     expect_true(bindingIsLocked('get_counter', a))
@@ -73,21 +73,21 @@ test_that('module bindings are locked', {
 
 test_that('modules don’t need exports', {
     expect_equal(ls(), character(0L))
-    expect_error(mod::use(mod/c), NA)
-    expect_error(capture.output(mod::use(mod/d)), NA)
+    expect_error(xyz::use(mod/c), NA)
+    expect_error(capture.output(xyz::use(mod/d)), NA)
     expect_equal(ls(), c('c', 'd'))
 })
 
 test_that('global scope is not leaking into modules', {
     in_globalenv({
         x = 1L
-        expect_error(mod::use(mod/issue151), 'object .* not found')
+        expect_error(xyz::use(mod/issue151), 'object .* not found')
     })
 })
 
 test_that('package exports do not leak into modules', {
     expect_true('package:stats' %in% search())
-    mod::use(mod/a)
+    xyz::use(mod/a)
     ns_a = attr(a, 'namespace')
     # First, ensure this is run in the right environment:
     expect_identical(get0('modname', envir = ns_a, inherits = FALSE), 'a')

@@ -1,5 +1,5 @@
 #' @export
-mod::use(b = ./cyclic_b)
+xyz::use(b = ./cyclic_b)
 
 #' @export
 name = 'a'

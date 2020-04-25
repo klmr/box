@@ -12,7 +12,7 @@
 #' @export
 double = function (x) x * 2
 
-modname = mod::name()
+modname = xyz::name()
 
 #' Counter for testing
 #' @export
@@ -25,7 +25,7 @@ get_modname = function () modname
 #' The module’s name, via a function
 #' @name get_modname
 #' @export
-get_modname2 = function () mod::name()
+get_modname2 = function () xyz::name()
 
 #' Read the counter
 #' @export

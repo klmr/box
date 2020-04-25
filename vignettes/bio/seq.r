@@ -31,7 +31,7 @@ seq = function (...) {
 
 #' Print one or more biological sequences
 `print.bio/seq` = function (x) {
-    mod::use(stringr[str_trunc])
+    xyz::use(stringr[str_trunc])
 
     if (is.null(names(x))) names(x) = paste('seq', seq_along(x))
 
@@ -43,7 +43,7 @@ seq = function (...) {
     invisible(x)
 }
 
-mod::register_S3_method('print', 'bio/seq', `print.bio/seq`)
+xyz::register_S3_method('print', 'bio/seq', `print.bio/seq`)
 
 #' Reverse complement
 #'
@@ -66,7 +66,7 @@ revcomp = function (seq) {
 #' @name seq
 #' @export
 table = function (seq) {
-    mod::use(stats[set_names = setNames])
+    xyz::use(stats[set_names = setNames])
     nucleotides = lapply(strsplit(seq, ''), factor, c('A', 'C', 'G', 'T'))
     set_names(lapply(nucleotides, base::table), names(seq))
 }

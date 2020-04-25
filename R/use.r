@@ -1,11 +1,11 @@
 #' Import a module or package
 #'
-#' \code{mod::use} imports one or more modules and/or packages, and makes them
+#' \code{xyz::use} imports one or more modules and/or packages, and makes them
 #' available in the calling environment.
 #'
 #' @details
-#' \code{mod::use(...)} specifies a list of one or more import declarations,
-#' given as individual arguments to \code{mod::use}, separated by comma. Each
+#' \code{xyz::use(...)} specifies a list of one or more import declarations,
+#' given as individual arguments to \code{xyz::use}, separated by comma. Each
 #' import declaration takes one of the following forms:
 #'
 #' \describe{
@@ -47,7 +47,7 @@
 #' shown above.
 #'
 #' Unlike with \code{\link[base]{library}}, attaching happens \emph{locally},
-#' i.e. in the caller’s environment: if \code{mod::use} is executed in the
+#' i.e. in the caller’s environment: if \code{xyz::use} is executed in the
 #' global environment, the effect is the same. Otherwise, the effect of
 #' importing and attaching a module or package is limited to the caller’s local
 #' scope (its \code{environment()}). When used \emph{inside a module} at module
@@ -60,12 +60,12 @@
 #' base R, which matches partial names.
 #'
 #' @section Search path:
-#' Modules are searched in the module search path, \code{mod::option('path')}.
+#' Modules are searched in the module search path, \code{xyz::option('path')}.
 #' This is a vector of paths to consider, from the highest to the lowest
 #' priority. The current directory is always considered last. That is, if a file
 #' \file{a/b.r} exists both in the current directory and in a module search
 #' path, the local file \file{./a/b.r} will not be loaded, unless the import is
-#' explicitly specified as \code{mod::use(./a/b)}.
+#' explicitly specified as \code{xyz::use(./a/b)}.
 #'
 #' The \emph{current directory} is context-dependent: inside a module, the
 #' directory corresponds to the module’s directory. Inside an R code file
@@ -93,24 +93,24 @@
 #' # Basic usage
 #'
 #' # `a.r` is a file in the local directory containing a function `f`.
-#' mod::use(./a)
+#' xyz::use(./a)
 #' a$f()
 #'
 #' # Attaching exported names
 #'
 #' # b/c.r is a file in path `b`, containing functions `f` and `g`.
-#' mod::use(b/c[f])
+#' xyz::use(b/c[f])
 #' f()
 #' g() # Error: could not find function "g"
 #' b$f() # Error: object 'b' not found
 #'
-#' mod::use(b/c[...])
+#' xyz::use(b/c[...])
 #' f()
 #' g()
 #'
 #' # Alias names
 #'
-#' mod::use(
+#' xyz::use(
 #'     x = ./a,
 #'     c = b/c[h = g, ...]
 #' )
@@ -244,7 +244,7 @@ finalize_deferred = function (info) {
     UseMethod('finalize_deferred')
 }
 
-`finalize_deferred.mod$mod_info` = function (info) {
+`finalize_deferred.xyz$mod_info` = function (info) {
     deferred = attr(loaded_mods[[info$source_path]], 'deferred')
     if (is.null(deferred)) return()
 
@@ -255,7 +255,7 @@ finalize_deferred = function (info) {
     }
 }
 
-`finalize_deferred.mod$pkg_info` = function (info) {}
+`finalize_deferred.xyz$pkg_info` = function (info) {}
 
 #' @rdname importing
 export_and_attach = function (spec, info, mod_ns, caller) {
@@ -286,7 +286,7 @@ load_mod = function (info) {
     UseMethod('load_mod')
 }
 
-`load_mod.mod$mod_info` = function (info) {
+`load_mod.xyz$mod_info` = function (info) {
     if (is_mod_loaded(info)) return(loaded_mod(info))
 
     # Load module/package and dependencies; register the module now, to allow
@@ -303,7 +303,7 @@ load_mod = function (info) {
     mod_ns
 }
 
-`load_mod.mod$pkg_info` = function (info) {
+`load_mod.xyz$pkg_info` = function (info) {
     pkg = info$name
     base::.getNamespace(pkg) %||% loadNamespace(pkg)
 }
@@ -329,11 +329,11 @@ mod_export_names = function (info, mod_ns) {
     UseMethod('mod_export_names')
 }
 
-`mod_export_names.mod$mod_info` = function (info, mod_ns) {
+`mod_export_names.xyz$mod_info` = function (info, mod_ns) {
     namespace_info(mod_ns, 'exports')
 }
 
-`mod_export_names.mod$pkg_info` = function (info, mod_ns) {
+`mod_export_names.xyz$pkg_info` = function (info, mod_ns) {
     getNamespaceExports(mod_ns)
 }
 
@@ -413,7 +413,7 @@ assign_temp_alias = function (spec, caller) {
         } else {
             # Resolve assignments
             for (env in callers) {
-                mod_unlock_binding(spec$alias, env)
+                xyz_unlock_binding(spec$alias, env)
                 assign(spec$alias, mod_exports, envir = env)
                 lockBinding(spec$alias, env)
             }

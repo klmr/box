@@ -1,4 +1,4 @@
-mod::use(mod/a)
+xyz::use(mod/a)
 
 # Muffle message
 silently = function (expr) {
@@ -8,7 +8,7 @@ silently = function (expr) {
     expr
 }
 
-silently(mod::use(local_a = ./a))
+silently(xyz::use(local_a = ./a))
 
 #' @export
 a_which = function () a$which()

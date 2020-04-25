@@ -1,2 +1,2 @@
 #' @export
-mod::use(./seq)
+xyz::use(./seq)

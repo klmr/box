@@ -10,10 +10,10 @@
 #' There are two situations in which the \code{@export} tag can be applied:
 #' \enumerate{
 #'   \item When applied to assignments, the assigned name is exported.
-#'   \item When applied to a \code{mod::use} call, the imported names are
+#'   \item When applied to a \code{xyz::use} call, the imported names are
 #'     exported. This can be the module name itself, any attached names, or
-#'     both. All names introduced by the \code{mod::use} call are exported. See
-#'     \code{\link[mod]{use}} for the rules governing what names are introduced
+#'     both. All names introduced by the \code{xyz::use} call are exported. See
+#'     \code{\link[xyz]{use}} for the rules governing what names are introduced
 #'     into the scope, and thus exported.
 #' }
 #' In any other situation, applying the \code{@export} tag is an error.
@@ -75,7 +75,7 @@ parse_export_specs = function (info, exprs, mod_ns) {
 
 #' @keywords internal
 #' @rdname parse_export_specs
-use_call = quote(mod::use)
+use_call = quote(xyz::use)
 
 #' @keywords internal
 #' @rdname parse_export_specs
@@ -166,7 +166,7 @@ parse_object = function (info, expr, mod_ns) {
             # FIXME: Add handling for S3
             roxygen2_object(value, name, 'function')
         } else if (identical(expr[[1L]], use_call)) {
-            roxygen2_object(list(pkg = 'mod', fun = 'use'), 'use', 'import')
+            roxygen2_object(list(pkg = 'xyz', fun = 'use'), 'use', 'import')
         } else {
             # We do not care about the rest.
             NULL
