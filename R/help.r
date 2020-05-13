@@ -124,7 +124,7 @@ is_module_help_topic = function (topic, parent) {
         missing(e2) && ! missing(e1) &&
         is_module_help_topic(topic, parent.frame())
     ) {
-        eval.parent(call('module_help', topic))
+        eval.parent(call('help', topic))
     } else {
         call_help(match.call(), parent.frame())
     }
