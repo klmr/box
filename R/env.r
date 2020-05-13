@@ -77,7 +77,7 @@ mod_topenv = function (env = parent.frame()) {
     env
 }
 
-#' \code{is_topenv} returns a logical determining if \code{env} is a top level
+#' \code{is_mod_topenv} returns \code{TRUE} if \code{env} is a top level
 #' environment.
 #' @name namespace
 is_mod_topenv = function (env) {
