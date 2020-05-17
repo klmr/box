@@ -5,10 +5,6 @@ test_that('xyz::file works in global namespace', {
     this_file = (function() getSrcFilename(sys.call(sys.nframe())))()
     expect_true(nzchar(this_file)) # Just to make sure.
     expect_true(nzchar(xyz::file(this_file)))
-    expect_error(
-        xyz::file('XXX-does-not-exist', must_work = TRUE),
-        'File not found'
-    )
 })
 
 test_that('xyz::file works for module', {
