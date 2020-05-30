@@ -15,7 +15,7 @@ test_that('xyz::file works for module', {
     xyz::use(mod/a)
     expect_true(grepl('/b$', xyz::file('b', module = a)))
     expect_true(grepl('/c\\.r$', xyz::file('c.r', module = a)))
-    expect_that(length(xyz::file(c('b', 'c.r'), module = a)), equals(2))
+    expect_that(length(xyz::file(c('b', 'c.r'), module = a)), equals(2L))
 })
 
 test_that('xyz::base_path works', {
@@ -65,7 +65,7 @@ test_that('xyz::file works after attaching modules', {
 
 test_that('regression #76 is fixed', {
     xyz::use(x = mod/issue76)
-    expect_equal(x$helper_var, 3)
+    expect_equal(x$helper_var, 3L)
 })
 
 test_that('regression #79 is fixed', {

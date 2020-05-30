@@ -16,7 +16,7 @@ modname = xyz::name()
 
 #' Counter for testing
 #' @export
-counter = 1
+counter = 1L
 
 #' The module’s name
 #' @export
@@ -34,12 +34,12 @@ get_counter = function () counter
 #' Increment the counter
 #' @export
 inc = function ()
-    counter <<- counter + 1
+    counter <<- counter + 1L
 
 #' Use \code{a} if it exists, else \code{b}
 #' @export
 `%or%` = function (a, b)
-    if (length(a) > 0) a else b
+    if (length(a) > 0L) a else b
 
 #' String concatenation
 #' @export
