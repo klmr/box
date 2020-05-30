@@ -29,10 +29,10 @@ update-master:
 .PHONY: test
 ## Run unit tests
 test:
-	${rscript} -e "devtools::test()"
+	${rscript} -e "devtools::test(export_all = FALSE)"
 
 test-%:
-	${rscript} -e "devtools::test(filter = '$*')"
+	${rscript} -e "devtools::test(filter = '$*', export_all = FALSE)"
 
 .PHONY: check
 ## Run R CMD check

@@ -1,5 +1,4 @@
-library(testthat)
 # Needed for subshells openend in tests, and does no harm otherwise.
 # See <https://github.com/hadley/testthat/issues/144> for details.
 Sys.setenv(R_TESTS = '')
-test_check('xyz')
+testthat::test_check('xyz')
