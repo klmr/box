@@ -28,10 +28,10 @@ test_that('module_name works after attaching modules', {
 
     xyz::use(x = mod/mod_name)
 
-    expect_that(x$this_module_name, equals('mod_name'))
-    expect_that(x$function_module_name(), equals('mod_name'))
-    expect_that(x$this_module_name2, equals('mod_name'))
-    expect_that(x$after_module_attach(), equals('mod_name'))
-    expect_that(x$after_package_attach(), equals('mod_name'))
-    expect_that(x$nested_module_name(), equals('mod_name'))
+    expect_equal(x$this_module_name, 'mod_name')
+    expect_equal(x$function_module_name(), 'mod_name')
+    expect_equal(x$this_module_name2, 'mod_name')
+    expect_equal(x$after_module_attach(), 'mod_name')
+    expect_equal(x$after_package_attach(), 'mod_name')
+    expect_equal(x$nested_module_name(), 'mod_name')
 })

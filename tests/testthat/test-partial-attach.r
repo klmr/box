@@ -8,7 +8,7 @@ test_that('partial attach works locally', {
 test_that('partial attach works globally', {
     exports = c('inc', 'get_counter')
     local(xyz::use(a = mod/a[inc, get_counter]), envir = .GlobalEnv)
-    expect_that(search()[2L], equals(environmentName(a)))
+    expect_equal(search()[2L], environmentName(a))
     on.exit(detach(), add = TRUE)
     expect_equal(sort(ls(2L)), c('get_counter', 'inc'))
 })

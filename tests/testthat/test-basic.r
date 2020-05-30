@@ -36,7 +36,7 @@ test_that('module is uniquely identified by path', {
 
 test_that('can use imported function', {
     xyz::use(mod/a)
-    expect_that(a$double(42), equals(42 * 2))
+    expect_equal(a$double(42), 42 * 2)
 })
 
 test_that('modules export all objects', {
@@ -68,7 +68,7 @@ test_that('module bindings are locked', {
     expect_true(bindingIsLocked('counter', a))
 
     err = try({a$counter = 2L}, silent = TRUE)
-    expect_that(class(err), equals('try-error'))
+    expect_equal(class(err), 'try-error')
 })
 
 test_that('modules don’t need exports', {
