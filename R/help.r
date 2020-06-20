@@ -135,7 +135,7 @@ call_help = function (call, parent) {
     call[[1L]] = if ('devtools_shims' %in% search()) {
         get(type, pos = 'devtools_shims')
     } else {
-        get(type, pos = 'utils')
+        get(type, pos = 'package:utils')
     }
     eval(call, envir = parent)
 }

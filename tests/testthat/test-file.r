@@ -1,7 +1,7 @@
 context('file paths')
 
 test_that('xyz::file works in global namespace', {
-    expect_that(xyz::file(), equals(getwd()))
+    expect_equal(xyz::file(), getwd())
     this_file = (function() getSrcFilename(sys.call(sys.nframe())))()
     expect_true(nzchar(this_file)) # Just to make sure.
     expect_true(nzchar(xyz::file(this_file)))
@@ -11,7 +11,7 @@ test_that('xyz::file works for module', {
     xyz::use(mod/a)
     expect_true(grepl('/b$', xyz::file('b', module = a)))
     expect_true(grepl('/c\\.r$', xyz::file('c.r', module = a)))
-    expect_that(length(xyz::file(c('b', 'c.r'), module = a)), equals(2))
+    expect_equal(length(xyz::file(c('b', 'c.r'), module = a)), 2L)
 })
 
 test_that('xyz::base_path works', {
@@ -61,7 +61,7 @@ test_that('xyz::file works after attaching modules', {
 
 test_that('regression #76 is fixed', {
     xyz::use(x = mod/issue76)
-    expect_equal(x$helper_var, 3)
+    expect_equal(x$helper_var, 3L)
 })
 
 test_that('regression #79 is fixed', {

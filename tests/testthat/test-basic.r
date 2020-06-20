@@ -36,22 +36,22 @@ test_that('module is uniquely identified by path', {
 
 test_that('can use imported function', {
     xyz::use(mod/a)
-    expect_that(a$double(42), equals(42 * 2))
+    expect_equal(a$double(42), 42 * 2)
 })
 
 test_that('modules export all objects', {
     xyz::use(mod/a)
-    expect_gt(length(lsf.str(a)), 0)
+    expect_gt(length(lsf.str(a)), 0L)
     expect_gt(length(ls(a)), length(lsf.str(a)))
     a_namespace = environment(a$double)
-    expect_equal(a$counter, 1)
+    expect_equal(a$counter, 1L)
 })
 
 test_that('module can modify its variables', {
     xyz::use(mod/a)
     counter = a$get_counter()
     a$inc()
-    expect_equal(a$get_counter(), counter + 1)
+    expect_equal(a$get_counter(), counter + 1L)
 })
 
 test_that('hidden objects are not exported', {
@@ -67,8 +67,8 @@ test_that('module bindings are locked', {
     expect_true(bindingIsLocked('get_counter', a))
     expect_true(bindingIsLocked('counter', a))
 
-    err = try({a$counter = 2}, silent = TRUE)
-    expect_that(class(err), equals('try-error'))
+    err = try({a$counter = 2L}, silent = TRUE)
+    expect_equal(class(err), 'try-error')
 })
 
 test_that('modules don’t need exports', {

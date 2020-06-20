@@ -23,7 +23,7 @@ patch_topic_name.text_help_format = function (x, file, topic) {
     old_topic = paste0('package:', mock_package_name)
     padded_old_topic = sprintf('%-*s', nchar(topic), old_topic)
     padded_new_topic = sprintf('%-*s', nchar(old_topic), topic)
-    doc_text[1] = sub(padded_old_topic, padded_new_topic, doc_text[1])
+    doc_text[1L] = sub(padded_old_topic, padded_new_topic, doc_text[1L])
     writeLines(doc_text, file)
 }
 
