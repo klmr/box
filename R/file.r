@@ -3,25 +3,18 @@
 #' @param ... character vectors of files or subdirectories inside a module; if
 #'  none is given, return the root directory of the module
 #' @param module a module environment (default: current module)
-#' @param must_work logical; if \code{TRUE}, an error is raised if the given
-#'  files do not match existing files.
 #' @return A character vector containing the absolute paths to the files
-#'  specified in \code{...}, or an empty string, \code{''}, if no file was
-#'  found (unless \code{mustWork = TRUE} was specified).
+#'  specified in \code{...}.
+#'
 #' @note If called from outside a module, the current working directory is used.
 #'
-#' This function is similar to \code{system.file} for packages. It is provided
-#' as a separate function rather than overriding \code{system.file} because that
-#' would cause ambiguity when a module and a package share the same name.
+#' This function is similar to \code{system.file} for packages. Its semantics
+#' differ in the presence of non-existent files: \code{xyz::file} always returns
+#' the requested paths, even for non-existent files; whereas \code{system.file}
+#' returns empty strings for non-existent files, or fails (if requested via the
+#' argument \code{mustWork = TRUE}).
 #' @seealso \code{\link[base]{system.file}}
 #' @export
-file = function (..., module = current_mod(), must_work = FALSE) {
-    path = base_path(module)
-
-    if (length(list(...)) == 0L) return(path)
-
-    paths = file.path(path, ...)
-    existing = paths[file.exists(paths)]
-
-    existing %||% if (must_work) stop('File not found: ', sQuote(paths)) else ''
+file = function (..., module = current_mod()) {
+    file.path(base_path(module), ...)
 }
