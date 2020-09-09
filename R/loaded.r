@@ -108,7 +108,7 @@ base_path = function (mod) {
 #' @export
 set_script_path = function (path) {
     if (is.null(path)) {
-        # Use `list = '.'` instead of `.` to work around bug in `R CMD CHECK`,
+        # Use `list = '.'` instead of `.` to work around bug in `R CMD check`,
         # which thinks that `.` refers to a non-existent global symbol.
         rm(list = '.', envir = loaded_mods)
     } else {
@@ -126,8 +126,8 @@ set_script_path = function (path) {
 #' \enumerate{
 #'  \item Path explicitly set via \code{set_script_path}
 #'  \item Path of a running document/application (\pkg{knitr}, \pkg{Shiny})
-#'  \item Code invoked as \code{Rscript script.r}
-#'  \item Code invoked as \code{R CMD BATCH script.r}
+#'  \item Code invoked as \command{Rscript script.r}
+#'  \item Code invoked as \command{R CMD BATCH script.r}
 #'  \item Script run interactively (use \code{getwd()})
 #' }
 #' @rdname path

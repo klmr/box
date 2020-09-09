@@ -9,7 +9,7 @@
 #' There are two ways of modifying the module search path: by default,
 #' \code{xyz::option('path')} specifies the search path as a character vector.
 #' Users can override its value by separately setting the environment variable
-#' \code{R_xyz_PATH} to one or more paths, separated by the platform’s path
+#' \env{R_xyz_PATH} to one or more paths, separated by the platform’s path
 #' separator.
 #' @keywords internal
 #' @name paths
