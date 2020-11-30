@@ -36,9 +36,9 @@ seq = function (...) {
     if (is.null(names(x))) names(x) = paste('seq', seq_along(x))
 
     cat(
-        sprintf('%d DNA sequence%s:', length(x), if (length(x) == 1L) '' else 's'),
-        sprintf('  >%s\n  %s', names(x), str_trunc(x, 30)),
-        sep = '\n'
+        sprintf('%d DNA sequence%s:\n', length(x), if (length(x) == 1L) '' else 's'),
+        sprintf('  >%s\n  %s\n', names(x), str_trunc(x, 30L)),
+        sep = ''
     )
     invisible(x)
 }
