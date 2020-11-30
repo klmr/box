@@ -1,10 +1,10 @@
-soname = function (name) {
+libname = function (name) {
     xyz::file(paste0(name, .Platform$dynlib.ext))
 }
 
-# xyz::on_install(function (...) xyz::use(./`__install__`))
-# xyz::on_load(function (ns) assign('dll', dyn.load(soname('hello')), envir = ns))
-dll = dyn.load(soname('hello'))
+.on_load = function (ns) {
+    ns$dll = dyn.load(libname('hello'))
+}
 
 #' @export
 hello_world = function (name) {
