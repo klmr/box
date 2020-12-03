@@ -62,5 +62,5 @@ split_path = function (path) {
 #' logical path given the same working directory.
 #' @rdname paths
 merge_path = function (components) {
-    do.call(file.path, as.list(components))
+    do.call('file.path', as.list(components))
 }
