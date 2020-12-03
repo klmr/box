@@ -96,10 +96,16 @@ make_export_env = function (info, spec, ns) {
     )
 }
 
-#' @export
-`$.xyz$mod` = function (e1, e2) {
+strict_extract = function (e1, e2) {
     get(as.character(substitute(e2)), envir = e1, inherits = FALSE)
 }
+
+#' @export
+`$.xyz$mod` = strict_extract
+
+
+#' @export
+`$.xyz$ns` = strict_extract
 
 #' @export
 `print.xyz$mod` = function (x, ...) {
