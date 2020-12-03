@@ -20,6 +20,7 @@
 #'  \item \code{\link{file}}
 #'  \item \code{\link{name}}
 #'  \item \code{\link{register_S3_method}}
+#'  \item \code{\link{.on_load}}
 #' }
 #'
 #' @section Interactive use:
@@ -37,4 +38,4 @@
 #' @docType package
 #' @importFrom stats setNames
 #' @importFrom utils lsf.str
-NULL
+'_PACKAGE'

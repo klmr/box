@@ -299,6 +299,10 @@ load_mod = function (info) {
     load_from_source(info, mod_ns)
     mod_loading_finished(info, mod_ns)
 
+    # Call `.on_load` hook just after loading is finished but before exporting
+    # symbols, so that `.on_load` can modify these symbols.
+    call_hook(mod_ns, '.on_load', mod_ns)
+
     on.exit()
     mod_ns
 }

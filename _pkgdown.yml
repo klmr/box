@@ -14,6 +14,7 @@ reference:
         - file
         - name
         - register_S3_method
+        - mod-hooks
     - title: Interactive use
       desc: Functions for use in interactive sessions and for testing.
       contents:
