@@ -44,7 +44,7 @@ test_that('modules export all objects', {
     expect_gt(length(lsf.str(a)), 0L)
     expect_gt(length(ls(a)), length(lsf.str(a)))
     a_namespace = environment(a$double)
-    expect_equal(a$counter, 1L)
+    expect_equal(a$get_counter(), 1L)
 })
 
 test_that('module can modify its variables', {
@@ -56,8 +56,12 @@ test_that('module can modify its variables', {
 
 test_that('hidden objects are not exported', {
     xyz::use(mod/a)
-    expect_true(exists('counter', envir = a))
-    expect_false(exists('.modname', envir = a))
+    ns = environment(a$get_counter)
+    expect_true(exists('modname', envir = a))
+    expect_true(exists('make_counter', envir = ns))
+    expect_false(exists('make_counter', envir = a))
+    expect_true(exists('private_modname', envir = ns))
+    expect_false(exists('private_modname', envir = a))
 })
 
 test_that('module bindings are locked', {
@@ -65,7 +69,7 @@ test_that('module bindings are locked', {
 
     expect_true(environmentIsLocked(a))
     expect_true(bindingIsLocked('get_counter', a))
-    expect_true(bindingIsLocked('counter', a))
+    expect_true(bindingIsLocked('modname', a))
 
     err = try({a$counter = 2L}, silent = TRUE)
     expect_equal(class(err), 'try-error')

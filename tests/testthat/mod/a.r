@@ -12,15 +12,27 @@
 #' @export
 double = function (x) x * 2
 
+#' @export
 modname = xyz::name()
 
-#' Counter for testing
-#' @export
-counter = 1L
+private_modname = xyz::name()
+
+# Variables at namespace scope are locked so mutable variables need to be
+# wrapped inside a closure.
+make_counter = function () {
+    counter = 1L
+
+    list(
+        get = function () counter,
+        inc = function () counter <<- counter + 1L
+    )
+}
+
+counter = make_counter()
 
 #' The module’s name
 #' @export
-get_modname = function () modname
+get_modname = function () private_modname
 
 #' The module’s name, via a function
 #' @name get_modname
@@ -29,12 +41,11 @@ get_modname2 = function () xyz::name()
 
 #' Read the counter
 #' @export
-get_counter = function () counter
+get_counter = counter$get
 
 #' Increment the counter
 #' @export
-inc = function ()
-    counter <<- counter + 1L
+inc = counter$inc
 
 #' Use \code{a} if it exists, else \code{b}
 #' @export

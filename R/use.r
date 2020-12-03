@@ -260,12 +260,12 @@ finalize_deferred = function (info) {
 #' @rdname importing
 export_and_attach = function (spec, info, mod_ns, caller) {
     finalize_deferred(info)
+
     mod_exports = mod_exports(info, spec, mod_ns)
     assign_alias(spec, mod_exports, caller)
     attach_to_caller(spec, mod_exports, caller)
 
-    # TODO: Lock bindings?! This breaks some tests.
-    lockEnvironment(mod_ns, bindings = FALSE)
+    lockEnvironment(mod_ns, bindings = TRUE)
 }
 
 #' @rdname importing
@@ -391,7 +391,10 @@ assign_alias = function (spec, mod_exports, caller) {
     create_mod_alias = is.null(spec$attach) || spec$explicit
     if (! create_mod_alias) return()
 
-    assign(spec$alias, mod_exports, caller)
+    if (exists(spec$alias, caller, inherits = FALSE) && bindingIsLocked(spec$alias, caller)) {
+        xyz_unlock_binding(spec$alias, caller)
+    }
+    assign(spec$alias, mod_exports, envir = caller)
 }
 
 #' @rdname importing
