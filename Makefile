@@ -42,7 +42,7 @@ check: documentation
 
 .PHONY: site
 ## Create package website
-site:
+site: documentation
 	${rscript} -e "pkgdown::build_site()"
 
 ## Create just the specified article for the website
@@ -50,7 +50,7 @@ article-%:
 	${rscript} -e "pkgdown::build_article('$*')"
 
 ## Create just the references for the website
-reference:
+reference: documentation
 	${rscript} -e "pkgdown::build_reference()"
 
 # NOTE: In the following, the vignettes are built TWICE: once via the
