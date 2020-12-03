@@ -11,12 +11,14 @@ test_that('attach works locally', {
 })
 
 test_that('module can be attached to global environment', {
-    searchlen = length(search())
-    local(xyz::use(a = mod/a[...]), .GlobalEnv)
-    mod_path = in_globalenv(xyz::path(a))
-    expect_equal(length(search()), searchlen + 1L)
-    expect_true(mod_path %in% names(xyz:::loaded_mods))
-    expect_equal(search()[2L], environmentName(a))
+    .GlobalEnv$searchlen = length(search())
+    in_globalenv({
+        xyz::use(a = mod/a[...])
+        mod_path = xyz::path(a)
+        expect_equal(length(search()), searchlen + 1L)
+        expect_true(mod_path %in% names(xyz:::loaded_mods))
+        expect_equal(search()[2L], environmentName(a))
+    })
 })
 
 test_that('module can be detached', {

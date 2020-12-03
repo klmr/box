@@ -96,10 +96,16 @@ make_export_env = function (info, spec, ns) {
     )
 }
 
-#' @export
-`$.xyz$mod` = function (e1, e2) {
+strict_extract = function (e1, e2) {
     get(as.character(substitute(e2)), envir = e1, inherits = FALSE)
 }
+
+#' @export
+`$.xyz$mod` = strict_extract
+
+
+#' @export
+`$.xyz$ns` = strict_extract
 
 #' @export
 `print.xyz$mod` = function (x, ...) {
@@ -136,16 +142,19 @@ find_import_env.environment = function (x, spec) {
     }
 }
 
-#' Wrap “unsafe calls” functions
+#' Wrap \dQuote{unsafe calls} functions
 #'
 #' \code{wrap_unsafe_function} declares a function wrapper to a function that
-#' causes an \code{R CMD CHECK} NOTE when called directly. We should usually not
-#' call these functions, but we need some of them because we want to explicitly
-#' support features they provide.
+#' causes an \command{R CMD check} NOTE when called directly. We should usually
+#' not call these functions, but we need some of them because we want to
+#' explicitly support features they provide.
 #' @param ns The namespace of the unsafe function.
 #' @param name The name of the unsafe function.
 #' @return \code{wrap_unsafe_calls} returns a wrapper function with the same
 #' argument as the wrapped function that can be called without causing a NOTE.
+#' @note Using an implementation that simply aliases \code{getExportedValue}
+#' does not work, since \command{R CMD check} sees right through this
+#' \dQuote{ruse}.
 #' @keywords internal
 wrap_unsafe_function = function (ns, name) {
     f = getExportedValue(ns, name)

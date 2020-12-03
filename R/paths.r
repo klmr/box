@@ -9,13 +9,13 @@
 #' There are two ways of modifying the module search path: by default,
 #' \code{xyz::option('path')} specifies the search path as a character vector.
 #' Users can override its value by separately setting the environment variable
-#' \code{R_MOD_PATH} to one or more paths, separated by the platform’s path
+#' \env{R_xyz_PATH} to one or more paths, separated by the platform’s path
 #' separator.
 #' @keywords internal
 #' @name paths
 mod_search_path = function () {
     option_value = option('path')
-    env_value = strsplit(Sys.getenv('R_MOD_PATH'), .Platform$path.sep)[[1L]]
+    env_value = strsplit(Sys.getenv('R_xyz_PATH'), .Platform$path.sep)[[1L]]
     c(option_value, env_value, base_path(parent.frame()))
 }
 
@@ -62,5 +62,5 @@ split_path = function (path) {
 #' logical path given the same working directory.
 #' @rdname paths
 merge_path = function (components) {
-    do.call(file.path, as.list(components))
+    do.call('file.path', as.list(components))
 }

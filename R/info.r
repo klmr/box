@@ -75,7 +75,7 @@ find_global_mod = function (spec, caller) {
 #' module source location.
 #' @details
 #' A module is physically represented in the file system either by
-#' \code{‹spec_name(spec)›.r} or by \code{‹spec_name(spec)›/__init__.r}, in that
+#' \file{‹spec_name(spec)›.r} or by \file{‹spec_name(spec)›/__init__.r}, in that
 #' order of preference in case both exist. File extensions are case insensitive
 #' to allow for R’s obsession with capital-R extensions (but lower-case are
 #' given preference, and upper-case file extensions are discouraged).
