@@ -112,7 +112,7 @@ set_script_path = function (path) {
         # which thinks that `.` refers to a non-existent global symbol.
         rm(list = '.', envir = loaded_mods)
     } else {
-        assign('.', dirname(path), loaded_mods)
+        loaded_mods$. = dirname(path)
     }
 }
 
