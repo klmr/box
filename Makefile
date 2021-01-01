@@ -1,4 +1,5 @@
 rscript = Rscript --no-save --no-restore
+unexport R_PROFILE_USER
 
 # Deployment configuration
 deploy_remote ?= origin
