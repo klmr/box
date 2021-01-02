@@ -20,14 +20,13 @@
 #' @keywords internal
 parse_export_specs = function (info, exprs, mod_ns) {
     parse_export = function (export) {
-        if (block_is_assign(export)) {
-            block_name(export)
-        } else if (block_is_use_call(export)) {
+        if (block_is_use_call(export)) {
             imports = attr(export, 'call')[-1L]
             aliases = names(imports) %||% character(length(imports))
             flatmap_chr(reexport_names, imports, aliases, list(export))
         } else {
-            block_error(export)
+            # Attempt to extract a name from an arbitrary expressions.
+            block_name(export) %||% block_error(export)
         }
     }
 
@@ -79,13 +78,23 @@ use_call = quote(xyz::use)
 
 #' @keywords internal
 #' @rdname parse_export_specs
-assignment_calls = c(quote(`<-`), quote(`=`), quote(assign), quote(`<<-`))
+static_assign_calls = c(quote(`<-`), quote(`=`), quote(`:=`), quote(`<<-`))
+
+#' @keywords internal
+#' @rdname parse_export_specs
+assign_calls = c(static_assign_calls, quote(assign), quote(makeActiveBinding))
 
 #' @param call A call to test.
 #' @keywords internal
 #' @rdname parse_export_specs
+is_static_assign_call = function (call) {
+    any(map_lgl(identical, static_assign_calls, call))
+}
+
+#' @keywords internal
+#' @rdname parse_export_specs
 is_assign_call = function (call) {
-    any(map_lgl(identical, assignment_calls, call))
+    any(map_lgl(identical, assign_calls, call))
 }
 
 #' @param block A roxygen2 block to inspect.
@@ -155,19 +164,42 @@ parse_object = function (info, expr, mod_ns) {
     if (is.character(expr)) {
         if (identical(expr, '_PACKAGE')) {
             value = list(path = info$source_path)
-            roxygen2_object(value, expr, 'package')
+            roxygen2_object(expr, value, 'package')
         } else {
             roxygen2_object(expr, expr, 'data')
         }
     } else if (is.call(expr)) {
-        if (is_assign_call(expr[[1L]])) {
-            name = as.character(expr[[2L]])
-            value = get(name, mod_ns)
-            # FIXME: Add handling for S3
-            roxygen2_object(value, name, 'function')
-        } else if (identical(expr[[1L]], use_call)) {
-            roxygen2_object(list(pkg = 'xyz', fun = 'use'), 'use', 'import')
+        if (identical(expr[[1L]], use_call)) {
+            roxygen2_object('use', list(pkg = 'xyz', fun = 'use'), 'import')
         } else {
+            # Attempt to extract a name from the LHS: recurse until the
+            # left-most token is a name or character literal (this is necessary
+            # because `"a" = 1` is valid R; but also to allow `assign` and
+            # `makeActiveBinding` calls).
+            while (is.call(expr) && length(expr) > 1L) {
+                if (is.name(expr[[2L]]) || is.character(expr[[2L]])) {
+                    name = if (is_static_assign_call(expr[[1L]])) {
+                        as.character(expr[[2L]])
+                    } else {
+                        # `assign(…)`, `makeActiveBinding(…)` and similar.
+                        eval(expr[[2L]], mod_ns)
+                    }
+
+                    obj = if (bindingIsActive(name, mod_ns)) {
+                        roxygen2_object(name, activeBindingFunction(name, mod_ns), 'active')
+                    } else {
+                        value = get(name, mod_ns)
+                        if (is.function(value)) {
+                            # FIXME: Add handling for S3
+                            roxygen2_object(name, value, 'function')
+                        } else {
+                            roxygen2_object(name, value, NULL)
+                        }
+                    }
+                    return(obj)
+                }
+                expr = expr[[2L]]
+            }
             # We do not care about the rest.
             NULL
         }
@@ -176,12 +208,12 @@ parse_object = function (info, expr, mod_ns) {
     }
 }
 
-#' @param value The object value.
 #' @param alias The object name.
+#' @param value The object value.
 #' @param type The object type.
 #' @keywords internal
 #' @rdname create_export_block
-roxygen2_object = function (value, alias, type) {
+roxygen2_object = function (alias, value, type) {
     structure(
         list(alias = alias, value = value, methods = NULL, topic = alias),
         class = paste0('roxygen2_', c(type, 'object'))

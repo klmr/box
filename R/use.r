@@ -317,10 +317,8 @@ load_mod = function (info) {
 #' @rdname importing
 mod_exports = function (info, spec, mod_ns) {
     exports = mod_export_names(info, mod_ns)
-
     env = make_export_env(info, spec, mod_ns)
-    list2env(mget(exports, mod_ns, inherits = TRUE), envir = env)
-
+    import_into_env(env, exports, mod_ns, exports)
     lockEnvironment(env, bindings = TRUE)
     env
 }
@@ -348,8 +346,7 @@ attach_to_caller = function (spec, mod_exports, caller) {
 
     import_env = find_import_env(caller, spec)
     attr(mod_exports, 'attached') = environmentName(import_env)
-    imports = setNames(mget(attach_list, mod_exports), names(attach_list))
-    list2env(imports, envir = import_env)
+    import_into_env(import_env, names(attach_list), mod_exports, attach_list)
 }
 
 #' @return \code{attach_list} returns a named character vector of the names in
@@ -432,5 +429,5 @@ assign_temp_alias = function (spec, caller) {
         }
     }
 
-    makeActiveBinding(spec$alias, binding, caller)
+    makeActiveBinding(spec$alias, structure(binding, class = 'xyz$placeholder'), caller)
 }
