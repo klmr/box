@@ -160,7 +160,7 @@ parse_object = function (info, expr, mod_ns) {
             roxygen2_object(expr, expr, 'data')
         }
     } else if (is.call(expr)) {
-        if (any(map_lgl(identical, assignment_calls, expr[[1L]]))) {
+        if (is_assign_call(expr[[1L]])) {
             name = as.character(expr[[2L]])
             value = get(name, mod_ns)
             # FIXME: Add handling for S3
@@ -240,7 +240,7 @@ has_export_tag = function (ref) {
         TRUE
     }
 
-    is_empty_line = function () {
+    is_empty_or_comment = function () {
         consume_whitespace()
         pos == nchar(line) || consume_char('#')
     }
@@ -256,7 +256,7 @@ has_export_tag = function (ref) {
     for (line in block) {
         pos = 0L
         if (! is_roxygen_comment()) {
-            if (is_empty_line()) next else return(FALSE)
+            if (is_empty_or_comment()) next else return(FALSE)
         }
         if (is_export()) return(TRUE)
     }
