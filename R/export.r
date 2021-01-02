@@ -63,10 +63,10 @@ parse_export_specs = function (info, exprs, mod_ns) {
         code = deparse(attr(export, 'call'), backtick = TRUE)
         location = attr(export, 'location')[1L]
         msg = paste0(
-            'The %s tag may only be applied to assignments or use ',
+            'The %s tag may only be applied to assignments or %s ',
             'statements.\nUsed incorrectly in line %d:\n    %s'
         )
-        stop(sprintf(msg, dQuote('@export'), location, code))
+        stop(sprintf(msg, dQuote('@export'), dQuote('use'), location, paste(code, collapse = '\n    ')))
     }
 
     exports = parse_export_tags(info, exprs, mod_ns)
