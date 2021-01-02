@@ -29,10 +29,10 @@ update-master:
 
 .PHONY: test
 ## Run unit tests
-test:
+test: documentation
 	${rscript} -e "devtools::test(export_all = FALSE)"
 
-test-%:
+test-%: documentation
 	${rscript} -e "devtools::test(filter = '$*', export_all = FALSE)"
 
 .PHONY: check
@@ -45,6 +45,11 @@ check: documentation
 ## Create package website
 site: documentation
 	${rscript} -e "pkgdown::build_site()"
+
+.PHONY: dev-site
+## [dev mode] Create package website
+dev-site: documentation
+	${rscript} -e "pkgdown::build_site(devel = TRUE)"
 
 ## Create just the specified article for the website
 article-%:
