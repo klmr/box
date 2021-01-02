@@ -262,10 +262,10 @@ export_and_attach = function (spec, info, mod_ns, caller) {
     finalize_deferred(info)
 
     mod_exports = mod_exports(info, spec, mod_ns)
+    lockEnvironment(mod_exports, bindings = TRUE)
+
     assign_alias(spec, mod_exports, caller)
     attach_to_caller(spec, mod_exports, caller)
-
-    lockEnvironment(mod_ns, bindings = TRUE)
 }
 
 #' @rdname importing
@@ -302,6 +302,7 @@ load_mod = function (info) {
     # Call `.on_load` hook just after loading is finished but before exporting
     # symbols, so that `.on_load` can modify these symbols.
     call_hook(mod_ns, '.on_load', mod_ns)
+    lockEnvironment(mod_ns, bindings = TRUE)
 
     on.exit()
     mod_ns
@@ -319,7 +320,6 @@ mod_exports = function (info, spec, mod_ns) {
     exports = mod_export_names(info, mod_ns)
     env = make_export_env(info, spec, mod_ns)
     import_into_env(env, exports, mod_ns, exports)
-    lockEnvironment(env, bindings = TRUE)
     env
 }
 
