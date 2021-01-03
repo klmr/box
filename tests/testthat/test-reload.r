@@ -21,7 +21,7 @@ test_that('module can be reloaded', {
     expect_equal(a$get_counter(), counter + 1L)
 
     xyz::reload(a)
-    expect_true(is_module_loaded(xyz::path(a)))
+    expect_true(is_module_loaded(xyz:::path(a)))
     expect_equal(length(xyz:::loaded_mods), 1L)
     expect_equal(a$get_counter(), counter)
 })

@@ -80,15 +80,15 @@ test_that('all things can be attached locally', {
 
 test_that('things can be attached globally', {
     in_globalenv({
-        expect_not_in('load_all', pls())
+        xyz:::expect_not_in('load_all', pls())
         xyz::use(devtools[load_all])
-        expect_in('load_all', pls())
+        xyz:::expect_in('load_all', pls())
 
-        expect_not_in('unload', pls())
-        expect_not_in('reload', pls())
+        xyz:::expect_not_in('unload', pls())
+        xyz:::expect_not_in('reload', pls())
         xyz::use(devtools[unload, reload])
-        expect_in('unload', pls())
-        expect_in('reload', pls())
+        xyz:::expect_in('unload', pls())
+        xyz:::expect_in('reload', pls())
     })
 })
 

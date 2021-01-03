@@ -4,7 +4,7 @@ test_that('module reexport exposes the correct names', {
     xyz::use(x = mod/reexport)
 
     xns = attr(x, 'namespace')
-    exports = xyz::namespace_info(xns, 'exports')
+    exports = xyz:::namespace_info(xns, 'exports')
     direct_exports = c('a', 'c')
     sub_exports = c('d', 'e')
     all_expected_exports = c(direct_exports, sub_exports, 'sub')
