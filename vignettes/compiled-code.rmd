@@ -138,5 +138,5 @@ Note that using `dll$hello_world` causes a somewhat costly call to
 the value of `dll$hello_world` should be stored in a variable when loading the
 module.
 
-[Rcpp]: http://cran.r-project.org/web/packages/Rcpp/index.html
+[Rcpp]: https://cran.r-project.org/package=Rcpp
 [Makevars]: https://cran.r-project.org/doc/manuals/r-release/R-exts.html#Using-Makevars
