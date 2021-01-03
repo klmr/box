@@ -5,8 +5,8 @@ context('attaching')
 test_mod_envname = 'mod:mod/a'
 
 test_that('attach works locally', {
-    xyz::use(mod/c)
-    # c attaches `a`. So check that `a` is *not* attached here.
+    xyz::use(mod/no_exports)
+    # `no_exports` attaches `a`. So check that `a` is *not* attached here.
     expect_false(test_mod_envname %in% search())
 })
 

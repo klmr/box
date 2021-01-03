@@ -77,9 +77,9 @@ test_that('module bindings are locked', {
 
 test_that('modules don’t need exports', {
     expect_equal(ls(), character(0L))
-    expect_error(xyz::use(mod/c), NA)
-    expect_error(capture.output(xyz::use(mod/d)), NA)
-    expect_equal(ls(), c('c', 'd'))
+    expect_error(xyz::use(mod/no_exports), NA)
+    expect_error(capture.output(xyz::use(mod/no_names)), NA)
+    expect_setequal(ls(), c('no_exports', 'no_names'))
 })
 
 test_that('global scope is not leaking into modules', {
