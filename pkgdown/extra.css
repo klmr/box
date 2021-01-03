@@ -1,0 +1,71 @@
+a {
+    color: #6877a1;
+}
+
+a:hover,
+a:focus {
+    color: #8695c0;
+}
+
+.navbar-default .navbar-link:hover {
+    color: #8695c0;
+}
+
+.navbar-default .navbar-nav > .active > a,
+.navbar-default .navbar-nav > .active > a:hover,
+.navbar-default .navbar-nav > .active > a:focus {
+    color: #6877a1;
+}
+
+.navbar-default .navbar-nav > .open > a,
+.navbar-default .navbar-nav > .open > a:hover,
+.navbar-default .navbar-nav > .open > a:focus {
+    color: #6877a1;
+}
+
+.navbar-default .navbar-nav > li > a:hover,
+.navbar-default .navbar-nav > li > a:focus {
+    color: #6877a1;
+}
+
+.dropdown-menu > .active > a,
+.dropdown-menu > .active > a:hover,
+.dropdown-menu > .active > a:focus {
+    background: #6877a1;
+}
+
+.dropdown-menu > li > a:hover,
+.dropdown-menu > li > a:focus {
+    background: #6877a1;
+}
+
+.nav .open > a,
+.nav .open > a:hover,
+.nav .open > a:focus {
+    border-color: #6877a1;
+}
+
+.btn-primary {
+    background-color: #6877a1;
+    border-color: #6877a1;
+}
+
+.btn-primary:active,
+.btn-primary.active,
+.open > .dropdown-toggle.btn-primary {
+    background-color: #8695c0;
+    border-color: #8695c0;
+}
+
+.btn-primary,
+.btn-primary:hover {
+    background-image: linear-gradient(#8695c0, #8695c0 6%, #6877a1);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff8695c0', endColorstr='#ff6877a1', GradientType=0);
+    border: 1px solid #6877a1;
+}
+
+.btn-primary:focus,
+.btn-primary.focus {
+    background-color: #6877a1;
+    border-color: #8695c0;
+}
