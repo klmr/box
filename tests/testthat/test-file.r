@@ -18,7 +18,7 @@ test_that('xyz::base_path works', {
     # On earlier versions of “devtools”, this test reproducibly segfaulted due
     # to the call to `load_all` from within a script. This seems to be fixed now
     # with version 1.9.1.9000.
-    script_path = 'mod/d.r'
+    script_path = 'mod/devtools_segfault.r'
 
     rcmd_result = rcmd(script_path)
     expect_paths_equal(rcmd_result, file.path(getwd(), 'mod'))
