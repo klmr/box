@@ -51,6 +51,7 @@
     }
     if (Sys.getenv('R_INSTALL_PKG') != '') return()
     if (Sys.getenv('_R_CHECK_PACKAGE_NAME_') != '') return()
+    if (Sys.getenv('R_TESTS', unset = '.') == '') return()
 
     template = paste0(
         'The %s package is not supposed to be attached.\n\n',
