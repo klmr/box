@@ -2,21 +2,19 @@ title: xyz
 url: http://xyz.klmr.me
 
 reference:
-    - title: Import
-      desc: Functions for users of packages.
+    - title: Using modules
+      desc: Functions for users of modules and packages
       contents:
-        - option
-        - set_options
         - use
     - title: Writing modules
-      desc: Infrastructure and utility functions that are mainly used inside modules
+      desc: Infrastructure and utility functions for use inside modules
       contents:
         - file
         - name
         - register_S3_method
         - mod-hooks
     - title: Interactive use
-      desc: Functions for use in interactive sessions and for testing.
+      desc: Functions for use in interactive sessions and for testing
       contents:
         - help
         - reload

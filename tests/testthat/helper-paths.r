@@ -54,13 +54,17 @@ normalize_path = function (path) {
 expect_paths_equal = function (actual, expected) {
     actual_norm = realpath(merge_path(actual))
     expected_norm = realpath(expected)
-    testthat::expect_equal(actual_norm, expected_norm,
-                           label = deparse(substitute(actual)),
-                           expected.label = deparse(substitute(expected)))
+    testthat::expect_equal(
+        actual_norm, expected_norm,
+        label = deparse(substitute(actual)),
+        expected.label = deparse(substitute(expected))
+    )
 }
 
-expect_correct_path_split = function (actual)
+expect_correct_path_split = function (actual) {
     expect_paths_equal(split_path(actual), actual)
+}
 
-expect_is_cwd = function (actual)
+expect_is_cwd = function (actual) {
     eval.parent(bquote(expect_paths_equal(.(actual), '.')))
+}

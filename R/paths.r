@@ -7,16 +7,15 @@
 #' The current module’s path always has the lowest priority.
 #'
 #' There are two ways of modifying the module search path: by default,
-#' \code{xyz::option('path')} specifies the search path as a character vector.
+#' \code{getOption('xyz.path')} specifies the search path as a character vector.
 #' Users can override its value by separately setting the environment variable
 #' \env{R_xyz_PATH} to one or more paths, separated by the platform’s path
-#' separator.
+#' separator (\dQuote{:} on UNIX-like systems, \dQuote{;} on Windows).
 #' @keywords internal
 #' @name paths
-mod_search_path = function () {
-    option_value = option('path')
+mod_search_path = function (caller) {
     env_value = strsplit(Sys.getenv('R_xyz_PATH'), .Platform$path.sep)[[1L]]
-    c(option_value, env_value, base_path(parent.frame()))
+    c(env_value %||% getOption('xyz.path'), calling_mod_path(caller))
 }
 
 #' \code{calling_mod_path} determines the path of the module code that is

@@ -118,15 +118,14 @@ xyz::unload(seq)
 … and load it again, via a different route:
 
 ```{r}
-xyz::set_options(path = getwd())
+options(xyz.path = getwd())
 xyz::use(bio/seq[revcomp, is_valid])
 ```
 
-After unloading the already loaded module, the `xyz::set_options` function call
-sets the module search path: this is where `xyz::use` searches for modules. If
-more than one path is given, `xyz::use` searches them all until a module of
-matching name is found. This works analogously to how `.libPaths()` operates on
-R packages.
+After unloading the already loaded module, `options(xyz.path = …)` sets the
+module search path: this is where `xyz::use` searches for modules. If more than
+one path is given, `xyz::use` searches them all until a module of matching name
+is found. This works analogously to how `.libPaths()` operates on R packages.
 
 The `xyz::use` directive can now use `bio/seq` instead of `./bio/seq` as the
 module name: rather than a relative name we specify a *global* name. In this
@@ -234,13 +233,13 @@ than a file, the module implementation resides in the nested file `__init__.r`):
 
 The submodule is specified as `./seq` rather than `seq`: the explicitly provided
 relative path prevents lookup in the import search path (that we set via
-`xyz::set_options(path = …)`); instead, only the current directory (that is, the
+`options(xyz.path = …)`); instead, only the current directory (that is, the
 directory containing the `bio` module) is considered.
 
 We can now use the `bio` module:
 
 ```{r}
-xyz::set_options(path = NULL) # Reset search path
+options(xyz.path = NULL) # Reset search path
 xyz::use(./bio)
 ls(bio)
 ls(bio$seq)

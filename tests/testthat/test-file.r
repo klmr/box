@@ -31,9 +31,9 @@ test_that('xyz::file works after attaching modules', {
     # R CMD CHECK resets the working directory AFTER executing the test helpers.
     # This throws off the subsequent tests, so we need to re-set the path here
     # although this shouldn’t be necessary.
-    old_path = xyz::option('path')
-    on.exit(xyz::set_options(path = old_path))
-    xyz::set_options(path = getwd())
+    old_opts = options(xyz.path = getwd())
+    on.exit(options(old_opts))
+
     # Test that #66 is fixed and that there are no regressions.
 
     expected_module_file = xyz::file()

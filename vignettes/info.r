@@ -1,4 +1,6 @@
 .on_load = function (ns) {
-    message('Loading module "', xyz::name(), '"')
-    message('Module path: "', basename(xyz::file()), '"')
+    message(
+        'Loading module "', xyz::name(), '"\n',
+        'Module path: "', basename(xyz::file()), '"'
+    )
 }

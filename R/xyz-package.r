@@ -4,11 +4,9 @@
 #' to import a package. Fully qualified names are supported for nested modules,
 #' reminiscent of module systems in many other modern languages.
 #'
-#' @section Import:
+#' @section Using modules:
 #'
 #' \itemize{
-#'  \item \code{\link{option}}
-#'  \item \code{\link{set_options}}
 #'  \item \code{\link{use}}
 #' }
 #'

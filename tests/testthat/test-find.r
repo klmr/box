@@ -22,3 +22,22 @@ test_that('"../" can only be used as a prefix', {
     expect_error(test_use(a/..))
     expect_error(test_use(a/b/../c))
 })
+
+test_that('local path is searched globally', {
+    old_opts = options(xyz.path = NULL)
+    on.exit(options(old_opts))
+
+    expect_paths_equal(mod_search_path(environment()), getwd())
+})
+
+test_that('local path is searched in module', {
+    old_opts = options(xyz.path = NULL)
+    on.exit(options(old_opts))
+
+    xyz::use(rel = mod/nested/rel_import)
+    nested_path = file.path(getwd(), 'mod', 'nested')
+
+    expect_paths_equal(rel$global_path, nested_path)
+    expect_paths_equal(rel$path_in_fun(), nested_path)
+    expect_paths_equal(rel$path_in_nested_fun(), nested_path)
+})

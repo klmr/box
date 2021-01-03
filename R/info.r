@@ -63,7 +63,7 @@ find_local_mod = function (spec, caller) {
 
 find_global_mod = function (spec, caller) {
     # In the future, this may be augmented by pluggable ways of loading modules.
-    find_in_path(spec, mod_search_path())
+    find_in_path(spec, mod_search_path(caller))
 }
 
 #' Find a module’s source location

@@ -60,7 +60,7 @@
 #' base R, which matches partial names.
 #'
 #' @section Search path:
-#' Modules are searched in the module search path, \code{xyz::option('path')}.
+#' Modules are searched in the module search path, \code{getOption('xyz.path')}.
 #' This is a vector of paths to consider, from the highest to the lowest
 #' priority. The current directory is always considered last. That is, if a file
 #' \file{a/b.r} exists both in the current directory and in a module search

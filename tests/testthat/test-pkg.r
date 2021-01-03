@@ -79,17 +79,25 @@ test_that('all things can be attached locally', {
 })
 
 test_that('things can be attached globally', {
-    in_globalenv({
-        xyz:::expect_not_in('load_all', pls())
-        xyz::use(devtools[load_all])
-        xyz:::expect_in('load_all', pls())
+    # Custom assertions are not attached, and are made available differently in
+    # `devtools::test()` and `R CMD check`. In particular, the latter doesn’t
+    # find them in the ‘xyz’ namespace either. That’s why the following code
+    # computes all values in individual .GlobalEnv wrappers, rather than
+    # wrapping the whole unit test in `in_globalenv`.
 
-        xyz:::expect_not_in('unload', pls())
-        xyz:::expect_not_in('reload', pls())
-        xyz::use(devtools[unload, reload])
-        xyz:::expect_in('unload', pls())
-        xyz:::expect_in('reload', pls())
-    })
+    objs = ls(envir = .GlobalEnv)
+    on.exit(rm(list = setdiff(ls(envir = .GlobalEnv), objs), envir = .GlobalEnv))
+
+    gpls = function () local(pls(), envir = .GlobalEnv)
+
+    expect_not_in('load_all', gpls())
+    local(xyz::use(devtools[load_all]), envir = .GlobalEnv)
+    expect_in('load_all', gpls())
+    expect_not_in('unload', gpls())
+    expect_not_in('reload', gpls())
+    local(xyz::use(devtools[unload, reload]), envir = .GlobalEnv)
+    expect_in('unload', gpls())
+    expect_in('reload', gpls())
 })
 
 test_that('all things can be attached globally', {
