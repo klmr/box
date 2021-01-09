@@ -65,7 +65,9 @@ a:focus {
 }
 
 .btn-primary:focus,
-.btn-primary.focus {
+.btn-primary.focus,
+.btn-primary:active:focus,
+.btn-primary.focus:active {
     background-color: #6877a1;
     border-color: #8695c0;
 }
