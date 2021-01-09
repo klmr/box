@@ -18,7 +18,7 @@
 #'  \item \code{\link{file}}
 #'  \item \code{\link{name}}
 #'  \item \code{\link{register_S3_method}}
-#'  \item \code{\link{.on_load}}
+#'  \item \link{mod-hooks}
 #' }
 #'
 #' @section Interactive use:
@@ -27,9 +27,8 @@
 #'
 #' \itemize{
 #'  \item \code{\link{help}}
-#'  \item \code{\link{reload}}
+#'  \item \code{\link{unload}}, \code{\link{reload}}
 #'  \item \code{\link{set_script_path}}
-#'  \item \code{\link{unload}}
 #' }
 #'
 #' @name xyz
