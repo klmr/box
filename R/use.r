@@ -35,14 +35,14 @@
 #'      \var{pkg}[\var{attach_list}]}.
 #'
 #'      The \code{\var{attach_list}} is a comma-separated list of names,
-#'      optionally with names to provide aliases. The list can also contain the
-#'      special symbol \code{...}, which causes \emph{all} exported names of the
-#'      module/package to be imported.
+#'      optionally with aliases assigned via \code{alias = name}. The list can
+#'      also contain the special symbol \code{...}, which causes \emph{all}
+#'      exported names of the module/package to be imported.
 #' }
 #' }
 #'
 #' @section Import semantics:
-#' Modules and packages are loaded into a dedicated namespace environment. Names
+#' Modules and packages are loaded into dedicated namespace environments. Names
 #' from a module or package can be selectively attached to the current scope as
 #' shown above.
 #'
@@ -60,12 +60,12 @@
 #' base R, which matches partial names.
 #'
 #' @section Search path:
-#' Modules are searched in the module search path, \code{getOption('xyz.path')}.
-#' This is a vector of paths to consider, from the highest to the lowest
-#' priority. The current directory is always considered last. That is, if a file
-#' \file{a/b.r} exists both in the current directory and in a module search
-#' path, the local file \file{./a/b.r} will not be loaded, unless the import is
-#' explicitly specified as \code{xyz::use(./a/b)}.
+#' Modules are searched in the module search path, given by
+#' \code{getOption('xyz.path')}. This is a vector of paths to consider, from the
+#' highest to the lowest priority. The current directory is always considered
+#' last. That is, if a file \file{a/b.r} exists both in the current directory
+#' and in a module search path, the local file \file{./a/b.r} will not be
+#' loaded, unless the import is explicitly declared as \code{xyz::use(./a/b)}.
 #'
 #' The \emph{current directory} is context-dependent: inside a module, the
 #' directory corresponds to the module’s directory. Inside an R code file
@@ -75,12 +75,16 @@
 #' in an interactive R session), the current working directory as given by
 #' \code{getwd()} is used.
 #'
+#' Local import declarations (that is, module prefixes that start with \code{.}
+#' or \code{..}) never use the search path to find the module. Instead,
+#' only the current directory is searched.
+#'
 #' @section S3 support:
 #'
 #' Modules can contain S3 generics and methods. To override known generics
-#' (defined outside modules), methods inside a module need to be registered
-#' using \code{\link{register_S3_method}}. See the documentation on that
-#' function for details.
+#' (= those defined outside the module), methods inside a module need to be
+#' registered using \code{\link{register_S3_method}}. See the documentation
+#' there for details.
 #'
 #' @section Encoding:
 #' All module source code files are assumed to be UTF-8 encoded.
@@ -120,10 +124,11 @@
 #' }
 #' @seealso
 #' \code{\link{name}} and \code{\link{file}} give information about loaded
-#' packages.
+#' modules.
 #' \code{\link{help}} displays help for a module’s exported names.
-#' \code{\link{unload}} and \code{\link{reload}} provide dynamic unloading and
-#' reloading of modules in a running session.
+#' \code{\link{unload}} and \code{\link{reload}} aid during module development
+#' by performing dynamic unloading and reloading of modules in a running R
+#' session.
 #' @export
 use = function (...) {
     caller = parent.frame()
