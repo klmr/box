@@ -95,16 +95,16 @@ base_path = function (mod) {
 
 #' Set the base path of the script
 #'
-#' @param path character string containing the relative or absolute path, or
-#' \code{NULL} to reset the path
+#' @param path character string containing the relative or absolute path to the
+#' currently executing R code file, or \code{NULL} to reset the path
 #'
 #' @details
-#' \pkg{xyz} needs to know the base path of the topmost calling R script to find
-#' relative import locations. In most cases, it can figure the path out
-#' automatically. However, in some cases third party packages load files in such
-#' a way that \pkg{xyz} cannot find out the correct path of the script any more.
-#' \code{set_script_path} can be used in these cases to set the script
-#' path manually.
+#' \pkg{xyz} needs to know the base path of the topmost calling R context (i.e.
+#' the script) to find relative import locations. In most cases, \code{xyz} can
+#' figure the path out automatically. However, in some cases third-party
+#' packages load code in a way in which \pkg{xyz} cannot find the correct path
+#' of the script any more. \code{set_script_path} can be used in these cases to
+#' set the path of the currently executing R script manually.
 #' @export
 set_script_path = function (path) {
     if (is.null(path)) {
