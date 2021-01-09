@@ -1,5 +1,5 @@
 Package: xyz
-Title: Write reusable, composable and distributable R code
+Title: Write Reusable, Composable and Modular R Code
 Version: 0.9.9.9000
 Author: Konrad Rudolph <konrad.rudolph@gmail.com>
 Maintainer: Konrad Rudolph <konrad.rudolph@gmail.com>
