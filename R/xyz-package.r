@@ -4,7 +4,7 @@
 #' to import a package. Fully qualified names are supported for nested modules,
 #' reminiscent of module systems in many other modern languages.
 #'
-#' @section Using modules:
+#' @section Using modules & packages:
 #'
 #' \itemize{
 #'  \item \code{\link{use}}

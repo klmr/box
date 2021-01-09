@@ -2,7 +2,7 @@ title: xyz
 url: http://xyz.klmr.me
 
 reference:
-    - title: Using modules
+    - title: Using modules & packages
       desc: Functions for users of modules and packages
       contents:
         - use
