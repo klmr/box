@@ -6,19 +6,21 @@ call_hook = function (ns, hook, ...) {
 
 #' Hooks for module events
 #'
-#' Modules can declare functions to be called when a module is first loaded,
-#' every time it is used or attached, and when it is detached and unloaded.
+#' Modules can declare functions to be called when a module is first loaded.
 #'
-#' @param ns the module namespace environment
+#' @param ns the unlocked module namespace environment
 #'
 #' @note The API for hook functions is still subject to change. In particular,
 #' there might in the future be a way to subscribe to module events of other
 #' modules and packages, equivalently to R package \link[base]{userhooks}.
 #'
 #' @details
-#' For \code{.on_load}, \code{ns} is the unlocked module namespace environment.
-#' This means that code in \code{.on_load} is permitted to modify the namespace
-#' by adding to, replacing, or removing names from the namesapce.
+#' To create module hooks, modules should define a function with the specified
+#' name and signature. Module hooks should \emph{not} be exported. When
+#' \code{.on_load} is called, the unlocked module namespace environment is
+#' passed to it via its parameter \code{ns}. This means that code in
+#' \code{.on_load} is permitted to modify the namespace by adding names to,
+#' replacing names in, or removing names from the namespace.
 #'
 #' @name mod-hooks
 #' @keywords utilities
