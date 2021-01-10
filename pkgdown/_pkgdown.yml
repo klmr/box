@@ -20,6 +20,21 @@ reference:
         - set_script_path
         - unload
 
+navbar:
+    components:
+        articles:
+            text: Articles
+            menu:
+                - text: General topics
+                - text: Using compiled code
+                  href: articles/compiled-code.html
+                - text: Modules and packages compared
+                  href: articles/packages.html
+                - text: ---
+                - text: Implementation details
+                - text: The hierarchy of module environments
+                  href: articles/mod-env-hierarchy.html
+
 template:
     params:
         bootswatch: simplex
