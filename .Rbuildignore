@@ -9,7 +9,6 @@
 ^README\.rmd$
 ^printenv\.r$
 ^\.travis\.yml$
-^_pkgdown\.yml$
 ^pkgdown$
 ^doc$
 ^docs$

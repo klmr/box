@@ -24,3 +24,7 @@ reference:
 template:
     params:
         bootswatch: simplex
+
+authors:
+    Konrad Rudolph:
+        href: https://klmr.me
