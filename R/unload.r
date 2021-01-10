@@ -23,10 +23,12 @@
 #' @seealso \code{\link{use}}, \link{mod-hooks}
 #' @export
 unload = function (mod) {
-    stopifnot(inherits(mod, 'xyz$mod'))
     stopifnot(is.name(substitute(mod)))
-    deregister_mod(attr(mod, 'info'))
+    stopifnot(inherits(mod, 'xyz$mod'))
+
+    mod_ns = attr(mod, 'namespace')
     attached = attr(mod, 'attached')
+
     if (! is.null(attached)) {
         if (identical(attached, '')) {
             caller = parent.frame()
@@ -38,6 +40,10 @@ unload = function (mod) {
             }
         }
     }
+
+    call_hook(mod_ns, '.on_unload', mod_ns)
+    deregister_mod(attr(mod, 'info'))
+
     # Unset the mod reference in its scope, i.e. the caller’s environment or
     # some parent thereof.
     mod_ref = as.character(substitute(mod))
@@ -47,19 +53,26 @@ unload = function (mod) {
 #' @name unload
 #' @export
 reload = function (mod) {
-    stopifnot(inherits(mod, 'xyz$mod'))
     stopifnot(is.name(substitute(mod)))
+    stopifnot(inherits(mod, 'xyz$mod'))
+
     caller = parent.frame()
     spec = attr(mod, 'spec')
     info = attr(mod, 'info')
-
-    ns = loaded_mod(info)
-    deregister_mod(info)
-    # If loading fails, restore old module.
-    on.exit(register_mod(info, ns))
-
-    # FIXME: Update to new API
+    mod_ns = attr(mod, 'namespace')
     attached = attr(mod, 'attached')
+
+    call_hook(mod_ns, '.on_unload', mod_ns)
+    deregister_mod(info)
+
+    on.exit({
+        warning(sprintf(
+            'Reloading module %s failed, attempting to restore the old instance.',
+            dQuote(deparse(substitute(mod)))
+        ))
+        register_mod(info, mod_ns)
+    })
+
     if (! is.null(attached)) {
         if (identical(attached, '')) {
             attached_env = parent.env(caller)

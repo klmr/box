@@ -63,3 +63,9 @@
     )
     stop(cond)
 }
+
+.onUnload = function (libpath) {
+    eapply(loaded_mods, function (mod_ns) {
+        call_hook(mod_ns, '.on_unload', mod_ns)
+    })
+}

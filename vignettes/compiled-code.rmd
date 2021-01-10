@@ -114,6 +114,15 @@ every time the module is loaded, it goes into the `.on_load` hook:
 }
 ```
 
+… and don’t forget to unload the dynamic library when the module is unloaded:
+
+```{r eval=FALSE}
+.on_unload = function (ns) {
+    dyn.unload(libname('hello'))
+}
+```
+
+
 ## Interacting with compiled code
 
 Finally, our module needs a way of calling the compiled code. This is done via

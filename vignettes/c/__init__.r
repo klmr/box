@@ -6,6 +6,10 @@ libname = function (name) {
     ns$dll = dyn.load(libname('hello'))
 }
 
+.on_unload = function (ns) {
+    dyn.unload(libname('hello'))
+}
+
 #' @export
 hello_world = function (name) {
     .Call(dll$hello_world, name)
