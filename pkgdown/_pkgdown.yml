@@ -1,5 +1,4 @@
-title: xyz
-url: http://xyz.klmr.me
+url: http://klmr.me/xyz
 
 reference:
     - title: Using modules & packages
@@ -28,3 +27,6 @@ template:
 authors:
     Konrad Rudolph:
         href: https://klmr.me
+
+repo:
+    branch: main

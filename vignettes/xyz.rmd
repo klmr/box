@@ -1,5 +1,5 @@
 ---
-title: "Basic Usage"
+title: "Get started"
 author: Konrad Rudolph
 date: "`r Sys.Date()`"
 output:
