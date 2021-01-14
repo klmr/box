@@ -94,25 +94,47 @@ help = function (topic, help_type = getOption('help_type', 'text')) {
     display_help(doc, paste0('module:', mod_name), help_type)
 }
 
+#' Helper functions for the help functionality
+#'
+#' \code{help_topic_leftmost_name} retrieves the leftmost name in an expression
+#' passed to a \code{help()} call.
+#' \code{call_help} invokes a \code{help()} call expression for a package help
+#' topic, finding the first \code{help} function definition, ignoring the one
+#' from this package.
+#'
+#' @param expr the expression that was passed to \code{help()}
+#' @keywords internal
+#' @rdname call_help
 help_topic_leftmost_name = function (expr) {
     # For nested modules, `topic` looks like this: `a$b$c…`. We need to retrieve
-    # the first part of this (`a`) and check whether it’s a module.
+    # the first part of this (`a`) to check whether it’s a module.
 
     if (is.name(expr)) {
         as.character(expr)
-    } else if (! is.call(expr) || expr[[1L]] != '$') {
+    } else if (! is.call(expr) || expr[[1L]] != quote(`$`)) {
         NULL
     } else {
         Recall(expr[[2L]])
     }
 }
 
-call_help = function (call, parent) {
-    type = as.character(call[[1L]])
-    call[[1L]] = if ('devtools_shims' %in% search()) {
-        get(type, pos = 'devtools_shims')
-    } else {
-        get(type, pos = 'package:utils')
-    }
-    eval(call, envir = parent)
+#' @param call the \code{help()} call expression.
+#' @param caller the environment of the original \code{help()} caller
+#' @keywords internal
+call_help = function (call, caller) {
+    # Search for `help` function in caller scope. This is intended to find the
+    # first help call which is either `utils::help` or potentially from another
+    # environment, such as `devtools_shims`.
+    # Unfortunately during testing (and during development) the current package
+    # *is* attached, so we can’t just use `get` in the global/caller’s
+    # environment — it would recurse indefinitely to this package’s `help`
+    # function. To fix this, we need to manually find the first hit that isn’t
+    # inside this package.
+    candidates = utils::getAnywhere('help')
+    envs = map(environment, candidates$objs)
+    valid = candidates$visible & map_lgl(is.function, candidates$objs)
+    other_helps = candidates$obj[valid & ! map_lgl(identical, envs, topenv())]
+
+    call[[1L]] = other_helps[[1L]]
+    eval(call, envir = caller)
 }
