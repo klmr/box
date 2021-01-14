@@ -107,35 +107,6 @@ help_topic_leftmost_name = function (expr) {
     }
 }
 
-is_module_help_topic = function (topic, parent) {
-    top_module = help_topic_leftmost_name(topic)
-
-    ! is.null(top_module) &&
-        exists(top_module, parent) &&
-        inherits(get(top_module, parent), 'xyz$mod')
-}
-
-#' @usage
-#' \special{?topic}
-#' @inheritParams utils::`?`
-#' @rdname help
-#' @export
-#' @examples
-#' \dontrun{
-#' ?mod$func
-#' }
-`?` = function (e1, e2) {
-    topic = substitute(e1)
-    if (
-        missing(e2) && ! missing(e1) &&
-        is_module_help_topic(topic, parent.frame())
-    ) {
-        eval.parent(call('help', topic))
-    } else {
-        call_help(match.call(), parent.frame())
-    }
-}
-
 call_help = function (call, parent) {
     type = as.character(call[[1L]])
     call[[1L]] = if ('devtools_shims' %in% search()) {
