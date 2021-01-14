@@ -10,7 +10,8 @@ parse_documentation = function (info, mod_ns) {
     # Due to aliases, documentation entries may have more than one name.
     aliases = map(function (rd) unique(rd$fields$alias$values), rdfiles)
     names = rep(names(rdfiles), lengths(aliases))
-    docs = setNames(rdfiles[names], unlist(aliases))
+    docs = stats::setNames(rdfiles[names], unlist(aliases))
+
     lapply(docs, format, wrap = FALSE)
 }
 

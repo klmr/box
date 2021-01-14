@@ -33,8 +33,6 @@
 #'
 #' @name xyz
 #' @docType package
-#' @importFrom stats setNames
-#' @importFrom utils lsf.str
 '_PACKAGE'
 
 .onAttach = function (libname, pkgname) {

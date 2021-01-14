@@ -382,7 +382,7 @@ attach_list = function (spec, exports) {
             aliases[to_replace] = names(name_spec)
         }
 
-        setNames(exports, aliases)
+        stats::setNames(exports, aliases)
     } else {
         name_spec
     }

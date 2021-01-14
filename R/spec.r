@@ -232,7 +232,7 @@ parse_attach_spec = function (expr) {
 }
 
 assign_missing_names = function (syms) {
-    x = setNames(syms, names(syms) %|% unlist(syms))
+    x = stats::setNames(syms, names(syms) %|% unlist(syms))
     x[x == '...'] = NA_character_
 
     if (any((dup = duplicated(names(x))))) {
