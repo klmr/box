@@ -8,7 +8,7 @@
 parse_documentation = function (info, mod_ns) {
     rdfiles = parse_roxygen_tags(info, mod_ns)
     # Due to aliases, documentation entries may have more than one name.
-    aliases = map(function (rd) unique(rd$fields$alias$values), rdfiles)
+    aliases = map(function (rd) unique(rd$get_value('alias')), rdfiles)
     names = rep(names(rdfiles), lengths(aliases))
     docs = stats::setNames(rdfiles[names], unlist(aliases))
 
@@ -20,7 +20,12 @@ parse_documentation = function (info, mod_ns) {
 parse_roxygen_tags = function (info, mod_ns) {
     mod_path = info$source_path
     blocks = roxygen2::parse_file(mod_path, mod_ns)
-    roxygen2::roclet_process(roxygen2::rd_roclet(), blocks, mod_ns, dirname(mod_path))
+    roxygen2::roclet_process(
+        roxygen2::rd_roclet(),
+        blocks,
+        mod_ns,
+        dirname(mod_path)
+    )
 }
 
 #' Display module documentation
