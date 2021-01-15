@@ -10,7 +10,7 @@ parse_documentation = function (info, mod_ns) {
     # Due to aliases, documentation entries may have more than one name.
     aliases = map(function (rd) unique(rd$get_value('alias')), rdfiles)
     names = rep(names(rdfiles), lengths(aliases))
-    docs = stats::setNames(rdfiles[names], unlist(aliases))
+    docs = patch_mod_doc(stats::setNames(rdfiles[names], unlist(aliases)))
 
     lapply(docs, format, wrap = FALSE)
 }
@@ -28,15 +28,30 @@ parse_roxygen_tags = function (info, mod_ns) {
     )
 }
 
+#' @param docs the list of \pkg{roxygen2} documentation objects.
+#' @keywords internal
+#' @rdname parse_documentation
+patch_mod_doc = function (docs) {
+    if ('.__module__.' %in% names(docs)) {
+        mod_doc = docs[['.__module__.']]
+        mod_doc$sections$docType$value = 'package'
+        mod_doc$sections$usage = NULL
+        mod_doc$sections$format = NULL
+        mod_doc$sections$name$value = 'module'
+    }
+
+    docs
+}
+
 #' Display module documentation
 #'
 #' \code{help} displays help on a module’s objects and functions in much
 #' the same way \code{\link[utils]{help}} does for package contents.
 #'
 #' @param topic fully-qualified name of the object or function to get help for,
-#'  in the format \code{module$function}
+#'  in the format \code{module$function}.
 #' @param help_type character string specifying the output format; currently,
-#'  only \code{'text'} is supported
+#'  only \code{'text'} is supported.
 #' @rdname help
 #' @export
 #' @examples
@@ -48,20 +63,27 @@ help = function (topic, help_type = getOption('help_type', 'text')) {
     topic = substitute(topic)
     top_module = help_topic_leftmost_name(topic)
 
-    if (is.null(top_module) || ! exists(top_module, parent.frame())) {
+    if (
+        is.null(top_module) ||
+        ! exists(top_module, parent.frame()) ||
+        ! inherits((mod_exports = get(top_module, parent.frame())), 'xyz$mod')
+    ) {
         stop(
             dQuote(deparse(topic)), ' is not a valid module help topic',
             call. = FALSE
         )
     }
 
-    mod_exports = get(top_module, parent.frame())
     info = attr(mod_exports, 'info')
     mod_name = strsplit(attr(mod_exports, 'name'), ':')[[1L]][2L]
-    subject = as.character(topic[[3L]])
 
     if (inherits(info, 'xyz$pkg_info')) {
-        help_call = bquote(help(topic = .(subject), package = .(mod_name)))
+        help_call = if (is.name(topic)) {
+            bquote(help(.(topic)))
+        } else {
+            subject = as.character(topic[[3L]])
+            bquote(help(topic = .(subject), package = .(mod_name)))
+        }
         return(call_help(help_call, parent.frame()))
     } else if (! inherits(info, 'xyz$mod_info')) {
         stop(
@@ -71,7 +93,10 @@ help = function (topic, help_type = getOption('help_type', 'text')) {
     }
 
     if (! requireNamespace('roxygen2')) {
-        stop('Displaying documentation requires roxygen2 installed.')
+        stop(
+            sprintf('Displaying documentation requires %s installed.', sQuote('roxygen2')),
+            call. = FALSE
+        )
     }
 
     mod_ns = attr(mod_exports, 'namespace')
@@ -82,13 +107,22 @@ help = function (topic, help_type = getOption('help_type', 'text')) {
         namespace_info(mod_ns, 'doc') = all_docs
     }
 
+    subject = if (is.name(topic)) '.__module__.' else  as.character(topic[[3L]])
     doc = all_docs[[subject]]
+
     if (is.null(doc)) {
-        stop(
-            'No documentation available for ', dQuote(subject),
-            ' in module ', dQuote(mod_name),
-            call. = FALSE
-        )
+        if (subject == '.__module__.') {
+            stop(
+                'No documentation available for ', dQuote(mod_name),
+                call. = FALSE
+            )
+        } else {
+            stop(
+                'No documentation available for ', dQuote(subject),
+                ' in module ', dQuote(mod_name),
+                call. = FALSE
+            )
+        }
     }
 
     display_help(doc, paste0('module:', mod_name), help_type)
