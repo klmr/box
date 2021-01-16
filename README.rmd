@@ -28,7 +28,7 @@ if (! requireNamespace('pak')) {
     install.packages("pak", repos = "https://r-lib.github.io/p/pak/dev/")
 }
 
-pak::pkg_install('klmr/xyz@main')
+pak::pkg_install('klmr/xyz@release')
 ```
 
 ## 🥜 Usage in a nutshell
