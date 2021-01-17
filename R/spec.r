@@ -111,7 +111,7 @@ spec_name = function (spec) {
     }
 
     mod_or_pkg = function (spec) {
-        if (inherits(spec, 'mod_spec')) {
+        if (inherits(spec, 'xyz$mod_spec')) {
             prefix = paste(r_name(spec$prefix), collapse = '/')
             sprintf('mod(%s/\x1b[4;33m%s\x1b[0m)', prefix, r_name(spec$name))
         } else {
