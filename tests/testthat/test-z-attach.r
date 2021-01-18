@@ -39,7 +39,7 @@ test_that('unloading a module detaches it', {
 })
 
 test_that('unloading a local module detaches it', {
-    (function () {
+    local({
         old_parent = parent.env(environment())
         xyz::use(a = mod/a[...])
         new_parent = parent.env(environment())
@@ -49,7 +49,7 @@ test_that('unloading a local module detaches it', {
         expect_not_identical(old_parent, parent.env(environment()))
         expect_not_identical(new_parent, parent.env(environment()))
         expect_identical(old_parent, parent.env(parent.env(environment())))
-    })()
+    })
 })
 
 test_that('reloading a module reattaches it', {
