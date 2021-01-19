@@ -1,5 +1,5 @@
 .Rprofile
-man
+man/*.Rd
 NAMESPACE
 check
 doc
