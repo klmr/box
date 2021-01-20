@@ -12,6 +12,7 @@
 ^pkgdown$
 ^doc$
 ^docs$
+^figures$
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^Meta$
