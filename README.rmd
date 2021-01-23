@@ -33,11 +33,16 @@ pak::pkg_install('klmr/xyz@release')
 
 ## 🥜 Usage in a nutshell
 
-‘xyz’ provides a better way of organising R code in a modular fashion. It allows
-loading just the parts of packages that you need, and giving imported names any
-alias you want. And it simplifies *writing modular code* by treating files and
-folders of R code as independent modules, without requiring the user to wrap
-reusable code into packages.
+‘xyz’ allows organising R code in a more modular way, using two complementary
+mechanisms. Firstly, it allows loading just the parts of packages that are
+needed, and giving imported names arbitrary aliases. This makes code more
+explicit, deliberate, and reduces errors due to name clashes.
+
+And secondly it simplifies *writing modular code* by treating files and folders
+of R code as independent modules, without requiring the user to wrap reusable
+code into packages.
+
+### Loading code
 
 ‘xyz’ replaces the base R `library` function with `xyz::use`. `xyz::use` is more
 powerful, more flexible, and less error-prone than `library`. At its simplest,
