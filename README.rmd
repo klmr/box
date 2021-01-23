@@ -124,8 +124,8 @@ FIXME: Add section about modules.
 ‘xyz’ promotes a philosophy that is in some way the opposite of what’s common in
 R: while some notable packages export and attach many hundreds and, in at least
 one notable case, *over a thousand* names, well-established software engineering
-best practices dictate that a given scope should contain as few names as
-possible, and to make them as explicit as possible.
+best practices encourage limiting both the scope of names, as well as the number
+of names available in each scope.
 
 For instance, it is best practice in Python to never use the equivalent of
 `library(pkg)` (which in Python is `from pkg import *`). Instead, Python
