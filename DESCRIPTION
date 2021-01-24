@@ -1,8 +1,22 @@
 Package: box
 Title: Write Reusable, Composable and Modular R Code
 Version: 1.0.0
-Author: Konrad Rudolph <konrad.rudolph@gmail.com>
-Maintainer: Konrad Rudolph <konrad.rudolph@gmail.com>
+Authors@R: c(
+        person(
+            'Konrad', 'Rudolph',
+            email = 'konrad.rudolph@gmail.com',
+            role = c('aut', 'cre'),
+            comment = c(ORCID = '0000-0002-9866-7051')
+        ),
+        person(
+            'Michael', 'Schubert',
+            email = 'mschu.dev@gmail.com',
+            role = 'aut',
+            comment = c(ORCID = '0000-0002-6862-5221')
+        )
+    )
+URL: https://klmr.me/box, https://github.com/klmr/box
+BugReports: https://github.com/klmr/box/issues
 Description: Create reusable code modules in R. An alternative package
     management system for R, similar to module systems in Python, Ruby or
     JavaScript.
