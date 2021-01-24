@@ -1,5 +1,5 @@
 libname = function (name) {
-    xyz::file(paste0(name, .Platform$dynlib.ext))
+    box::file(paste0(name, .Platform$dynlib.ext))
 }
 
 .on_load = function (ns) {

@@ -4,7 +4,7 @@ help_test_cases = c(quote(a), quote(a$b), quote(a$b$c), quote(a$b$c$d))
 help_test_env = new.env()
 
 local({
-    xyz::use(mod/help/a)
+    box::use(mod/help/a)
 }, envir = help_test_env)
 
 test_that('help topic targets are correctly resolved', {
@@ -14,9 +14,9 @@ test_that('help topic targets are correctly resolved', {
     a = help_test_env$a
     expected_mods = c(a, a, a$b, a$b$c)
     expected_names = c('.__module__.', 'b', 'c', 'd')
-    actual_targets = xyz:::map(xyz:::help_topic_target, list(help_test_env), help_test_cases)
-    xyz:::map(expect_identical, xyz:::map(`[[`, actual_targets, list(1L)), expected_mods)
-    xyz:::map(expect_identical, xyz:::map(`[[`, actual_targets, list(2L)), expected_names)
+    actual_targets = box:::map(box:::help_topic_target, list(help_test_env), help_test_cases)
+    box:::map(expect_identical, box:::map(`[[`, actual_targets, list(1L)), expected_mods)
+    box:::map(expect_identical, box:::map(`[[`, actual_targets, list(2L)), expected_names)
 })
 
 test_that('documentation can be parsed', {

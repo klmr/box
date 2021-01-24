@@ -10,7 +10,7 @@ local({
 
 test_that('R core packages can be used', {
     expect_not_in('methods', ls())
-    xyz::use(methods)
+    box::use(methods)
     expect_true(isNamespaceLoaded('methods'))
     expect_in('methods', ls())
     expect_in('as', ls(methods))
@@ -18,14 +18,14 @@ test_that('R core packages can be used', {
 })
 
 # Use ‘devtools’ as a test package since it’s suggested by testthat and required
-# for ‘xyz’/ development, so highly likely to be installed, but hopefully not
+# for ‘box’/ development, so highly likely to be installed, but hopefully not
 # loaded.
 
 test_that('previously loaded user packages can be used', {
     loadNamespace('devtools')
     expect_not_in('devtools', ls())
     expect_true(isNamespaceLoaded('devtools'))
-    xyz::use(devtools)
+    box::use(devtools)
     expect_in('devtools', ls())
     expect_in('load_all', ls(devtools))
     expect_identical(devtools$load_all, devtools::load_all)
@@ -35,7 +35,7 @@ test_that('unloaded user packages can be used', {
     unloadNamespace('devtools')
     expect_not_in('devtools', ls())
     expect_false(isNamespaceLoaded('devtools'))
-    xyz::use(devtools)
+    box::use(devtools)
     expect_true(isNamespaceLoaded('devtools'))
     expect_in('devtools', ls())
     expect_in('load_all', ls(devtools))
@@ -45,7 +45,7 @@ test_that('unloaded user packages can be used', {
 test_that('packages can be aliased', {
     expect_not_in('methods', ls())
     expect_not_in('m', ls())
-    xyz::use(m = methods)
+    box::use(m = methods)
     expect_not_in('methods', ls())
     expect_in('m', ls())
     expect_in('as', ls(m))
@@ -54,19 +54,19 @@ test_that('packages can be aliased', {
 
 test_that('packages can be used with aliases', {
     expect_not_in('dev', ls())
-    xyz::use(dev = devtools)
+    box::use(dev = devtools)
     expect_in('dev', ls())
     expect_identical(dev$load_all, devtools::load_all)
 })
 
 test_that('things can be attached locally', {
     expect_not_in('load_all', pls())
-    xyz::use(devtools[load_all])
+    box::use(devtools[load_all])
     expect_in('load_all', pls())
 
     expect_not_in('unload', pls())
     expect_not_in('reload', pls())
-    xyz::use(devtools[unload, reload])
+    box::use(devtools[unload, reload])
     expect_in('unload', pls())
     expect_in('reload', pls())
 })
@@ -74,14 +74,14 @@ test_that('things can be attached locally', {
 test_that('all things can be attached locally', {
     devtools_exports = getNamespaceExports('devtools')
     expect_gt(length(devtools_exports), 0L) # Sanity check …
-    xyz::use(devtools[...])
+    box::use(devtools[...])
     expect_false(any(is.na(match(pls(), devtools_exports))))
 })
 
 test_that('things can be attached globally', {
     # Custom assertions are not attached, and are made available differently in
     # `devtools::test()` and `R CMD check`. In particular, the latter doesn’t
-    # find them in the ‘xyz’ namespace either. That’s why the following code
+    # find them in the ‘box’ namespace either. That’s why the following code
     # computes all values in individual .GlobalEnv wrappers, rather than
     # wrapping the whole unit test in `in_globalenv`.
 
@@ -91,11 +91,11 @@ test_that('things can be attached globally', {
     gpls = function () local(pls(), envir = .GlobalEnv)
 
     expect_not_in('load_all', gpls())
-    local(xyz::use(devtools[load_all]), envir = .GlobalEnv)
+    local(box::use(devtools[load_all]), envir = .GlobalEnv)
     expect_in('load_all', gpls())
     expect_not_in('unload', gpls())
     expect_not_in('reload', gpls())
-    local(xyz::use(devtools[unload, reload]), envir = .GlobalEnv)
+    local(box::use(devtools[unload, reload]), envir = .GlobalEnv)
     expect_in('unload', gpls())
     expect_in('reload', gpls())
 })
@@ -104,7 +104,7 @@ test_that('all things can be attached globally', {
     in_globalenv({
         devtools_exports = getNamespaceExports('devtools')
         expect_gt(length(devtools_exports), 0L) # Sanity check …
-        xyz::use(devtools[...])
+        box::use(devtools[...])
         expect_false(any(is.na(match(pls(), devtools_exports))))
     })
 })
@@ -113,7 +113,7 @@ test_that('attachments can be aliased', {
     expect_not_in('u', pls())
     expect_not_in('reload', pls())
     expect_not_in('la', pls())
-    xyz::use(devtools[u = unload, reload, la = load_all])
+    box::use(devtools[u = unload, reload, la = load_all])
     expect_in('u', pls())
     expect_in('reload', pls())
     expect_in('la', pls())
@@ -128,31 +128,31 @@ test_that('wildcard attachments can contain aliases', {
         setdiff(devtools_exports, c('test', 'r_env_vars')),
         'test_alias', 'ev'
     )
-    xyz::use(devtools[..., test_alias = test, ev = r_env_vars])
+    box::use(devtools[..., test_alias = test, ev = r_env_vars])
     expect_equal(length(pls()), length(expected))
     expect_false(any(is.na(match(pls(), expected))))
 })
 
 test_that('non-existent aliases raise error', {
-    expect_error(xyz::use(devtools[foobar123]))
-    expect_error(xyz::use(devtools[test = foobar123]))
-    expect_error(xyz::use(devtools[..., test = foobar123]))
+    expect_error(box::use(devtools[foobar123]))
+    expect_error(box::use(devtools[test = foobar123]))
+    expect_error(box::use(devtools[..., test = foobar123]))
 })
 
 test_that('only exported things can be attached', {
     expect_in('indent', ls(getNamespace('devtools')))
-    expect_error(xyz::use(devtools[indent]), 'not exported')
+    expect_error(box::use(devtools[indent]), 'not exported')
 })
 
 test_that('packages that attach things are not aliased', {
-    xyz::use(devtools[load_all])
+    box::use(devtools[load_all])
     expect_not_in('devtools', ls())
     expect_in('load_all', pls())
 })
 
 test_that('packages that attach things are can be aliased', {
     expect_not_in('dev', ls())
-    xyz::use(dev = devtools[load_all])
+    box::use(dev = devtools[load_all])
     expect_in('dev', ls())
     expect_in('load_all', pls())
 })
@@ -161,7 +161,7 @@ test_that('S3 lookup works for partial exports', {
     # ‘devtools’ has no S3 exports at the time of writing but ‘roxygen2’ does,
     # and is also needed to compile this package — and hence likely available
     # when running these tests.
-    xyz::use(roxygen2[parse = roxy_tag_parse])
+    box::use(roxygen2[parse = roxy_tag_parse])
     x = structure(list(raw = '{}'), class = 'roxy_tag_usage')
     actual = parse(x)
     expected = roxygen2::roxy_tag_parse(x)

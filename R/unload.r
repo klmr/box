@@ -5,26 +5,26 @@
 #'
 #' @details
 #' Unloading a module causes it to be purged from the internal cache such that
-#' the next subsequent \code{xyz::use} declaration will reload the module from
+#' the next subsequent \code{box::use} declaration will reload the module from
 #' its source. \code{reload} is a shortcut for unloading a module and calling
-#' \code{xyz::use} in the same scope with the same parameters as the
-#' \code{xyz::use} call that originally loaded the current module instance.
+#' \code{box::use} in the same scope with the same parameters as the
+#' \code{box::use} call that originally loaded the current module instance.
 #'
 #' @note Any other references to the loaded modules remain unchanged, and will
 #' still work. Unloading and reloading modules is primarily useful for testing
 #' during development, and should not be used in production code.
 #'
 #' \code{unload} and \code{reload} come with a few restrictions. \code{unload}
-#' attempts to detach names attached by the corresponding \code{xyz::use} call.
+#' attempts to detach names attached by the corresponding \code{box::use} call.
 #' \code{reload} attempts to re-attach these same names. This only works if the
-#' corresponding \code{xyz::use} declaration is located in the same scope.
+#' corresponding \code{box::use} declaration is located in the same scope.
 #'
 #' \code{reload} will re-execute the \code{.on_load} hook of the module.
 #' @seealso \code{\link{use}}, \link{mod-hooks}
 #' @export
 unload = function (mod) {
     stopifnot(is.name(substitute(mod)))
-    stopifnot(inherits(mod, 'xyz$mod'))
+    stopifnot(inherits(mod, 'box$mod'))
 
     mod_ns = attr(mod, 'namespace')
     attached = attr(mod, 'attached')
@@ -54,7 +54,7 @@ unload = function (mod) {
 #' @export
 reload = function (mod) {
     stopifnot(is.name(substitute(mod)))
-    stopifnot(inherits(mod, 'xyz$mod'))
+    stopifnot(inherits(mod, 'box$mod'))
 
     caller = parent.frame()
     spec = attr(mod, 'spec')
@@ -84,7 +84,7 @@ reload = function (mod) {
                 detach(attached, character.only = TRUE)
             }
             on.exit(
-                xyz_attach(attached_env, pos = attached_pos, name = attached),
+                box_attach(attached_env, pos = attached_pos, name = attached),
                 add = TRUE
             )
         }

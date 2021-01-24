@@ -1,32 +1,32 @@
 context('names')
 
 test_that('the global namespace has no module name', {
-    expect_null(xyz::name())
+    expect_null(box::name())
 })
 
 test_that('modules have a name', {
-    xyz::use(mod/a)
+    box::use(mod/a)
     expect_equal(a$get_modname(), 'a')
 })
 
 test_that('module names can be read inside functions', {
-    xyz::use(mod/a)
+    box::use(mod/a)
     expect_equal(a$get_modname2(), 'a')
 })
 
 test_that('module_name works after attaching modules', {
     # Test that #66 is fixed and that there are no regressions.
 
-    xyz::use(a = mod/a[...])
-    expect_null(xyz::name())
+    box::use(a = mod/a[...])
+    expect_null(box::name())
 
     in_globalenv({
-        xyz::use(a = mod/a[...])
-        on.exit(xyz::unload(a))
-        expect_null(xyz::name())
+        box::use(a = mod/a[...])
+        on.exit(box::unload(a))
+        expect_null(box::name())
     })
 
-    xyz::use(x = mod/mod_name)
+    box::use(x = mod/mod_name)
 
     expect_equal(x$this_module_name, 'mod_name')
     expect_equal(x$function_module_name(), 'mod_name')

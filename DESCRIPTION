@@ -1,4 +1,4 @@
-Package: xyz
+Package: box
 Title: Write Reusable, Composable and Modular R Code
 Version: 0.9.9.9000
 Author: Konrad Rudolph <konrad.rudolph@gmail.com>

@@ -1,2 +1,2 @@
 #' @export
-xyz::use(./seq)
+box::use(./seq)

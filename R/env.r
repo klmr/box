@@ -17,7 +17,7 @@ make_namespace = function (info) {
     ns_env$.__module__. = ns_attr
     # TODO: Set exports here!
     enable_s3_lookup(ns_env, info)
-    structure(ns_env, name = paste0('namespace:', info$name), class = 'xyz$ns')
+    structure(ns_env, name = paste0('namespace:', info$name), class = 'box$ns')
 }
 
 enable_s3_lookup = function (ns_env, info) {
@@ -29,7 +29,7 @@ make_imports_env = function (info) {
     structure(
         new.env(parent = baseenv()),
         name = paste0('imports:', info$name),
-        class = 'xyz$imports'
+        class = 'box$imports'
     )
 }
 
@@ -54,7 +54,7 @@ namespace_info = function (ns, which, default = NULL) {
 
 #' Get a module’s name
 #'
-#' @return \code{xyz::name} returns a character string containing the name of
+#' @return \code{box::name} returns a character string containing the name of
 #' the module, or \code{NULL} if called from outside a module.
 #' @note Because this function returns \code{NULL} if not invoked inside a
 #' module, the function can be used to check whether a code is being imported as
@@ -89,7 +89,7 @@ make_export_env = function (info, spec, ns) {
     structure(
         new.env(parent = emptyenv()),
         name = paste0('mod:', spec_name(spec)),
-        class = 'xyz$mod',
+        class = 'box$mod',
         spec = spec,
         info = info,
         namespace = ns
@@ -101,21 +101,21 @@ strict_extract = function (e1, e2) {
 }
 
 #' @export
-`$.xyz$mod` = strict_extract
+`$.box$mod` = strict_extract
 
 
 #' @export
-`$.xyz$ns` = strict_extract
+`$.box$ns` = strict_extract
 
 #' @export
-`print.xyz$mod` = function (x, ...) {
+`print.box$mod` = function (x, ...) {
     spec = attr(x, 'spec')
     type = if (inherits(spec, 'pkg_spec')) 'package' else 'module'
     cat(sprintf('<%s: %s>\n', type, spec_name(spec)))
     invisible(x)
 }
 
-#' @useDynLib xyz, unlock_env, .registration = TRUE
+#' @useDynLib box, unlock_env, .registration = TRUE
 unlock_environment = function (env) {
     invisible(.Call(unlock_env, env))
 }
@@ -124,11 +124,11 @@ find_import_env = function (x, spec) {
     UseMethod('find_import_env')
 }
 
-`find_import_env.xyz$ns` = function (x, spec) {
+`find_import_env.box$ns` = function (x, spec) {
     parent.env(x)
 }
 
-`find_import_env.xyz$mod` = function (x, spec) {
+`find_import_env.box$mod` = function (x, spec) {
     x
 }
 
@@ -136,7 +136,7 @@ find_import_env.environment = function (x, spec) {
     if (identical(x, .GlobalEnv)) {
         # We need to use `attach` here: attempting to set
         # `parent.env(.GlobalEnv)` causes R to segfault.
-        xyz_attach(NULL, name = paste0('mod:', spec_name(spec)))
+        box_attach(NULL, name = paste0('mod:', spec_name(spec)))
     } else {
         parent.env(x) = new.env(parent = parent.env(x))
     }
@@ -147,7 +147,7 @@ import_into_env = function (to_env, to_names, from_env, from_names) {
         if (
             exists(from_names[i], from_env, inherits = FALSE) &&
             bindingIsActive(from_names[i], from_env) &&
-            ! inherits ((fun = activeBindingFunction(from_names[i], from_env)), 'xyz$placeholder')
+            ! inherits((fun = activeBindingFunction(from_names[i], from_env)), 'box$placeholder')
         ) {
             makeActiveBinding(to_names[i], fun, to_env)
         } else {
@@ -177,6 +177,6 @@ wrap_unsafe_function = function (ns, name) {
     wrapper
 }
 
-xyz_attach = wrap_unsafe_function(.BaseNamespaceEnv, 'attach')
+box_attach = wrap_unsafe_function(.BaseNamespaceEnv, 'attach')
 
-xyz_unlock_binding = wrap_unsafe_function(.BaseNamespaceEnv, 'unlockBinding')
+box_unlock_binding = wrap_unsafe_function(.BaseNamespaceEnv, 'unlockBinding')

@@ -1,4 +1,4 @@
-xyz::use(./a[...])
+box::use(./a[...])
 
 double = function (x) c(x, x)
 

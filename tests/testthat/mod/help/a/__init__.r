@@ -2,4 +2,4 @@
 '.__module__.'
 
 #' @export
-xyz::use(./b)
+box::use(./b)

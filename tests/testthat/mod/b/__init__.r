@@ -1,5 +1,5 @@
 #' @export
-xyz::use(./a[...])
+box::use(./a[...])
 
 #' @export
 z = 1

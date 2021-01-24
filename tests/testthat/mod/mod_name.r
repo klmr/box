@@ -1,14 +1,14 @@
 #' @export
-this_module_name = xyz::name()
+this_module_name = box::name()
 
 #' @export
-function_module_name = function () xyz::name()
+function_module_name = function () box::name()
 
-xyz::use(./a[...])
+box::use(./a[...])
 
 # Is this changed by the previous import/attach?
 #' @export
-this_module_name2 = xyz::name()
+this_module_name2 = box::name()
 
 #' @export
 after_module_attach = function () {
@@ -19,21 +19,21 @@ after_module_attach = function () {
         sink(file)
         expr
     }
-    silently(xyz::use(a = ./nested/a[...]))
-    on.exit(xyz::unload(a))
-    xyz::name()
+    silently(box::use(a = ./nested/a[...]))
+    on.exit(box::unload(a))
+    box::name()
 }
 
 #' @export
 after_package_attach = function () {
-    xyz::use(datasets[...])
-    xyz::name()
+    box::use(datasets[...])
+    box::name()
 }
 
 #' @export
 nested_module_name = function () {
     local({
-        xyz::use(datasets[...])
-        xyz::name()
+        box::use(datasets[...])
+        box::name()
     })
 }

@@ -1,7 +1,7 @@
 # Set up local module environment to test against.
 # Note that we override the normal path here.
 
-options(xyz.path = getwd())
+options(box.path = getwd())
 
 expect_not_identical = function (object, expected, info = NULL, label = NULL, expected.label = NULL) {
     lab_act = testthat::quasi_label(rlang::enquo(object), label)

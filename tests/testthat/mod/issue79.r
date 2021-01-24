@@ -1,5 +1,5 @@
-before = xyz::name()
-xyz::use(./a)
-after = xyz::name()
+before = box::name()
+box::use(./a)
+after = box::name()
 
 before; after

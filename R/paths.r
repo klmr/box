@@ -1,29 +1,29 @@
 #' Path related functions
 #'
 #' \code{mod_search_path} returns the character vector of paths where module
-#' code can be located and will be found by \pkg{xyz}.
+#' code can be located and will be found by \pkg{box}.
 #'
 #' @note The search paths are ordered from highest to lowest priority.
 #' The current module’s path always has the lowest priority.
 #'
 #' There are two ways of modifying the module search path: by default,
-#' \code{getOption('xyz.path')} specifies the search path as a character vector.
+#' \code{getOption('box.path')} specifies the search path as a character vector.
 #' Users can override its value by separately setting the environment variable
-#' \env{R_xyz_PATH} to one or more paths, separated by the platform’s path
+#' \env{R_BOX_PATH} to one or more paths, separated by the platform’s path
 #' separator (\dQuote{:} on UNIX-like systems, \dQuote{;} on Windows).
 #' @keywords internal
 #' @name paths
 mod_search_path = function (caller) {
-    env_value = strsplit(Sys.getenv('R_xyz_PATH'), .Platform$path.sep)[[1L]]
-    c(env_value %||% getOption('xyz.path'), calling_mod_path(caller))
+    env_value = strsplit(Sys.getenv('R_BOX_PATH'), .Platform$path.sep)[[1L]]
+    c(env_value %||% getOption('box.path'), calling_mod_path(caller))
 }
 
 #' \code{calling_mod_path} determines the path of the module code that is
-#' currently calling into the \pkg{xyz} package.
+#' currently calling into the \pkg{box} package.
 #'
-#' @param caller the environment from which \code{xyz::use} was invoked.
+#' @param caller the environment from which \code{box::use} was invoked.
 #' @return \code{calling_mod_path} the path of the source module that is calling
-#' \code{xyz::use}, or the script’s path if the calling code is not a module.
+#' \code{box::use}, or the script’s path if the calling code is not a module.
 #' @rdname paths
 calling_mod_path = function (caller) {
     calling_ns = mod_topenv(caller)

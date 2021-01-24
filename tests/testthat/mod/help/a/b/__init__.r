@@ -1,5 +1,5 @@
 #' @export
-xyz::use(
+box::use(
     ./c,
     devtools
 )
