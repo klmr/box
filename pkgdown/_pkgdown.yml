@@ -35,7 +35,7 @@ navbar:
                   href: articles/compiled-code.html
                 - text: Modules and packages compared
                   href: articles/packages.html
-                - text: Migration guide
+                - text: Migration guide for version 1.0
                   href: articles/migration.html
                 - text: ---
                 - text: Implementation details
