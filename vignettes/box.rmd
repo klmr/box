@@ -266,7 +266,7 @@ the hook for the `.onLoad` *package* namespace event.
 
 This function is executed the first time the module is loaded in an R session.
 Subsequent calls to `box::use` for that module, regardless of whether they occur
-in a different csope, will refer to the already loaded, cached module, and will
+in a different scope, will refer to the already loaded, cached module, and will
 *not* reload the module.
 
 We can illustrate this by loading a module which has side-effects, `'info'`.
