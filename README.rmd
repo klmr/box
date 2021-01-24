@@ -117,7 +117,26 @@ functionality is always used explicitly via `box::use`.
 
 ### Reusable code modules
 
-FIXME: Add section about modules.
+With ‘box’, code doesn’t have to be wrapped into a package to be reusable.
+Instead, every regular R file forms a reusable *R module* that can be used
+elsewhere via `box::use`.
+
+Such modules can be stored in a central path, or locally in each individual
+project. To import an R module, write
+
+```{r eval = FALSE}
+box::use(prefix/modname)
+```
+
+Unlike packages, modules always need to be qualified by a *prefix*, which forms
+the full module name. The prefix must match the path of the module below the
+*repository path*, or the local path.
+
+Otherwise, modules function like packages — they define code and export names,
+which `xyz::use` imports. The biggest difference to packages is ease of use:
+modules encourage writing all R code to be potentially reusable.
+
+For more information refer to the [Get started][] vignette.
 
 ## Why ‘box’?
 
@@ -138,8 +157,6 @@ needing to create a package, each R code file *is already a module* which can be
 imported using `box::use`. Modules can also be nested inside directories, such
 that self-contained projects can be easily split into separate or interdependent
 submodules.
-
-For more information refer to the [Get started][] vignette.
 
 [pep8]: https://www.python.org/dev/peps/pep-0008/#id23
 [Get started]: articles/box.html
