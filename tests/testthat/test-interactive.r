@@ -1,16 +1,19 @@
-context('Same as the basic tests, just in an interactive R shell')
+context('interactive')
 
 play_back_results = function (record_events, onto) {
     for (event in record_events) {
-        switch(event$type,
-               start_test = onto$start_test(event$context, event$test),
-               add_result = onto$add_result(event$context, event$test, event$result),
-               end_test = onto$end_test(event$context, event$test))
+        switch(
+            event$type,
+            start_test = onto$start_test(event$context, event$test),
+            add_result = onto$add_result(event$context, event$test, event$result),
+            end_test = onto$end_test(event$context, event$test)
+        )
     }
 }
 
 interactive_r(code = {
     library(testthat)
+    devtools::load_all()
 
     RecordReporter = R6::R6Class('RecordReporter', inherit = Reporter,
         public = list(
@@ -26,8 +29,7 @@ interactive_r(code = {
             },
 
             add_result = function (context, test, result) {
-                self$events$push(list(type = 'add_result',
-                                      context = context, test = test, result = result))
+                self$events$push(list(type = 'add_result', context = context, test = test, result = result))
             },
 
             end_test = function (context, test) {
@@ -41,8 +43,10 @@ interactive_r(code = {
     )
 
     record = RecordReporter$new()
-    tryCatch(test_file('test-basic.r', reporter = record),
-             finally = saveRDS(record$get_events(), 'test_results.rds'))
+    tryCatch(
+        test_file('test-basic.r', reporter = record),
+        finally = saveRDS(record$get_events(), 'test_results.rds')
+    )
 })
 
 record_events = readRDS('test_results.rds')

@@ -1,0 +1,47 @@
+url: http://klmr.me/box
+
+reference:
+    - title: Using modules & packages
+      desc: Functions for users of modules and packages
+      contents:
+        - use
+    - title: Writing modules
+      desc: Infrastructure and utility functions for use inside modules
+      contents:
+        - file
+        - name
+        - register_S3_method
+        - mod-hooks
+    - title: Interactive use
+      desc: Functions for use in interactive sessions and for testing
+      contents:
+        - help
+        - reload
+        - set_script_path
+        - unload
+
+navbar:
+    components:
+        articles:
+            text: Articles
+            menu:
+                - text: General topics
+                - text: Using compiled code
+                  href: articles/compiled-code.html
+                - text: Modules and packages compared
+                  href: articles/packages.html
+                - text: ---
+                - text: Implementation details
+                - text: The hierarchy of module environments
+                  href: articles/mod-env-hierarchy.html
+
+template:
+    params:
+        bootswatch: simplex
+
+authors:
+    Konrad Rudolph:
+        href: https://klmr.me
+
+repo:
+    branch: main

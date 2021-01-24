@@ -1,9 +1,9 @@
-context('Source file encoding')
+context('encoding')
 
 test_that('source is read as UTF-8', {
-    a = import('a')
+    box::use(mod/a)
     expected_bytes = as.raw(c(0xE2, 0x98, 0x83))
-    expect_that(nchar(a$encoding_test(), 'bytes'), equals(3))
-    expect_that(Encoding(a$encoding_test()), equals('UTF-8'))
-    expect_that(charToRaw(a$encoding_test()), equals(expected_bytes))
+    expect_equal(nchar(a$encoding_test(), 'bytes'), 3L)
+    expect_equal(Encoding(a$encoding_test()), 'UTF-8')
+    expect_equal(charToRaw(a$encoding_test()), expected_bytes)
 })

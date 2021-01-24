@@ -1,3 +1,11 @@
 .Rprofile
-man
+man/*.Rd
 NAMESPACE
+check
+doc
+docs
+Meta
+src/*.o
+src/*.so
+vignettes/*.html
+vignettes/*.R

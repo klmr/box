@@ -1,16 +1,15 @@
-Package: modules
-Title: Modules for R
-Version: 0.9.9
+Package: box
+Title: Write Reusable, Composable and Modular R Code
+Version: 0.9.9.9000
 Author: Konrad Rudolph <konrad.rudolph@gmail.com>
 Maintainer: Konrad Rudolph <konrad.rudolph@gmail.com>
 Description: Create reusable code modules in R. An alternative package
     management system for R, similar to module systems in Python, Ruby or
     JavaScript.
 Depends:
-    R (>= 3.0.2)
+    R (>= 3.5.0)
 Imports:
-    tools,
-    roxygen2 (>= 6.0.1)
+    tools
 License: Apache License (== 2.0) | file LICENSE
 LazyData: true
 Encoding: UTF-8
@@ -18,9 +17,10 @@ Suggests:
     devtools,
     knitr,
     rmarkdown,
+    R6,
+    rlang,
+    roxygen2 (>= 7.0.2),
     shiny,
-    testthat (>= 1.0.2.9000)
-Remotes:
-    hadley/testthat,
-    klutometis/roxygen
+    testthat (>= 2.0.0)
 VignetteBuilder: knitr
+RoxygenNote: 7.1.0

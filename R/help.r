@@ -1,122 +1,193 @@
-roxygen2_parse_code = function(file, env, registry) {
-    roxygen2:::parse_blocks(file, env, registry = registry)
+#' Parse a module’s documentation
+#'
+#' @param info The module info.
+#' @param mod_ns The module namespace.
+#' @return \code{parse_documentation} returns a list of character strings with
+#' the Rd documentation source code for each documented name in a module.
+#' @keywords internal
+parse_documentation = function (info, mod_ns) {
+    rdfiles = parse_roxygen_tags(info, mod_ns)
+    # Due to aliases, documentation entries may have more than one name.
+    aliases = map(function (rd) unique(rd$get_value('alias')), rdfiles)
+    names = rep(names(rdfiles), lengths(aliases))
+    docs = patch_mod_doc(stats::setNames(rdfiles[names], unlist(aliases)))
+
+    lapply(docs, format, wrap = FALSE)
 }
 
-parse_documentation = function (module) {
-    module_path = module_path(module)
+#' @keywords internal
+#' @rdname parse_documentation
+parse_roxygen_tags = function (info, mod_ns) {
+    mod_path = info$source_path
+    blocks = roxygen2::parse_file(mod_path, mod_ns)
+    roxygen2::roclet_process(
+        roxygen2::rd_roclet(),
+        blocks,
+        mod_ns,
+        dirname(mod_path)
+    )
+}
 
-    roclets = list(roxygen2::rd_roclet(), export_roclet())
-    registry = unlist(lapply(roclets, roxygen2::roclet_tags))
+#' @param docs the list of \pkg{roxygen2} documentation objects.
+#' @keywords internal
+#' @rdname parse_documentation
+patch_mod_doc = function (docs) {
+    if ('.__module__.' %in% names(docs)) {
+        mod_doc = docs[['.__module__.']]
+        mod_doc$sections$docType$value = 'package'
+        mod_doc$sections$usage = NULL
+        mod_doc$sections$format = NULL
+        mod_doc$sections$name$value = 'module'
+    }
 
-    parsed = list(env = module,
-                  blocks = roxygen2_parse_code(module_path, module, registry))
-    results = lapply(roclets, roxygen2::roclet_process,
-                     parsed = parsed, base_path = dirname(module_path))
-    rdfiles = results[[1]]
-
-    # Due to aliases, documentation entries may have more than one name.
-    aliases = lapply(rdfiles, function (rd) unique(rd$fields$alias$values))
-    names = rep(names(aliases), lengths(aliases))
-    docs = setNames(rdfiles[names], unlist(aliases))
-    lapply(docs, format, wrap = FALSE)
+    docs
 }
 
 #' Display module documentation
 #'
-#' \code{module_help} displays help on a module’s objects and functions in much
+#' \code{help} displays help on a module’s objects and functions in much
 #' the same way \code{\link[utils]{help}} does for package contents.
 #'
 #' @param topic fully-qualified name of the object or function to get help for,
-#'  in the format \code{module$function}
+#'  in the format \code{module$function}.
 #' @param help_type character string specifying the output format; currently,
-#'  only \code{'text'} is supported
-#' @note Help is only available if \code{\link{import}} loaded the help stored
-#' in the module file(s). By default, this happens only in interactive sessions.
+#'  only \code{'text'} is supported.
 #' @rdname help
 #' @export
 #' @examples
 #' \dontrun{
-#' mod = import('mod')
-#' module_help(mod$func)
+#' box::use(my/mod)
+#' box::help(mod$func)
 #' }
-module_help = function (topic, help_type = getOption('help_type', 'text')) {
+help = function (topic, help_type = getOption('help_type', 'text')) {
     topic = substitute(topic)
+    target = help_topic_target(parent.frame(), topic)
+    target_mod = target[[1L]]
+    subject = target[[2L]]
 
-    if (! is_module_help_topic(topic, parent.frame()))
-        stop(sQuote(deparse(topic)), ' is not a valid module help topic',
-             call. = FALSE)
-
-    module = get(as.character(topic[[2]]), parent.frame())
-    module_name = module_name(module)
-    object = as.character(topic[[3]])
-
-    doc = attr(module, 'doc')[[object]]
-    if (is.null(doc))
-        stop('No documentation available for ', sQuote(object),
-             ' in module ', sQuote(module_name), call. = FALSE)
-
-    display_help(doc, paste0('module:', module_name), help_type)
-}
-
-is_module_help_topic = function (topic, parent) {
-    # For nested modules, `topic` looks like this: `a$b$c…`. We need to retrieve
-    # the first part of this (`a`) and check whether it’s a module.
-
-    leftmost_name = function (expr) {
-        if (is.name(expr))
-            expr
-        else if (! is.call(expr) || expr[[1]] != '$')
-            NULL
-        else
-            leftmost_name(expr[[2]])
+    if (! inherits(target_mod, 'box$mod')) {
+        stop(
+            dQuote(deparse(topic)), ' is not a valid module help topic',
+            call. = FALSE
+        )
     }
 
-    top_module = leftmost_name(topic)
+    if (subject != '.__module__.') {
+        obj = if (
+            exists(subject, target_mod, inherits = FALSE) &&
+            ! bindingIsActive(subject, target_mod)
+        ) get(subject, envir = target_mod, inherits = FALSE)
 
-    ! is.null(top_module) &&
-        exists(as.character(top_module), parent) &&
-        ! is.null(module_name(get(as.character(top_module), parent)))
-}
-
-#' @usage
-#' # ?module$function
-#' @inheritParams utils::`?`
-#' @rdname help
-#' @export
-#' @examples
-#' \dontrun{
-#' ?mod$func
-#' }
-`?` = function (e1, e2) {
-    topic = substitute(e1)
-    if (missing(e2) && is_module_help_topic(topic, parent.frame()))
-        eval(call('module_help', topic), envir = parent.frame())
-    else {
-        delegate = if ('devtools_shims' %in% search())
-            get('?', pos = 'devtools_shims')
-        else
-            utils::`?`
-        eval(`[[<-`(match.call(), 1, delegate), envir = parent.frame())
+        if (inherits(obj, 'box$mod')) {
+            target_mod = obj
+            subject = '.__module__.'
+        }
     }
+
+    info = attr(target_mod, 'info')
+    mod_name = strsplit(attr(target_mod, 'name'), ':')[[1L]][2L]
+
+    if (inherits(info, 'box$pkg_info')) {
+        help_call = if (subject == '.__module__.') {
+            bquote(help(.(as.name(mod_name))))
+        } else {
+            bquote(help(topic = .(subject), package = .(mod_name)))
+        }
+        return(call_help(help_call, parent.frame()))
+    }
+
+    if (! requireNamespace('roxygen2')) {
+        stop(
+            sprintf('Displaying documentation requires %s installed', sQuote('roxygen2')),
+            call. = FALSE
+        )
+    }
+
+    mod_ns = attr(target_mod, 'namespace')
+    all_docs = namespace_info(mod_ns, 'doc')
+
+    if (is.null(all_docs)) {
+        all_docs = parse_documentation(info, mod_ns)
+        namespace_info(mod_ns, 'doc') = all_docs
+    }
+
+    doc = all_docs[[subject]]
+
+    if (is.null(doc)) {
+        if (subject == '.__module__.') {
+            stop(
+                'No documentation available for ', dQuote(mod_name),
+                call. = FALSE
+            )
+        } else {
+            stop(
+                'No documentation available for ', dQuote(subject),
+                ' in module ', dQuote(mod_name),
+                call. = FALSE
+            )
+        }
+    }
+
+    display_help(doc, paste0('module:', mod_name), help_type)
 }
 
-#' @usage
-#' # help(module$function)
-#' @inheritParams utils::help
-#' @export
-#' @examples
-#' \dontrun{
-#' help(mod$func)
-#' }
-help = function (topic, ...) {
-    topic = substitute(topic)
-    delegate = if (! missing(topic) &&
-                   is_module_help_topic(topic, parent.frame())) {
-        module_help
-    } else if ('devtools_shims' %in% search()) {
-        get('help', pos = 'devtools_shims')
+#' Helper functions for the help functionality
+#'
+#' \code{help_topic_target} parses the expression being passed to the
+#' \code{help} function call to find the innermost module subset expression in
+#' it.
+#' \code{call_help} invokes a \code{help()} call expression for a package help
+#' topic, finding the first \code{help} function definition, ignoring the one
+#' from this package.
+#'
+#' @param caller the environment from which \code{help} was called.
+#' @param topic the unevaluated expression passed to \code{help}.
+#'
+#' @return \code{help_topic_target} returns a list of two elements containing
+#' the innermost module of the \code{help} call, as well as the name of the
+#' object that’s the subject of the \code{help} call. For \code{help(a$b$c$d)},
+#' it returns \code{list(c, quote(d))}.
+#' @name help-internal
+#' @keywords internal
+help_topic_target = function (caller, topic) {
+    inner_mod = function (mod, expr) {
+        name = if (is.name(expr)) {
+            as.character(expr)
+        } else if (is.call(expr) && identical(expr[[1L]], quote(`$`))) {
+            mod = Recall(mod, expr[[2L]])
+            as.character(expr[[3L]])
+        } else {
+            stop(
+                dQuote(deparse(topic)), ' is not a valid module help topic',
+                call. = FALSE
+            )
+        }
+        get(name, envir = mod, inherits = FALSE)
+    }
+
+    if (is.name(topic)) {
+        list(inner_mod(caller, topic), '.__module__.')
     } else {
-        utils::help
+        list(inner_mod(caller, topic[[2L]]), as.character(topic[[3L]]))
     }
-    eval(`[[<-`(match.call(), 1, delegate), envir = parent.frame())
+}
+
+#' @param call the patched \code{help} call expression.
+#' @name help-internal
+call_help = function (call, caller) {
+    # Search for `help` function in caller scope. This is intended to find the
+    # first help call which is either `utils::help` or potentially from another
+    # environment, such as `devtools_shims`.
+    # Unfortunately during testing (and during development) the current package
+    # *is* attached, so we can’t just use `get` in the global/caller’s
+    # environment — it would recurse indefinitely to this package’s `help`
+    # function. To fix this, we need to manually find the first hit that isn’t
+    # inside this package.
+    candidates = utils::getAnywhere('help')
+    envs = map(environment, candidates$objs)
+    valid = candidates$visible & map_lgl(is.function, candidates$objs)
+    other_helps = candidates$obj[valid & ! map_lgl(identical, envs, topenv())]
+
+    call[[1L]] = other_helps[[1L]]
+    eval(call, envir = caller)
 }

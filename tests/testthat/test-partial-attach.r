@@ -1,20 +1,21 @@
-context('Attach specific names only')
+context('partial attaching')
 
 test_that('partial attach works locally', {
-    a = import('a', attach = 'double')
-    expect_that(ls(parent.env(environment())), equals('double'))
+    a = box::use(mod/a[double])
+    expect_equal(ls(parent.env(environment())), 'double')
 })
 
 test_that('partial attach works globally', {
-    exports <<- c('inc', 'get_counter')
-    on.exit(rm(exports, envir = .GlobalEnv))
-    a = local(import('a', attach = exports), envir = .GlobalEnv)
-    expect_that(search()[2], equals(environmentName(a)))
+    exports = c('inc', 'get_counter')
+    local(box::use(a = mod/a[inc, get_counter]), envir = .GlobalEnv)
+    expect_equal(search()[2L], environmentName(a))
     on.exit(detach(), add = TRUE)
-    expect_that(sort(ls(as.environment(2))), equals(sort(exports)))
+    expect_equal(sort(ls(2L)), c('get_counter', 'inc'))
 })
 
 test_that('Invalid attach specifier raises error', {
-    expect_that(import('a', attach = c('foo', 'bar')),
-                throws_error('Non-existent function\\(s\\)'))
+    expect_error(
+        box::use(mod/a[foo, bar]),
+        regexp = 'Names .* not exported by'
+    )
 })

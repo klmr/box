@@ -1,13 +1,18 @@
-r_cmdline = function (cmd, args = '') {
+r_cmdline = function (cmd, ...) {
     in_tests = grepl('tests/testthat$', getwd())
-    rprofile = file.path(if (in_tests) '.' else 'tests/testthat', 'support', 'rprofile.r')
-    args = c('--no-save', '--no-restore', args)
-    sprintf('R_OLD_PROFILE_USER="$R_PROFILE_USER" R_PROFILE_USER="%s" %s %s',
-            rprofile, cmd, paste(args, collapse = ' '))
+    rprofile = file.path(
+        if (in_tests) '.' else 'tests/testthat',
+        'support', 'rprofile.r'
+    )
+    args = c('--no-save', '--no-restore', ...)
+    sprintf(
+        'R_ORIGINAL_PROFILE_USER="$R_PROFILE_USER" R_PROFILE_USER="%s" %s %s',
+        rprofile, cmd, paste(shQuote(args), collapse = ' ')
+    )
 }
 
 rcmd = function (script_path) {
-    cmd = r_cmdline('R CMD BATCH', c('--slave', '--no-timing'))
+    cmd = r_cmdline('"$R_HOME/bin/R" CMD BATCH', '--slave', '--no-timing')
     output_file = tempfile(fileext = '.rout')
     on.exit(unlink(output_file))
     system(paste(cmd, script_path, output_file))
@@ -15,14 +20,14 @@ rcmd = function (script_path) {
 }
 
 rscript = function (script_path) {
-    cmd = r_cmdline('Rscript', '--slave')
-    p = pipe(paste(cmd, script_path))
+    cmd = r_cmdline('"$R_HOME/bin/Rscript"', '--slave', script_path)
+    p = pipe(cmd)
     on.exit(close(p))
     readLines(p)
 }
 
 interactive_r = function (script_path, text, code) {
-    cmd = r_cmdline('R --interactive')
+    cmd = r_cmdline('"$R_HOME/bin/R"', '--interactive')
     output_file = tempfile(fileext = '.rout')
     on.exit(unlink(output_file))
 
@@ -35,7 +40,6 @@ interactive_r = function (script_path, text, code) {
     } else {
         stop('Missing argument')
     }
-
 
     local({
         p = pipe(paste(cmd, '>', output_file), 'w')

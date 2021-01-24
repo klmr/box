@@ -1,0 +1,1 @@
+PKG_CFLAGS = -std=c11 -pedantic -Wall -Wextra -Werror
