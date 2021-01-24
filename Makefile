@@ -100,7 +100,7 @@ NAMESPACE: ${r_source_files}
 	${rscript} -e "devtools::document()"
 
 README.md: README.rmd DESCRIPTION
-	Rscript -e "rmarkdown::render('$<', output_file = '${@F}', output_dir = '${@D}')"
+	${rscript} -e "knitr::knit('$<')"
 
 .PHONY: favicons
 ## Generate the documentation site favicons
