@@ -40,9 +40,9 @@ code into packages.
 
 ### Loading code
 
-‘box’ replaces the base R `library` function with `box::use`. `box::use` is more
-powerful, more flexible, and less error-prone than `library`. At its simplest,
-it provides a direct replacement of `library`:
+‘box’ replaces the base R `library` (and `require`) functions with `box::use`.
+`box::use` is more powerful, more flexible, and less error-prone than `library`.
+At its simplest, it provides a direct replacement for `library`:
 
 Instead of
 
@@ -57,10 +57,10 @@ box::use(ggplot2[...])
 ```
 
 This tells R to import the ‘ggplot2’ package, and to attach all its exported
-names — just like `library`. For this, `...` acts as a wildcard to denote “all
-exported names”. However, attaching everything is generally discouraged, since
-this practice leads to name clashes and makes it harder to retrace which
-packages individual names come from.
+names — just like `library`. For this purpose, `...` acts as a wildcard to
+denote “all exported names”. However, attaching everything is generally
+discouraged, since this practice leads to name clashes and makes it harder to
+retrace which names come from which packages.
 
 Instead, we can also instruct `box::use` to not attach any names when loading a
 package — or to just attach some. Or we can tell it to attach some names under
@@ -70,30 +70,32 @@ The following `box::use` declaration illustrates all these different cases:
 
 ```{r eval = FALSE}
 box::use(
-    purrr[map, map_dbl],
+    purrr,
     tbl = tibble,
-    dplyr[dp_select = select]
+    dplyr[filter, select],
+    stats[st_filter = filter]
 )
 ```
 
 This declaration
 
-* attaches the names `purrr::map` and `purrr::map_dbl`;
-* creates an alias, `tbl`, for the imported ‘tibble’ package (but does not attach
-any of its names directly); and
-* attaches `dplyr::select` under the alias `dp_select`.
+* imports the package ‘purrr’ (but does not attach any of its names);
+* creates an alias, `tbl`, for the imported ‘tibble’ package (but does not
+  attach any of its names);
+* attaches the names `dplyr::filter` and `dplyr::select`; and
+* attaches the name `stats::filter` under the alias `st_filter`.
 
-Of the three packages thus loaded, only ‘tibble’ is now available by name (as
-`tbl`), and we can use its exports via the `$` subset operator, e.g.
-`tbl$glimpse`. Although we’ve also loaded ‘purrr’ and ‘dplyr’, we did not create
-local names for the packages themselves, we only attached some of their exported
-names.
+Of the four packages thus loaded, only ‘purrr’ and ‘tibble’ are now available by
+name (as `purrr` and `tbl`, respectively), and we can use their exports via the
+`$` operator, e.g. `purrr$map` or `tbl$glimpse`. Although we’ve also loaded
+‘dplyr’ and ‘stats’, we did not create local names for the packages themselves,
+we only attached some of their exported names.
 
 Furthermore, unlike with `library`, the effects of `box::use` are restricted to
-the current scope: we can load and attach names inside a function, and after
-executing the function nothing has changed on its outside: importing code
-happens *locally* and *safely*, and functions which load packages no longer
-cause global side effects:
+the current scope: we can load and attach names *inside* a function, and calling
+this function will not change the available names in the calling scope (or
+elsewhere). Importing code happens *locally*, and functions which load packages
+no longer cause global side effects:
 
 ```{r eval = FALSE}
 log = function (msg) {
@@ -106,7 +108,7 @@ log('test')
 ```
 
 This makes it easy to write code with external dependencies without creating
-accidental, far-reaching side effects.
+unintentional, far-reaching side effects.
 
 Unlike other packages, ‘box’ itself is never loaded via `library`. Instead, its
 functionality is always used explicitly via `box::use`.
@@ -137,17 +139,23 @@ For more information refer to the *[Get started][]* vignette.
 
 ## Why ‘box’?
 
-‘box’ promotes a philosophy that is in some way the opposite of what’s common in
-R: while some notable packages export and attach many hundreds and, in at least
-one notable case, *over a thousand* names, well-established software engineering
-best practices encourage limiting both the scope of names, as well as the number
-of names available in each scope.
+‘box’ promotes a philosophy that is in a way the opposite of what’s common in R:
+while some notable packages export and attach many hundreds and, in at least one
+notable case, *over a thousand* names, software engineering best practices
+encourage limiting both the scope of names, as well as the number of names
+available in each scope.
 
-For instance, it is best practice in Python to never use the equivalent of
-`library(pkg)` (which in Python is `from pkg import *`). Instead, Python
-[strongly encourages][pep8] using `import pkg` or `from pkg import a, few,
-symbols`, which correspond to `box::use(pkg)` and `box::use(pkg[a, few,
-symbols])`, respectively.
+For instance, in Python it is best practice to never use the equivalent of
+`library(pkg)` (i.e. `from pkg import *`). Instead, Python [strongly
+encourages][pep8] using `import pkg` or `from pkg import a, few, symbols`, which
+correspond to `box::use(pkg)` and `box::use(pkg[a, few, symbols])`,
+respectively. The same is true in many other languages, e.g. [C++][], [Rust][],
+and [Perl][]. Other languages (e.g. JavaScript and Go) are even stricter: they
+don’t allow unqualified imports at all.
+
+[*The Zen of Python*][pep20] puts this rule succinctly:
+
+> Explicit is better than implicit.
 
 ‘box’ also makes it drastically easier to *write* reusable code: instead of
 needing to create a package, each R code file *is already a module* which can be
@@ -155,5 +163,9 @@ imported using `box::use`. Modules can also be nested inside directories, such
 that self-contained projects can be easily split into separate or interdependent
 submodules.
 
-[pep8]: https://www.python.org/dev/peps/pep-0008/#id23
+[pep8]: https://www.python.org/dev/peps/pep-0008/#imports
 [Get started]: https://klmr.me/box/articles/box.html
+[C++]: https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Rs-using
+[Rust]: https://stackoverflow.com/q/23839699/1968
+[Perl]: https://perldoc.perl.org/Exporter#Selecting-What-to-Export
+[pep20]: https://www.python.org/dev/peps/pep-0020/
