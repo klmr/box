@@ -24,7 +24,7 @@ Depends:
     R (>= 3.5.0)
 Imports:
     tools
-License: Apache License (== 2.0) | file LICENSE
+License: MIT + file LICENSE
 LazyData: true
 Encoding: UTF-8
 Suggests:
