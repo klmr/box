@@ -130,7 +130,7 @@ which `xyz::use` imports. The biggest difference to packages is ease of use:
 modules encourage writing all R code to be potentially reusable. No need for
 setup, separate folders, metadata or other infrastructure.
 
-For more information refer to the [Get started][] vignette.
+For more information refer to the *[Get started][]* vignette.
 
 ## Why ‘box’?
 
@@ -153,4 +153,4 @@ that self-contained projects can be easily split into separate or interdependent
 submodules.
 
 [pep8]: https://www.python.org/dev/peps/pep-0008/#id23
-[Get started]: articles/box.html
+[Get started]: https://klmr.me/box/articles/box.html
