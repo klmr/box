@@ -30,6 +30,8 @@ navbar:
                   href: articles/compiled-code.html
                 - text: Modules and packages compared
                   href: articles/packages.html
+                - text: Migration guide
+                  href: articles/migration.html
                 - text: ---
                 - text: Implementation details
                 - text: The hierarchy of module environments
