@@ -73,20 +73,16 @@ article-%:
 reference: documentation
 	${rscript} -e "pkgdown::build_reference()"
 
-# NOTE: In the following, the vignettes are built TWICE: once via the
-# conventional route, to result in HTML output. And once to create MD output for
-# hosting on GitHub, because the standard knitr RMarkdown vignette template
-# refuses to save the intermediate MD files.
-
+# FIXME: Old reason for building everything twice no longer exists; do we need
+# both `vignettes` and `knit_all` rules?
 .PHONY: vignettes
 ## Compile all vignettes and other R Markdown articles
-vignettes: knit_all
+vignettes:
 	${rscript} -e "devtools::build_vignettes(dependencies = TRUE)"
 
 .PHONY: knit_all
 ## Compile R markdown articles and move files to the documentation directory
 knit_all: ${knit_results} | doc
-	cp -r vignettes/* doc
 
 doc/%.md: vignettes/%.rmd | doc
 	${rscript} -e "rmarkdown::render('$<', output_format = 'md_document', output_file = '${@F}', output_dir = '${@D}')"
