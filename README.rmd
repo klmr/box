@@ -21,14 +21,14 @@ desc = setNames(as.list(desc), colnames(desc))
 
 ## 📦 Installation
 
-To install the development version:
+To install the pre-release development version:
 
 ```{r, eval = FALSE}
 if (! requireNamespace('pak')) {
     install.packages("pak", repos = "https://r-lib.github.io/p/pak/dev/")
 }
 
-pak::pkg_install('klmr/box@release')
+pak::pkg_install('klmr/box@develop')
 ```
 
 ## 🥜 Usage in a nutshell
