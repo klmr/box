@@ -50,14 +50,14 @@ parse_spec = function (expr, alias) {
 #' @name spec
 mod_spec = function (spec, ...) {
     extra_spec = spec[setdiff(names(spec), 'mod')]
-    structure(c(spec$mod, extra_spec, ...), class = c('box$mod_spec', 'box$spec'))
+    structure(c(spec$mod, extra_spec, ...), class = c('pod$mod_spec', 'pod$spec'))
 }
 
 #' @keywords internal
 #' @name spec
 pkg_spec = function (spec, ...) {
     extra_spec = spec[setdiff(names(spec), 'pkg')]
-    structure(c(spec$pkg, extra_spec, ...), class = c('box$pkg_spec', 'box$spec'))
+    structure(c(spec$pkg, extra_spec, ...), class = c('pod$pkg_spec', 'pod$spec'))
 }
 
 #' @keywords internal
@@ -66,22 +66,22 @@ spec_name = function (spec) {
     UseMethod('spec_name')
 }
 
-`spec_name.box$mod_spec` = function (spec) {
+`spec_name.pod$mod_spec` = function (spec) {
     paste(paste(spec$prefix, collapse = '/'), spec$name, sep = '/')
 }
 
-`spec_name.box$pkg_spec` = function (spec) {
+`spec_name.pod$pkg_spec` = function (spec) {
     spec$name
 }
 
 #' @export
-`print.box$spec` = function (x, ...) {
+`print.pod$spec` = function (x, ...) {
     cat(as.character(x, ...), '\n', sep = '')
     invisible(x)
 }
 
 #' @export
-`as.character.box$spec` = function (x, ...) {
+`as.character.pod$spec` = function (x, ...) {
     r_name = function (names) {
         map_chr(
             function (n) {
@@ -111,7 +111,7 @@ spec_name = function (spec) {
     }
 
     mod_or_pkg = function (spec) {
-        if (inherits(spec, 'box$mod_spec')) {
+        if (inherits(spec, 'pod$mod_spec')) {
             prefix = paste(r_name(spec$prefix), collapse = '/')
             sprintf('mod(%s/\x1b[4;33m%s\x1b[0m)', prefix, r_name(spec$name))
         } else {

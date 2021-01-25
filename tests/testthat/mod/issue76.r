@@ -1,15 +1,15 @@
 f = function() {
-    box::use(./a[...])
+    pod::use(./a[...])
     helper()
 }
 
 g = function() {
-    box::use(./a)
+    pod::use(./a)
     helper()
 }
 
 h = function() {
-    box::use(./a[`%.%`])
+    pod::use(./a[`%.%`])
     helper()
 }
 

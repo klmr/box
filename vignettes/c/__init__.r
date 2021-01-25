@@ -1,5 +1,5 @@
 libname = function (name) {
-    box::file(paste0(name, .Platform$dynlib.ext))
+    pod::file(paste0(name, .Platform$dynlib.ext))
 }
 
 .on_load = function (ns) {

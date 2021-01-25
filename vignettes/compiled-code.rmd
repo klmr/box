@@ -19,7 +19,7 @@ vignette: >
 ---
 ```{r include=FALSE}
 devtools::load_all()
-box::use(./source_file)
+pod::use(./source_file)
 
 # Set up a temporary directory with the module demo. This is necessary for the
 # sole reason that, otherwise, `R CMD check` breaks: vignette building invokes
@@ -29,12 +29,12 @@ box::use(./source_file)
 tmpdir = tempfile('dir')
 dir.create(tmpdir)
 file.copy(file.path(getwd(), 'c'), tmpdir, recursive = TRUE)
-box::set_script_path(file.path(tmpdir, 'c'))
+pod::set_script_path(file.path(tmpdir, 'c'))
 ```
 
 ## Current status
 
-The ‘box’ package doesn’t have a built-in foreign function interface yet but it
+The ‘pod’ package doesn’t have a built-in foreign function interface yet but it
 is possible to integrate compiled code via R’s `SHLIB` mechanism for building
 shared libraries. In particular, this also works with packages such as [Rcpp][].
 
@@ -84,7 +84,7 @@ With this in place, we can invoke the compilation by loading the `c/__setup__`
 submodule:
 
 ```{r}
-box::use(c/`__setup__`)
+pod::use(c/`__setup__`)
 ```
 
 The result of the compilation will be a single file, `hello.so` (on Unix and
@@ -101,7 +101,7 @@ helper function that gives us this name:
 
 ```{r eval=FALSE}
 libname = function (name) {
-    box::file(paste0(name, .Platform$dynlib.ext))
+    pod::file(paste0(name, .Platform$dynlib.ext))
 }
 ```
 
@@ -138,7 +138,7 @@ hello_world = function (name) {
 To use the code, we load the module and call the `hello_world` function:
 
 ```{r}
-box::use(./c)
+pod::use(./c)
 c$hello_world('Rthur')
 ```
 

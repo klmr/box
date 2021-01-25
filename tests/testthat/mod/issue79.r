@@ -1,5 +1,5 @@
-before = box::name()
-box::use(./a)
-after = box::name()
+before = pod::name()
+pod::use(./a)
+after = pod::name()
 
 before; after

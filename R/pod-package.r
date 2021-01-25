@@ -1,6 +1,6 @@
 #' An alternative module system for R
 #'
-#' Use \code{box::use(prefix/mod)} to import a module, or \code{box::use(pkg)}
+#' Use \code{pod::use(prefix/mod)} to import a module, or \code{pod::use(pkg)}
 #' to import a package. Fully qualified names are supported for nested modules,
 #' reminiscent of module systems in many other modern languages.
 #'
@@ -31,7 +31,7 @@
 #'  \item \code{\link{set_script_path}}
 #' }
 #'
-#' @name box
+#' @name pod
 #' @docType package
 '_PACKAGE'
 
@@ -57,7 +57,7 @@
     help = sprintf('`vignette(\'basic-usage\', package = \'%s\')`', pkgname)
     cond = structure(
         list(message = sprintf(template, shQuote(pkgname), help), call = NULL),
-        class = c('box_attach_error', 'error', 'condition')
+        class = c('pod_attach_error', 'error', 'condition')
     )
     stop(cond)
 }

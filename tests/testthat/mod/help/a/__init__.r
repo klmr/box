@@ -2,4 +2,4 @@
 '.__module__.'
 
 #' @export
-box::use(./b)
+pod::use(./b)

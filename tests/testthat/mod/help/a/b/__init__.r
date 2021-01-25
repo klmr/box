@@ -1,5 +1,5 @@
 #' @export
-box::use(
+pod::use(
     ./c,
     devtools
 )

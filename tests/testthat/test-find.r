@@ -24,17 +24,17 @@ test_that('"../" can only be used as a prefix', {
 })
 
 test_that('local path is searched globally', {
-    old_opts = options(box.path = NULL)
+    old_opts = options(pod.path = NULL)
     on.exit(options(old_opts))
 
     expect_paths_equal(mod_search_path(environment()), getwd())
 })
 
 test_that('local path is searched in module', {
-    old_opts = options(box.path = NULL)
+    old_opts = options(pod.path = NULL)
     on.exit(options(old_opts))
 
-    box::use(rel = mod/nested/rel_import)
+    pod::use(rel = mod/nested/rel_import)
     nested_path = file.path(getwd(), 'mod', 'nested')
 
     expect_paths_equal(rel$global_path, nested_path)

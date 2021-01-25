@@ -1,11 +1,11 @@
 #' Import a module or package
 #'
-#' \code{box::use} imports one or more modules and/or packages, and makes them
+#' \code{pod::use} imports one or more modules and/or packages, and makes them
 #' available in the calling environment.
 #'
 #' @details
-#' \code{box::use(...)} specifies a list of one or more import declarations,
-#' given as individual arguments to \code{box::use}, separated by comma. Each
+#' \code{pod::use(...)} specifies a list of one or more import declarations,
+#' given as individual arguments to \code{pod::use}, separated by comma. Each
 #' import declaration takes one of the following forms:
 #'
 #' \describe{
@@ -47,7 +47,7 @@
 #' shown above.
 #'
 #' Unlike with \code{\link[base]{library}}, attaching happens \emph{locally},
-#' i.e. in the caller’s environment: if \code{box::use} is executed in the
+#' i.e. in the caller’s environment: if \code{pod::use} is executed in the
 #' global environment, the effect is the same. Otherwise, the effect of
 #' importing and attaching a module or package is limited to the caller’s local
 #' scope (its \code{environment()}). When used \emph{inside a module} at module
@@ -61,11 +61,11 @@
 #'
 #' @section Search path:
 #' Modules are searched in the module search path, given by
-#' \code{getOption('box.path')}. This is a vector of paths to consider, from the
+#' \code{getOption('pod.path')}. This is a vector of paths to consider, from the
 #' highest to the lowest priority. The current directory is always considered
 #' last. That is, if a file \file{a/b.r} exists both in the current directory
 #' and in a module search path, the local file \file{./a/b.r} will not be
-#' loaded, unless the import is explicitly declared as \code{box::use(./a/b)}.
+#' loaded, unless the import is explicitly declared as \code{pod::use(./a/b)}.
 #'
 #' The \emph{current directory} is context-dependent: inside a module, the
 #' directory corresponds to the module’s directory. Inside an R code file
@@ -97,24 +97,24 @@
 #' # Basic usage
 #'
 #' # `a.r` is a file in the local directory containing a function `f`.
-#' box::use(./a)
+#' pod::use(./a)
 #' a$f()
 #'
 #' # Attaching exported names
 #'
 #' # b/c.r is a file in path `b`, containing functions `f` and `g`.
-#' box::use(b/c[f])
+#' pod::use(b/c[f])
 #' f()
 #' g() # Error: could not find function "g"
 #' b$f() # Error: object 'b' not found
 #'
-#' box::use(b/c[...])
+#' pod::use(b/c[...])
 #' f()
 #' g()
 #'
 #' # Alias names
 #'
-#' box::use(
+#' pod::use(
 #'     x = ./a,
 #'     c = b/c[h = g, ...]
 #' )
@@ -249,7 +249,7 @@ finalize_deferred = function (info) {
     UseMethod('finalize_deferred')
 }
 
-`finalize_deferred.box$mod_info` = function (info) {
+`finalize_deferred.pod$mod_info` = function (info) {
     deferred = attr(loaded_mods[[info$source_path]], 'deferred')
     if (is.null(deferred)) return()
 
@@ -260,7 +260,7 @@ finalize_deferred = function (info) {
     }
 }
 
-`finalize_deferred.box$pkg_info` = function (info) {}
+`finalize_deferred.pod$pkg_info` = function (info) {}
 
 #' @rdname importing
 export_and_attach = function (spec, info, mod_ns, caller) {
@@ -291,7 +291,7 @@ load_mod = function (info) {
     UseMethod('load_mod')
 }
 
-`load_mod.box$mod_info` = function (info) {
+`load_mod.pod$mod_info` = function (info) {
     if (is_mod_loaded(info)) return(loaded_mod(info))
 
     # Load module/package and dependencies; register the module now, to allow
@@ -313,7 +313,7 @@ load_mod = function (info) {
     mod_ns
 }
 
-`load_mod.box$pkg_info` = function (info) {
+`load_mod.pod$pkg_info` = function (info) {
     pkg = info$name
     base::.getNamespace(pkg) %||% loadNamespace(pkg)
 }
@@ -336,11 +336,11 @@ mod_export_names = function (info, mod_ns) {
     UseMethod('mod_export_names')
 }
 
-`mod_export_names.box$mod_info` = function (info, mod_ns) {
+`mod_export_names.pod$mod_info` = function (info, mod_ns) {
     namespace_info(mod_ns, 'exports')
 }
 
-`mod_export_names.box$pkg_info` = function (info, mod_ns) {
+`mod_export_names.pod$pkg_info` = function (info, mod_ns) {
     getNamespaceExports(mod_ns)
 }
 
@@ -394,7 +394,7 @@ assign_alias = function (spec, mod_exports, caller) {
     if (! create_mod_alias) return()
 
     if (exists(spec$alias, caller, inherits = FALSE) && bindingIsLocked(spec$alias, caller)) {
-        box_unlock_binding(spec$alias, caller)
+        pod_unlock_binding(spec$alias, caller)
     }
     assign(spec$alias, mod_exports, envir = caller)
 }
@@ -422,7 +422,7 @@ assign_temp_alias = function (spec, caller) {
         } else {
             # Resolve assignments
             for (env in callers) {
-                box_unlock_binding(spec$alias, env)
+                pod_unlock_binding(spec$alias, env)
                 assign(spec$alias, mod_exports, envir = env)
                 lockBinding(spec$alias, env)
             }
@@ -434,5 +434,5 @@ assign_temp_alias = function (spec, caller) {
         }
     }
 
-    makeActiveBinding(spec$alias, structure(binding, class = 'box$placeholder'), caller)
+    makeActiveBinding(spec$alias, structure(binding, class = 'pod$placeholder'), caller)
 }

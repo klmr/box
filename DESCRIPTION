@@ -1,4 +1,4 @@
-Package: box
+Package: pod
 Title: Write Reusable, Composable and Modular R Code
 Version: 1.0.0
 Authors@R: c(
@@ -15,8 +15,8 @@ Authors@R: c(
             comment = c(ORCID = '0000-0002-6862-5221')
         )
     )
-URL: https://klmr.me/box, https://github.com/klmr/box
-BugReports: https://github.com/klmr/box/issues
+URL: https://klmr.me/pod, https://github.com/klmr/pod
+BugReports: https://github.com/klmr/pod/issues
 Description: Create reusable code modules in R. An alternative package
     management system for R, similar to module systems in Python, Ruby or
     JavaScript.

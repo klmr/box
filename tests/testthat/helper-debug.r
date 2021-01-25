@@ -1,5 +1,5 @@
 clear_mods = function () {
-    rm(list = names(box:::loaded_mods), envir = box:::loaded_mods)
+    rm(list = names(pod:::loaded_mods), envir = pod:::loaded_mods)
 }
 
 .setup_fun = NULL

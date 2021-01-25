@@ -1,32 +1,32 @@
 context('names')
 
 test_that('the global namespace has no module name', {
-    expect_null(box::name())
+    expect_null(pod::name())
 })
 
 test_that('modules have a name', {
-    box::use(mod/a)
+    pod::use(mod/a)
     expect_equal(a$get_modname(), 'a')
 })
 
 test_that('module names can be read inside functions', {
-    box::use(mod/a)
+    pod::use(mod/a)
     expect_equal(a$get_modname2(), 'a')
 })
 
 test_that('module_name works after attaching modules', {
     # Test that #66 is fixed and that there are no regressions.
 
-    box::use(a = mod/a[...])
-    expect_null(box::name())
+    pod::use(a = mod/a[...])
+    expect_null(pod::name())
 
     in_globalenv({
-        box::use(a = mod/a[...])
-        on.exit(box::unload(a))
-        expect_null(box::name())
+        pod::use(a = mod/a[...])
+        on.exit(pod::unload(a))
+        expect_null(pod::name())
     })
 
-    box::use(x = mod/mod_name)
+    pod::use(x = mod/mod_name)
 
     expect_equal(x$this_module_name, 'mod_name')
     expect_equal(x$function_module_name(), 'mod_name')

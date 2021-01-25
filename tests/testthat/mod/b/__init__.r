@@ -1,5 +1,5 @@
 #' @export
-box::use(./a[...])
+pod::use(./a[...])
 
 #' @export
 z = 1

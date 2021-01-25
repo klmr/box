@@ -1,14 +1,14 @@
 #' @export
-this_module_file = box::file()
+this_module_file = pod::file()
 
 #' @export
-function_module_file = function () box::file()
+function_module_file = function () pod::file()
 
-box::use(./a[...])
+pod::use(./a[...])
 
 # Is this changed by the previous import/attach?
 #' @export
-this_module_file2 = box::file()
+this_module_file2 = pod::file()
 
 #' @export
 after_module_attach = function () {
@@ -19,21 +19,21 @@ after_module_attach = function () {
         sink(file)
         expr
     }
-    silently(box::use(a = ./nested/a[...]))
-    on.exit(box::unload(a))
-    box::file()
+    silently(pod::use(a = ./nested/a[...]))
+    on.exit(pod::unload(a))
+    pod::file()
 }
 
 #' @export
 after_package_attach = function () {
-    box::use(datasets[...])
-    box::file()
+    pod::use(datasets[...])
+    pod::file()
 }
 
 #' @export
 nested_module_file = function () {
     local({
-        box::use(datasets[...])
-        box::file()
+        pod::use(datasets[...])
+        pod::file()
     })
 }

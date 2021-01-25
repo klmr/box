@@ -10,10 +10,10 @@
 #' There are two situations in which the \code{@export} tag can be applied:
 #' \enumerate{
 #'   \item When applied to assignments, the assigned name is exported.
-#'   \item When applied to a \code{box::use} call, the imported names are
+#'   \item When applied to a \code{pod::use} call, the imported names are
 #'     exported. This can be the module name itself, any attached names, or
-#'     both. All names introduced by the \code{box::use} call are exported. See
-#'     \code{\link[box]{use}} for the rules governing what names are introduced
+#'     both. All names introduced by the \code{pod::use} call are exported. See
+#'     \code{\link[pod]{use}} for the rules governing what names are introduced
 #'     into the scope, and thus exported.
 #' }
 #' In any other situation, applying the \code{@export} tag is an error.
@@ -74,7 +74,7 @@ parse_export_specs = function (info, exprs, mod_ns) {
 
 #' @keywords internal
 #' @rdname parse_export_specs
-use_call = quote(box::use)
+use_call = quote(pod::use)
 
 #' @keywords internal
 #' @rdname parse_export_specs
@@ -170,7 +170,7 @@ parse_object = function (info, expr, mod_ns) {
         }
     } else if (is.call(expr)) {
         if (identical(expr[[1L]], use_call)) {
-            roxygen2_object('use', list(pkg = 'box', fun = 'use'), 'import')
+            roxygen2_object('use', list(pkg = 'pod', fun = 'use'), 'import')
         } else {
             # Attempt to extract a name from the LHS: recurse until the
             # left-most token is a name or character literal (this is necessary

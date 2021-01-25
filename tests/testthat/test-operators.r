@@ -1,8 +1,8 @@
 context('operators')
 
 test_that('S3 operators work', {
-    box::use(a = mod/a[...])
-    on.exit(box::unload(a))
+    pod::use(a = mod/a[...])
+    on.exit(pod::unload(a))
 
     expect_equal(1L + 2L, 3L)
     s = structure('foo', class = 'string')
@@ -19,7 +19,7 @@ test_that('dot operators work', {
     expect_false(exists('%%.%%'))
     expect_false(exists('%a%.class%'))
 
-    box::use(a = mod/a[...])
+    pod::use(a = mod/a[...])
     on.exit(unload(a))
 
     expect_true(exists('%.%'))

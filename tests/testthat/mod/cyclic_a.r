@@ -1,5 +1,5 @@
 #' @export
-box::use(b = ./cyclic_b)
+pod::use(b = ./cyclic_b)
 
 #' @export
 name = 'a'

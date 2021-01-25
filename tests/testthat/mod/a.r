@@ -13,9 +13,9 @@
 double = function (x) x * 2
 
 #' @export
-modname = box::name()
+modname = pod::name()
 
-private_modname = box::name()
+private_modname = pod::name()
 
 # Variables at namespace scope are locked so mutable variables need to be
 # wrapped inside a closure.
@@ -37,7 +37,7 @@ get_modname = function () private_modname
 #' The module’s name, via a function
 #' @name get_modname
 #' @export
-get_modname2 = function () box::name()
+get_modname2 = function () pod::name()
 
 #' Read the counter
 #' @export

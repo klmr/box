@@ -1,7 +1,7 @@
 #' @export
 a = 'reexport$a'
 
-box::use(./reexport_sub[a, b, c, d])
+pod::use(./reexport_sub[a, b, c, d])
 
 b = 'reexport$b'
 
@@ -9,4 +9,4 @@ b = 'reexport$b'
 c = 'reexport$c'
 
 #' @export
-box::use(sub = ./reexport_sub[d = c, e = b])
+pod::use(sub = ./reexport_sub[d = c, e = b])

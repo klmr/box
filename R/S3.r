@@ -24,10 +24,10 @@
 #'     invisible(x)
 #' }
 #'
-#' box::register_S3_method('print', 'my_class', print.my_class)
+#' pod::register_S3_method('print', 'my_class', print.my_class)
 #'
 #' # Globally:
-#' box::use(mymod/a)
+#' pod::use(mymod/a)
 #' obj = structure(list(field = 42), class = 'my_class')
 #' obj # calls `print.my_class`, with output "My class with field 42"
 #' }
