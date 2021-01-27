@@ -84,7 +84,7 @@ With this in place, we can invoke the compilation by loading the `c/__setup__`
 submodule:
 
 ```{r}
-pod::use(c/`__setup__`)
+pod::use(./c/`__setup__`)
 ```
 
 The result of the compilation will be a single file, `hello.so` (on Unix and
