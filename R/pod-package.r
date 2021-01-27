@@ -52,7 +52,7 @@
 
     template = paste0(
         'The %s package is not supposed to be attached.\n\n',
-        'Please consult the user guide via %s.'
+        'Please consult the user guide at %s.'
     )
     help = sprintf('`vignette(\'basic-usage\', package = \'%s\')`', pkgname)
     cond = structure(
