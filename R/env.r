@@ -147,12 +147,20 @@ import_into_env = function (to_env, to_names, from_env, from_names) {
         if (
             exists(from_names[i], from_env, inherits = FALSE) &&
             bindingIsActive(from_names[i], from_env) &&
-            ! inherits((fun = activeBindingFunction(from_names[i], from_env)), 'pod$placeholder')
+            ! inherits((fun = active_binding_function(from_names[i], from_env)), 'pod$placeholder')
         ) {
             makeActiveBinding(to_names[i], fun, to_env)
         } else {
             assign(to_names[i], get(from_names[i], from_env), envir = to_env)
         }
+    }
+}
+
+active_binding_function = if (version$major >= 4L) {
+    function (sym, env) activeBindingFunction(sym, env)
+} else {
+    function (sym, env) {
+        as.list(`class<-`(env, NULL))[[sym]]
     }
 }
 
