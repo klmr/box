@@ -42,3 +42,14 @@ in_globalenv = function (expr) {
     })
     eval.parent(substitute(eval(quote(expr), .GlobalEnv)))
 }
+
+in_source_repo = local({
+    in_tests = grepl('tests/testthat$', getwd())
+    basedir = if (in_tests) file.path(getwd(), '../..') else getwd()
+    desc_file = 
+    file.exists(file.path(basedir, 'DESCRIPTION'))
+})
+
+skip_outside_source_repos = function () {
+    skip_if(! in_source_repo, 'Outside source code repository')
+}

@@ -1,5 +1,7 @@
 context('interactive')
 
+skip_outside_source_repos()
+
 play_back_results = function (record_events, onto) {
     for (event in record_events) {
         switch(

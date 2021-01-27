@@ -15,6 +15,7 @@ test_that('pod::file works for module', {
 })
 
 test_that('pod::base_path works', {
+    skip_outside_source_repos()
     # On earlier versions of “devtools”, this test reproducibly segfaulted due
     # to the call to `load_all` from within a script. This seems to be fixed now
     # with version 1.9.1.9000.
