@@ -35,6 +35,8 @@ jobs:
         with:
           r-version: ${{ matrix.config.r }}
 
+      - uses: r-lib/actions/setup-pandoc@v1
+
       - name: Cache R packages
         if: runner.os != 'Windows'
         uses: actions/cache@v2
