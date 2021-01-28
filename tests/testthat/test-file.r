@@ -14,7 +14,7 @@ test_that('box::file works for module', {
     expect_equal(length(box::file(c('b', 'c.r'), module = a)), 2L)
 })
 
-test_that('pod::base_path works', {
+test_that('box::base_path works', {
     skip_outside_source_repos()
     # On earlier versions of “devtools”, this test reproducibly segfaulted due
     # to the call to `load_all` from within a script. This seems to be fixed now

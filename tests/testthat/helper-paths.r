@@ -52,7 +52,7 @@ normalize_path = function (path) {
 }
 
 expect_paths_equal = function (actual, expected) {
-    actual_norm = realpath(pod:::merge_path(actual))
+    actual_norm = realpath(box:::merge_path(actual))
     expected_norm = realpath(expected)
     testthat::expect_equal(
         actual_norm, expected_norm,
@@ -62,7 +62,7 @@ expect_paths_equal = function (actual, expected) {
 }
 
 expect_correct_path_split = function (actual) {
-    expect_paths_equal(pod:::split_path(actual), actual)
+    expect_paths_equal(box:::split_path(actual), actual)
 }
 
 expect_is_cwd = function (actual) {
