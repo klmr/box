@@ -106,10 +106,10 @@ export-favicon = \
 	@sz=$$(sed 's/.*x\([[:digit:]]*\)\.png/\1/' <<<"$@"); \
 	(set -x; ${inkscape} -w $$sz -h $$sz --export-area $1 --export-filename=$@ $<)
 
-${favicons_small}: man/figures/pod.svg | pkgdown/favicon
+${favicons_small}: man/figures/box.svg | pkgdown/favicon
 	$(call export-favicon,-11:1000:181:1192)
 
-${favicons_large}: man/figures/pod.svg | pkgdown/favicon
+${favicons_large}: man/figures/box.svg | pkgdown/favicon
 	$(call export-favicon,-51:0:711:760)
 
 doc pkgdown/favicon:

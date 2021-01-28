@@ -1,17 +1,17 @@
 context('file paths')
 
-test_that('pod::file works in global namespace', {
-    expect_equal(pod::file(), getwd())
+test_that('box::file works in global namespace', {
+    expect_equal(box::file(), getwd())
     this_file = (function() getSrcFilename(sys.call(sys.nframe())))()
     expect_true(nzchar(this_file)) # Just to make sure.
-    expect_true(nzchar(pod::file(this_file)))
+    expect_true(nzchar(box::file(this_file)))
 })
 
-test_that('pod::file works for module', {
-    pod::use(mod/a)
-    expect_true(grepl('/b$', pod::file('b', module = a)))
-    expect_true(grepl('/c\\.r$', pod::file('c.r', module = a)))
-    expect_equal(length(pod::file(c('b', 'c.r'), module = a)), 2L)
+test_that('box::file works for module', {
+    box::use(mod/a)
+    expect_true(grepl('/b$', box::file('b', module = a)))
+    expect_true(grepl('/c\\.r$', box::file('c.r', module = a)))
+    expect_equal(length(box::file(c('b', 'c.r'), module = a)), 2L)
 })
 
 test_that('pod::base_path works', {
@@ -28,29 +28,29 @@ test_that('pod::base_path works', {
     expect_paths_equal(rscript_result, file.path(getwd(), 'mod'))
 })
 
-test_that('pod::file works after attaching modules', {
+test_that('box::file works after attaching modules', {
     # R CMD CHECK resets the working directory AFTER executing the test helpers.
     # This throws off the subsequent tests, so we need to re-set the path here
     # although this shouldn’t be necessary.
-    old_opts = options(pod.path = getwd())
+    old_opts = options(box.path = getwd())
     on.exit(options(old_opts))
 
     # Test that #66 is fixed and that there are no regressions.
 
-    expected_module_file = pod::file()
-    pod::use(mod/a[...])
-    expect_paths_equal(pod::file(), expected_module_file)
+    expected_module_file = box::file()
+    box::use(mod/a[...])
+    expect_paths_equal(box::file(), expected_module_file)
 
     modfile = in_globalenv({
-        expected_module_file = pod::file()
-        pod::use(a = mod/a[...])
-        on.exit(pod::unload(a))
-        list(actual = pod::file(), expected = expected_module_file)
+        expected_module_file = box::file()
+        box::use(a = mod/a[...])
+        on.exit(box::unload(a))
+        list(actual = box::file(), expected = expected_module_file)
     })
 
     expect_paths_equal(modfile$actual, modfile$expected)
 
-    pod::use(x = mod/mod_file)
+    box::use(x = mod/mod_file)
     expected_module_file = file.path(getwd(), 'mod')
     expect_paths_equal(x$this_module_file, expected_module_file)
     expect_paths_equal(x$function_module_file(), expected_module_file)
@@ -61,7 +61,7 @@ test_that('pod::file works after attaching modules', {
 })
 
 test_that('regression #76 is fixed', {
-    pod::use(x = mod/issue76)
+    box::use(x = mod/issue76)
     expect_equal(x$helper_var, 3L)
 })
 

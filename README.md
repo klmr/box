@@ -2,7 +2,7 @@
 
 
 
-# pod <img src="man/figures/pod.svg" align="right" alt="" width="120"/>
+# box <img src="man/figures/box.svg" align="right" alt="" width="120"/>
 
 > Write Reusable, Composable and Modular R Code
 
@@ -16,12 +16,12 @@ if (! requireNamespace('pak')) {
     install.packages("pak", repos = "https://r-lib.github.io/p/pak/dev/")
 }
 
-pak::pkg_install('klmr/pod@develop')
+pak::pkg_install('klmr/box@develop')
 ```
 
 ## 🥜 Usage in a nutshell
 
-‘pod’ allows organising R code in a more modular way, using two complementary
+‘box’ allows organising R code in a more modular way, using two complementary
 mechanisms. Firstly, it allows loading just the parts of packages that are
 needed, and giving imported names arbitrary aliases. This makes code more
 explicit, deliberate, and reduces errors due to name clashes.
@@ -32,8 +32,8 @@ code into packages.
 
 ### Loading code
 
-‘pod’ replaces the base R `library` (and `require`) functions with `pod::use`.
-`pod::use` is more powerful, more flexible, and less error-prone than `library`.
+‘box’ replaces the base R `library` (and `require`) functions with `box::use`.
+`box::use` is more powerful, more flexible, and less error-prone than `library`.
 At its simplest, it provides a direct replacement for `library`:
 
 Instead of
@@ -47,7 +47,7 @@ You’d write
 
 
 ```r
-pod::use(ggplot2[...])
+box::use(ggplot2[...])
 ```
 
 This tells R to import the ‘ggplot2’ package, and to attach all its exported
@@ -56,15 +56,15 @@ denote “all exported names”. However, attaching everything is generally
 discouraged, since this practice leads to name clashes and makes it harder to
 retrace which names come from which packages.
 
-Instead, we can also instruct `pod::use` to not attach any names when loading a
+Instead, we can also instruct `box::use` to not attach any names when loading a
 package — or to just attach some. Or we can tell it to attach some names under
 an alias, and we can even give the package *itself* an alias.
 
-The following `pod::use` declaration illustrates all these different cases:
+The following `box::use` declaration illustrates all these different cases:
 
 
 ```r
-pod::use(
+box::use(
     purrr,
     tbl = tibble,
     dplyr[filter, select],
@@ -86,7 +86,7 @@ name (as `purrr` and `tbl`, respectively), and we can use their exports via the
 ‘dplyr’ and ‘stats’, we did not create local names for the packages themselves,
 we only attached some of their exported names.
 
-Furthermore, unlike with `library`, the effects of `pod::use` are restricted to
+Furthermore, unlike with `library`, the effects of `box::use` are restricted to
 the current scope: we can load and attach names *inside* a function, and calling
 this function will not change the available names in the calling scope (or
 elsewhere). Importing code happens *locally*, and functions which load packages
@@ -95,7 +95,7 @@ no longer cause global side effects:
 
 ```r
 log = function (msg) {
-    pod::use(glue[glue])
+    box::use(glue[glue])
     message(glue('[LOG MESSAGE] {msg}'))
 }
 
@@ -106,21 +106,21 @@ log('test')
 This makes it easy to write code with external dependencies without creating
 unintentional, far-reaching side effects.
 
-Unlike other packages, ‘pod’ itself is never loaded via `library`. Instead, its
-functionality is always used explicitly via `pod::use`.
+Unlike other packages, ‘box’ itself is never loaded via `library`. Instead, its
+functionality is always used explicitly via `box::use`.
 
 ### Reusable code modules
 
-With ‘pod’, code doesn’t have to be wrapped into a package to be reusable.
+With ‘box’, code doesn’t have to be wrapped into a package to be reusable.
 Instead, every regular R file forms a reusable *R module* that can be used
-elsewhere via `pod::use`.
+elsewhere via `box::use`.
 
 Such modules can be stored in a central path, or locally in each individual
 project. To import an R module, write
 
 
 ```r
-pod::use(prefix/modname)
+box::use(prefix/modname)
 ```
 
 Unlike packages, modules always need to be qualified by a *prefix*, which forms
@@ -134,9 +134,9 @@ setup, separate folders, metadata or other infrastructure.
 
 For more information refer to the *[Get started][]* vignette.
 
-## Why ‘pod’?
+## Why ‘box’?
 
-‘pod’ promotes a philosophy that is in a way the opposite of what’s common in R:
+‘box’ promotes a philosophy that is in a way the opposite of what’s common in R:
 while some notable packages export and attach many hundreds and, in at least one
 notable case, *over a thousand* names, software engineering best practices
 encourage limiting both the scope of names, as well as the number of names
@@ -145,7 +145,7 @@ available in each scope.
 For instance, in Python it is best practice to never use the equivalent of
 `library(pkg)` (i.e. `from pkg import *`). Instead, Python [strongly
 encourages][pep8] using `import pkg` or `from pkg import a, few, symbols`, which
-correspond to `pod::use(pkg)` and `pod::use(pkg[a, few, symbols])`,
+correspond to `box::use(pkg)` and `box::use(pkg[a, few, symbols])`,
 respectively. The same is true in many other languages, e.g. [C++][], [Rust][],
 and [Perl][]. Other languages (e.g. JavaScript and Go) are even stricter: they
 don’t allow unqualified imports at all.
@@ -154,14 +154,14 @@ don’t allow unqualified imports at all.
 
 > Explicit is better than implicit.
 
-‘pod’ also makes it drastically easier to *write* reusable code: instead of
+‘box’ also makes it drastically easier to *write* reusable code: instead of
 needing to create a package, each R code file *is already a module* which can be
-imported using `pod::use`. Modules can also be nested inside directories, such
+imported using `box::use`. Modules can also be nested inside directories, such
 that self-contained projects can be easily split into separate or interdependent
 submodules.
 
 [pep8]: https://www.python.org/dev/peps/pep-0008/#imports
-[Get started]: https://klmr.me/pod/articles/pod.html
+[Get started]: https://klmr.me/box/articles/box.html
 [C++]: https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Rs-using
 [Rust]: https://stackoverflow.com/q/23839699/1968
 [Perl]: https://perldoc.perl.org/Exporter#Selecting-What-to-Export

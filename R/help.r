@@ -56,8 +56,8 @@ patch_mod_doc = function (docs) {
 #' @export
 #' @examples
 #' \dontrun{
-#' pod::use(my/mod)
-#' pod::help(mod$func)
+#' box::use(my/mod)
+#' box::help(mod$func)
 #' }
 help = function (topic, help_type = getOption('help_type', 'text')) {
     topic = substitute(topic)
@@ -65,7 +65,7 @@ help = function (topic, help_type = getOption('help_type', 'text')) {
     target_mod = target[[1L]]
     subject = target[[2L]]
 
-    if (! inherits(target_mod, 'pod$mod')) {
+    if (! inherits(target_mod, 'box$mod')) {
         stop(
             dQuote(deparse(topic)), ' is not a valid module help topic',
             call. = FALSE
@@ -78,7 +78,7 @@ help = function (topic, help_type = getOption('help_type', 'text')) {
             ! bindingIsActive(subject, target_mod)
         ) get(subject, envir = target_mod, inherits = FALSE)
 
-        if (inherits(obj, 'pod$mod')) {
+        if (inherits(obj, 'box$mod')) {
             target_mod = obj
             subject = '.__module__.'
         }
@@ -87,7 +87,7 @@ help = function (topic, help_type = getOption('help_type', 'text')) {
     info = attr(target_mod, 'info')
     mod_name = strsplit(attr(target_mod, 'name'), ':')[[1L]][2L]
 
-    if (inherits(info, 'pod$pkg_info')) {
+    if (inherits(info, 'box$pkg_info')) {
         help_call = if (subject == '.__module__.') {
             bquote(help(.(as.name(mod_name))))
         } else {

@@ -1,4 +1,4 @@
-pod::use(mod/a)
+box::use(mod/a)
 
 # Muffle message
 silently = function (expr) {
@@ -8,7 +8,7 @@ silently = function (expr) {
     expr
 }
 
-silently(pod::use(local_a = ./a))
+silently(box::use(local_a = ./a))
 
 #' @export
 a_which = function () a$which()
