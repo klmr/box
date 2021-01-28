@@ -3,15 +3,11 @@ title: "Using compiled code"
 author: Konrad Rudolph
 date: "`r Sys.Date()`"
 output:
-    rmarkdown::html_document:
-        theme: "cerulean"
+    rmarkdown::html_vignette:
         toc: true
-        toc_float:
-            collapsed: false
         number_sections: true
-        highlight: "tango"
     md_document:
-        variant: markdown_github
+        variant: gfm
 vignette: >
     %\VignetteEngine{knitr::rmarkdown}
     %\VignetteIndexEntry{Using compiled code}

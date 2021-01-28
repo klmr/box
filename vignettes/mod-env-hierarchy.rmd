@@ -2,11 +2,16 @@
 title: "The hierarchy of module environments"
 author: Konrad Rudolph
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output:
+    rmarkdown::html_vignette:
+        toc: true
+        number_sections: true
+    md_document:
+        variant: gfm
 vignette: >
-  %\VignetteIndexEntry{Module environments hierarchy}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+    %\VignetteEngine{knitr::rmarkdown}
+    %\VignetteIndexEntry{The hierarchy of module environments}
+    %\VignetteEncoding{UTF-8}
 ---
 
 > **Note:** This document describes internal implementation details. They are

@@ -3,18 +3,14 @@ title: "Get started"
 author: Konrad Rudolph
 date: "`r Sys.Date()`"
 output:
-    rmarkdown::html_document:
-        theme: "cerulean"
+    rmarkdown::html_vignette:
         toc: true
-        toc_float:
-            collapsed: false
         number_sections: true
-        highlight: "tango"
     md_document:
-        variant: markdown_github
+        variant: gfm
 vignette: >
     %\VignetteEngine{knitr::rmarkdown}
-    %\VignetteIndexEntry{Basic usage}
+    %\VignetteIndexEntry{Get started}
     %\VignetteEncoding{UTF-8}
 ---
 ```{r include=FALSE}

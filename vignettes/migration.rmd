@@ -3,13 +3,9 @@ title: "Migration guide"
 author: Konrad Rudolph
 date: "`r Sys.Date()`"
 output:
-    rmarkdown::html_document:
-        theme: "cerulean"
+    rmarkdown::html_vignette:
         toc: true
-        toc_float:
-            collapsed: false
         number_sections: true
-        highlight: "tango"
     md_document:
         variant: gfm
 vignette: >
