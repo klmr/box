@@ -54,7 +54,7 @@
         'The %s package is not supposed to be attached.\n\n',
         'Please consult the user guide at %s.'
     )
-    help = sprintf('`vignette(\'basic-usage\', package = \'%s\')`', pkgname)
+    help = sprintf('`vignette(\'%s\', package = \'%s\')`', pkgname, pkgname)
     cond = structure(
         list(message = sprintf(template, shQuote(pkgname), help), call = NULL),
         class = c('box_attach_error', 'error', 'condition')
