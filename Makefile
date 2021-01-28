@@ -11,6 +11,8 @@ r_source_files = $(wildcard R/*.r)
 rmd_files = $(wildcard vignettes/*.rmd)
 knit_results = $(patsubst vignettes/%.rmd,doc/%.md,${rmd_files})
 
+pkg_bundle_name := $(shell ${rscript} --vanilla -e 'cat(sprintf("%s.tar.gz\n", paste(read.dcf("DESCRIPTION")[1L, c("Package", "Version")], collapse = "_")))')
+
 favicons_small = $(addprefix pkgdown/favicon/,$(addprefix favicon-,16x16.png 32x32.png))
 
 favicons_large = $(addprefix pkgdown/favicon/,\
@@ -97,6 +99,13 @@ NAMESPACE: ${r_source_files} DESCRIPTION
 
 README.md: README.rmd DESCRIPTION
 	${rscript} -e "knitr::knit('$<')"
+
+.PHONY: build
+## Build the package tar.gz bundle
+build: ${pkg_bundle_name}
+
+${pkg_bundle_name}: DESCRIPTION NAMESPACE ${r_source_files} ${rmd_files}
+	R CMD build .
 
 .PHONY: favicons
 ## Generate the documentation site favicons
