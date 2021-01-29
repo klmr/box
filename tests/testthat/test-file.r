@@ -66,6 +66,7 @@ test_that('regression #76 is fixed', {
 })
 
 test_that('regression #79 is fixed', {
+    skip_outside_source_repos()
     script_path = 'mod/issue79.r'
     result = tail(interactive_r(script_path), 3L)
 
