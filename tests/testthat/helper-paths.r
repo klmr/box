@@ -11,7 +11,7 @@ realpath = function (path) {
     if (.Platform$OS.type == 'unix') {
         normalize_path(path)
     } else {
-        normalizePath(path, mustWork = FALSE)
+        sub('\\\\$', '', normalizePath(path, mustWork = FALSE))
     }
 }
 
