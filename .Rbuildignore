@@ -9,7 +9,6 @@
 ^README\.rmd$
 ^LICENSE.md$
 ^printenv\.r$
-^\.travis\.yml$
 ^pkgdown$
 ^doc$
 ^docs$
@@ -19,3 +18,4 @@
 ^Meta$
 ^renv$
 ^renv\.lock$
+^\.github$
