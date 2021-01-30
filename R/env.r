@@ -156,7 +156,7 @@ import_into_env = function (to_env, to_names, from_env, from_names) {
     }
 }
 
-active_binding_function = if (version$major >= 4L) {
+active_binding_function = if (as.integer(version$major) >= 4L) {
     function (sym, env) activeBindingFunction(sym, env)
 } else {
     function (sym, env) {
