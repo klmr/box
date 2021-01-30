@@ -15,7 +15,7 @@ Authors@R: c(
             comment = c(ORCID = '0000-0002-6862-5221')
         )
     )
-URL: https://klmr.me/box, https://github.com/klmr/box
+URL: https://klmr.me/box/, https://github.com/klmr/box
 BugReports: https://github.com/klmr/box/issues
 Description: A modern module system for R. Organise code into hierarchical,
     composable, reusable modules, and use it effortlessly across projects via a
