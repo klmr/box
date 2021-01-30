@@ -88,7 +88,7 @@ s
 ```
 
 Note how we automatically get pretty-printed
-([FASTA](http://en.wikipedia.org/wiki/FASTA_format)) output because the `print`
+([FASTA][]) output because the `print`
 method (which gets called implicitly here) is specialised for the `'bio/seq'` S3
 class in the `bio/seq` module (prefixing S3 classes inside modules with the full
 module name is a convention to avoid name clashes of S3 classes):
@@ -129,7 +129,8 @@ example we set the search path to the current working directory but in normal
 usage it would be a global library location, e.g. (following the [XDG base
 directory specification][XDG]) `~/.local/R/modules` on Linux.
 
-[XDG]: https://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
+[FASTA]: https://en.wikipedia.org/wiki/FASTA_format
+[XDG]: https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
 
 **Note** that non-local module names *must* be fully qualified, nested modules:
 `box::use(foo/bar)` works, `box::use(bar)` does not (instead, it is assumed that

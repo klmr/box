@@ -107,5 +107,12 @@ make_S3_methods_known = function (module) {
 #' @param envir the environment to search in
 #' @keywords internal
 lsf = function (envir) {
-    names(which(eapply(envir, class, all.names = TRUE) == 'function'))
+    # We cannot use `eapply` here since that will try to evaluate active
+    # bindings starting with R 4.1. ‘box’ uses active bindings to for delayed
+    # cyclic loading, and these should not be evaluated at this point.
+    is_function = function (name) {
+        ! bindingIsActive(name, envir) &&
+            ! is.null(get0(name, envir, inherits = FALSE, mode = 'function'))
+    }
+    Filter(is_function, names(envir))
 }
