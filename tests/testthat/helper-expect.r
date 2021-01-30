@@ -1,7 +1,7 @@
 # Set up local module environment to test against.
 # Note that we override the normal path here.
 
-options(pod.path = getwd())
+options(box.path = getwd())
 
 expect_not_identical = function (object, expected, info = NULL, label = NULL, expected.label = NULL) {
     lab_act = testthat::quasi_label(rlang::enquo(object), label)
@@ -41,4 +41,15 @@ in_globalenv = function (expr) {
         rm(list = to_delete, envir = .GlobalEnv)
     })
     eval.parent(substitute(eval(quote(expr), .GlobalEnv)))
+}
+
+in_source_repo = local({
+    in_tests = grepl('tests/testthat$', getwd())
+    basedir = if (in_tests) file.path(getwd(), '../..') else getwd()
+    desc_file = 
+    file.exists(file.path(basedir, 'DESCRIPTION'))
+})
+
+skip_outside_source_repos = function () {
+    skip_if(! in_source_repo, 'Outside source code repository')
 }

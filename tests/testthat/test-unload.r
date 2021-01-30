@@ -1,29 +1,29 @@
 context('unloading')
 
 is_module_loaded = function (path) {
-    path %in% names(pod:::loaded_mods)
+    path %in% names(box:::loaded_mods)
 }
 
 test_that('module can be unloaded', {
-    pod::use(mod/a)
-    path = pod:::path(a)
+    box::use(mod/a)
+    path = box:::path(a)
     expect_true(is_module_loaded(path))
-    pod::unload(a)
+    box::unload(a)
     expect_false(is_module_loaded(path))
     expect_false(exists('a', inherits = FALSE))
 })
 
 test_that('unloaded module can be reloaded', {
-    pod::use(mod/a)
-    pod::unload(a)
-    pod::use(mod/a)
-    expect_true(is_module_loaded(pod:::path(a)))
+    box::use(mod/a)
+    box::unload(a)
+    box::use(mod/a)
+    expect_true(is_module_loaded(box:::path(a)))
     expect_true(exists('a', inherits = FALSE))
 })
 
 test_that('unload checks its arguments', {
-    expect_error(pod::unload(123))
-    expect_error(pod::unload(foo))
-    pod::use(mod/a)
-    expect_error(pod::unload((a)))
+    expect_error(box::unload(123))
+    expect_error(box::unload(foo))
+    box::use(mod/a)
+    expect_error(box::unload((a)))
 })

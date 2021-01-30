@@ -3,28 +3,24 @@ title: "Get started"
 author: Konrad Rudolph
 date: "`r Sys.Date()`"
 output:
-    rmarkdown::html_document:
-        theme: "cerulean"
+    rmarkdown::html_vignette:
         toc: true
-        toc_float:
-            collapsed: false
         number_sections: true
-        highlight: "tango"
     md_document:
-        variant: markdown_github
+        variant: gfm
 vignette: >
     %\VignetteEngine{knitr::rmarkdown}
-    %\VignetteIndexEntry{Basic usage}
+    %\VignetteIndexEntry{Get started}
     %\VignetteEncoding{UTF-8}
 ---
 ```{r include=FALSE}
 devtools::load_all()
-detach('package:pod') # No need to keep the package attached.
+detach('package:box') # No need to keep the package attached.
 
 # The module does not export any symbols. We use `[...]` solely to prevent the
 # declaration to create a module alias in the calling environment, so this
 # implementation detail isn’t shown in subsequent `ls()` calls.
-pod::use(./source_file[...])
+box::use(./source_file[...])
 ```
 
 ## Using modules
@@ -36,14 +32,14 @@ sequences (= character strings consisting of the letters `A`, `C`, `G` and `T`).
 First, we load the module:
 
 ```{r}
-pod::use(./bio/seq)
+box::use(./bio/seq)
 ```
 
-The function `pod::use` accepts a list of *unquoted*, *qualified* module names.
+The function `box::use` accepts a list of *unquoted*, *qualified* module names.
 Each of these module names will load a single module and make it available to
 the caller in some form. In the code above, we’ve loaded a single module,
 `seq/seq`. `bio` serves as a *parent module* that may group several submodules.
-Since the module name inside `pod::use` starts with `./`, the module location is
+Since the module name inside `box::use` starts with `./`, the module location is
 resolved *locally*, i.e. relative to the path of the currently running code.
 
 In the above, `seq` is the module’s *proper name*. `bio/seq` is its *fully
@@ -102,7 +98,7 @@ getS3method('print', 'bio/seq')
 ```
 
 The source code for `print.bio/seq` contains an interesting `use` declaration.
-It show-cases an alternative way of invoking `pod::use`, which we’ll explore
+It show-cases an alternative way of invoking `box::use`, which we’ll explore
 now.
 
 ## Attaching modules
@@ -112,22 +108,22 @@ Let’s have a look at alternative ways of using modules.
 To start, let’s unload the `bio/seq` module …
 
 ```{r}
-pod::unload(seq)
+box::unload(seq)
 ```
 
 … and load it again, via a different route:
 
 ```{r}
-options(pod.path = getwd())
-pod::use(bio/seq[revcomp, is_valid])
+options(box.path = getwd())
+box::use(bio/seq[revcomp, is_valid])
 ```
 
-After unloading the already loaded module, `options(pod.path = …)` sets the
-module search path: this is where `pod::use` searches for modules. If more than
-one path is given, `pod::use` searches them all until a module of matching name
+After unloading the already loaded module, `options(box.path = …)` sets the
+module search path: this is where `box::use` searches for modules. If more than
+one path is given, `box::use` searches them all until a module of matching name
 is found. This works analogously to how `.libPaths()` operates on R packages.
 
-The `pod::use` directive can now use `bio/seq` instead of `./bio/seq` as the
+The `box::use` directive can now use `bio/seq` instead of `./bio/seq` as the
 module name: rather than a relative name we specify a *global* name. In this
 example we set the search path to the current working directory but in normal
 usage it would be a global library location, e.g. (following the [XDG base
@@ -136,7 +132,7 @@ directory specification][XDG]) `~/.local/R/modules` on Linux.
 [XDG]: https://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
 
 **Note** that non-local module names *must* be fully qualified, nested modules:
-`pod::use(foo/bar)` works, `pod::use(bar)` does not (instead, it is assumed that
+`box::use(foo/bar)` works, `box::use(bar)` does not (instead, it is assumed that
 `bar` refers to a *package*)!
 
 In the declaration above we use `[revcomp]` to specify that the `revcomp` name
@@ -170,7 +166,7 @@ undo that, to attach (and use) the module locally instead:
 detach()
 
 seq_table = function (s) {
-    pod::use(./bio/seq[...])
+    box::use(./bio/seq[...])
     table(s)
 }
 
@@ -205,7 +201,7 @@ In fact, there are only three things worth mentioning:
 
 1. Documentation. Functions in the module file can be documented using
    ‘[roxygen2](https://cran.r-project.org/package=roxygen2)’
-   syntax. It works the same as for packages. The ‘pod’ package parses the
+   syntax. It works the same as for packages. The ‘box’ package parses the
    documentation and makes it available via `module_help` and `?`. This requires
    that ‘roxygen2’ is installed.
 
@@ -215,7 +211,7 @@ In fact, there are only three things worth mentioning:
    does *not* require having that package installed).
 
 3. The module exports [S3 functions](http://adv-r.had.co.nz/S3.html). The
-   ‘pod’ package takes care to register such functions automatically but
+   ‘box’ package takes care to register such functions automatically but
    this only works for *user generics* that are defined inside the same module.
    When overriding “known generics” (such as `print`), we need to register
    these manually via `register_S3_method` (this is necessary since these
@@ -233,14 +229,14 @@ than a file, the module implementation resides in the nested file `__init__.r`):
 
 The submodule is specified as `./seq` rather than `seq`: the explicitly provided
 relative path prevents lookup in the import search path (that we set via
-`options(pod.path = …)`); instead, only the current directory (that is, the
+`options(box.path = …)`); instead, only the current directory (that is, the
 directory containing the `bio` module) is considered.
 
 We can now use the `bio` module:
 
 ```{r}
-options(pod.path = NULL) # Reset search path
-pod::use(./bio)
+options(box.path = NULL) # Reset search path
+box::use(./bio)
 ls(bio)
 ls(bio$seq)
 bio$seq$revcomp('CAT')
@@ -250,7 +246,7 @@ We could also have implemented `bio` as follows:
 
 ```{r eval=FALSE}
 #' @export
-pod::use(./seq[...])
+box::use(./seq[...])
 ```
 
 This would have made all of `seq`’s definitions immediately available in
@@ -265,7 +261,7 @@ put it inside a function with the name `.on_load`. This function is similar to
 the hook for the `.onLoad` *package* namespace event.
 
 This function is executed the first time the module is loaded in an R session.
-Subsequent calls to `pod::use` for that module, regardless of whether they occur
+Subsequent calls to `box::use` for that module, regardless of whether they occur
 in a different scope, will refer to the already loaded, cached module, and will
 *not* reload the module.
 
@@ -277,14 +273,14 @@ We can illustrate this by loading a module which has side-effects, `'info'`.
 Let’s use it:
 
 ```{r}
-pod::use(./info)
+box::use(./info)
 ```
 
 We have imported the module, and get the diagnostic messages. Let’s re-use the
 module:
 
 ```{r}
-pod::use(./info)
+box::use(./info)
 ```
 
 … no messages are displayed. However, we *can* explicitly reload a module. This
@@ -292,7 +288,7 @@ clears the cache, and loads the module again. This can be useful during
 development and debugging:
 
 ```{r}
-pod::reload(info)
+box::reload(info)
 ```
 
 And this displays the messages again. The `reload` function is a shortcut for
@@ -303,13 +299,13 @@ original `import` call).
 
 This `info` module also show-cases two important helper functions:
 
-1. `pod::name()` returns the name of the module with which it was loaded. This
-   is especially handy because, when called outside of a module, `pod::name()`
+1. `box::name()` returns the name of the module with which it was loaded. This
+   is especially handy because, when called outside of a module, `box::name()`
    is `NULL`. This allows testing whether a piece of code was loaded as a
    module, or invoked directly (e.g. via `Rscript` on the command line).
 
-2. `pod::file()` is similar to `system.file`: it returns the full path to any
+2. `box::file()` is similar to `system.file`: it returns the full path to any
    file within the directory where a module is stored. This is useful when
    distributing data files with modules, which are loaded from within the
-   module. When invoked without arguments, `pod::file()` returns the full path
+   module. When invoked without arguments, `box::file()` returns the full path
    to the directory containing the module source file.

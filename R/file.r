@@ -9,7 +9,7 @@
 #' @note If called from outside a module, the current working directory is used.
 #'
 #' This function is similar to \code{system.file} for packages. Its semantics
-#' differ in the presence of non-existent files: \code{pod::file} always returns
+#' differ in the presence of non-existent files: \code{box::file} always returns
 #' the requested paths, even for non-existent files; whereas \code{system.file}
 #' returns empty strings for non-existent files, or fails (if requested via the
 #' argument \code{mustWork = TRUE}).

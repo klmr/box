@@ -75,12 +75,12 @@ path = function (mod) {
 }
 
 #' @export
-`path.pod$mod` = function (mod) {
+`path.box$mod` = function (mod) {
     attr(mod, 'info')$source_path
 }
 
 #' @export
-`path.pod$ns` = function (mod) {
+`path.box$ns` = function (mod) {
     namespace_info(mod, 'info')$source_path
 }
 
@@ -99,10 +99,10 @@ base_path = function (mod) {
 #' currently executing R code file, or \code{NULL} to reset the path
 #'
 #' @details
-#' \pkg{pod} needs to know the base path of the topmost calling R context (i.e.
-#' the script) to find relative import locations. In most cases, \code{pod} can
+#' \pkg{box} needs to know the base path of the topmost calling R context (i.e.
+#' the script) to find relative import locations. In most cases, \code{box} can
 #' figure the path out automatically. However, in some cases third-party
-#' packages load code in a way in which \pkg{pod} cannot find the correct path
+#' packages load code in a way in which \pkg{box} cannot find the correct path
 #' of the script any more. \code{set_script_path} can be used in these cases to
 #' set the path of the currently executing R script manually.
 #' @export

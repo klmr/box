@@ -1,9 +1,9 @@
-url: http://klmr.me/pod
+url: http://klmr.me/box
 
 home:
     links:
         - text: Browse source code
-          href: https://github.com/klmr/pod
+          href: https://github.com/klmr/box
 
 reference:
     - title: Using modules & packages

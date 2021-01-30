@@ -1,4 +1,4 @@
-pod::use(./s3)
+box::use(./s3)
 
 #' @export
 test = s3$test

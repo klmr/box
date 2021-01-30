@@ -1,2 +1,2 @@
 #' @export
-pod::use(./seq)
+box::use(./seq)

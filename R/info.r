@@ -9,7 +9,7 @@
 mod_info = function (spec, source_path) {
     structure(
         list(name = spec$name, source_path = source_path),
-        class = c('pod$mod_info', 'pod$info')
+        class = c('box$mod_info', 'box$info')
     )
 }
 
@@ -18,17 +18,17 @@ mod_info = function (spec, source_path) {
 #' @keywords internal
 #' @name info
 pkg_info = function (spec) {
-    structure(list(name = spec$name), class = c('pod$pkg_info', 'pod$info'))
+    structure(list(name = spec$name), class = c('box$pkg_info', 'box$info'))
 }
 
 #' @export
-`print.pod$info` = function (x, ...) {
+`print.box$info` = function (x, ...) {
     cat(as.character(x, ...), '\n', sep = '')
     invisible(x)
 }
 
 #' @export
-`as.character.pod$mod_info` = function (x, ...) {
+`as.character.box$mod_info` = function (x, ...) {
     sprintf(
         '<mod_info: \x1B[33m%s\x1B[0m at \x1B[33m%s\x1B[0m>',
         x$name, x$source_path
@@ -36,7 +36,7 @@ pkg_info = function (spec) {
 }
 
 #' @export
-`as.character.pod$pkg_info` = function (x, ...) {
+`as.character.box$pkg_info` = function (x, ...) {
     path = getNamespaceInfo(x$name, 'path')
     sprintf('<mod_info: \x1B[33m%s\x1B[0m>', path)
 }
@@ -49,11 +49,11 @@ find_mod = function (spec, caller) {
     UseMethod('find_mod')
 }
 
-`find_mod.pod$mod_spec` = function (spec, caller) {
+`find_mod.box$mod_spec` = function (spec, caller) {
     if (is_absolute(spec)) find_local_mod(spec, caller) else find_global_mod(spec, caller)
 }
 
-`find_mod.pod$pkg_spec` = function (spec, caller) {
+`find_mod.box$pkg_spec` = function (spec, caller) {
     pkg_info(spec)
 }
 

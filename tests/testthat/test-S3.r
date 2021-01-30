@@ -31,7 +31,7 @@ test_that('S3 generics are recognized', {
 })
 
 test_that('S3 methods are found', {
-    pod::use(mod/s3)
+    box::use(mod/s3)
     s3ns = environment(s3$test)
     test = getS3method('test', 'character', envir = s3)
     test_dot_character = s3ns$test.character
@@ -44,7 +44,7 @@ test_that('S3 methods are found', {
 })
 
 test_that('can call S3 methods without attaching', {
-    pod::use(mod/s3)
+    box::use(mod/s3)
     expect_equal(s3$test(1), 'test.default')
     expect_equal(s3$test('a'), 'test.character')
 
@@ -53,7 +53,7 @@ test_that('can call S3 methods without attaching', {
 })
 
 test_that('S3 methods are not registered twice', {
-    pod::use(mod/s3)
+    box::use(mod/s3)
 
     result = s3$se(structure(1, class = 'contrast.test'))
     expect_equal(
@@ -69,11 +69,11 @@ test_that('S3 methods are not registered twice', {
 })
 
 test_that('Forwarded S3 genetics without methods work', {
-    pod::use(mod/s3_b)
+    box::use(mod/s3_b)
     expect_equal(s3_b$test(1), 'test.default')
     expect_equal(s3_b$test('a'), 'test.character')
 })
 
 test_that('`is_S3_user_generic` can deal with substituted functions', {
-    expect_error(pod::use(mod/issue125), regexp = NA)
+    expect_error(box::use(mod/issue125), regexp = NA)
 })

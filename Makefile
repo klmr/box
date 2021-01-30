@@ -11,6 +11,8 @@ r_source_files = $(wildcard R/*.r)
 rmd_files = $(wildcard vignettes/*.rmd)
 knit_results = $(patsubst vignettes/%.rmd,doc/%.md,${rmd_files})
 
+pkg_bundle_name := $(shell ${rscript} --vanilla -e 'cat(sprintf("%s.tar.gz\n", paste(read.dcf("DESCRIPTION")[1L, c("Package", "Version")], collapse = "_")))')
+
 favicons_small = $(addprefix pkgdown/favicon/,$(addprefix favicon-,16x16.png 32x32.png))
 
 favicons_large = $(addprefix pkgdown/favicon/,\
@@ -98,6 +100,13 @@ NAMESPACE: ${r_source_files} DESCRIPTION
 README.md: README.rmd DESCRIPTION
 	${rscript} -e "knitr::knit('$<')"
 
+.PHONY: build
+## Build the package tar.gz bundle
+build: ${pkg_bundle_name}
+
+${pkg_bundle_name}: DESCRIPTION NAMESPACE ${r_source_files} ${rmd_files}
+	R CMD build .
+
 .PHONY: favicons
 ## Generate the documentation site favicons
 favicons: ${favicons}
@@ -106,10 +115,10 @@ export-favicon = \
 	@sz=$$(sed 's/.*x\([[:digit:]]*\)\.png/\1/' <<<"$@"); \
 	(set -x; ${inkscape} -w $$sz -h $$sz --export-area $1 --export-filename=$@ $<)
 
-${favicons_small}: man/figures/pod.svg | pkgdown/favicon
+${favicons_small}: man/figures/box.svg | pkgdown/favicon
 	$(call export-favicon,-11:1000:181:1192)
 
-${favicons_large}: man/figures/pod.svg | pkgdown/favicon
+${favicons_large}: man/figures/box.svg | pkgdown/favicon
 	$(call export-favicon,-51:0:711:760)
 
 doc pkgdown/favicon:

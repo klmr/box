@@ -3,13 +3,9 @@ title: "Migration guide"
 author: Konrad Rudolph
 date: "`r Sys.Date()`"
 output:
-    rmarkdown::html_document:
-        theme: "cerulean"
+    rmarkdown::html_vignette:
         toc: true
-        toc_float:
-            collapsed: false
         number_sections: true
-        highlight: "tango"
     md_document:
         variant: gfm
 vignette: >
@@ -18,16 +14,16 @@ vignette: >
     %\VignetteEncoding{UTF-8}
 ---
 
-## ‘modules’ “v1.0” == ‘pod’
+## ‘modules’ “v1.0” == ‘box’
 
-‘pod’ is the spiritual successor of the [‘modules’ package][modules], which will
-forever remain at version 0.9.*x*. However, the API of ‘pod’ intentionally
+‘box’ is the spiritual successor of the [‘modules’ package][modules], which will
+forever remain at version 0.9.*x*. However, the API of ‘box’ intentionally
 breaks backwards compatibility, and module code written for use with ‘modules’
-will no longer work with ‘pod’.
+will no longer work with ‘box’.
 
-The following guide is intended to ease migration to ‘pod’. **Migration is
+The following guide is intended to ease migration to ‘box’. **Migration is
 strongly recommended**, since the authors believe that ‘modules’ had conceptual
-shortcomings that have been fixed in ‘pod’, and to keep the ecosystem
+shortcomings that have been fixed in ‘box’, and to keep the ecosystem
 consolidated. For the time being, ‘modules’ will receive support (only) in the
 form of critical bug fixes.
 
@@ -46,38 +42,38 @@ modname = import('prefix/modname')
 pkgname = import_package('pkgname')
 ```
 
-With ‘pod’, modules and packages are imported via [`pod::use()`][pod::use]:
+With ‘box’, modules and packages are imported via [`box::use()`][box::use]:
 
 ```{r eval = FALSE}
-pod::use(prefix/modname)
-pod::use(pkgname)
+box::use(prefix/modname)
+box::use(pkgname)
 ```
 
-Notably, module and package names in a use declaration in ‘pod’ are unquoted,
-unevaluated expressions; and **the ‘pod’ package is never loaded via
-`library()`**. In fact, `library(pod)` raises an error.
+Notably, module and package names in a use declaration in ‘box’ are unquoted,
+unevaluated expressions; and **the ‘box’ package is never loaded via
+`library()`**. In fact, `library(box)` raises an error.
 
-Furthermore, with ‘pod’, module names *must* be fully qualified. The equivalent
+Furthermore, with ‘box’, module names *must* be fully qualified. The equivalent
 of the ‘modules’ code `mod = import('modname')` no longer exists. To import a
 *local* module without namespace prefix, instead use
 
 ```{r eval = FALSE}
-pod::use(./modname)
+box::use(./modname)
 ```
 
-`pod::use()` has no return value. Instead, it automatically creates an alias with
+`box::use()` has no return value. Instead, it automatically creates an alias with
 the module/package name in the calling scope *if no names are attached* (see
 below). To override the alias name, specify it as as a named argument:
 
 ```{r eval = FALSE}
-pod::use(mod_alias = prefix/modname)
+box::use(mod_alias = prefix/modname)
 ```
 
-Unlike with `modules::import()`, `pod::use()` allows (and encourages) multiple
+Unlike with `modules::import()`, `box::use()` allows (and encourages) multiple
 use declarations at once:
 
 ```{r eval = FALSE}
-pod::use(
+box::use(
     prefix/mod1,
     mod = prefix/mod2,
     pkg
@@ -87,15 +83,15 @@ pod::use(
 ### Attaching names
 
 In ‘modules’, the `attach` and `attach_operators` parameters controlled if and
-which names were attached. In ‘pod’, attachment is controlled via attach list
+which names were attached. In ‘box’, attachment is controlled via attach list
 declarations:
 
 ```{r eval = FALSE}
 # ‘modules’:
 import('prefix/mod', attach = c('name1', 'name2'))
 
-# ‘pod’:
-pod::use(prefix/mod[name1, name2])
+# ‘box’:
+box::use(prefix/mod[name1, name2])
 ```
 
 Wildcard attach lists are also supported:
@@ -104,8 +100,8 @@ Wildcard attach lists are also supported:
 # ‘modules’:
 import('prefix/mod', attach = TRUE)
 
-# ‘pod’:
-pod::use(prefix/mod[...])
+# ‘box’:
+box::use(prefix/mod[...])
 ```
 
 To introduce a module/package alias when attaching names, specify an alias name:
@@ -114,60 +110,60 @@ To introduce a module/package alias when attaching names, specify an alias name:
 # ‘modules’:
 mod = import('prefix/mod', attach = c('name1', 'name2'))
 
-# ‘pod’:
-pod::use(mod = prefix/mod[name1, name2])
+# ‘box’:
+box::use(mod = prefix/mod[name1, name2])
 ```
 
-‘pod’ also allows declaring aliases for attached names; this feature did not
+‘box’ also allows declaring aliases for attached names; this feature did not
 exist in ‘modules’:
 
 ```{r eval = FALSE}
 # Declare alias for one name, attach other name unchanged:
-pod::use(prefix/mod[name_alias = name1, name2])
+box::use(prefix/mod[name_alias = name1, name2])
 
 # Declare alias for two names, attach all other exported names unchanged:
-pod::use(prefix/mod[name_alias1 = name1, name_alias2 = name2, ...])
+box::use(prefix/mod[name_alias1 = name1, name_alias2 = name2, ...])
 ```
 
 The `attach_operators` option from ‘modules’ has been dropped. If users require
-operators, they need to explicitly attach them when using ‘pod’.
+operators, they need to explicitly attach them when using ‘box’.
 
 ### Loading documentation
 
 The `doc` option from `modules::import()` has been dropped without replacement.
-‘pod’ loads documentation lazily only when it is requested via `pod::help()`
+‘box’ loads documentation lazily only when it is requested via `box::help()`
 (see below).
 
 ## Executing code during module loading
 
 The ‘modules’ package treated modules as regular R source code files: upon
-importing them, the entire code inside a module file was executed. ‘pod’
+importing them, the entire code inside a module file was executed. ‘box’
 conceptually no longer does this. It regards module source code as
 *declarative*: the module source code defines a number of names to be exported.
 However, code with side-effects on the module file level is no longer guaranteed
 to execute.
 
-Instead, ‘pod’ introduces [module event hooks][hooks], in particular
+Instead, ‘box’ introduces [module event hooks][hooks], in particular
 `.on_load()`, which is a function that gets executed whenever a module is first
 loaded inside an R session.
 
 ## Changed options
 
 In ‘modules’, the module search path was set via `options('import.path')`. In
-‘pod’, use `options('pod.path')` instead.
+‘box’, use `options('box.path')` instead.
 
 The ‘modules’ options `options('import.attach')` and `options('warn.conflicts')`
-no longer exist. In particular, ‘pod’ no longer warns of name conflicts when
+no longer exist. In particular, ‘box’ no longer warns of name conflicts when
 attaching names. Instead, it encourages consciously choosing which names to
 attach.
 
 ## Changed function names
 
-The ‘modules’ function `module_file` is now called [`pod::file()`][pod::file].
+The ‘modules’ function `module_file` is now called [`box::file()`][box::file].
 Its semantics have also changed: it no longer cares whether files relative to
 the module exist or not; it merely constructs appropriate path strings.
 
-The ‘module’ function `module_name` is now called [`pod::name()`][pod::name]. It
+The ‘module’ function `module_name` is now called [`box::name()`][box::name]. It
 no longer has any arguments.
 
 ## Exporting names from modules
@@ -175,7 +171,7 @@ no longer has any arguments.
 With the ‘modules’ packages, module source files exported all non-hidden names;
 that is, all names that didn’t start with a dot (`.`).
 
-‘pod’ makes exporting explicit. By default, *no* names are exported from a
+‘box’ makes exporting explicit. By default, *no* names are exported from a
 module, unless they are marked with the directive comment `#' @export`:
 
 ```{r eval = FALSE}
@@ -183,7 +179,7 @@ module, unless they are marked with the directive comment `#' @export`:
 f1 = function () {}
 
 # This nested module is not exported
-pod::use(./nested1)
+box::use(./nested1)
 
 # This function is exported:
 #' @export
@@ -191,15 +187,15 @@ f2 = function () {}
 
 # This nested module is exported
 #' @export
-pod::use(./nested2)
+box::use(./nested2)
 ```
 
-`@export` directives that decorate `pod::use()` declarations apply to *all*
+`@export` directives that decorate `box::use()` declarations apply to *all*
 names declared in it:
 
 ```{r eval = FALSE}
 #' @export
-pod::use(
+box::use(
     pkg_alias = pkg,
     prefix/mod,
     prefix/mod2[a, b, c]
@@ -223,28 +219,28 @@ this would first execute the code of the modules `a` and `a/b`. In other words
 it would source the files `a/__init__.r`, `a/b/__init__.r`, and `a/b/c.r`, in
 this order.
 
-‘pod’ no longer loads the full module hierarchy: `pod::use(a/b/c)` loads only
-the module defined by `a/b/c.r`. Likewise, `pod::use(a/b)` does *not*
+‘box’ no longer loads the full module hierarchy: `box::use(a/b/c)` loads only
+the module defined by `a/b/c.r`. Likewise, `box::use(a/b)` does *not*
 automatically load `a/b/c.r` (but the same behaviour was already present in
 ‘modules’).
 
 ## Displaying documentation
 
 ‘modules’ overrode the `help` function and the `?` operator to allow displaying
-module documentation. Since ‘pod’ is no longer attached, these functions no
+module documentation. Since ‘box’ is no longer attached, these functions no
 longer display module documentation. Instead, the documentation of anything
-imported via ‘pod’ (both modules and packages!) can be queried via
-[`pod::help()`][pod::help].
+imported via ‘box’ (both modules and packages!) can be queried via
+[`box::help()`][box::help].
 
-Unlike ‘modules’, ‘pod’ also supports displaying the documentation of nested
-module names, e.g. `pod::help(a$b$c)`.
+Unlike ‘modules’, ‘box’ also supports displaying the documentation of nested
+module names, e.g. `box::help(a$b$c)`.
 
 ## Cyclic imports
 
-Cyclic/circular imports are supported by both ‘modules’ and ‘pod’. However, the
+Cyclic/circular imports are supported by both ‘modules’ and ‘box’. However, the
 level of support differs. The details are complicated, and it is generally
 recommended to avoid cyclic modules. However, there are some situations where
-circularity in the dependencies makes sense, and ‘pod’ strives to make this
+circularity in the dependencies makes sense, and ‘box’ strives to make this
 work, where technically possible.
 
 For instance, consider the following (nonsensical) working, circular definition
@@ -254,7 +250,7 @@ integer is even or odd:
 * `even.r`:
 
     ```{r eval = FALSE}
-    pod::use(./odd[...])
+    box::use(./odd[...])
 
     #' @export
     even = function (n) {
@@ -265,7 +261,7 @@ integer is even or odd:
 * `odd.r`:
 
     ```{r eval = FALSE}
-    pod::use(./even[...])
+    box::use(./even[...])
 
     #' @export
     odd = function (n) {
@@ -273,7 +269,7 @@ integer is even or odd:
     }
     ```
 
-These modules compute `even` in terms of `odd`, and vice-versa. Yet ‘pod’ has no
+These modules compute `even` in terms of `odd`, and vice-versa. Yet ‘box’ has no
 trouble importing and using both these modules. However, this no longer works
 once we attempt to export imported submodules themselves. That is, the following
 version of `odd.r` would cause an error:
@@ -282,7 +278,7 @@ version of `odd.r` would cause an error:
 
     ```{r eval = FALSE}
     #' @export
-    pod::use(./even[...])
+    box::use(./even[...])
 
     #' @export
     odd = function (n) {
@@ -291,8 +287,8 @@ version of `odd.r` would cause an error:
     ```
 
 [modules]: https://github.com/klmr/modules
-[pod::use]: https://klmr.me/pod/reference/use.html
-[hooks]: https://klmr.me/pod/reference/mod-hooks.html
-[pod::file]: https://klmr.me/pod/reference/file.html
-[pod::name]: https://klmr.me/pod/reference/name.html
-[pod::help]: https://klmr.me/pod/reference/help.html
+[box::use]: https://klmr.me/box/reference/use.html
+[hooks]: https://klmr.me/box/reference/mod-hooks.html
+[box::file]: https://klmr.me/box/reference/file.html
+[box::name]: https://klmr.me/box/reference/name.html
+[box::help]: https://klmr.me/box/reference/help.html
