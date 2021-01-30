@@ -36,7 +36,7 @@ calling_mod_path = function (caller) {
     }
 }
 
-#' \code{split_path(path)} is a platform independent and file system logic
+#' \code{split_path(path)} is a platform independent and filesystem logic
 #' aware alternative to \code{strsplit(path, '/')[[1L]]}.
 #' @param path the path to split
 #' @return \code{split_path} returns a character vector of path components that
