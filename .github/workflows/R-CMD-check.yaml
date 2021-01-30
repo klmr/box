@@ -37,6 +37,11 @@ jobs:
 
       - uses: r-lib/actions/setup-pandoc@v1
 
+      - name: Install cURL on ubuntu-20.04 (R devel)
+        if: runner.os == 'ubuntu-20.04'
+        run: |
+          sudo apt-get install libcurl4-openssl-dev
+
       - name: Cache R packages
         if: runner.os != 'Windows'
         uses: actions/cache@v2
