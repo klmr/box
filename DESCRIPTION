@@ -17,9 +17,9 @@ Authors@R: c(
     )
 URL: https://klmr.me/box, https://github.com/klmr/box
 BugReports: https://github.com/klmr/box/issues
-Description: Create reusable code modules in R. An alternative package
-    management system for R, similar to module systems in Python, Ruby or
-    JavaScript.
+Description: A modern module system for R. Organise code into hierarchical,
+    composable, reusable modules, and use it effortlessly across projects via a
+    flexible, declarative dependency loading syntax.
 Depends:
     R (>= 3.5.0)
 Imports:
