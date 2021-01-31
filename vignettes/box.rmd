@@ -5,7 +5,6 @@ date: "`r Sys.Date()`"
 output:
     rmarkdown::html_vignette:
         toc: true
-        number_sections: true
     md_document:
         variant: gfm
 vignette: >
@@ -87,11 +86,11 @@ seq$is_valid(s)
 s
 ```
 
-Note how we automatically get pretty-printed
-([FASTA][]) output because the `print`
-method (which gets called implicitly here) is specialised for the `'bio/seq'` S3
-class in the `bio/seq` module (prefixing S3 classes inside modules with the full
-module name is a convention to avoid name clashes of S3 classes):
+Note how we automatically get pretty-printed ([FASTA][]) output because the
+`print` method (which gets called implicitly here) is specialised for the
+`'bio/seq'` S3 class in the `bio/seq` module (prefixing S3 classes inside
+modules with the full module name is a convention to avoid name clashes of S3
+classes):
 
 ```{r}
 getS3method('print', 'bio/seq')
@@ -266,7 +265,7 @@ Subsequent calls to `box::use` for that module, regardless of whether they occur
 in a different scope, will refer to the already loaded, cached module, and will
 *not* reload the module.
 
-We can illustrate this by loading a module which has side-effects, `'info'`.
+We can illustrate this by loading a module which has side-effects, `info`.
 
 ```{r file='info.r'}
 ```

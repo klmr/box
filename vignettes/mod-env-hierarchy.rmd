@@ -5,7 +5,6 @@ date: "`r Sys.Date()`"
 output:
     rmarkdown::html_vignette:
         toc: true
-        number_sections: true
     md_document:
         variant: gfm
 vignette: >
