@@ -98,7 +98,7 @@ NAMESPACE: ${r_source_files} DESCRIPTION
 	${rscript} -e "devtools::document()"
 
 README.md: README.rmd DESCRIPTION
-	${rscript} -e "knitr::knit('$<')"
+	${rscript} -e "devtools::load_all(export_all = FALSE); knitr::knit('$<')"
 
 .PHONY: build
 ## Build the package tar.gz bundle
