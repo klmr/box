@@ -40,17 +40,21 @@ make_imports_env = function (info) {
 
 #' \code{is_namespace} checks whether a given environment corresponds to a
 #' module namespace.
-#' @param env Environment that may be a module namespace.
+#' @param env an environment that may be a module namespace.
 #' @rdname namespace
 is_namespace = function (env) {
     exists('.__module__.', env, mode = 'environment', inherits = FALSE)
 }
 
+#' @param ns the module namespace environment.
+#' @param which the key (as a length 1 character string) of the info to get/set.
+#' @param default default value to use if the key is not set.
 #' @rdname namespace
 namespace_info = function (ns, which, default = NULL) {
     get0(which, ns$.__module__., inherits = FALSE, ifnotfound = default)
 }
 
+#' @param value the value to assign to the specified key.
 #' @rdname namespace
 `namespace_info<-` = function (ns, which, value) {
     assign(which, value, envir = ns$.__module__.)
