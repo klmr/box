@@ -54,8 +54,10 @@ test-%: documentation
 .PHONY: check
 ## Run R CMD check
 check: documentation
-	build/check_rule_man_has_value .; \
-		ret=$$?; \
+	ret=0; \
+		for rule in build/check_rule_*; do \
+			if ! $$rule .; then ret=1; fi \
+		done; \
 		mkdir -p check; \
 		${rscript} -e "devtools::check(check_dir = 'check')"; \
 		check=$$?; \
