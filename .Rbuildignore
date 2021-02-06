@@ -8,8 +8,10 @@
 ^README\.md$
 ^README\.rmd$
 ^LICENSE.md$
+^build$
 ^printenv\.r$
 ^pkgdown$
+^cran-comments.md$
 ^doc$
 ^docs$
 ^figures$

@@ -54,8 +54,13 @@ test-%: documentation
 .PHONY: check
 ## Run R CMD check
 check: documentation
-	mkdir -p check
-	${rscript} -e "devtools::check(check_dir = 'check')"
+	build/check_rule_man_has_value .; \
+		ret=$$?; \
+		mkdir -p check; \
+		${rscript} -e "devtools::check(check_dir = 'check')"; \
+		check=$$?; \
+		let ret='ret | check'; \
+		exit $$ret
 
 .PHONY: site
 ## Create package website
