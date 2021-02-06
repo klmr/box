@@ -52,6 +52,8 @@ patch_mod_doc = function (docs) {
 #'  in the format \code{module$function}.
 #' @param help_type character string specifying the output format; currently,
 #'  only \code{'text'} is supported.
+#' @return \code{help} is called for its side-effect when called directly from
+#' the command prompt.
 #' @rdname help
 #' @export
 #' @examples
@@ -142,7 +144,6 @@ help = function (topic, help_type = getOption('help_type', 'text')) {
 #'
 #' @param caller the environment from which \code{help} was called.
 #' @param topic the unevaluated expression passed to \code{help}.
-#'
 #' @return \code{help_topic_target} returns a list of two elements containing
 #' the innermost module of the \code{help} call, as well as the name of the
 #' object that’s the subject of the \code{help} call. For \code{help(a$b$c$d)},

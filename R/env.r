@@ -1,5 +1,10 @@
 #' Module namespace handling
 #'
+#' \code{make_namespace} creates a new module namespace.
+#' @param info the module info.
+#' @return \code{make_namespace} returns the newly created module namespace for
+#' the module described by \code{info}.
+#' @details
 #' The namespace contains a module’s content. This schema is very much like R
 #' package organisation. A good resource for this is:
 #' <http://obeautifulcode.com/R/How-R-Searches-And-Finds-Stuff/>

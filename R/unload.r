@@ -2,6 +2,8 @@
 #'
 #' Unload a given module or reload it from its source.
 #' @param mod the module reference to be unloaded or reloaded
+#' @return \code{box::unload} and \code{box::reload} are called for their
+#' side-effect. They do not return anything.
 #'
 #' @details
 #' Unloading a module causes it to be purged from the internal cache such that

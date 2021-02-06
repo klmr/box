@@ -9,6 +9,8 @@ call_hook = function (ns, hook, ...) {
 #' Modules can declare functions to be called when a module is first loaded.
 #'
 #' @param ns the module namespace environment
+#' @return \code{.on_load} is called for its side-effect. Any return value is
+#' ignored.
 #'
 #' @note The API for hook functions is still subject to change. In particular,
 #' there might in the future be a way to subscribe to module events of other

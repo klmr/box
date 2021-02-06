@@ -143,6 +143,9 @@ parse_export_tags = function (info, exprs, mod_ns) {
 #'
 #' @param expr The unevaluated expression represented by the tag.
 #' @param ref The code reference \code{srcref} represented by the tag.
+#' @return \code{create_export_block} returns an object of type
+#' \code{roxy_block} represents an exported declaration expression, along with
+#' its source code location.
 #' @note This could be represented much simpler but we keep compatibility with
 #' roxygen2 — at least for the time being — to make integration with the
 #' roxygen2 API easier, should it become necessary.

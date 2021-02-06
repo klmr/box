@@ -91,6 +91,8 @@
 #'
 #' @param ... one or more module import declarations, see \sQuote{Details} for a
 #' description of the format.
+#' @return \code{box::use} has no return value. It is called for its
+#' side-effect.
 #'
 #' @examples
 #' \dontrun{
