@@ -125,6 +125,8 @@ block_name = function (block) {
 #' Extract comment tags from Roxygen block comments
 #'
 #' @param exprs The unevaluated expressions to parse.
+#' @return \code{parse_export_tags} returns a list of \code{roxy_block}s for all
+#' exported declarations.
 #' @note The following code performs the same function as roxygen2 with a custom
 #' \code{@} tag roclet. Unfortunately roxygen2 itself pulls in many
 #' dependencies, making it less suitable for an infrastructure package such as
@@ -225,7 +227,9 @@ roxygen2_object = function (alias, value, type) {
 
 #' Extend code regions to include leading comments and whitespace
 #'
-#' @param refs The code region \code{srcref}s to extend.
+#' @param refs a list of the code region \code{srcref}s to extend.
+#' @return \code{add_comment} returns a list of \code{srcref}s corresponding to
+#' \code{srcref}, but extended to include the preceding comment block.
 #' @keywords internal
 add_comments = function (refs) {
     block_end_lines = map_int(`[[`, refs, 3L)
