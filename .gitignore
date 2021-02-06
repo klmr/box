@@ -1,11 +1,11 @@
 /.Rprofile
 /man/*.Rd
 /NAMESPACE
-/check
-/doc
+/check/
+/doc/
 /docs
-/Meta
-/pkgdown/favicon
+/Meta/
+/pkgdown/favicon/
 /src/*.o
 /src/*.so
 /vignettes/*.html
