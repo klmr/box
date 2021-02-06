@@ -23,16 +23,19 @@
 #' flatmap_chr(identity, list(c('a', 'b'), 'c'))
 #' # [1] "a" "b" "c"
 #' }
+#' @noRd
 map = function (.f, ...) {
     if (length(..1) == 0L) list() else Map(.f, ..., USE.NAMES = FALSE)
 }
 
 #' @rdname map
+#' @noRd
 flatmap = function (.f, ..., .default) {
     Reduce(c, map(.f, ...), .default)
 }
 
 #' @rdname map
+#' @noRd
 flatmap_chr = function (.f, ...) {
     flatmap(.f, ..., .default = character(0L))
 }
