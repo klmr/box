@@ -6,7 +6,14 @@ deploy_remote ?= origin
 deploy_branch ?= master
 deploy_source ?= develop
 
+# Helper functions for a recursive wildcard function.
+match_files = $(filter $(subst *,%,$2),$1)
+filter_out_dirs = $(filter-out %/,$(foreach f,$1,$(wildcard $f/)))
+rec_find = $(foreach f,$(wildcard ${1:=/*}),$(call filter_out_dirs,$(call rec_find,$f,$2) $(call match_files,$f,$2)))
+
 r_source_files = $(wildcard R/*.r)
+
+vignette_files = $(call rec_find,vignettes,*)
 
 rmd_files = $(wildcard vignettes/*.rmd)
 knit_results = $(patsubst vignettes/%.rmd,doc/%.md,${rmd_files})
@@ -86,7 +93,9 @@ reference: documentation
 # both `vignettes` and `knit_all` rules?
 .PHONY: vignettes
 ## Compile all vignettes and other R Markdown articles
-vignettes:
+vignettes: Meta/vignettes.rds
+
+Meta/vignettes.rds: DESCRIPTION ${r_source_files} ${vignette_files}
 	${rscript} -e "devtools::build_vignettes(dependencies = TRUE)"
 
 .PHONY: knit_all
@@ -111,7 +120,7 @@ README.md: README.rmd DESCRIPTION
 ## Build the package tar.gz bundle
 build: ${pkg_bundle_name}
 
-${pkg_bundle_name}: DESCRIPTION NAMESPACE ${r_source_files} ${rmd_files}
+${pkg_bundle_name}: DESCRIPTION NAMESPACE Meta/vignettes.rds ${r_source_files}
 	R CMD build .
 
 .PHONY: favicons
