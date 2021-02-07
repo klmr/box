@@ -93,9 +93,9 @@ reference: documentation
 # both `vignettes` and `knit_all` rules?
 .PHONY: vignettes
 ## Compile all vignettes and other R Markdown articles
-vignettes: Meta/vignettes.rds
+vignette: Meta/vignette.rds
 
-Meta/vignettes.rds: DESCRIPTION ${r_source_files} ${vignette_files}
+Meta/vignette.rds: DESCRIPTION ${r_source_files} ${vignette_files}
 	${rscript} -e "devtools::build_vignettes(dependencies = TRUE)"
 
 .PHONY: knit_all
@@ -120,7 +120,7 @@ README.md: README.rmd DESCRIPTION
 ## Build the package tar.gz bundle
 build: ${pkg_bundle_name}
 
-${pkg_bundle_name}: DESCRIPTION NAMESPACE Meta/vignettes.rds ${r_source_files}
+${pkg_bundle_name}: DESCRIPTION NAMESPACE ${r_source_files}
 	R CMD build .
 
 .PHONY: favicons
