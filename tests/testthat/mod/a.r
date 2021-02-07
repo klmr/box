@@ -1,7 +1,7 @@
 #' A test module
 #'
 #' With a description
-".__module__."
+'.__module__.'
 
 #' Double a number
 #'

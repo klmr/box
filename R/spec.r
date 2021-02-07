@@ -248,7 +248,7 @@ assign_missing_names = function (syms) {
 }
 
 parse_attach_list = function (expr) {
-    if (length(expr) == 1L && identical(expr[[1L]], quote(expr = ))) {
+    if (length(expr) == 1L && identical(expr[[1L]], quote(expr =))) {
         parse_error('Expected at least one identifier in attach list')
     } else {
         vapply(expr, parse_identifier, character(1L))
@@ -258,7 +258,7 @@ parse_attach_list = function (expr) {
 parse_identifier = function (expr) {
     if (length(expr) != 1L || ! is.name(expr)) {
         parse_error('Expected identifier, got ', expr)
-    } else if (identical(expr, quote(expr = ))) {
+    } else if (identical(expr, quote(expr =))) {
         parse_error('Expected identifier, got nothing')
     } else {
         deparse(expr)
