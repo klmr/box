@@ -95,14 +95,14 @@ reference: documentation
 ## Compile all vignettes and other R Markdown articles
 vignette: Meta/vignette.rds
 
-Meta/vignette.rds: DESCRIPTION ${r_source_files} ${vignette_files}
+Meta/vignette.rds: DESCRIPTION NAMESPACE ${r_source_files} ${vignette_files}
 	${rscript} -e "devtools::build_vignettes(dependencies = TRUE)"
 
 .PHONY: knit_all
 ## Compile R markdown articles and move files to the documentation directory
 knit_all: ${knit_results} | doc
 
-doc/%.md: vignettes/%.rmd | doc
+doc/%.md: vignettes/%.rmd DESCRIPTION NAMESPACE ${r_source_files} | doc
 	${rscript} -e "rmarkdown::render('$<', output_format = 'md_document', output_file = '${@F}', output_dir = '${@D}')"
 
 .PHONY: documentation
