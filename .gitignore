@@ -1,9 +1,10 @@
 /.Rprofile
 /man/*.Rd
 /NAMESPACE
+/build/
 /check/
 /doc/
-/docs
+/docs/
 /Meta/
 /pkgdown/favicon/
 /src/*.o

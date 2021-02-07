@@ -55,7 +55,7 @@ test-%: documentation
 ## Run R CMD check
 check: documentation
 	ret=0; \
-		for rule in build/check_rule_*; do \
+		for rule in scripts/check_rule_*; do \
 			if ! $$rule .; then ret=1; fi \
 		done; \
 		mkdir -p check; \
