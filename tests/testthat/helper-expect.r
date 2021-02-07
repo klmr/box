@@ -46,7 +46,6 @@ in_globalenv = function (expr) {
 in_source_repo = local({
     in_tests = grepl('tests/testthat$', getwd())
     basedir = if (in_tests) file.path(getwd(), '../..') else getwd()
-    desc_file = 
     file.exists(file.path(basedir, 'DESCRIPTION'))
 })
 
