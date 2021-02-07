@@ -150,6 +150,11 @@ ${favicons_small}: man/figures/box.svg | pkgdown/favicon
 ${favicons_large}: man/figures/box.svg | pkgdown/favicon
 	$(call export-favicon,-51:0:711:760)
 
+.PHONY: lint
+## Link the package source
+lint:
+	${rscript} -e "lintr::lint_package('.')"
+
 doc pkgdown/favicon:
 	mkdir -p $@
 
