@@ -124,7 +124,6 @@
 #'     hi('Eve')
 #'     bye('Eve')
 #' })
-#' }
 #' @seealso
 #' \code{\link{name}} and \code{\link{file}} give information about loaded
 #' modules.
