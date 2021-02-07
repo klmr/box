@@ -39,21 +39,27 @@ e.g.:
 
 ```r
 #' @export
-world = function (name) {
+hello = function (name) {
     message('Hello, ', name, '!')
+}
+
+#' @export
+bye = function (name) {
+    message('Goodbye ', name, '!')
 }
 ```
 
-Such modules can be stored in a central path analogous to the R package library
-(configured via `options('box.path')`), or locally in each individual project.
-Let’s assume that previous module is stored in a file `hello.r` inside the
-current project’s directory. Then the following code imports and uses it:
+Such modules can be stored in a central **module search path** (configured via
+`options('box.path')`) analogous to the R package library, or locally in
+individual projects. Let’s assume the module we just defined is stored in a file
+`hello_world.r` inside a directory `box`, which is inside the module search
+path. Then the following code imports and uses it:
 
 
 ```r
-box::use(./hello)
+box::use(box/hello_world)
 
-hello$world('Ross')
+hello_world$hello('Ross')
 #> Hello, Ross!
 ```
 

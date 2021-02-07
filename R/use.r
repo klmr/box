@@ -95,34 +95,44 @@
 #' side-effect.
 #'
 #' @examples
+#' local({
+#'     # Set the module search path for the example module.
+#'     old_opts = options(box.path = system.file(package = 'box'))
+#'     on.exit(options(old_opts))
+#'
+#'     # Basic usage
+#'     # The file `box/hello_world.r` exports the functions `world` and `bye`.
+#'     box::use(box/hello_world)
+#'     hello_world$hello('Robert')
+#'     hello_world$bye('Robert')
+#'
+#'     # Using an alias
+#'     box::use(world = box/hello_world)
+#'     world$hello('John')
+#'
+#'     # Attaching exported names
+#'     box::use(box/hello_world[hello])
+#'     hello('Jenny')
+#'     # Exported but not attached, thus access fails:
+#'     try(bye('Jenny'))
+#'
+#'     # Attach everything, give 'world' an alias:
+#'     box::use(box/hello_world[hi = hello, ...])
+#'     hi('Eve')
+#'     bye('Eve')
+#' })
+#'
 #' \dontrun{
-#' # Basic usage
+#' # Load packages:
+#' box::use(dplyr)
 #'
-#' # `a.r` is a file in the local directory containing a function `f`.
-#' box::use(./a)
-#' a$f()
-#'
-#' # Attaching exported names
-#'
-#' # b/c.r is a file in path `b`, containing functions `f` and `g`.
-#' box::use(b/c[f])
-#' f()
-#' g() # Error: could not find function "g"
-#' b$f() # Error: object 'b' not found
-#'
-#' box::use(b/c[...])
-#' f()
-#' g()
-#'
-#' # Alias names
-#'
+#' # Combine the above. Load multiple modules and packages at once, give them
+#' # aliases, and locally attach the exports of some of them:
 #' box::use(
-#'     x = ./a,
-#'     c = b/c[h = g, ...]
+#'     d = dplyr,
+#'     t = tidyr,
+#'     ./local/mod[...]
 #' )
-#' # Now the module defined in `a.r` is available as `x`, the module defined
-#' # in `b/c.r` is available as `c`, and all exported names in `b/c.r` are
-#' # attached, with the exception of `g`, which is attached under the name `h`.
 #' }
 #' @seealso
 #' \code{\link{name}} and \code{\link{file}} give information about loaded

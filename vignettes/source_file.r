@@ -8,9 +8,6 @@ source_file = function (path, language) {
 
 knitr::knit_hooks$set(file = function (before, options, envir) {
     if (! before) {
-        # Necessary because this file is built both as vignette and
-        # independent, and this happens from different working directories.
-        path_prefix = if (grepl('vignettes$', getwd())) '.' else 'vignettes'
-        source_file(file.path(path_prefix, options$file), options$lang)
+        source_file(options$file, options$lang)
     }
 })
