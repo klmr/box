@@ -14,24 +14,12 @@
 #' module, e.g. \code{\link{print}}), then this needs to be made known
 #' explicitly.
 #'
+#' See the vignette in \code{vignette('use', 'box')} for more information on
+#' defining S3 methods inside modules.
+#'
 #' @note \strong{Do not} call \code{\link[base]{registerS3method}} inside a
 #' module. Only use \code{register_S3_method}. This is important for the
 #' module’s own book-keeping.
-#' @examples
-#' \dontrun{
-#' # In module mymod/a:
-#' print.my_class = function (x) {
-#'     message(sprintf('My class with field %s\n', x$field))
-#'     invisible(x)
-#' }
-#'
-#' box::register_S3_method('print', 'my_class', print.my_class)
-#'
-#' # Globally:
-#' box::use(mymod/a)
-#' obj = structure(list(field = 42), class = 'my_class')
-#' obj # calls `print.my_class`, with output "My class with field 42"
-#' }
 #' @export
 register_S3_method = function (name, class, method) {
     module = environment(method)

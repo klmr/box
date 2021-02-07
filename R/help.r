@@ -54,13 +54,11 @@ patch_mod_doc = function (docs) {
 #'  only \code{'text'} is supported.
 #' @return \code{help} is called for its side-effect when called directly from
 #' the command prompt.
+#' @details
+#' See the vignette in \code{vignette('use', 'box')} for more information on
+#' displaying help for modules.
 #' @rdname help
 #' @export
-#' @examples
-#' \dontrun{
-#' box::use(my/mod)
-#' box::help(mod$func)
-#' }
 help = function (topic, help_type = getOption('help_type', 'text')) {
     topic = substitute(topic)
     target = help_topic_target(parent.frame(), topic)

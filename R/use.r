@@ -41,6 +41,9 @@
 #' }
 #' }
 #'
+#' See the vignette in \code{vignette('use', 'box')} for detailed examples of
+#' usage of the different types of use declarations listed above.
+#'
 #' @section Import semantics:
 #' Modules and packages are loaded into dedicated namespace environments. Names
 #' from a module or package can be selectively attached to the current scope as
@@ -121,18 +124,6 @@
 #'     hi('Eve')
 #'     bye('Eve')
 #' })
-#'
-#' \dontrun{
-#' # Load packages:
-#' box::use(dplyr)
-#'
-#' # Combine the above. Load multiple modules and packages at once, give them
-#' # aliases, and locally attach the exports of some of them:
-#' box::use(
-#'     d = dplyr,
-#'     t = tidyr,
-#'     ./local/mod[...]
-#' )
 #' }
 #' @seealso
 #' \code{\link{name}} and \code{\link{file}} give information about loaded
