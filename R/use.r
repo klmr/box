@@ -41,7 +41,7 @@
 #' }
 #' }
 #'
-#' See the vignette in \code{vignette('use', 'box')} for detailed examples of
+#' See the vignette in \code{vignette('box', 'box')} for detailed examples of
 #' usage of the different types of use declarations listed above.
 #'
 #' @section Import semantics:

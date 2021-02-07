@@ -55,7 +55,7 @@ patch_mod_doc = function (docs) {
 #' @return \code{help} is called for its side-effect when called directly from
 #' the command prompt.
 #' @details
-#' See the vignette in \code{vignette('use', 'box')} for more information on
+#' See the vignette in \code{vignette('box', 'box')} for more information on
 #' displaying help for modules.
 #' @rdname help
 #' @export
