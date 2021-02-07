@@ -34,5 +34,9 @@ for i in "${!vignettes[@]}"; do
     echo >&2 "- Converting $m => $v"
 
     header=$(yaml_header "$v")
-    (echo "$header"; sed '/^``` *r/s//```{r eval = FALSE}/' "$m") >"$v"
+    # Substituting the code fence headers of the R code is done so that the
+    # vignette builder produces *.R output files. Without this, no such R files
+    # are produced.
+    # shellcheck disable=SC2016
+    (echo "$header"; sed '/^``` *r$/s//```{r eval = FALSE}/' "$m") >"$v"
 done
