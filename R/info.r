@@ -81,13 +81,7 @@ find_global_mod = function (spec, caller) {
 #' given preference, and upper-case file extensions are discouraged).
 #' @keywords internal
 find_in_path = function (spec, base_paths) {
-    mod_path_prefix = merge_path(spec$prefix)
-    ext = c('.r', '.R')
-    # TODO: Write unit test that ensures the module is found in the correct
-    # order of preference of paths, when multiple possibilities exist.
-    simple_mod = file.path(mod_path_prefix, paste0(spec$name, ext))
-    nested_mod = file.path(mod_path_prefix, spec$name, paste0('__init__', ext))
-    candidates = map(file.path, base_paths, c(simple_mod, nested_mod))
+    candidates = mod_file_candidates(spec, base_paths)
     hits = map(file.exists, candidates)
     which_base = which(map_lgl(any, hits))[1L]
 
@@ -101,4 +95,12 @@ find_in_path = function (spec, base_paths) {
     path = candidates[[which_base]][hits[[which_base]]][1L]
     base_path = base_paths[which_base]
     mod_info(spec, normalizePath(path))
+}
+
+mod_file_candidates = function (spec, base_paths) {
+    mod_path_prefix = merge_path(spec$prefix)
+    ext = c('.r', '.R')
+    simple_mod = file.path(mod_path_prefix, paste0(spec$name, ext))
+    nested_mod = file.path(mod_path_prefix, spec$name, paste0('__init__', ext))
+    map(file.path, base_paths, list(c(simple_mod, nested_mod)))
 }
