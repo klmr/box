@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# CRAN does not like my vignettes which “modify” the user filesystem — probably
+# because a vignette is invoking `R CMD SHLIB`, but potentially for different
+# reasons.
+# As a consequence, it’s easier just to submit static vignettes. To keep it
+# simple, let’s pretend that the already compiled vignettes, in Markdown format
+# (*.md), are R Markdown input (*.rmd). This works because running `knitr::knit`
+# seems to be (!) idempotent. We just need to paste the RMD YAML header in front
+# of the MD files for the correct creation of the HTML output.
+
+if (($# == 0)); then
+    echo >&2 'Error: missing package directory'
+    exit 1
+fi
+
+yaml_header() {
+    sed -n '/^----*/,/^----*/p' "$1"
+}
+
+pkgdir=$1
+vignettes=()
+markdown=()
+for file in "$pkgdir/vignettes/"*.rmd; do
+    vignettes+=("$file")
+    markdown+=("$pkgdir/doc/$(basename "${file%%.rmd}.md")")
+done
+
+for i in "${!vignettes[@]}"; do
+    v=${vignettes[$i]}
+    m=${markdown[$i]}
+    echo >&2 "- Converting $m => $v"
+
+    header=$(yaml_header "$v")
+    (echo "$header"; sed '/^``` *r/s//```{r eval = FALSE}/' "$m") >"$v"
+done

@@ -20,6 +20,8 @@ knit_results = $(patsubst vignettes/%.rmd,doc/%.md,${rmd_files})
 
 pkg_bundle_name := $(shell ${rscript} --vanilla -e 'cat(sprintf("%s.tar.gz\n", paste(read.dcf("DESCRIPTION")[1L, c("Package", "Version")], collapse = "_")))')
 
+cran-tmpdir = tmp.cran
+
 favicons_small = $(addprefix pkgdown/favicon/,$(addprefix favicon-,16x16.png 32x32.png))
 
 favicons_large = $(addprefix pkgdown/favicon/,\
@@ -122,6 +124,17 @@ build: ${pkg_bundle_name}
 
 ${pkg_bundle_name}: DESCRIPTION NAMESPACE ${r_source_files}
 	R CMD build .
+
+.PHONY: build-cran
+## Bundle the package with static vignette sources for submission to CRAN
+build-cran:
+	mkdir ${cran-tmpdir} && \
+		git clone . ${cran-tmpdir} && \
+		${MAKE} -C ${cran-tmpdir} knit_all && \
+		scripts/precompile-vignettes ${cran-tmpdir} && \
+		${MAKE} -C ${cran-tmpdir} build && \
+		mv ${cran-tmpdir}/${pkg_bundle_name} . && \
+		rm -rf ${cran-tmpdir}
 
 .PHONY: favicons
 ## Generate the documentation site favicons
