@@ -41,3 +41,21 @@ test_that('local path is searched in module', {
     expect_paths_equal(rel$path_in_fun(), nested_path)
     expect_paths_equal(rel$path_in_nested_fun(), nested_path)
 })
+
+test_that('all module file candidates are found', {
+    # See <https://github.com/klmr/box/issues/174>
+    spec = parse_spec(quote(a/b), '')
+    paths = c('x', 'y')
+    candidates = mod_file_candidates(spec, paths)
+    expected = c(
+        'x/a/b.r',
+        'x/a/b.R',
+        'x/a/b/__init__.r',
+        'x/a/b/__init__.R',
+        'y/a/b.r',
+        'y/a/b.R',
+        'y/a/b/__init__.r',
+        'y/a/b/__init__.R'
+    )
+    expect_setequal(unlist(candidates), expected)
+})
