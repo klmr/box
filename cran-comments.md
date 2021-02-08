@@ -14,16 +14,12 @@
 
 * Do not delete objects in examples or vignettes: The vignettes have been
   replaced by versions that no longer execute R code in the user environment,
-  and therefore will not perform modifications/deletions. That said, I cannot
-  explain this CRAN note: The previous vignettes were run in complete isolation:
-  in particular, they did not delete any objects or files. The only object that
-  was deleted was one that was previously created *inside the vignette*. No
-  files were touched, except by an invocation of `R CMD SHLIB`.
+  and therefore will not perform modifications/deletions.
 
-* Do not modify the global environment: This package only modifies the *calling*
+* Do not modify the global environment: This package only modifies the calling
   environment (which may be the global environment), at the explicit direction
   of the user, and only according to fixed, clearly documented rules. Performing
-  these modifications is the express purpose of this package. They are never
+  these modifications is the express purpose of this package: they are never
   unexpected or surprising side-effects. As noted, there is precedent for this
   behaviour in existing CRAN packages. In particular, the 'import' package
   modifies the calling environment in the same fashion via import::here().
