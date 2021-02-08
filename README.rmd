@@ -7,6 +7,9 @@ knitr::opts_chunk$set(
   fig.path = 'man/figures/'
 )
 
+options(box.path = 'inst')
+box::use(./vignettes/source_file)
+
 desc = read.dcf('DESCRIPTION')
 desc = setNames(as.list(desc), colnames(desc))
 ```
@@ -29,20 +32,49 @@ pak::pkg_install('klmr/box@develop')
 
 ## 🥜 Usage in a nutshell
 
-‘box’ allows organising R code in a more modular way, using two complementary
-mechanisms. Firstly, it allows loading just the parts of packages that are
-needed, and giving imported names arbitrary aliases. This makes code more
-explicit, deliberate, and reduces errors due to name clashes.
+‘box’ allows organising R code in a more modular way, via two mechanisms:
 
-And secondly it simplifies *writing modular code* by treating files and folders
-of R code as independent modules, without requiring the user to wrap reusable
-code into packages.
+1. It enables *writing modular code* by treating files and folders of R code as
+   independent (potentially nested) modules, without requiring the user to wrap
+   reusable code into packages.
+2. It provides a new syntax to import reusable code (both from packages and from
+   modules) which is more powerful and less error-prone than `library` or
+   `require`, by limiting the number of names that are made available.
+
+### Reusable code modules
+
+Code doesn’t have to be wrapped into a package to be reusable. With ‘box’,
+regular R files form reusable **R modules** that can be used elsewhere. Just put
+the **export directive** `#' @export` in front of names that should be exported,
+e.g.:
+
+```{r file = 'inst/box/hello_world.r'}
+```
+
+Such modules can be stored in a central **module search path** (configured via
+`options('box.path')`) analogous to the R package library, or locally in
+individual projects. Let’s assume the module we just defined is stored in a file
+`hello_world.r` inside a directory `box`, which is inside the module search
+path. Then the following code imports and uses it:
+
+```{r}
+box::use(box/hello_world)
+
+hello_world$hello('Ross')
+```
+
+Modules are a lot like packages. But they are easier to write and use (often
+without requiring any set-up), and they offer some other nice features that set
+them apart from packages (such as the ability to be nested hierarchically).
+
+For more information on writing modules refer to the *[Get started][]* vignette.
 
 ### Loading code
 
-‘box’ replaces the base R `library` (and `require`) functions with `box::use`.
-`box::use` is more powerful, more flexible, and less error-prone than `library`.
-At its simplest, it provides a direct replacement for `library`:
+`box::use` is a **universal import declaration**. It works for packages just as
+well as for modules. In fact, ‘box’ completely replaces the base R `library` and
+`require` functions. `box::use` is more explicit, more flexible, and less
+error-prone than `library`. At its simplest, it provides a direct replacement:
 
 Instead of
 
@@ -56,100 +88,94 @@ You’d write
 box::use(ggplot2[...])
 ```
 
-This tells R to import the ‘ggplot2’ package, and to attach all its exported
-names — just like `library`. For this purpose, `...` acts as a wildcard to
-denote “all exported names”. However, attaching everything is generally
-discouraged, since this practice leads to name clashes and makes it harder to
-retrace which names come from which packages.
+This tells R to import the ‘ggplot2’ package, and to make all its exported names
+available (i.e. to “attach” them) — just like `library`. For this purpose, `...`
+acts as a wildcard to denote “all exported names”. However, attaching everything
+is generally *discouraged* (hence why it needs to be done explicitly rather than
+happening implicitly), since it leads to name clashes, and makes it harder to
+retrace which names belong to what packages.
 
 Instead, we can also instruct `box::use` to not attach any names when loading a
-package — or to just attach some. Or we can tell it to attach some names under
-an alias, and we can even give the package *itself* an alias.
+package — or to just attach a few. Or we can tell it to attach names under an
+alias, and we can also give the package *itself* an alias.
 
-The following `box::use` declaration illustrates all these different cases:
+The following `box::use` declaration illustrates these different cases:
 
 ```{r eval = FALSE}
 box::use(
-    purrr,
-    tbl = tibble,
-    dplyr[filter, select],
-    stats[st_filter = filter]
+    purrr,                          # 1
+    tbl = tibble,                   # 2
+    dplyr = dplyr[filter, select],  # 3
+    stats[st_filter = filter, ...]  # 4
 )
 ```
 
-This declaration
+**Users of Python, JavaScript, Rust and many other programming languages will
+find this `use` declaration familiar** (even if the syntax differs):
 
-* imports the package ‘purrr’ (but does not attach any of its names);
-* creates an alias, `tbl`, for the imported ‘tibble’ package (but does not
-  attach any of its names);
-* attaches the names `dplyr::filter` and `dplyr::select`; and
-* attaches the name `stats::filter` under the alias `st_filter`.
+The code
 
-Of the four packages thus loaded, only ‘purrr’ and ‘tibble’ are now available by
-name (as `purrr` and `tbl`, respectively), and we can use their exports via the
-`$` operator, e.g. `purrr$map` or `tbl$glimpse`. Although we’ve also loaded
-‘dplyr’ and ‘stats’, we did not create local names for the packages themselves,
-we only attached some of their exported names.
+1. *imports* the package ‘purrr’ (but does not attach any of its names);
+2. creates an *alias* `tbl` for the imported ‘tibble’ package (but does not
+   attach any of its names);
+3. *imports* the package ‘dplyr’ and additionally *attaches* the names
+   `dplyr::filter` and `dplyr::select`; and
+4. *attaches* all exported names from ‘stats’, but uses the local *alias*
+   `st_filter` for the name `stats::filter`.
+
+Of the four packages loaded in the code above, only ‘purrr’, ‘tibble’ and
+‘dplyr’ are made available by name (as `purrr`, `tbl` and `dplyr`,
+respectively), and we can use their exports via the `$` operator, e.g.
+`purrr$map` or `tbl$glimpse`. Although we’ve also loaded ‘stats’, we did not
+create a local name for the package itself, we only attached its exported names.
+
+Thanks to aliases, we can safely use functions with the same name from multiple
+packages without conflict: in the above, `st_filter` refers to the `filter`
+function from the ‘stats’ package; by contrast, plain `filter` refers to the
+‘dplyr’ function. Alternatively, we could also explicitly qualify the package
+alias, and write `dplyr$filter`.
 
 Furthermore, unlike with `library`, the effects of `box::use` are restricted to
-the current scope: we can load and attach names *inside* a function, and calling
-this function will not change the available names in the calling scope (or
-elsewhere). Importing code happens *locally*, and functions which load packages
-no longer cause global side effects:
+the current scope: we can load and attach names *inside* a function, and this
+will not affect the calling scope (or elsewhere). So importing code happens
+*locally*, and functions which load packages no longer cause global side
+effects:
 
-```{r eval = FALSE}
+```{r}
 log = function (msg) {
     box::use(glue[glue])
     message(glue('[LOG MESSAGE] {msg}'))
 }
 
 log('test')
-# 'glue' is undefined at this point!
+
+# … 'glue' is still undefined at this point!
 ```
 
-This makes it easy to write code with external dependencies without creating
-unintentional, far-reaching side effects.
+This makes it easy to encapsulate code with external dependencies without
+creating unintentional, far-reaching side effects.
 
-Unlike other packages, ‘box’ itself is never loaded via `library`. Instead, its
-functionality is always used explicitly via `box::use`.
-
-### Reusable code modules
-
-With ‘box’, code doesn’t have to be wrapped into a package to be reusable.
-Instead, every regular R file forms a reusable *R module* that can be used
-elsewhere via `box::use`.
-
-Such modules can be stored in a central path, or locally in each individual
-project. To import an R module, write
-
-```{r eval = FALSE}
-box::use(prefix/modname)
-```
-
-Unlike packages, modules always need to be qualified by a *prefix*, which forms
-the full module name. The prefix must match the path of the module below the
-*repository path*, or the local path.
-
-Otherwise, modules function like packages — they define code and export names,
-which `xyz::use` imports. The biggest difference to packages is ease of use:
-modules encourage writing all R code to be potentially reusable. No need for
-setup, separate folders, metadata or other infrastructure.
-
-For more information refer to the *[Get started][]* vignette.
+‘box’ itself is never loaded via `library`. Instead, its functionality is always
+used explicitly via `box::use`.
 
 ## Why ‘box’?
 
-‘box’ promotes a philosophy that is in a way the opposite of what’s common in R:
-while some notable packages export and attach many hundreds and, in at least one
-notable case, *over a thousand* names, software engineering best practices
-encourage limiting both the scope of names, as well as the number of names
-available in each scope.
+‘box’ promotes the opposite philosophy of what’s common in R: some notable
+packages export and attach many hundreds and, in at least one notable case,
+*over a thousand* names. This works adequately for small-ish analysis scripts
+but breaks down for even moderately large software projects because it makes it
+non-obvious where names are imported from, and increases the risk of name
+clashes.
 
-For instance, in Python it is best practice to never use the equivalent of
+To make code more explicit, readable and maintainable, software engineering best
+practices encourage limiting both the scope of names, as well as the number of
+names available in each scope.
+
+For instance, best practice in Python is to never use the equivalent of
 `library(pkg)` (i.e. `from pkg import *`). Instead, Python [strongly
 encourages][pep8] using `import pkg` or `from pkg import a, few, symbols`, which
 correspond to `box::use(pkg)` and `box::use(pkg[a, few, symbols])`,
-respectively. The same is true in many other languages, e.g. [C++][], [Rust][],
+respectively. The same is true in many other languages, e.g. [C++][], [Rust][]
 and [Perl][]. Other languages (e.g. JavaScript and Go) are even stricter: they
 don’t allow unqualified imports at all.
 
@@ -163,9 +189,10 @@ imported using `box::use`. Modules can also be nested inside directories, such
 that self-contained projects can be easily split into separate or interdependent
 submodules.
 
+[roxygen2]: https://roxygen2.r-lib.org/
 [pep8]: https://www.python.org/dev/peps/pep-0008/#imports
 [Get started]: https://klmr.me/box/articles/box.html
 [C++]: https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Rs-using
-[Rust]: https://stackoverflow.com/q/23839699/1968
+[Rust]: https://doc.rust-lang.org/book/ch07-04-bringing-paths-into-scope-with-the-use-keyword.html#the-glob-operator
 [Perl]: https://perldoc.perl.org/Exporter#Selecting-What-to-Export
 [pep20]: https://www.python.org/dev/peps/pep-0020/

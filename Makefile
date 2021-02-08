@@ -6,12 +6,21 @@ deploy_remote ?= origin
 deploy_branch ?= master
 deploy_source ?= develop
 
+# Helper functions for a recursive wildcard function.
+match_files = $(filter $(subst *,%,$2),$1)
+filter_out_dirs = $(filter-out %/,$(foreach f,$1,$(wildcard $f/)))
+rec_find = $(foreach f,$(wildcard ${1:=/*}),$(call filter_out_dirs,$(call rec_find,$f,$2) $(call match_files,$f,$2)))
+
 r_source_files = $(wildcard R/*.r)
+
+vignette_files = $(call rec_find,vignettes,*)
 
 rmd_files = $(wildcard vignettes/*.rmd)
 knit_results = $(patsubst vignettes/%.rmd,doc/%.md,${rmd_files})
 
 pkg_bundle_name := $(shell ${rscript} --vanilla -e 'cat(sprintf("%s.tar.gz\n", paste(read.dcf("DESCRIPTION")[1L, c("Package", "Version")], collapse = "_")))')
+
+cran-tmpdir = tmp.cran
 
 favicons_small = $(addprefix pkgdown/favicon/,$(addprefix favicon-,16x16.png 32x32.png))
 
@@ -54,8 +63,15 @@ test-%: documentation
 .PHONY: check
 ## Run R CMD check
 check: documentation
-	mkdir -p check
-	${rscript} -e "devtools::check(check_dir = 'check')"
+	ret=0; \
+		for rule in scripts/check_rule_*; do \
+			if ! $$rule .; then ret=1; fi \
+		done; \
+		mkdir -p check; \
+		${rscript} -e "devtools::check(check_dir = 'check')"; \
+		check=$$?; \
+		let ret='ret | check'; \
+		exit $$ret
 
 .PHONY: site
 ## Create package website
@@ -79,14 +95,16 @@ reference: documentation
 # both `vignettes` and `knit_all` rules?
 .PHONY: vignettes
 ## Compile all vignettes and other R Markdown articles
-vignettes:
+vignette: Meta/vignette.rds
+
+Meta/vignette.rds: DESCRIPTION NAMESPACE ${r_source_files} ${vignette_files}
 	${rscript} -e "devtools::build_vignettes(dependencies = TRUE)"
 
 .PHONY: knit_all
 ## Compile R markdown articles and move files to the documentation directory
 knit_all: ${knit_results} | doc
 
-doc/%.md: vignettes/%.rmd | doc
+doc/%.md: vignettes/%.rmd DESCRIPTION NAMESPACE ${r_source_files} | doc
 	${rscript} -e "rmarkdown::render('$<', output_format = 'md_document', output_file = '${@F}', output_dir = '${@D}')"
 
 .PHONY: documentation
@@ -98,14 +116,25 @@ NAMESPACE: ${r_source_files} DESCRIPTION
 	${rscript} -e "devtools::document()"
 
 README.md: README.rmd DESCRIPTION
-	${rscript} -e "knitr::knit('$<')"
+	${rscript} -e "devtools::load_all(export_all = FALSE); knitr::knit('$<')"
 
 .PHONY: build
 ## Build the package tar.gz bundle
 build: ${pkg_bundle_name}
 
-${pkg_bundle_name}: DESCRIPTION NAMESPACE ${r_source_files} ${rmd_files}
+${pkg_bundle_name}: DESCRIPTION NAMESPACE ${r_source_files}
 	R CMD build .
+
+.PHONY: build-cran
+## Bundle the package with static vignette sources for submission to CRAN
+build-cran:
+	mkdir ${cran-tmpdir} && \
+		git clone . ${cran-tmpdir} && \
+		${MAKE} -C ${cran-tmpdir} knit_all && \
+		scripts/precompile-vignettes ${cran-tmpdir} && \
+		${MAKE} -C ${cran-tmpdir} build && \
+		mv ${cran-tmpdir}/${pkg_bundle_name} . && \
+		rm -rf ${cran-tmpdir}
 
 .PHONY: favicons
 ## Generate the documentation site favicons
@@ -120,6 +149,11 @@ ${favicons_small}: man/figures/box.svg | pkgdown/favicon
 
 ${favicons_large}: man/figures/box.svg | pkgdown/favicon
 	$(call export-favicon,-51:0:711:760)
+
+.PHONY: lint
+## Link the package source
+lint:
+	${rscript} -e "lintr::lint_package('.')"
 
 doc pkgdown/favicon:
 	mkdir -p $@

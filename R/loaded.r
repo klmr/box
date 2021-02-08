@@ -84,7 +84,7 @@ path = function (mod) {
     namespace_info(mod, 'info')$source_path
 }
 
-#' @param mod a module environment or namespace
+#' @param mod a module environment or namespace.
 #' @return \code{base_path} returns a character string containing the module’s
 #' base directory, or the current working directory if not invoked on a module.
 #' @rdname path
@@ -96,7 +96,9 @@ base_path = function (mod) {
 #' Set the base path of the script
 #'
 #' @param path character string containing the relative or absolute path to the
-#' currently executing R code file, or \code{NULL} to reset the path
+#' currently executing R code file, or \code{NULL} to reset the path.
+#' @return \code{box::set_script_path} returns the previously set script path,
+#' or \code{NULL} if none was explicitly set.
 #'
 #' @details
 #' \pkg{box} needs to know the base path of the topmost calling R context (i.e.
@@ -107,6 +109,7 @@ base_path = function (mod) {
 #' set the path of the currently executing R script manually.
 #' @export
 set_script_path = function (path) {
+    old_value = loaded_mods$.
     if (is.null(path)) {
         # Use `list = '.'` instead of `.` to work around bug in `R CMD check`,
         # which thinks that `.` refers to a non-existent global symbol.
@@ -114,6 +117,7 @@ set_script_path = function (path) {
     } else {
         loaded_mods$. = dirname(path)
     }
+    invisible(old_value)
 }
 
 #' @return \code{script_path} returns a character string that contains the

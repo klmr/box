@@ -66,10 +66,10 @@ It appears that `seq` exports `r length(ls(seq))` different names. To access
 exported names, we use the `$` operator:
 <code>`r paste0('seq$', lsf.str(seq)[[1L]])`</code> allows us to use the first
 function in the list of exported names. We can also display the interactive help
-for individual names using the regular `?` operator, e.g.:
+for individual names using the `box::help` function, e.g.:
 
-```{r eval=FALSE}
-? seq$revcomp
+```{r eval = FALSE}
+box::help(seq$revcomp)
 ```
 
 Now let’s actually *use* the module. The `seq` function inside the `dna/seq`
@@ -202,8 +202,8 @@ In fact, there are only three things worth mentioning:
 1. Documentation. Functions in the module file can be documented using
    ‘[roxygen2](https://cran.r-project.org/package=roxygen2)’
    syntax. It works the same as for packages. The ‘box’ package parses the
-   documentation and makes it available via `module_help` and `?`. This requires
-   that ‘roxygen2’ is installed.
+   documentation and makes it available via `box::help`. *Displaying module help
+   requires that ‘roxygen2’ is installed.*
 
 2. Export declarations. Similar to packages, modules explicitly need to declare
    which names they export; they do this using the annotation comment `#'
@@ -244,7 +244,7 @@ bio$seq$revcomp('CAT')
 
 We could also have implemented `bio` as follows:
 
-```{r eval=FALSE}
+```{r eval = FALSE}
 #' @export
 box::use(./seq[...])
 ```

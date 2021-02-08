@@ -1,0 +1,13 @@
+linters: source('scripts/linters.r'); with_defaults(
+    assignment_linter = arrow_assignment_linter,
+    closed_curly_linter = NULL,
+    commented_code_linter = NULL,
+    function_left_parentheses_linter = NULL,
+    line_length_linter(120L),
+    infix_spaces_linter = NULL,
+    object_length_linter = s3_object_length_linter(20L),
+    object_name_linter = NULL,
+    object_usage_linter = NULL,
+    open_curly_linter = NULL,
+    single_quotes_linter = double_quotes_linter
+  )

@@ -41,6 +41,9 @@
 #' }
 #' }
 #'
+#' See the vignette in \code{vignette('box', 'box')} for detailed examples of
+#' usage of the different types of use declarations listed above.
+#'
 #' @section Import semantics:
 #' Modules and packages are loaded into dedicated namespace environments. Names
 #' from a module or package can be selectively attached to the current scope as
@@ -91,37 +94,36 @@
 #'
 #' @param ... one or more module import declarations, see \sQuote{Details} for a
 #' description of the format.
+#' @return \code{box::use} has no return value. It is called for its
+#' side-effect.
 #'
 #' @examples
-#' \dontrun{
-#' # Basic usage
+#' local({
+#'     # Set the module search path for the example module.
+#'     old_opts = options(box.path = system.file(package = 'box'))
+#'     on.exit(options(old_opts))
 #'
-#' # `a.r` is a file in the local directory containing a function `f`.
-#' box::use(./a)
-#' a$f()
+#'     # Basic usage
+#'     # The file `box/hello_world.r` exports the functions `world` and `bye`.
+#'     box::use(box/hello_world)
+#'     hello_world$hello('Robert')
+#'     hello_world$bye('Robert')
 #'
-#' # Attaching exported names
+#'     # Using an alias
+#'     box::use(world = box/hello_world)
+#'     world$hello('John')
 #'
-#' # b/c.r is a file in path `b`, containing functions `f` and `g`.
-#' box::use(b/c[f])
-#' f()
-#' g() # Error: could not find function "g"
-#' b$f() # Error: object 'b' not found
+#'     # Attaching exported names
+#'     box::use(box/hello_world[hello])
+#'     hello('Jenny')
+#'     # Exported but not attached, thus access fails:
+#'     try(bye('Jenny'))
 #'
-#' box::use(b/c[...])
-#' f()
-#' g()
-#'
-#' # Alias names
-#'
-#' box::use(
-#'     x = ./a,
-#'     c = b/c[h = g, ...]
-#' )
-#' # Now the module defined in `a.r` is available as `x`, the module defined
-#' # in `b/c.r` is available as `c`, and all exported names in `b/c.r` are
-#' # attached, with the exception of `g`, which is attached under the name `h`.
-#' }
+#'     # Attach everything, give 'world' an alias:
+#'     box::use(box/hello_world[hi = hello, ...])
+#'     hi('Eve')
+#'     bye('Eve')
+#' })
 #' @seealso
 #' \code{\link{name}} and \code{\link{file}} give information about loaded
 #' modules.

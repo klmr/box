@@ -10,6 +10,7 @@
 ^LICENSE.md$
 ^printenv\.r$
 ^pkgdown$
+^cran-comments.md$
 ^doc$
 ^docs$
 ^figures$
@@ -19,3 +20,4 @@
 ^renv$
 ^renv\.lock$
 ^\.github$
+^scripts$

@@ -1,0 +1,31 @@
+#!/usr/bin/env Rscript
+
+args = commandArgs(trailingOnly = TRUE)
+
+if (length(args) == 0L) {
+    stop(sprintf('Error: missing argument %s', dQuote('pkg')))
+}
+
+verify_function_has_value = function (file) {
+    rd = tools::parse_Rd(file)
+    type = find_tag(rd, 'docType')
+    (length(type) != 0L && type != 'function') || length(find_tag(rd, 'value')) != 0L
+}
+
+find_tag = function (rd, tag) {
+    Filter(function (x) attr(x, 'Rd_tag') == paste0('\\', tag), rd)
+}
+
+pkg = args[[1L]]
+
+rd_files = dir(file.path(pkg, 'man'), pattern = '\\.[Rr]d$', full.names = TRUE)
+
+ok = vapply(rd_files, verify_function_has_value, logical(1L))
+if (! all(ok)) {
+    msg = 'The following function documentation files are missing `\\value` declarations:\n  %s'
+    failed = basename(rd_files[! ok])
+    stop(sprintf(msg, paste(failed, collapse = ',\n  ')))
+}
+invisible()
+
+# vim: ft=r

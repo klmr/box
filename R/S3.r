@@ -3,9 +3,10 @@
 #' \code{register_S3_method} makes an S3 method for a given generic and class
 #' known inside a module.
 #'
-#' @param name the name of the generic as a character string
-#' @param class the class name
-#' @param method the method to register
+#' @param name the name of the generic as a character string.
+#' @param class the class name.
+#' @param method the method to register.
+#' @return \code{register_S3_method} is called for its side-effect.
 #'
 #' @details Methods for generics defined in the same module do not need to be
 #' registered explicitly, and indeed \emph{should not} be registered. However,
@@ -13,24 +14,12 @@
 #' module, e.g. \code{\link{print}}), then this needs to be made known
 #' explicitly.
 #'
+#' See the vignette in \code{vignette('box', 'box')} for more information on
+#' defining S3 methods inside modules.
+#'
 #' @note \strong{Do not} call \code{\link[base]{registerS3method}} inside a
 #' module. Only use \code{register_S3_method}. This is important for the
 #' module’s own book-keeping.
-#' @examples
-#' \dontrun{
-#' # In module mymod/a:
-#' print.my_class = function (x) {
-#'     message(sprintf('My class with field %s\n', x$field))
-#'     invisible(x)
-#' }
-#'
-#' box::register_S3_method('print', 'my_class', print.my_class)
-#'
-#' # Globally:
-#' box::use(mymod/a)
-#' obj = structure(list(field = 42), class = 'my_class')
-#' obj # calls `print.my_class`, with output "My class with field 42"
-#' }
 #' @export
 register_S3_method = function (name, class, method) {
     module = environment(method)
@@ -47,8 +36,10 @@ register_S3_method = function (name, class, method) {
 #' point, calls \code{UseMethod}.
 #'
 #' \code{make_S3_methods_known} finds and registers S3 methods inside a module.
-#' @param function_name function name as character string
-#' @param envir the environment this function is invoked from
+#' @param function_name function name as character string.
+#' @param envir the environment this function is invoked from.
+#' @return \code{is_S3_user_generic} returns \code{TRUE} if the specified
+#' function is a user-defined S3 generic, \code{FALSE} otherwise.
 #' @keywords internal
 #' @name s3
 is_S3_user_generic = function (function_name, envir = parent.frame()) {
@@ -104,7 +95,8 @@ make_S3_methods_known = function (module) {
 
 #' Return a list of function names in an environment
 #'
-#' @param envir the environment to search in
+#' @param envir the environment to search in.
+#' @return \code{lsf} returns a vector of function names in the given environment.
 #' @keywords internal
 lsf = function (envir) {
     # We cannot use `eapply` here since that will try to evaluate active

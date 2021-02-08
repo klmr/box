@@ -35,20 +35,49 @@
 #' @docType package
 '_PACKAGE'
 
-.onAttach = function (libname, pkgname) {
+called_from_devtools = function () {
     if (isNamespaceLoaded('devtools')) {
         is_devtools_ns = function (x) identical(x, getNamespace('devtools'))
-        called_from_devtools = length(Filter(is_devtools_ns, lapply(sys.frames(), topenv))) != 0L
-        if (called_from_devtools) return()
+        length(Filter(is_devtools_ns, lapply(sys.frames(), topenv))) != 0L
+    } else {
+        FALSE
     }
+}
+
+called_from_pkgdown = function () {
     if (isNamespaceLoaded('pkgdown')) {
         is_pkgdown_ns = function (x) identical(x, getNamespace('pkgdown'))
-        called_from_pkgdown = length(Filter(is_pkgdown_ns, lapply(sys.frames(), topenv))) != 0L
-        if (called_from_pkgdown) return()
+        length(Filter(is_pkgdown_ns, lapply(sys.frames(), topenv))) != 0L
+    } else {
+        FALSE
     }
-    if (Sys.getenv('R_INSTALL_PKG') != '') return()
-    if (Sys.getenv('_R_CHECK_PACKAGE_NAME_') != '') return()
-    if (Sys.getenv('R_TESTS', unset = '.') == '') return()
+}
+
+called_from_ci = function () {
+    any(Sys.getenv(c('R_INSTALL_PKG', '_R_CHECK_PACKAGE_NAME_', 'R_TESTS')) != '')
+}
+
+called_from_example = function () {
+    utils_ns = getNamespace('utils')
+    example = quote(example)
+    for (frame in seq_along(sys.nframe())) {
+        call = sys.call(frame)
+        if (identical(call[[1L]], example) && identical(topenv(sys.frame(frame)), utils_ns)) {
+            return(TRUE)
+        }
+    }
+    FALSE
+}
+
+.onAttach = function (libname, pkgname) {
+    # Do not permit attaching ‘box’, except during build/check/CI.
+    if (
+        called_from_devtools() ||
+        called_from_pkgdown() ||
+        called_from_ci() ||
+        # `utils::example` also attaches the package.
+        called_from_example()
+    ) return()
 
     template = paste0(
         'The %s package is not supposed to be attached.\n\n',
