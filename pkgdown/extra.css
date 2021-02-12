@@ -71,3 +71,15 @@ a:focus {
     background-color: #6877a1;
     border-color: #8695c0;
 }
+
+.pkg {
+    quotes: '‘' '’';
+}
+
+.pkg::before {
+    content: open-quote;
+}
+
+.pkg::after {
+    content: close-quote;
+}
