@@ -64,11 +64,24 @@
 #'
 #' @section Search path:
 #' Modules are searched in the module search path, given by
-#' \code{getOption('box.path')}. This is a vector of paths to consider, from the
-#' highest to the lowest priority. The current directory is always considered
-#' last. That is, if a file \file{a/b.r} exists both in the current directory
-#' and in a module search path, the local file \file{./a/b.r} will not be
-#' loaded, unless the import is explicitly declared as \code{box::use(./a/b)}.
+#' \code{getOption('box.path')}. This is a character vector of paths to search,
+#' from the highest to the lowest priority. The current directory is always
+#' considered last. That is, if a file \file{a/b.r} exists both locally in the
+#' current directory and in a module search path, the local file \file{./a/b.r}
+#' will \emph{not} be loaded, unless the import is explicitly declared as
+#' \code{box::use(./a/b)}.
+#'
+#' Given a declaration \code{box::use(a/b)} and a search path \file{\var{p}}, if
+#' the file \file{\var{p}/a/b.r} does not exist, \pkg{box} alternatively looks
+#' for a nested file \file{\var{p}/a/b/__init__r} to load. Module path names are
+#' \emph{case sensitive} (even on case insensitive file systems), but the file
+#' extension can be spelled as either \file{.r} or \file{.R} (if both exist,
+#' \code{.r} is given preference).
+#'
+#' The module search path can be overridden by the environment variable
+#' \env{R_BOX_PATH}. If set, it may consist of one or more search paths,
+#' separated by the platform’s path separator (i.e. \code{;} on Windows, and
+#' \code{:} on most other platforms).
 #'
 #' The \emph{current directory} is context-dependent: inside a module, the
 #' directory corresponds to the module’s directory. Inside an R code file
@@ -78,16 +91,26 @@
 #' in an interactive R session), the current working directory as given by
 #' \code{getwd()} is used.
 #'
-#' Local import declarations (that is, module prefixes that start with \code{.}
-#' or \code{..}) never use the search path to find the module. Instead,
-#' only the current directory is searched.
+#' Local import declarations (that is, module prefixes that start with \code{./}
+#' or \code{../}) never use the search path to find the module. Instead,
+#' only the current module’s directory (for \code{./}) or the parent module’s
+#' directory (for \code{../}) is looked at. \code{../} can be nested:
+#' \code{../../} denotes the grandparent module, etc.
 #'
 #' @section S3 support:
-#'
 #' Modules can contain S3 generics and methods. To override known generics
 #' (= those defined outside the module), methods inside a module need to be
 #' registered using \code{\link{register_S3_method}}. See the documentation
 #' there for details.
+#'
+#' @section Module names:
+#' A module’s full name consists of one or more R names separated by \code{/}.
+#' Since \code{box::use} declarations contain R expressions, the names need to
+#' be valid R names. Non-syntactic names need to be wrapped in backticks; see
+#' \link[base]{Quotes}.
+#'
+#' Furthermore, since module names usually correspond to file or folder names,
+#' they should consist only of valid path name characters to ensure portability.
 #'
 #' @section Encoding:
 #' All module source code files are assumed to be UTF-8 encoded.
