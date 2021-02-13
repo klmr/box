@@ -1,4 +1,4 @@
-name: Dev-Build
+name: Build
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    name: Build
+    name: Dev build
     runs-on: ubuntu-latest
 
     steps:
