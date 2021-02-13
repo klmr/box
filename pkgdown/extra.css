@@ -83,3 +83,11 @@ a:focus {
 .pkg::after {
     content: close-quote;
 }
+
+pre .pkg {
+    quotes: unset;
+}
+
+pre .pkg::before, pre .pkg::after {
+    content: unset;
+}
