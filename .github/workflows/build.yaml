@@ -2,7 +2,7 @@ name: Dev-Build
 
 on:
   push:
-    branches: $default-branch
+    branches: [ $default-branch ]
   workflow_dispatch:
 
 jobs:
