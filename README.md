@@ -8,15 +8,24 @@
 
 ## 📦 Installation
 
-To install the pre-release development version:
+‘box’ can be installed from CRAN:
 
 
 ```r
-if (! requireNamespace('pak')) {
-    install.packages("pak", repos = "https://r-lib.github.io/p/pak/dev/")
-}
+install.packages('pak')
+```
 
-pak::pkg_install('klmr/box@develop')
+Alternatively, the current development version can be installed from GitHub.
+Note that the main branch cannot be installed directly, since it intentionally
+misses generated files; instead, ‘box’ needs to be installed from the
+auto-generated `devel` branch:
+
+
+```r
+if (! requireNamespace('pak') {
+    install.packages('pak', repos = 'https://r-lib.github.io/p/pak/dev/')
+}
+pak::pkg_install('klmr/box@devel')
 ```
 
 ## 🥜 Usage in a nutshell
