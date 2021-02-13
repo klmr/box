@@ -23,7 +23,7 @@ desc = setNames(as.list(desc), colnames(desc))
 ‘box’ can be installed from CRAN:
 
 ```{r, eval = FALSE}
-install.packages('pak')
+install.packages('box')
 ```
 
 Alternatively, the current development version can be installed from GitHub.

@@ -12,7 +12,7 @@
 
 
 ```r
-install.packages('pak')
+install.packages('box')
 ```
 
 Alternatively, the current development version can be installed from GitHub.
