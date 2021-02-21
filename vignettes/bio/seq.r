@@ -1,3 +1,8 @@
+#' Biological sequences
+#'
+#' The \code{bio/seq} module provides a type for representing DNA sequences.
+'.__module__.'
+
 #' Test whether input is valid biological sequence
 #' @param seq a character vector or \code{seq} object
 #' @name seq
