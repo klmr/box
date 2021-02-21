@@ -73,5 +73,7 @@ revcomp = function (seq) {
 table = function (seq) {
     box::use(stats[set_names = setNames])
     nucleotides = lapply(strsplit(seq, ''), factor, c('A', 'C', 'G', 'T'))
-    set_names(lapply(nucleotides, base::table), names(seq))
+    set_names(lapply(nucleotides, base::table, dnn = NULL), names(seq))
 }
+
+if (is.null(box::name())) box::use(./`__tests__`)
