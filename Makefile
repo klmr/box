@@ -57,7 +57,7 @@ update-master:
 test: documentation
 	${rscript} -e "devtools::test(export_all = FALSE)"
 
-test-%: documentation
+/test-%: documentation
 	${rscript} -e "devtools::test(filter = '$*', export_all = FALSE)"
 
 .PHONY: check
@@ -93,7 +93,7 @@ reference: documentation
 
 # FIXME: Old reason for building everything twice no longer exists; do we need
 # both `vignettes` and `knit_all` rules?
-.PHONY: vignettes
+.PHONY: vignette
 ## Compile all vignettes and other R Markdown articles
 vignette: Meta/vignette.rds
 
