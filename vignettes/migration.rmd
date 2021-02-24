@@ -203,6 +203,19 @@ box::use(
 
 The above code will export the names `pkg_alias`, `mod`, `a`, `b` and `c`.
 
+## Accessing default packages
+
+In ‘modules’, module source code “sees” the package search path at the time it
+is loaded. That is, modules have implicit access to all names in packages that
+were attached when the module was loaded. In particular, this means that legacy
+modules could access names in the default packages (in non-interactive sessions,
+that’s typically ‘datasets’, ‘utils’, ‘grDevices’, ‘graphics’ and ‘stats’; in
+interactive sessions, the package ‘methods’ is added).
+
+‘box’ modules no longer attach *any* packages by default, except ‘base’. If a
+module needs to use functions from those other packages, it needs to declare
+them explicitly (e.g. via `box::use(stats)`).
+
 ## Loading parents of nested modules
 
 Consider the following file hierarchy defining a nested module:
