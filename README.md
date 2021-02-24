@@ -2,7 +2,7 @@
 
 
 
-# box <img src="man/figures/box.svg" align="right" alt="" width="120"/>
+# box <img src="man/figures/box.png" align="right" alt="" width="120"/>
 
 > Write Reusable, Composable and Modular R Code
 
