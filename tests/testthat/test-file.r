@@ -1,7 +1,7 @@
 context('file paths')
 
 test_that('box::file works in global namespace', {
-    expect_equal(box::file(), getwd())
+    expect_paths_equal(box::file(), getwd())
     this_file = (function() getSrcFilename(sys.call(sys.nframe())))()
     expect_true(nzchar(this_file)) # Just to make sure.
     expect_true(nzchar(box::file(this_file)))
