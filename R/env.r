@@ -105,13 +105,13 @@ make_export_env = function (info, spec, ns) {
     )
 }
 
+#' @useDynLib box, c_strict_extract, .registration = TRUE
 strict_extract = function (e1, e2) {
-    get(as.character(substitute(e2)), envir = e1, inherits = FALSE)
+    .Call(c_strict_extract, e1, e2)
 }
 
 #' @export
 `$.box$mod` = strict_extract
-
 
 #' @export
 `$.box$ns` = strict_extract
@@ -124,9 +124,9 @@ strict_extract = function (e1, e2) {
     invisible(x)
 }
 
-#' @useDynLib box, unlock_env, .registration = TRUE
+#' @useDynLib box, c_unlock_env, .registration = TRUE
 unlock_environment = function (env) {
-    invisible(.Call(unlock_env, env))
+    invisible(.Call(c_unlock_env, env))
 }
 
 find_import_env = function (x, spec) {
