@@ -65,7 +65,7 @@ SEXP c_strict_extract(SEXP e1, SEXP e2) {
         SEXP parent = PROTECT(current_frame());
         LOG("parent = %p\n", parent);
         ParseStatus status;
-        SEXP call_code = PROTECT(Rf_mkString("sys.call(-1)"));
+        SEXP call_code = PROTECT(Rf_mkString("sys.call(-1L)"));
         SEXP call_expr = PROTECT(R_ParseVector(call_code, -1, &status, R_NilValue));
         SEXP call = VECTOR_ELT(PROTECT(Rf_eval(call_expr, parent)), 0);
         call = PROTECT(Rf_eval(call, parent));
