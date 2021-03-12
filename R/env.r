@@ -105,7 +105,6 @@ make_export_env = function (info, spec, ns) {
     )
 }
 
-#' @useDynLib box, c_strict_extract, .registration = TRUE
 strict_extract = function (e1, e2) {
     # Implemented in C since this function is called very frequently and needs
     # to be fast, and the C implementation is about 270% faster than an R
@@ -130,7 +129,6 @@ strict_extract = function (e1, e2) {
     invisible(x)
 }
 
-#' @useDynLib box, c_unlock_env, .registration = TRUE
 unlock_environment = function (env) {
     invisible(.Call(c_unlock_env, env))
 }

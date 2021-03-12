@@ -31,6 +31,7 @@
 #'  \item \code{\link{set_script_path}}
 #' }
 #'
+#' @useDynLib box, .registration = TRUE
 #' @name box
 #' @docType package
 '_PACKAGE'

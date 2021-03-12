@@ -1,3 +1,4 @@
+#define R_NO_REMAP
 #include "Rinternals.h"
 #include "R_ext/Parse.h"
 
@@ -16,25 +17,25 @@ static SEXP sys_call(SEXP parent);
  */
 SEXP c_strict_extract(SEXP e1, SEXP e2) {
     PROTECT(e1);
-    if (! isEnvironment(e1)) {
+    if (! Rf_isEnvironment(e1)) {
         UNPROTECT(1);
-        error("first argument was not a module environment");
+        Rf_error("first argument was not a module environment");
         return R_NilValue;
     }
 
     PROTECT(e2);
-    SEXP name = PROTECT(installTrChar(STRING_ELT(e2, 0)));
-    SEXP ret = findVarInFrame(e1, name);
+    SEXP name = PROTECT(Rf_installTrChar(STRING_ELT(e2, 0)));
+    SEXP ret = Rf_findVarInFrame(e1, name);
 
     if (ret == R_UnboundValue) {
         SEXP parent = PROTECT(parent_frame());
         SEXP call = PROTECT(sys_call(parent));
         SEXP fst_arg = PROTECT(CADR(call));
 
-        errorcall(
+        Rf_errorcall(
             call, "name '%s' not found in '%s'",
-            translateChar(STRING_ELT(e2, 0)),
-            translateChar(PRINTNAME(fst_arg))
+            Rf_translateChar(STRING_ELT(e2, 0)),
+            Rf_translateChar(PRINTNAME(fst_arg))
         );
         UNPROTECT(6);
         return R_NilValue;
