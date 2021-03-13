@@ -1,12 +1,12 @@
 #define R_NO_REMAP
 #include "Rinternals.h"
 
-SEXP c_strict_extract(SEXP e1, SEXP e2);
-SEXP c_unlock_env(SEXP env);
+SEXP strict_extract(SEXP e1, SEXP e2);
+SEXP unlock_env(SEXP env);
 
 static const R_CallMethodDef methods[] = {
-    {"c_strict_extract", (DL_FUNC) &c_strict_extract, 2},
-    {"c_unlock_env", (DL_FUNC) &c_unlock_env, 1},
+    {"c_strict_extract", (DL_FUNC) &strict_extract, 2},
+    {"c_unlock_env", (DL_FUNC) &unlock_env, 1},
     {NULL, NULL, 0}
 };
 

@@ -15,7 +15,7 @@ static SEXP sys_call(SEXP parent);
  * Throws an error if {@code e1} is not an environment, or if {@code e2} does
  * not exist.
  */
-SEXP c_strict_extract(SEXP e1, SEXP e2) {
+SEXP strict_extract(SEXP e1, SEXP e2) {
     if (! Rf_isEnvironment(e1)) {
         Rf_error("first argument was not a module environment");
         return R_NilValue;
