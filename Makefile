@@ -136,13 +136,13 @@ ${pkg_bundle_name}: DESCRIPTION NAMESPACE ${r_source_files}
 .PHONY: build-cran
 ## Bundle the package with static vignette sources for submission to CRAN
 build-cran:
-	mkdir ${cran-tmpdir} && \
-		git clone . ${cran-tmpdir} && \
-		${MAKE} -C ${cran-tmpdir} knit_all && \
-		scripts/precompile-vignettes ${cran-tmpdir} && \
-		${MAKE} -C ${cran-tmpdir} build && \
-		mv ${cran-tmpdir}/${pkg_bundle_name} . && \
-		${RM} -r ${cran-tmpdir}
+	mkdir ${cran-tmpdir} \
+	&& git clone . ${cran-tmpdir} \
+	&& ${MAKE} -C ${cran-tmpdir} knit_all \
+	&& scripts/precompile-vignettes ${cran-tmpdir} \
+	&& ${MAKE} -C ${cran-tmpdir} build \
+	&& mv ${cran-tmpdir}/${pkg_bundle_name} . \
+	&& ${RM} -r ${cran-tmpdir}
 
 .PHONY: favicons
 ## Generate the documentation site favicons
