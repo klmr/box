@@ -16,14 +16,11 @@ static SEXP sys_call(SEXP parent);
  * not exist.
  */
 SEXP c_strict_extract(SEXP e1, SEXP e2) {
-    PROTECT(e1);
     if (! Rf_isEnvironment(e1)) {
-        UNPROTECT(1);
         Rf_error("first argument was not a module environment");
         return R_NilValue;
     }
 
-    PROTECT(e2);
     SEXP name = PROTECT(Rf_installTrChar(STRING_ELT(e2, 0)));
     SEXP ret = Rf_findVarInFrame(e1, name);
 
@@ -37,11 +34,11 @@ SEXP c_strict_extract(SEXP e1, SEXP e2) {
             Rf_translateChar(STRING_ELT(e2, 0)),
             Rf_translateChar(PRINTNAME(fst_arg))
         );
-        UNPROTECT(6);
+        UNPROTECT(4);
         return R_NilValue;
     }
 
-    UNPROTECT(3);
+    UNPROTECT(1);
     return ret;
 }
 
