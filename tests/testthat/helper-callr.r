@@ -5,8 +5,10 @@ r_cmdline = function (cmd, ...) {
         'support', 'rprofile.r'
     )
     args = c('--no-save', '--no-restore', ...)
+    # Unset `TESTTHAT` since otherwise ‘box’ thinks that tests are being run
+    # from inside ‘testthat’, and fudges the local search path.
     sprintf(
-        'R_ORIGINAL_PROFILE_USER="$R_PROFILE_USER" R_PROFILE_USER="%s" %s %s',
+        'TESTTHAT= R_ORIGINAL_PROFILE_USER="$R_PROFILE_USER" R_PROFILE_USER="%s" %s %s',
         rprofile, cmd, paste(shQuote(args), collapse = ' ')
     )
 }
