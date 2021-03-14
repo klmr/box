@@ -144,6 +144,8 @@ script_path = function () {
 
     if (! is.null((shiny_path = shiny_path()))) return(shiny_path)
 
+    if (! is.null((testthat_path = testthat_path()))) return(testthat_path)
+
     args = commandArgs()
 
     file_arg = grep('--file=', args)
@@ -172,4 +174,8 @@ knitr_path = function () {
 #' @rdname path
 shiny_path = function () {
     if ('shiny' %in% loadedNamespaces() && shiny::isRunning()) getwd()
+}
+
+testthat_path = function () {
+    if (identical(Sys.getenv("TESTTHAT"), "true")) getwd()
 }

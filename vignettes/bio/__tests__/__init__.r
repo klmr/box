@@ -1,2 +1,5 @@
 box::use(testthat[...])
-test_dir(box::file())
+
+.on_load = function (ns) {
+    test_dir(box::file())
+}
