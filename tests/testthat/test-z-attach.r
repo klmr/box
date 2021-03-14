@@ -4,10 +4,21 @@ context('attaching')
 
 test_mod_envname = 'mod:mod/a'
 
-test_that('attach works locally', {
+test_that('attach works locally inside module', {
     box::use(mod/no_exports)
     # `no_exports` attaches `a`. So check that `a` is *not* attached here.
-    expect_false(test_mod_envname %in% search())
+    expect_not_in(test_mod_envname, search())
+    expect_false(exists('modname'))
+})
+
+test_that('attach works locally inside function', {
+    f = function () {
+        box::use(mod/a[...])
+        expect_true(exists('modname'))
+    }
+
+    f()
+    expect_false(exists('modname'))
 })
 
 test_that('module can be attached to global environment', {
@@ -19,6 +30,7 @@ test_that('module can be attached to global environment', {
         expect_true(mod_path %in% names(box:::loaded_mods))
         expect_equal(search()[2L], environmentName(a))
     })
+    rm(searchlen, envir = .GlobalEnv)
 })
 
 test_that('module can be detached', {
@@ -26,6 +38,12 @@ test_that('module can be detached', {
     parent = as.environment(3L)
     detach(test_mod_envname, character.only = TRUE)
     expect_identical(as.environment(2L), parent)
+})
+
+test_that('hidden names can be attached', {
+    expect_false(exists('.hidden'))
+    box::use(mod/a[...])
+    expect_true(exists('.hidden'))
 })
 
 test_that('unloading a module detaches it', {

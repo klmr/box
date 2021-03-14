@@ -371,7 +371,7 @@ mod_export_names = function (info, mod_ns) {
 
 #' @rdname importing
 attach_to_caller = function (spec, mod_exports, caller) {
-    attach_list = attach_list(spec, ls(mod_exports))
+    attach_list = attach_list(spec, names(mod_exports))
     if (is.null(attach_list)) return()
 
     import_env = find_import_env(caller, spec)
