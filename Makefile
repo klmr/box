@@ -1,11 +1,6 @@
 rscript = Rscript --no-save --no-restore
 unexport R_PROFILE_USER
 
-# Deployment configuration
-deploy_remote ?= origin
-deploy_branch ?= master
-deploy_source ?= develop
-
 # Helper functions for a recursive wildcard function.
 match_files = $(filter $(subst *,%,$2),$1)
 filter_out_dirs = $(filter-out %/,$(foreach f,$1,$(wildcard $f/)))
@@ -30,9 +25,6 @@ favicons_large = $(addprefix pkgdown/favicon/,\
 favicons = ${favicons_small} ${favicons_large}
 
 inkscape = $(shell command -v inkscape || echo /Applications/Inkscape.app/Contents/MacOS/inkscape)
-
-.PHONY: all
-all: documentation vignettes
 
 .PHONY: test
 ## Run unit tests
@@ -74,17 +66,17 @@ reference: documentation
 	${rscript} -e "pkgdown::build_reference()"
 
 # FIXME: Old reason for building everything twice no longer exists; do we need
-# both `vignettes` and `knit_all` rules?
-.PHONY: vignette
+# both `all-vignette` and `knit-all` rules?
+.PHONY: all-vignettes
 ## Compile all vignettes and other R Markdown articles
-vignette: Meta/vignette.rds
+all-vignettes: Meta/vignette.rds
 
 Meta/vignette.rds: DESCRIPTION NAMESPACE ${r_source_files} ${vignette_files}
 	${rscript} -e "devtools::build_vignettes(dependencies = TRUE)"
 
-.PHONY: knit_all
+.PHONY: knit-all
 ## Compile R markdown articles and move files to the documentation directory
-knit_all: ${knit_results} | doc
+knit-all: ${knit_results} | doc
 
 doc/%.md: vignettes/%.rmd DESCRIPTION NAMESPACE ${r_source_files} | doc
 	${rscript} -e "rmarkdown::render('$<', output_format = 'md_document', output_file = '${@F}', output_dir = '${@D}')"
@@ -117,7 +109,7 @@ ${pkg_bundle_name}: DESCRIPTION NAMESPACE ${r_source_files}
 build-cran:
 	mkdir ${cran-tmpdir} && \
 		git clone . ${cran-tmpdir} && \
-		${MAKE} -C ${cran-tmpdir} knit_all && \
+		${MAKE} -C ${cran-tmpdir} knit-all && \
 		scripts/precompile-vignettes ${cran-tmpdir} && \
 		${MAKE} -C ${cran-tmpdir} build && \
 		mv ${cran-tmpdir}/${pkg_bundle_name} . && \
