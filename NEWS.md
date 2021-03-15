@@ -1,5 +1,6 @@
 # box (devel)
 
+* Add explicit support for ‘testthat’ (#188)
 * Fix: Attach names starting with a dot (#186)
 
 

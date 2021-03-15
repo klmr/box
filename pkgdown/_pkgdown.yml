@@ -31,6 +31,8 @@ navbar:
             text: Articles
             menu:
                 - text: General topics
+                - text: Testing modules
+                  href: articles/testing.html
                 - text: Using compiled code
                   href: articles/compiled-code.html
                 - text: Modules and packages compared
