@@ -34,24 +34,6 @@ inkscape = $(shell command -v inkscape || echo /Applications/Inkscape.app/Conten
 .PHONY: all
 all: documentation vignettes
 
-.PHONY: deploy
-## Deploy the code with documentation to Github
-deploy: update-master
-	git add --force NAMESPACE
-	git add --force man
-	git add --force doc
-	git commit --message Deployment
-	git push --force ${deploy_remote} ${deploy_branch}
-	git checkout ${deploy_source}
-	git checkout DESCRIPTION # To undo Roxygen meddling with file
-
-.PHONY: update-master
-update-master:
-	git checkout ${deploy_source}
-	-git branch --delete --force ${deploy_branch}
-	git checkout -b ${deploy_branch}
-	${MAKE} documentation vignettes
-
 .PHONY: test
 ## Run unit tests
 test: documentation
