@@ -17,6 +17,9 @@ devtools::load_all()
 box::use(./source_file)
 ```
 
+> **NOTE:** The contents of this vignette refer to a *development version* of
+> ‘box’! They may not apply entirely to the last stable release.
+
 ## Testing is crucial
 
 Writing tests to ensure code correctness is a crucial part of developing robust
