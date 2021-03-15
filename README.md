@@ -18,14 +18,14 @@ install.packages('box')
 Alternatively, the current development version can be installed from GitHub.
 Note that the main branch cannot be installed directly, since it intentionally
 misses generated files; instead, ‘box’ needs to be installed from the
-auto-generated `devel` branch:
+auto-generated `dev` branch:
 
 
 ```r
 if (! requireNamespace('pak') {
     install.packages('pak', repos = 'https://r-lib.github.io/p/pak/dev/')
 }
-pak::pkg_install('klmr/box@devel')
+pak::pkg_install('klmr/box@dev')
 ```
 
 ## 🥜 Usage in a nutshell
