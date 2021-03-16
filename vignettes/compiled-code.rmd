@@ -12,7 +12,7 @@ vignette: >
     %\VignetteIndexEntry{Using compiled code}
     %\VignetteEncoding{UTF-8}
 ---
-```{r include=FALSE}
+```{r include = FALSE}
 devtools::load_all()
 box::use(./source_file)
 
@@ -48,7 +48,7 @@ To demonstrate these steps, we will use an example module named `c` that uses
 compiled code written in C. Here is the C code that we want to make usable in an
 R module, which is saved in the file `c/hello.c`:
 
-```{r file='c/hello.c'}
+```{r file = 'c/hello.c'}
 ```
 
 In addition, compiled code often includes specific compilation instructions.
@@ -56,7 +56,7 @@ While this is unnecessary for this simple example, it’s included anyway for
 completeness. For R, these compilation instructions are contained in a file
 called [`Makevars`][Makevars]:
 
-```{r file='c/Makevars'}
+```{r file = 'c/Makevars'}
 ```
 
 ## Compile code
@@ -69,7 +69,7 @@ and not intended for direct consumption of the module user.
 
 The module specifies which object files to compile, and invokes `R CMD SHLIB`:
 
-```{r file='c/__setup__.r'}
+```{r file = 'c/__setup__.r'}
 ```
 
 In principle, only the last line in this file should need to be changed for
@@ -94,7 +94,7 @@ This will happen inside the module that uses and/or exposes the compiled code.
 Since the name of the shared library file is platform dependent, we need a
 helper function that gives us this name:
 
-```{r eval=FALSE}
+```{r eval = FALSE}
 libname = function (name) {
     box::file(paste0(name, .Platform$dynlib.ext))
 }
@@ -103,7 +103,7 @@ libname = function (name) {
 Now our module can load the compiled code; since this code needs to be executed
 every time the module is loaded, it goes into the `.on_load` hook:
 
-```{r eval=FALSE}
+```{r eval = FALSE}
 .on_load = function (ns) {
     ns$dll = dyn.load(libname('hello'))
 }
@@ -111,7 +111,7 @@ every time the module is loaded, it goes into the `.on_load` hook:
 
 … and don’t forget to unload the dynamic library when the module is unloaded:
 
-```{r eval=FALSE}
+```{r eval = FALSE}
 .on_unload = function (ns) {
     dyn.unload(libname('hello'))
 }

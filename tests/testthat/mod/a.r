@@ -63,6 +63,9 @@ which = function () '/a'
 #' @export
 encoding_test = function () '☃' # U+2603: SNOWMAN
 
+#' @export
+.hidden = 1L
+
 # Test cases for the issue 42. The semantics of the functions don’t matter so I
 # am using whimsical place-holders. What matters is whether or not the functions
 # get exported as operators.

@@ -1,0 +1,202 @@
+---
+title: "Testing modules"
+author: Konrad Rudolph
+date: "`r Sys.Date()`"
+output:
+    rmarkdown::html_vignette:
+        toc: true
+    md_document:
+        variant: gfm
+vignette: >
+    %\VignetteEngine{knitr::rmarkdown}
+    %\VignetteIndexEntry{Testing modules}
+    %\VignetteEncoding{UTF-8}
+---
+```{r include = FALSE}
+devtools::load_all()
+box::use(./source_file)
+```
+
+> **NOTE:** The contents of this vignette refer to a *development version* of
+> ‘box’! They may not apply entirely to the last stable release.
+
+## Testing is crucial
+
+Writing tests to ensure code correctness is a crucial part of developing robust
+software. This is especially true for dynamic languages such as R, which lack
+some of the tools that ensure correctness in statically checked programming
+languages.
+
+‘box’ does not dictate a specific style of testing, and different kinds of
+testing are appropriate in different situations. However, the following article
+suggests a structure for the test accompanying a module which I have found to
+work well.
+
+Following the suggested structure causes the implementation and the tests of
+each module to be located in paths next to each other. This structure is found
+in several other conventions across programming languages; but it differs
+somewhat from the convention of R packages (where all implementation code is in
+a separate directory from all testing code), and differs drastically from the
+convention found for instance in Java. That said, it should be possible to make
+a Java-like test project work with ‘box’, too.
+
+
+## Support for existing testing frameworks
+
+‘box’ is agnostic regarding the testing framework. The following example employs
+the widely used ‘[testthat][]’ unit testing package, but other frameworks exist,
+and should also work.
+
+This example uses the [`bio/seq`](bio/seq.r) module from the _[Getting
+started][]_ vignette. To enable unit testing, this module contains the following
+code at the very end:
+
+```{r eval = FALSE}
+if (is.null(box::name())) {
+    box::use(./`__tests__`)
+}
+```
+
+This allows us to run the tests by running the module source code from the
+command line, e.g. via
+
+```bash
+Rscript bio/seq.r
+```
+
+… or inside an IDE such as RStudio by choosing the menu item “Tools” › “Jobs” ›
+“Start Local Job…” ^[It may be tempting to instead use the “Source” button but
+doing so is problematic; see the section “A note on RStudio and other IDEs”!].
+This works because `box::name()` returns the name of the module from which this
+function is called. But if the function is invoked from code that wasn’t loaded
+via `box::use()` (as is the case here), its value is `NULL`. In other words,
+`is.null(box::name())` is a way of testing whether the code currently being run
+is loaded as a module, or executed directly.
+
+The code inside the `if` imports the `__tests__` submodule: that’s where we put
+the unit tests. The name `__tests__` is a convention. You’re free to choose a
+different name, but I recommend sticking with this convention. Note that
+`__tests__` is not a valid R variable name; that’s why it needs to be written in
+backticks, i.e. the qualified local module name is ``./`__tests__` ``.
+
+In this case, the `__tests__` submodule consists of a directory with the
+following contents:
+
+* `__tests__/`
+    * [`__init__.r`](bio/__tests__/__init__.r)
+    * [`helper-module.r`](bio/__tests__/helper-module.r)
+    * individual test files
+
+The `__init__.r` file corresponds closely to the file `tests/testthat.R` in a
+standard R package structure. It loads ‘testthat’ and launches the tests:
+
+```{r file = 'bio/__tests__/__init__.r'}
+```
+
+This first loads and attaches the ‘testthat’ package. Although attaching is not
+strictly necessary, ‘testthat’ code is a lot more readable without cluttering
+the code with explicit name qualifications.
+
+Next it invokes `test_dir()` and passes the tests’ directory via
+`box::file()` inside the module’s `.on_load()` hook — remember that only
+declarations should be at file level inside a module! All code execution should
+happen inside functions.
+
+
+The `helper-module.r` file is a ‘testthat’ helper; these are sourced
+automatically by ‘testthat’ in the environment where the tests are run. We use
+this mechanism to load our module in the test environment:
+
+```{r file = 'bio/__tests__/helper-module.r'}
+```
+
+And, again, attaching isn’t strictly necessary here. Note also that, depending
+on how the tests are run, this helper file might not be needed, since executing
+the module script file itself already loads the module contents into the global
+namespace; however, not all ways of loading the tests do this; for instance,
+RStudio’s “Start Local Job” doesn’t. So having this helper is sometimes
+necessary, and never hurts.
+
+With this set-up, the actual unit test files look exactly like regular
+‘testthat’ test files. For instance, here’s `__tests__/test-seq.r`:
+
+```{r file = 'bio/__tests__/test-seq.r'}
+```
+
+
+### A note on RStudio and other IDEs
+
+Most IDEs have an option to “Source” a local file. When doing this it may *seem*
+as if the tests are correctly run, but this isn’t actually the case! This is
+because `box::use()` doesn’t reload code that has already been loaded
+previously; instead, it uses an already loaded, cached version. This means that
+running the tests via the “Source” button risks running an outdated version of
+the tests, or the module, or both, after modifying their code.
+
+To avoid this, always execute the test module in a new R session. In RStudio,
+the easiest way of doing this is by running it as a job, via the menu “Tools” ›
+“Jobs” › “Start Local Job…” (or using the option “Source as Local Job…” in the
+“Source” drop-down).
+
+
+## Test interfaces, not implementation details
+
+One big difference between testing module code and testing package code is that,
+with the testing structure laid out above, the testing code only sees the
+module’s public interface, it does not get access to the internal module
+implementation.^[Depending on how it’s invoked; but we shouldn’t make
+assumptions. In particular, when invoked as a job in RStudio, the test module is
+loaded via the test helper, and thus the module internals are not visible.]
+
+This is *by design*: the idea is that we want to test the *observable behaviour*
+rather than the (purely incidental) current implementation, which might be
+changed. This is the way unit testing works in many other environments, and how
+it is often recommended.
+
+But I realise that this may not always be appropriate. Sometimes we *need* to
+test implementation details. There are essentially two workarounds for this. For
+the moment, I have not yet developed a strong preference for either of these
+methods.
+
+1. Put the tests into the module files themselves.
+
+    ```{r eval = FALSE}
+    # mymod.r
+
+    this_works = function () TRUE
+
+    if (is.null(box::name())) {
+        box::use(testthat[...])
+
+        # Define tests
+
+        test_that('implementation detail X works', {
+            expect_true(this_works())
+        })
+
+        # Invoke tests
+
+        test_file(box::file())
+    }
+    ```
+
+2. Get access to the private module namespace for testing. When loading a module
+   with `box::use()`, the module object has an attribute `namespace` that holds
+   the private module namespace. It generally shouldn’t be accessed by client
+   code, but access by the testing code for a module is entirely legitimate:
+
+    ```{r eval = FALSE}
+    # __tests__/test-something.r
+
+    box::use(../mymod)
+
+    impl = attr(mymod, 'namespace')
+
+    test_that('implementation detail X works', {
+        expect_true(impl$this_works())
+    })
+    ```
+
+
+[testthat]: https://testthat.r-lib.org/
+[Getting started]: box.html

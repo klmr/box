@@ -1,0 +1,50 @@
+#!/usr/bin/env Rscript
+
+# ‘pkgdown’ currently ignores `vignettes/.install_extras` and instead uses its
+# own logic for finding files that should be copied to the `docs/articles`
+# folder. The script below attempts to replicate the `tools::buildVignette`
+# logic that copies these files.
+
+args = commandArgs(trailingOnly = TRUE)
+
+if (length(args) != 2L) {
+    stop(sprintf(
+        'Invalid number of arguments; expected: %s %s',
+        dQuote('pkg'), dQuote('docs')
+    ))
+}
+
+pkg = args[1L]
+docs = args[2L]
+
+if (! dir.exists(docs)) {
+    stop(sprintf('Target %s does not exist or is not a directory', dQuote(docs)))
+}
+
+all_files = dir(
+    file.path(pkg, 'vignettes'),
+    all.files = TRUE, full.names = FALSE, recursive = TRUE, include.dirs = TRUE
+)
+
+all_files_posix = file.path(
+    'vignettes', 
+    if (.Platform$file.sep != '/') {
+        # To match patterns in vignettes/.install_extras
+        gsub(.Platform$file.sep, '/', all_files, fixed = TRUE)
+    } else all_files,
+    fsep = '/'
+)
+
+install_extras = readLines(file.path(pkg, 'vignettes', '.install_extras'))
+
+extra_files = unlist(lapply(
+    install_extras,
+    function (pattern) all_files[grep(pattern, all_files_posix, perl = TRUE)]
+))
+
+invisible(tryCatch(
+    file.copy(file.path(pkg, 'vignettes', extra_files), docs, recursive = TRUE),
+    warning = stop
+))
+
+# vim: ft=r

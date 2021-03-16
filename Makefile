@@ -1,11 +1,6 @@
 rscript = Rscript --no-save --no-restore
 unexport R_PROFILE_USER
 
-# Deployment configuration
-deploy_remote ?= origin
-deploy_branch ?= master
-deploy_source ?= develop
-
 # Helper functions for a recursive wildcard function.
 match_files = $(filter $(subst *,%,$2),$1)
 filter_out_dirs = $(filter-out %/,$(foreach f,$1,$(wildcard $f/)))
@@ -32,27 +27,6 @@ favicons = ${favicons_small} ${favicons_large}
 
 inkscape = $(shell command -v inkscape || echo /Applications/Inkscape.app/Contents/MacOS/inkscape)
 
-.PHONY: all
-all: documentation vignettes
-
-.PHONY: deploy
-## Deploy the code with documentation to Github
-deploy: update-master
-	git add --force NAMESPACE
-	git add --force man
-	git add --force doc
-	git commit --message Deployment
-	git push --force ${deploy_remote} ${deploy_branch}
-	git checkout ${deploy_source}
-	git checkout DESCRIPTION # To undo Roxygen meddling with file
-
-.PHONY: update-master
-update-master:
-	git checkout ${deploy_source}
-	-git branch --delete --force ${deploy_branch}
-	git checkout -b ${deploy_branch}
-	${MAKE} documentation vignettes
-
 .PHONY: test
 ## Run unit tests
 test: documentation
@@ -78,6 +52,7 @@ check: documentation
 ## Create package website
 site: README.md NAMESPACE ${favicons}
 	${rscript} -e "pkgdown::build_site()"
+	scripts/copy-vignette-extra-files . docs/articles
 
 .PHONY: dev-site
 ## Create package website [dev mode]
@@ -93,17 +68,17 @@ reference: documentation
 	${rscript} -e "pkgdown::build_reference()"
 
 # FIXME: Old reason for building everything twice no longer exists; do we need
-# both `vignettes` and `knit_all` rules?
-.PHONY: vignette
+# both `all-vignette` and `knit-all` rules?
+.PHONY: all-vignettes
 ## Compile all vignettes and other R Markdown articles
-vignette: Meta/vignette.rds
+all-vignettes: Meta/vignette.rds
 
 Meta/vignette.rds: DESCRIPTION NAMESPACE ${r_source_files} ${vignette_files}
 	${rscript} -e "devtools::build_vignettes(dependencies = TRUE)"
 
-.PHONY: knit_all
+.PHONY: knit-all
 ## Compile R markdown articles and move files to the documentation directory
-knit_all: ${knit_results} | doc
+knit-all: ${knit_results} | doc
 
 doc/%.md: vignettes/%.rmd DESCRIPTION NAMESPACE ${r_source_files} | doc
 	${rscript} -e "rmarkdown::render('$<', output_format = 'md_document', output_file = '${@F}', output_dir = '${@D}')"
@@ -138,7 +113,7 @@ ${pkg_bundle_name}: DESCRIPTION NAMESPACE ${r_source_files}
 build-cran:
 	mkdir ${cran-tmpdir} \
 	&& git clone . ${cran-tmpdir} \
-	&& ${MAKE} -C ${cran-tmpdir} knit_all \
+	&& ${MAKE} -C ${cran-tmpdir} knit-all \
 	&& scripts/precompile-vignettes ${cran-tmpdir} \
 	&& ${MAKE} -C ${cran-tmpdir} build \
 	&& mv ${cran-tmpdir}/${pkg_bundle_name} . \

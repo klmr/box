@@ -57,12 +57,12 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ env.R_LIBS_USER }}
-          key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
-          restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
+          key: ${{ runner.os }}-${{ hashFiles('.github/r-version') }}-1-${{ hashFiles('.github/r-depends.rds') }}
+          restore-keys: ${{ runner.os }}-${{ hashFiles('.github/r-version') }}-1-
 
-      - name: Install dependencies
+      - name: Install R package dependencies
         run: |
-          install.packages('rcmdcheck')
+          install.packages(c('remotes', 'rcmdcheck'))
           remotes::install_deps(dependencies = TRUE)
         shell: Rscript {0}
 

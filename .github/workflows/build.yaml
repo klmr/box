@@ -56,8 +56,8 @@ jobs:
           git config user.name klmr
           git config user.email klmr@users.noreply.github.com
           git remote set-url --push origin https://klmr:$GITHUB_TOKEN@github.com/klmr/box.git
-          git branch -D devel 2>/dev/null || :
-          git checkout -b devel
+          git branch -D dev 2>/dev/null || :
+          git checkout -b dev
           git add --force NAMESPACE man
           git commit -m 'Create a development release'
-          git push --force --set-upstream origin devel
+          git push --force --set-upstream origin dev

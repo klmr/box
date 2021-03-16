@@ -130,6 +130,7 @@ set_script_path = function (path) {
 #' \enumerate{
 #'  \item Path explicitly set via \code{set_script_path}
 #'  \item Path of a running document/application (\pkg{knitr}, \pkg{Shiny})
+#'  \item Path of unit test cases (\pkg{testthat})
 #'  \item Code invoked as \command{Rscript script.r}
 #'  \item Code invoked as \command{R CMD BATCH script.r}
 #'  \item Script run interactively (use \code{getwd()})
@@ -143,6 +144,8 @@ script_path = function () {
     if (! is.null((knitr_path = knitr_path()))) return(knitr_path)
 
     if (! is.null((shiny_path = shiny_path()))) return(shiny_path)
+
+    if (! is.null((testthat_path = testthat_path()))) return(testthat_path)
 
     args = commandArgs()
 
@@ -158,7 +161,8 @@ script_path = function () {
 }
 
 #' @return \code{knitr_path} returns the directory in which the currently knit
-#' document is run, or \code{NULL} if not called from within a knitr document.
+#' document is run, or \code{NULL} if not called from within a \pkg{knitr}
+#' document.
 #' @rdname path
 knitr_path = function () {
     if (! 'knitr' %in% loadedNamespaces()) return(NULL)
@@ -167,9 +171,18 @@ knitr_path = function () {
     if (! is.null(knitr_input)) dirname(knitr_input)
 }
 
-#' @return \code{shiny_path} returns the directory in which a Shiny application
-#' is running, or \code{NULL} if not called from within a Shiny application.
+#' @return \code{shiny_path} returns the directory in which a \pkg{Shiny}
+#' application is running, or \code{NULL} if not called from within a
+#' \pkg{Shiny} application.
 #' @rdname path
 shiny_path = function () {
     if ('shiny' %in% loadedNamespaces() && shiny::isRunning()) getwd()
+}
+
+#' @return \code{testthat_path} returns the directory in which \pkg{testthat}
+#' code is being executed, or \code{NULL} if not called from within a
+#' \pkg{testthat} test case.
+#' @rdname path
+testthat_path = function () {
+    if (identical(Sys.getenv("TESTTHAT"), "true")) getwd()
 }

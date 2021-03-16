@@ -76,4 +76,6 @@ table = function (seq) {
     set_names(lapply(nucleotides, base::table, dnn = NULL), names(seq))
 }
 
-if (is.null(box::name())) box::use(./`__tests__`)
+if (is.null(box::name())) {
+    box::use(./`__tests__`)
+}
