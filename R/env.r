@@ -106,12 +106,17 @@ make_export_env = function (info, spec, ns) {
 }
 
 strict_extract = function (e1, e2) {
-    get(as.character(substitute(e2)), envir = e1, inherits = FALSE)
+    # Implemented in C since this function is called very frequently and needs
+    # to be fast, and the C implementation is about 270% faster than an R
+    # implementation based on `get`, and provides more readable error messages.
+    # In fact, the fastest code that manages to provide a readable error message
+    # that contains the actual call ("foo$bar") rather than only mentioning the
+    # `get` function call, is more than 350% slower.
+    .Call(c_strict_extract, e1, e2)
 }
 
 #' @export
 `$.box$mod` = strict_extract
-
 
 #' @export
 `$.box$ns` = strict_extract
@@ -124,9 +129,8 @@ strict_extract = function (e1, e2) {
     invisible(x)
 }
 
-#' @useDynLib box, unlock_env, .registration = TRUE
 unlock_environment = function (env) {
-    invisible(.Call(unlock_env, env))
+    invisible(.Call(c_unlock_env, env))
 }
 
 find_import_env = function (x, spec) {

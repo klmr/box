@@ -1,5 +1,7 @@
 # box (devel)
 
+* Enhancement: improve error message and performance for module environment name
+  access via `$` (#180)
 * Add explicit support for ‘testthat’ (#188)
 * Fix: Attach names starting with a dot (#186)
 
