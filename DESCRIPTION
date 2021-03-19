@@ -36,5 +36,7 @@ Suggests:
     roxygen2 (>= 7.0.2),
     shiny,
     testthat (>= 2.0.0)
+Enhances:
+    rstudioapi
 VignetteBuilder: knitr
 RoxygenNote: 7.1.0

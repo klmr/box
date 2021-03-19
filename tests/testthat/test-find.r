@@ -59,3 +59,12 @@ test_that('all module file candidates are found', {
     )
     expect_setequal(unlist(candidates), expected)
 })
+
+test_that('script path can be set manually', {
+    on.exit(box::set_script_path())
+
+    expect_paths_equal(script_path(), getwd())
+
+    box::set_script_path('mod/b/a.r')
+    expect_equal(script_path(), 'mod/b')
+})

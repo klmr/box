@@ -108,11 +108,9 @@ base_path = function (mod) {
 #' of the script any more. \code{set_script_path} can be used in these cases to
 #' set the path of the currently executing R script manually.
 #' @export
-set_script_path = function (path) {
+set_script_path = function (path = NULL) {
     old_value = loaded_mods$.
     if (is.null(path)) {
-        # Use `list = '.'` instead of `.` to work around bug in `R CMD check`,
-        # which thinks that `.` refers to a non-existent global symbol.
         rm(list = '.', envir = loaded_mods)
     } else {
         loaded_mods$. = dirname(path)
@@ -137,15 +135,11 @@ set_script_path = function (path) {
 #' }
 #' @rdname path
 script_path = function () {
-    if (exists('.', envir = loaded_mods, inherits = FALSE)) {
-        return(loaded_mods$.)
-    }
-
-    if (! is.null((knitr_path = knitr_path()))) return(knitr_path)
-
-    if (! is.null((shiny_path = shiny_path()))) return(shiny_path)
-
-    if (! is.null((testthat_path = testthat_path()))) return(testthat_path)
+    if (! is.null((path = loaded_mods$.))) return(path)
+    if (! is.null((path = knitr_path()))) return(path)
+    if (! is.null((path = shiny_path()))) return(path)
+    if (! is.null((path = testthat_path()))) return(path)
+    if (! is.null((path = rstudio_path()))) return(path)
 
     args = commandArgs()
 
@@ -185,4 +179,11 @@ shiny_path = function () {
 #' @rdname path
 testthat_path = function () {
     if (identical(Sys.getenv("TESTTHAT"), "true")) getwd()
+}
+
+rstudio_path = function () {
+    if (! 'rstudioapi' %in% loadedNamespaces() || ! rstudioapi::isAvailable()) return(NULL)
+
+    document_path = rstudioapi::getActiveDocumentContext()$path
+    if (! identical(document_path, '')) dirname(document_path)
 }
