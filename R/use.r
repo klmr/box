@@ -223,6 +223,8 @@ use = function (...) {
 #' @keywords internal
 #' @name importing
 use_one = function (declaration, alias, caller) {
+    # Permit empty expression resulting from trailing comma.
+    if (identical(declaration, quote(expr =)) && identical(alias, '')) return()
     spec = parse_spec(declaration, alias)
     info = rethrow_on_error(find_mod(spec, caller), sys.call(-1L))
     load_and_register(spec, info, caller)

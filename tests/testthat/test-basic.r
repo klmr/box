@@ -109,3 +109,8 @@ test_that('partial name causes error', {
     expect_s3_class(error, 'simpleError')
     expect_identical(error$call, quote(a$doubl))
 })
+
+test_that('trailing comma is accepted', {
+    expect_error(box::use(mod/a, ), NA)
+    expect_error(box::use(mod/a, mod/b, ), NA)
+})
