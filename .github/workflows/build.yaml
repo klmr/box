@@ -1,4 +1,4 @@
-name: Build
+name: Dev build
 
 on:
   push:
@@ -33,8 +33,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ env.R_LIBS_USER }}
-          key: ${{ hashFiles('.github/r-version') }}-1-${{ hashFiles('.github/r-depends.rds') }}
-          restore-keys: ${{ hashFiles('.github/r-version') }}-1-
+          key: ${{ hashFiles('.github/r-version') }}-2-${{ hashFiles('.github/r-depends.rds') }}
+          restore-keys: ${{ hashFiles('.github/r-version') }}-2-
 
       - name: Install R package dependencies
         run: |
