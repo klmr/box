@@ -1,4 +1,4 @@
-# box (devel)
+# box 1.0.1
 
 * Enhancement: Allow trailing comma in `box::use()` (#172)
 * Enhancement: Support loading local modules from open files in RStudio (#187)
