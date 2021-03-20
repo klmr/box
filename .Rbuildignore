@@ -1,14 +1,10 @@
 ^\.lintr$
-^\.Rprofile_develop$
 ^\.Rprofile$
 ^\.gitignore$
-^CHANGES\.md$
-^CONTRIBUTING.md$
 ^Makefile$
 ^README\.md$
 ^README\.rmd$
 ^LICENSE.md$
-^printenv\.r$
 ^pkgdown$
 ^cran-comments.md$
 ^doc$
