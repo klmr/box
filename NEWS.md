@@ -1,8 +1,10 @@
 # box (devel)
 
+* Enhancement: Allow trailing comma in `box::use()` (#172)
+* Enhancement: Support loading local modules from open files in RStudio (#187)
 * Enhancement: improve error message and performance for module environment name
   access via `$` (#180)
-* Add explicit support for ‘testthat’ (#188)
+* Enhancement: Add explicit support for ‘testthat’ (#188)
 * Fix: Attach names starting with a dot (#186)
 
 

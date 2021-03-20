@@ -129,6 +129,7 @@ set_script_path = function (path = NULL) {
 #'  \item Path explicitly set via \code{set_script_path}
 #'  \item Path of a running document/application (\pkg{knitr}, \pkg{Shiny})
 #'  \item Path of unit test cases (\pkg{testthat})
+#'  \item Path of the currently opened source code file in RStudio
 #'  \item Code invoked as \command{Rscript script.r}
 #'  \item Code invoked as \command{R CMD BATCH script.r}
 #'  \item Script run interactively (use \code{getwd()})
