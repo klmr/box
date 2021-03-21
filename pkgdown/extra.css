@@ -2,6 +2,10 @@ a {
     color: #6877a1;
 }
 
+a code {
+    background: #edeef3;
+}
+
 a:hover,
 a:focus {
     color: #8695c0;
