@@ -21,9 +21,11 @@ cran-tmpdir = tmp.cran
 favicons_small = $(addprefix pkgdown/favicon/,$(addprefix favicon-,16x16.png 32x32.png))
 
 favicons_large = $(addprefix pkgdown/favicon/,\
-	$(addsuffix .png,$(addprefix apple-touch-icon-,60x60 76x76 120x120 152x152 180x180)))
+	$(addsuffix .png,$(addprefix apple-touch-icon-,60x60 76x76 120x120 152x152)))
 
-favicons = ${favicons_small} ${favicons_large}
+favicon_default = pkgdown/favicon/apple-touch-icon.png
+
+favicons = ${favicons_small} ${favicons_large} ${favicon_default}
 
 inkscape = $(shell command -v inkscape || echo /Applications/Inkscape.app/Contents/MacOS/inkscape)
 
@@ -124,14 +126,20 @@ build-cran:
 favicons: ${favicons}
 
 export-favicon = \
-	@sz=$$(sed 's/.*x\([[:digit:]]*\)\.png/\1/' <<<"$@"); \
-	(set -x; ${inkscape} -w $$sz -h $$sz --export-area $1 --export-filename=$@ $<)
+	@sz=$$(sed 's/.*x\([[:digit:]]*\)\.png/\1/' <<<"$@") \
+	&& set -x; \
+	${inkscape} -w $$sz -h $$sz --export-area $1 --export-filename=${@D}/tmp-${@F} $< \
+	&& pngcrush -q ${@D}/tmp-${@F} $@ && rm ${@D}/tmp-${@F}
 
 ${favicons_small}: man/figures/box.svg | pkgdown/favicon
 	$(call export-favicon,-11:1000:181:1192)
 
 ${favicons_large}: man/figures/box.svg | pkgdown/favicon
 	$(call export-favicon,-51:0:711:760)
+
+${favicon_default}: man/figures/box.svg | pkgdown/favicon
+	${inkscape} -w 180 -h 180 --export-area -51:0:711:760 --export-filename=${@D}/tmp-${@F} $<
+	pngcrush -q ${@D}/tmp-${@F} $@ && rm ${@D}/tmp-${@F}
 
 .PHONY: lint
 ## Link the package source
