@@ -1,3 +1,8 @@
+# box (dev)
+
+* Allow trailing comma in attach list (#191)
+
+
 # box 1.0.1
 
 * Enhancement: Allow trailing comma in `box::use()` (#172)

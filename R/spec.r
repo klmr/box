@@ -251,17 +251,17 @@ parse_attach_list = function (expr) {
     if (length(expr) == 1L && identical(expr[[1L]], quote(expr =))) {
         parse_error('Expected at least one identifier in attach list')
     } else {
-        vapply(expr, parse_identifier, character(1L))
+        # We filter missing names to allow “trailing comma” syntax:
+        #   box::use(./a[x, y, ])
+        Filter(Negate(is.na), vapply(expr, parse_identifier, character(1L)))
     }
 }
 
 parse_identifier = function (expr) {
     if (length(expr) != 1L || ! is.name(expr)) {
         parse_error('Expected identifier, got ', expr)
-    } else if (identical(expr, quote(expr =))) {
-        parse_error('Expected identifier, got nothing')
     } else {
-        deparse(expr)
+        deparse(expr) %||% NA_character_
     }
 }
 
