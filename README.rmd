@@ -14,7 +14,7 @@ desc = read.dcf('DESCRIPTION')
 desc = setNames(as.list(desc), colnames(desc))
 ```
 
-# `r desc$Package` <img src="man/figures/box.png" align="right" alt="" width="120"/>
+# `r desc$Package` <img src="man/figures/logo.png" align="right" alt="" width="120"/>
 
 > `r desc$Title`
 
