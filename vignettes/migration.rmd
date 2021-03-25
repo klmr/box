@@ -41,7 +41,7 @@ modname = import('prefix/modname')
 pkgname = import_package('pkgname')
 ```
 
-With ‘box’, modules and packages are imported via [`box::use()`][box::use]:
+With ‘box’, modules and packages are imported via [`box::use`][box::use]:
 
 ```{r eval = FALSE}
 box::use(prefix/modname)
@@ -50,7 +50,7 @@ box::use(pkgname)
 
 Notably, module and package names in a use declaration in ‘box’ are unquoted,
 unevaluated expressions; and **the ‘box’ package is never loaded via
-`library()`**. In fact, `library(box)` raises an error.
+`library`**. In fact, `library(box)` raises an error.
 
 Furthermore, with ‘box’, module names *must* be fully qualified. The equivalent
 of the ‘modules’ code `mod = import('modname')` no longer exists. To import a
@@ -60,7 +60,7 @@ of the ‘modules’ code `mod = import('modname')` no longer exists. To import 
 box::use(./modname)
 ```
 
-`box::use()` has no return value. Instead, it automatically creates an alias with
+`box::use` has no return value. Instead, it automatically creates an alias with
 the module/package name in the calling scope *if no names are attached* (see
 below). To override the alias name, specify it as as a named argument:
 
@@ -68,8 +68,8 @@ below). To override the alias name, specify it as as a named argument:
 box::use(mod_alias = prefix/modname)
 ```
 
-Unlike with `modules::import()`, `box::use()` allows (and encourages) multiple
-use declarations at once:
+Unlike with `modules::import`, `box::use` allows (and encourages) multiple use
+declarations at once:
 
 ```{r eval = FALSE}
 box::use(
@@ -129,9 +129,9 @@ operators, they need to explicitly attach them when using ‘box’.
 
 ### Loading documentation
 
-The `doc` option from `modules::import()` has been dropped without replacement.
-‘box’ loads documentation lazily only when it is requested via `box::help()`
-(see below).
+The `doc` option from `modules::import` has been dropped without replacement.
+‘box’ loads documentation lazily only when it is requested via `box::help` (see
+below).
 
 ## Executing code during module loading
 
@@ -142,9 +142,9 @@ conceptually no longer does this. It regards module source code as
 However, code with side-effects on the module file level is no longer guaranteed
 to execute.
 
-Instead, ‘box’ introduces [module event hooks][hooks], in particular
-`.on_load()`, which is a function that gets executed whenever a module is first
-loaded inside an R session.
+Instead, ‘box’ introduces [module event hooks][hooks], in particular `.on_load`,
+which is a function that gets executed whenever a module is first loaded inside
+an R session.
 
 ## Changed options
 
@@ -158,11 +158,11 @@ attach.
 
 ## Changed function names
 
-The ‘modules’ function `module_file` is now called [`box::file()`][box::file].
-Its semantics have also changed: it no longer cares whether files relative to
-the module exist or not; it merely constructs appropriate path strings.
+The ‘modules’ function `module_file` is now called [`box::file`][box::file]. Its
+semantics have also changed: it no longer cares whether files relative to the
+module exist or not; it merely constructs appropriate path strings.
 
-The ‘module’ function `module_name` is now called [`box::name()`][box::name]. It
+The ‘module’ function `module_name` is now called [`box::name`][box::name]. It
 no longer has any arguments.
 
 ## Exporting names from modules
@@ -189,8 +189,8 @@ f2 = function () {}
 box::use(./nested2)
 ```
 
-`@export` directives that decorate `box::use()` declarations apply to *all*
-names declared in it:
+`@export` directives that decorate `box::use` declarations apply to *all* names
+declared in it:
 
 ```{r eval = FALSE}
 #' @export
@@ -242,7 +242,7 @@ automatically load `a/b/c.r` (but the same behaviour was already present in
 module documentation. Since ‘box’ is no longer attached, these functions no
 longer display module documentation. Instead, the documentation of anything
 imported via ‘box’ (both modules and packages!) can be queried via
-[`box::help()`][box::help].
+[`box::help`][box::help].
 
 Unlike ‘modules’, ‘box’ also supports displaying the documentation of nested
 module names, e.g. `box::help(a$b$c)`.

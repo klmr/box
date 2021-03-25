@@ -120,7 +120,7 @@ box::use(bio/seq[revcomp, is_valid])
 After unloading the already loaded module, `options(box.path = …)` sets the
 module search path: this is where `box::use` searches for modules. If more than
 one path is given, `box::use` searches them all until a module of matching name
-is found. This works analogously to how `.libPaths()` operates on R packages.
+is found. This works analogously to how `.libPaths` operates on R packages.
 
 The `box::use` directive can now use `bio/seq` instead of `./bio/seq` as the
 module name: rather than a relative name we specify a *global* name. In this
@@ -299,13 +299,13 @@ original `import` call).
 
 This `info` module also show-cases two important helper functions:
 
-1. `box::name()` returns the name of the module with which it was loaded. This
-   is especially handy because, when called outside of a module, `box::name()`
-   is `NULL`. This allows testing whether a piece of code was loaded as a
-   module, or invoked directly (e.g. via `Rscript` on the command line).
+1. `box::name` returns the name of the module with which it was loaded. This is
+   especially handy because, when called outside of a module, `box::name` is
+   `NULL`. This allows testing whether a piece of code was loaded as a module,
+   or invoked directly (e.g. via `Rscript` on the command line).
 
-2. `box::file()` is similar to `system.file`: it returns the full path to any
-   file within the directory where a module is stored. This is useful when
+2. `box::file` is similar to `system.file`: it returns the full path to any file
+   within the directory where a module is stored. This is useful when
    distributing data files with modules, which are loaded from within the
-   module. When invoked without arguments, `box::file()` returns the full path
-   to the directory containing the module source file.
+   module. When invoked without arguments, `box::file` returns the full path to
+   the directory containing the module source file.

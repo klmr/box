@@ -64,9 +64,9 @@ Rscript bio/seq.r
 … or inside an IDE such as RStudio by choosing the menu item “Tools” › “Jobs” ›
 “Start Local Job…” ^[It may be tempting to instead use the “Source” button but
 doing so is problematic; see the section “A note on RStudio and other IDEs”!].
-This works because `box::name()` returns the name of the module from which this
+This works because `box::name` returns the name of the module from which this
 function is called. But if the function is invoked from code that wasn’t loaded
-via `box::use()` (as is the case here), its value is `NULL`. In other words,
+via `box::use` (as is the case here), its value is `NULL`. In other words,
 `is.null(box::name())` is a way of testing whether the code currently being run
 is loaded as a module, or executed directly.
 
@@ -94,10 +94,10 @@ This first loads and attaches the ‘testthat’ package. Although attaching is 
 strictly necessary, ‘testthat’ code is a lot more readable without cluttering
 the code with explicit name qualifications.
 
-Next it invokes `test_dir()` and passes the tests’ directory via
-`box::file()` inside the module’s `.on_load()` hook — remember that only
-declarations should be at file level inside a module! All code execution should
-happen inside functions.
+Next it invokes `test_dir` and passes the tests’ directory via `box::file`
+inside the module’s `.on_load` hook — remember that only declarations should be
+at file level inside a module! All code execution should happen inside
+functions.
 
 
 The `helper-module.r` file is a ‘testthat’ helper; these are sourced
@@ -125,10 +125,10 @@ With this set-up, the actual unit test files look exactly like regular
 
 Most IDEs have an option to “Source” a local file. When doing this it may *seem*
 as if the tests are correctly run, but this isn’t actually the case! This is
-because `box::use()` doesn’t reload code that has already been loaded
-previously; instead, it uses an already loaded, cached version. This means that
-running the tests via the “Source” button risks running an outdated version of
-the tests, or the module, or both, after modifying their code.
+because `box::use` doesn’t reload code that has already been loaded previously;
+instead, it uses an already loaded, cached version. This means that running the
+tests via the “Source” button risks running an outdated version of the tests, or
+the module, or both, after modifying their code.
 
 To avoid this, always execute the test module in a new R session. In RStudio,
 the easiest way of doing this is by running it as a job, via the menu “Tools” ›
@@ -178,7 +178,7 @@ methods.
     ```
 
 2. Get access to the private module namespace for testing. When loading a module
-   with `box::use()`, the module object has an attribute `namespace` that holds
+   with `box::use`, the module object has an attribute `namespace` that holds
    the private module namespace. It generally shouldn’t be accessed by client
    code, but access by the testing code for a module is entirely legitimate:
 
