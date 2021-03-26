@@ -133,26 +133,27 @@ unlock_environment = function (env) {
     invisible(.Call(c_unlock_env, env))
 }
 
-find_import_env = function (x, spec) {
+find_import_env = function (x, spec, info, mod_ns) {
     UseMethod('find_import_env')
 }
 
-`find_import_env.box$ns` = function (x, spec) {
+`find_import_env.box$ns` = function (x, spec, info, mod_ns) {
     parent.env(x)
 }
 
-`find_import_env.box$mod` = function (x, spec) {
+`find_import_env.box$mod` = function (x, spec, info, mod_ns) {
     x
 }
 
-find_import_env.environment = function (x, spec) {
-    if (identical(x, .GlobalEnv)) {
+find_import_env.environment = function (x, spec, info, mod_ns) {
+    env = if (identical(x, .GlobalEnv)) {
         # We need to use `attach` here: attempting to set
         # `parent.env(.GlobalEnv)` causes R to segfault.
         box_attach(NULL, name = paste0('mod:', spec_name(spec)))
     } else {
         parent.env(x) = new.env(parent = parent.env(x))
     }
+    structure(env, class = 'box$mod', spec = spec, info = info, namespace = mod_ns)
 }
 
 import_into_env = function (to_env, to_names, from_env, from_names) {

@@ -14,7 +14,7 @@ test_that('help topic targets are correctly resolved', {
     a = help_test_env$a
     expected_mods = c(a, a, a$b, a$b$c)
     expected_names = c('.__module__.', 'b', 'c', 'd')
-    actual_targets = box:::map(box:::help_topic_target, list(help_test_env), help_test_cases)
+    actual_targets = box:::map(box:::help_topic_target, help_test_cases, list(help_test_env))
     box:::map(expect_identical, box:::map(`[[`, actual_targets, list(1L)), expected_mods)
     box:::map(expect_identical, box:::map(`[[`, actual_targets, list(2L)), expected_names)
 })

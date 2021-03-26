@@ -1,11 +1,12 @@
 # box (dev)
 
+* Make `box::help` work with attached objects (#170)
 * Allow trailing comma in attach list (#191)
 
 
 # box 1.0.1
 
-* Enhancement: Allow trailing comma in `box::use()` (#172)
+* Enhancement: Allow trailing comma in `box::use` (#172)
 * Enhancement: Support loading local modules from open files in RStudio (#187)
 * Enhancement: improve error message and performance for module environment name
   access via `$` (#180)
