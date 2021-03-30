@@ -42,8 +42,14 @@ jobs:
 
       - name: Install cURL on Ubuntu
         if: runner.os == 'Linux'
-        run: |
-          sudo apt-get install libcurl4-openssl-dev
+        run: sudo apt-get install -y libcurl4-openssl-dev
+
+      - name: Install libgit2 on macOS
+        # Required only for source install of ‘gert’, but this can happen
+        # accidentally (and has!) when ‘gert’ is being updated and the CRAN
+        # server hasn’t yet built the new binary packages.
+        if: runner.os == 'macOS'
+        run: brew install libgit2
 
       - name: Query dependencies
         run: |
@@ -76,7 +82,9 @@ jobs:
       - name: Check
         env:
           _R_CHECK_CRAN_INCOMING_REMOTE_: false
-        run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "error", check_dir = "check")
+        run: |
+          options(crayon.enabled = TRUE)
+          rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "error", check_dir = "check")
         shell: Rscript {0}
 
       - name: Upload check results on failure

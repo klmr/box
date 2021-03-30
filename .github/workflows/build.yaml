@@ -19,8 +19,7 @@ jobs:
         uses: r-lib/actions/setup-r@v1
 
       - name: Install external library dependencies
-        run: |
-          sudo apt-get install libcurl4-openssl-dev
+        run: sudo apt-get install -y libcurl4-openssl-dev
 
       - name: Query dependencies
         run: |
