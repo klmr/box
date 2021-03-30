@@ -9,6 +9,24 @@ unload_all = function () {
     rm(list = ls(modenv), envir = modenv)
 }
 
+tempfile_dir = function (...) {
+    file = tempfile()
+    dir.create(file)
+    file
+}
+
+create_nested_test_module = function (dir) {
+    mod = file.path(dir, 'mod', 'a')
+    dir.create(mod, recursive = TRUE)
+    writeLines("#' @export\nbox::use(./sub)", file.path(mod, '__init__.r'))
+    writeLines("#' @export\nvalue = 1L", file.path(mod, 'sub.r'))
+}
+
+edit_nested_test_module = function (dir) {
+    mod = file.path(dir, 'mod', 'a')
+    writeLines("#' @export\nvalue = 2L", file.path(mod, 'sub.r'))
+}
+
 test_that('module can be reloaded', {
     # Required since other tests have side-effects.
     # Tear-down would be helpful here, but not supported by testthat.
@@ -31,4 +49,30 @@ test_that('reload checks its arguments', {
     expect_error(box::reload(foo))
     box::use(mod/a)
     expect_error(box::reload((a)))
+})
+
+test_that('reload includes submodules', {
+    dir = tempfile_dir()
+    on.exit(unlink(dir, recursive = TRUE))
+
+    old_path = options(box.path = dir)
+    on.exit(options(old_path), add = TRUE)
+
+    create_nested_test_module(dir)
+
+    box::use(mod/a)
+
+    expect_equal(a$sub$value, 1L)
+
+    edit_nested_test_module(dir)
+
+    box::reload(a)
+
+    expect_equal(a$sub$value, 2L)
+
+    # To do:
+    # * modules with compiled source,
+    # * tricky packages loaded as modules, e.g. packages that call
+    #   system.file(), and alike, and
+    # * modules with S4 classes/object,
 })
