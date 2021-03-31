@@ -140,8 +140,8 @@ test_that('non-existent aliases raise error', {
 })
 
 test_that('only exported things can be attached', {
-    expect_in('indent', ls(getNamespace('devtools')))
-    expect_error(box::use(devtools[indent]), 'not exported')
+    expect_in('yesno', ls(getNamespace('devtools')))
+    expect_error(box::use(devtools[yesno]), 'not exported')
 })
 
 test_that('packages that attach things are not aliased', {
