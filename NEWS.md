@@ -2,6 +2,7 @@
 
 * Make `box::help` work with attached objects (#170)
 * Allow trailing comma in attach list (#191)
+* Make `box::use(.)` syntax work (#192)
 
 
 # box 1.0.1

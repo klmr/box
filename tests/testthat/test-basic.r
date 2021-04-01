@@ -115,3 +115,9 @@ test_that('trailing comma is accepted', {
     expect_error(box::use(mod/a, mod/b, ), NA)
     expect_error(box::use(mod/a[modname, double, ]), NA)
 })
+
+test_that('nested module can use parent', {
+    box::use(mod/b/b)
+    expect_true(exists('z', b))
+    expect_equal(b$z, 1)
+})

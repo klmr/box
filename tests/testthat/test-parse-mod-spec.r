@@ -41,9 +41,6 @@ test_that('fully qualified names can be nested', {
 })
 
 test_that('imports can be relative', {
-    expect_error(test_use(.), 'Incomplete module name')
-    expect_error(test_use(.[foo]), 'Incomplete module name')
-
     m = test_use(./foo)
     expect_true(is_mod_spec(m))
     expect_equal(m$name, 'foo')
