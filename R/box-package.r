@@ -37,20 +37,16 @@
 '_PACKAGE'
 
 called_from_devtools = function () {
-    if (isNamespaceLoaded('devtools')) {
+    isNamespaceLoaded('devtools') && {
         is_devtools_ns = function (x) identical(x, getNamespace('devtools'))
-        length(Filter(is_devtools_ns, lapply(sys.frames(), topenv))) != 0L
-    } else {
-        FALSE
+        any(map_lgl(is_devtools_ns, lapply(sys.frames(), topenv)))
     }
 }
 
 called_from_pkgdown = function () {
-    if (isNamespaceLoaded('pkgdown')) {
+    isNamespaceLoaded('pkgdown') && {
         is_pkgdown_ns = function (x) identical(x, getNamespace('pkgdown'))
-        length(Filter(is_pkgdown_ns, lapply(sys.frames(), topenv))) != 0L
-    } else {
-        FALSE
+        any(map_lgl(is_pkgdown_ns, lapply(sys.frames(), topenv)))
     }
 }
 
@@ -61,13 +57,17 @@ called_from_ci = function () {
 called_from_example = function () {
     utils_ns = getNamespace('utils')
     example = quote(example)
-    for (frame in seq_along(sys.nframe())) {
-        call = sys.call(frame)
-        if (identical(call[[1L]], example) && identical(topenv(sys.frame(frame)), utils_ns)) {
-            return(TRUE)
-        }
-    }
-    FALSE
+    frames = sys.frame()
+    # N.B.: This only handles direct, unqualified calls, i.e.
+    #   example(…)
+    # it fails with other forms, such as
+    #   utils::example(…)
+    #   get('example')(…)
+    # etc.
+    is_example_call = function (i)
+        identical(sys.call(i)[[1L]], example) &&
+            identical(topenv(sys.frame(i)), utils_ns)
+    any(map_lgl(is_example_call, seq_len(sys.nframe())))
 }
 
 .onAttach = function (libname, pkgname) {
@@ -85,8 +85,15 @@ called_from_example = function () {
         'Please consult the user guide at %s.'
     )
     help = sprintf('`vignette(\'%s\', package = \'%s\')`', pkgname, pkgname)
+    is_bad_call = function (call) {
+        c = call[[1L]]
+        identical(c, quote(library)) || identical(c, quote(require))
+    }
+    # Deparsed to silence spurious `R CMD check` warnign
+    default = parse(text = 'library(box)')[[1L]]
+    bad_call = Filter(is_bad_call, sys.calls())[1L][[1L]] %||% default
     cond = structure(
-        list(message = sprintf(template, shQuote(pkgname), help), call = NULL),
+        list(message = sprintf(template, shQuote(pkgname), help), call = bad_call),
         class = c('box_attach_error', 'error', 'condition')
     )
     stop(cond)
