@@ -67,6 +67,11 @@ reload = function (mod) {
     call_hook(mod_ns, '.on_unload', mod_ns)
     deregister_mod(info)
 
+    for (import_ns in namespace_info(mod_ns, 'imports')) {
+        call_hook(import_ns, '.on_unload', import_ns)
+        deregister_mod(attr(import_ns, 'info'))
+    }
+
     on.exit({
         warning(sprintf(
             'Reloading module %s failed, attempting to restore the old instance.',
