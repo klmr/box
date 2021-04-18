@@ -174,7 +174,7 @@ active_binding_function = if (as.integer(version$major) >= 4L) {
     function (sym, env) activeBindingFunction(sym, env)
 } else {
     function (sym, env) {
-        as.list(`class<-`(env, NULL))[[sym]]
+        as.list(`class<-`(env, NULL), all.names = TRUE)[[sym]]
     }
 }
 
