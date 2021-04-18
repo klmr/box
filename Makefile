@@ -52,7 +52,7 @@ check: documentation
 
 .PHONY: site
 ## Create package website
-site: README.md NAMESPACE ${favicons}
+site: README.md NAMESPACE NEWS.md ${favicons}
 	${rscript} -e "pkgdown::build_site()"
 	scripts/copy-vignette-extra-files . docs/articles
 

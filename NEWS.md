@@ -1,4 +1,4 @@
-# box (dev)
+# box (development version)
 
 * Make `box::help` work with attached objects (#170)
 * Allow trailing comma in attach list (#191)
@@ -21,7 +21,9 @@ Complete rewrite; see the [migration
 guide](https://klmr.me/box/articles/migration.html) for more information.
 
 
-# modules 0.9.9
+# modules 0.x
+
+## modules 0.9.9
 
 * Fix `module_file` argument check (#90)
 * Add clickable links to “See also” section in documentation (#56)
@@ -34,60 +36,60 @@ guide](https://klmr.me/box/articles/migration.html) for more information.
   runtime (#125)
 
 
-# modules 0.9.8
+## modules 0.9.8
 
 * Fix missing S3 methods bug (#117)
 * Fix missing exported operators (#93)
 
 
-# modules 0.9.7
+## modules 0.9.7
 
 * Support rudimentary HTML help
 * Fix `help(package = …)` (#38, #73)
 
 
-# modules 0.9.6
+## modules 0.9.6
 
 * Fix broken interaction with Roxygen2 (#103)
 
 
-# modules 0.9.5
+## modules 0.9.5
 
 * Locally attach ‹modules› inside modules (#44)
 
 
-# modules 0.9.4
+## modules 0.9.4
 
 * Fix regression in 0.9 when ‹modules› package is not attached
 * Fix `R CMD CHECK` warnings
 * Fix missing documentation of `import` (#78)
 
 
-# modules 0.9.3
+## modules 0.9.3
 
 * Fix regression in 0.9 due to attachment of operator environment (#71)
 * Fix another typo in test for deprecation warning (from #68)
 
 
-# modules 0.9.2
+## modules 0.9.2
 
 * Fix missing export of `export_submodule_` (#75)
 
 
-# modules 0.9.1
+## modules 0.9.1
 
 * Fix typo in test for deprecation warning (from #68)
 * Disable name conflict warning when run in non-interactive mode (#48)
 
 
-# modules 0.9
+## modules 0.9
 
 * Fix wrong module name and path information after a module has been attached
   (#66, #67, #70)
 * Deprecate usage of variables for package names (#68)
 
 
-# modules 0.8.2
+## modules 0.8.2
 
 * Fix loading of a package that contains errors (#58)
 * Fix `reload` overwriting the wrong object if its name is shadowed by the name
@@ -95,51 +97,51 @@ guide](https://klmr.me/box/articles/migration.html) for more information.
 * Fix loading of S3 generics without associated methods (#63)
 
 
-# modules 0.8.1
+## modules 0.8.1
 
 * Fix bug concerning wrong operator attachment for packages
 
 
-# modules 0.8
+## modules 0.8
 
 * Add support for importing packages (#45)
 * Make module access operator `$` stricter
 * Improve type checking (module access operator `$` is stricter, #55)
 
 
-# modules 0.7.3
+## modules 0.7.3
 
 * Add Shiny support (#53, rstudio/shinyapps#152)
 
 
-# modules 0.7.2
+## modules 0.7.2
 
 * Fix building of vignette (#52)
 * Add support for knitr with help from @yihui (#31, yihui/knitr#950)
 
 
-# modules 0.7.1
+## modules 0.7.1
 
 * Add a vignette
 * Fix operators whose name contains a dot
 
 
-# modules 0.7
+## modules 0.7
 
 * Add support for S3 methods in modules
 
 
-# modules 0.6.1
+## modules 0.6.1
 
 * Support aliases and illegal R names for documentation topics
 
 
-# modules 0.6
+## modules 0.6
 
 * Add support for documentation via roxygen2 doc comments in modules
 
 
-# modules 0.5
+## modules 0.5
 
 * Assume all module source files are UTF-8 encoded
 * Export non-function objects as well as functions
@@ -148,7 +150,7 @@ guide](https://klmr.me/box/articles/migration.html) for more information.
 * Improve documentation
 
 
-# modules 0.4
+## modules 0.4
 
 * Make imports absolute by default, and add ability for explicit relative
   imports via the `./` or `../` prefix, and use the current script path as the
@@ -164,18 +166,18 @@ guide](https://klmr.me/box/articles/migration.html) for more information.
 * Fix (hopefully) installation on Windows by specifying project encoding
 
 
-# modules 0.3
+## modules 0.3
 
 * Add capability of partially attaching modules
 
 
-# modules 0.2
+## modules 0.2
 
 * Change the API to use quoted strings instead of unevaluated expressions, and
   slashes instead of dots to denote nested submodules
 * Attach operators even if other functions are not attached, to make them usable
 
 
-# modules 0.1
+## modules 0.1
 
 Initial release
