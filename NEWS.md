@@ -1,4 +1,4 @@
-# box (development version)
+# box 1.0.2
 
 * Make `box::help` work with attached objects (#170)
 * Allow trailing comma in attach list (#191)

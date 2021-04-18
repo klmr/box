@@ -1,6 +1,6 @@
 Package: box
 Title: Write Reusable, Composable and Modular R Code
-Version: 1.0.1.9000
+Version: 1.0.2
 Authors@R: c(
         person(
             'Konrad', 'Rudolph',
