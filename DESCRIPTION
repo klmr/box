@@ -25,7 +25,6 @@ Depends:
 Imports:
     tools
 License: MIT + file LICENSE
-LazyData: true
 Encoding: UTF-8
 Suggests:
     devtools,

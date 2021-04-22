@@ -1,0 +1,21 @@
+#!/usr/bin/env Rscript
+
+args = commandArgs(trailingOnly = TRUE)
+
+if (length(args) == 0L) {
+    stop(sprintf('Error: missing argument %s', dQuote('pkg')))
+}
+
+pkg = args[[1L]]
+
+desc = packageDescription('.', lib.loc = pkg)
+
+if (! is.null(desc$LazyData)) {
+    if (! dir.exists(file.path(pkg, 'data'))) {
+        stop('\'LazyData\' is specified without a \'data\' directory')
+    }
+}
+
+invisible()
+
+# vim: ft=r
