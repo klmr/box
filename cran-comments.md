@@ -1,17 +1,13 @@
 ## Changes
 
-* Fix: Adjustment in test suite to fix a R CMD CHECK failure on WinBuilder when
-  the capitalisation of the current working directory as returned from getwd()
-  mismatches the actual capitalisation in the filesystem.
+* Fix test failure due to an update in the 'devtools' dependency.
+* Fix: remove unnecessary 'LazyData' statement from 'DESCRIPTION'.
 
 Other changes:
 
-* Enhancement: Allow trailing comma in box::use()
-* Enhancement: Support loading local modules from open files in RStudio
-* Enhancement: improve error message and performance for module environment name
-  access via `$`
-* Enhancement: Add explicit support for 'testthat'
-* Fix: Attach names starting with a dot
+* Enhancement: Make box::help() work with attached objects
+* Enhancement: Allow trailing comma in attach list
+* Fix: Make box::use(.) syntax work
 
 
 ## Test environments
