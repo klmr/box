@@ -102,5 +102,5 @@ called_from_example = function () {
 .onUnload = function (libpath) {
     eapply(loaded_mods, function (mod_ns) {
         call_hook(mod_ns, '.on_unload', mod_ns)
-    })
+    }, all.names = TRUE)
 }
