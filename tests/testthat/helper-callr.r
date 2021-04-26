@@ -61,9 +61,11 @@ interactive_r = function (script_path, text, code) {
     check_line = function (which, expected) {
         # Separate check to generate only one assertion, and only if needed.
         if (! identical(strip_ansi_escapes(result[which]), expected)) {
-            expect_identical(strip_ansi_escapes(result[which]), expected,
-                             label = sprintf('"%s"', result[which]),
-                             info = 'interactive_r')
+            expect_identical(
+                strip_ansi_escapes(result[which]), expected,
+                label = sprintf('"%s"', result[which]),
+                info = 'interactive_r'
+            )
         }
     }
 
