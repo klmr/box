@@ -22,7 +22,7 @@ auto-generated `dev` branch:
 
 
 ```r
-if (! requireNamespace('pak') {
+if (! requireNamespace('pak')) {
     install.packages('pak', repos = 'https://r-lib.github.io/p/pak/dev/')
 }
 pak::pkg_install('klmr/box@dev')
