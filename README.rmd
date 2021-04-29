@@ -32,7 +32,7 @@ misses generated files; instead, ‘box’ needs to be installed from the
 auto-generated `dev` branch:
 
 ```{r, eval = FALSE}
-if (! requireNamespace('pak') {
+if (! requireNamespace('pak')) {
     install.packages('pak', repos = 'https://r-lib.github.io/p/pak/dev/')
 }
 pak::pkg_install('klmr/box@dev')
