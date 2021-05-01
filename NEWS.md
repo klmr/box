@@ -6,9 +6,9 @@
 
 # box 1.0.2
 
-* Make `box::help` work with attached objects (#170)
-* Allow trailing comma in attach list (#191)
-* Make `box::use(.)` syntax work (#192)
+* Enhancement: Make `box::help` work with attached objects (#170)
+* Enhancement: Allow trailing comma in attach list (#191)
+* Enhancement: Make `box::use(.)` syntax work (#192)
 
 
 # box 1.0.1
