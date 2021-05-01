@@ -80,4 +80,6 @@ test_that('`is_S3_user_generic` can deal with substituted functions', {
 
 test_that('nested functions are parsed correctly', {
     expect_error(box::use(mod/issue203), NA)
+    expect_false(box:::is_S3_user_generic('g', issue203))
+    expect_false(box:::is_S3_user_generic('h', issue203))
 })

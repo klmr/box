@@ -13,5 +13,17 @@
 #   class(body(g)[[2L]]) == 'name'
 #   class(body(h)[[2L]]) == 'call'
 f = function () { NULL }
-
 body(f)[[2L]] = identity
+
+#' `g` clearly isn’t a generic even though `UseMethod` is used inside a nested
+#' function in its body.
+#' @export
+g = function (x) {
+    nested = function () UseMethod('nested')
+    nested()
+}
+
+#' … nor is `h`.
+#' @export
+h = function () { NULL }
+body(h)[[2L]] = function () UseMethod('foo')
