@@ -1,17 +1,18 @@
 # The following defines a function which has a function inside its body. This is
 # *different* from a nested function; that is, `f` is different from
 #
-#   g = function () { identity }
+#   f1 = function () { identity }
 #
-# … because `g` contains a *name* in its body. Likewise, it is different from
+# … because `f1` contains a *name* in its body. Likewise, it is different from
 #
-#   h = function () { function (x) x }
+#   f2 = function () { function (x) x }
 #
-# … because `h` contains a *call expression* in its body. That is:
+# … because `f2` contains a *call expression* which, when executed, *defines* a
+# function, in its body. That is:
 #
-#   class(body(f)[[2L]]) == 'function'
-#   class(body(g)[[2L]]) == 'name'
-#   class(body(h)[[2L]]) == 'call'
+#   class(body(f)[[2L]])  == 'function'
+#   class(body(f1)[[2L]]) == 'name'
+#   class(body(f2)[[2L]]) == 'call'
 f = function () { NULL }
 body(f)[[2L]] = identity
 
