@@ -1,3 +1,9 @@
+# box (development version)
+
+* Fix: Don’t crash in the presence of nested, expanded functions inside modules
+    (#203)
+
+
 # box 1.0.2
 
 * Make `box::help` work with attached objects (#170)
