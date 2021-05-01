@@ -43,17 +43,37 @@ register_S3_method = function (name, class, method) {
 #' @keywords internal
 #' @name s3
 is_S3_user_generic = function (function_name, envir = parent.frame()) {
-    is_S3 = function (b) {
-        if (length(b) == 0L) FALSE
-        else if (is.function(b)) b = body(b)
-        else if (is.call(b)) {
-            is_s3_dispatch = is.name(b[[1L]]) && b[[1L]] == 'UseMethod'
-            is_s3_dispatch || is_S3(as.list(b)[-1L])
-        } else is.recursive(b) && (is_S3(b[[1L]]) || is_S3(b[-1L]))
-    }
-
     ! bindingIsActive(function_name, envir) &&
         is_S3(body(get(function_name, envir = envir, mode = 'function')))
+}
+
+is_S3 = function (expr) {
+    if (length(expr) == 0L) {
+        FALSE
+    } else if (is.function(expr)) {
+        FALSE
+    } else if (is.call(expr)) {
+        fun = expr[[1L]]
+        if (is.name(fun)) {
+            # NB: this is relying purely on static analysis. We do not test
+            # whether these calls actually refer to the expected base R
+            # functions since that would require evaluating the function body in
+            # the general case (namely, the function body itself could redefine
+            # them).
+            if (identical(fun, quote(UseMethod))) return(TRUE)
+            # Make sure nested function definitions are *not* getting
+            # traversed: `UseMethod` inside a nested function does not make
+            # the containing function a generic.
+            if (identical(fun, quote(`function`))) return(FALSE)
+            Recall(as.list(expr)[-1])
+        } else {
+            Recall(fun) || Recall(expr[-1L])
+        }
+    } else if (is.recursive(expr)) {
+        Recall(expr[[1L]]) || Recall(expr[-1L])
+    } else {
+        FALSE
+    }
 }
 
 #' @param module the module object for which to register S3 methods
