@@ -109,14 +109,16 @@ base_path = function (mod) {
 #' set the path of the currently executing R script manually.
 #' @export
 set_script_path = function (path = NULL) {
-    old_value = loaded_mods$.
+    old_path = script_path_env$value
     if (is.null(path)) {
-        rm(list = '.', envir = loaded_mods)
+        script_path_env$value = NULL
     } else {
-        loaded_mods$. = dirname(path)
+        script_path_env$value = dirname(path)
     }
-    invisible(old_value)
+    invisible(old_path)
 }
+
+script_path_env = new.env(parent = emptyenv())
 
 #' @return \code{script_path} returns a character string that contains the
 #' directory in which the calling R code is run. See \sQuote{Details}.
@@ -132,27 +134,40 @@ set_script_path = function (path = NULL) {
 #'  \item Path of the currently opened source code file in RStudio
 #'  \item Code invoked as \command{Rscript script.r}
 #'  \item Code invoked as \command{R CMD BATCH script.r}
+#'  \item Code invoked as \command{R -f script.r}
 #'  \item Script run interactively (use \code{getwd()})
 #' }
 #' @rdname path
 script_path = function () {
-    if (! is.null((path = loaded_mods$.))) return(path)
-    if (! is.null((path = knitr_path()))) return(path)
-    if (! is.null((path = shiny_path()))) return(path)
-    if (! is.null((path = testthat_path()))) return(path)
-    if (! is.null((path = rstudio_path()))) return(path)
-
-    args = commandArgs()
-
-    file_arg = grep('--file=', args)
-    if (length(file_arg) != 0L) {
-        return(dirname(sub('--file=', '', args[file_arg])))
+    for (test in path_tests) {
+        path = test()
+        if (! is.null(path)) {
+            # Don’t cache result, since it might change suddenly, due to knitr
+            # or Shiny running in the same proces.
+            return(path)
+        }
     }
+    stop('Unreachable code')
+}
 
-    f_arg = grep('-f', args)
-    if (length(f_arg) != 0L) return(dirname(args[f_arg + 1L]))
+#' @return \code{explicit_path} returns the script path explicitly set by the
+#' user, if such a path was set.
+#' @rdname path
+explicit_path = function () {
+    if (! is.null((path = script_path_env$value))) path
+}
 
-    getwd()
+#' @param args command line arguments passed to R; by default, the arguments of
+#' the current process.
+#' @return \code{r_path} returns the directory in which the current script is
+#' run via \command{Rscript}, \command{R CMD BATCH} or \command{R -f}.
+#' @rdname path
+r_path = function (args = commandArgs()) {
+    if (length((file_arg = grep('^--file=', args))) != 0L) {
+        dirname(sub('--file=', '', args[file_arg]))
+    } else if (length((f_arg = grep('^-f$', args))) != 0L) {
+        dirname(args[f_arg + 1L])
+    }
 }
 
 #' @return \code{knitr_path} returns the directory in which the currently knit
@@ -182,9 +197,22 @@ testthat_path = function () {
     if (identical(Sys.getenv("TESTTHAT"), "true")) getwd()
 }
 
+#' @return \code{rstdio_path} returns the directory in which the currently
+#' active RStudio script file is saved.
+#' @rdname path
 rstudio_path = function () {
     if (! 'rstudioapi' %in% loadedNamespaces() || ! rstudioapi::isAvailable()) return(NULL)
 
     document_path = rstudioapi::getActiveDocumentContext()$path
     if (! identical(document_path, '')) dirname(document_path)
 }
+
+#' @return \code{wd_path} returns the current working directory.
+#' @rdname path
+wd_path = function () {
+    # Fallback
+    getwd()
+}
+
+path_test_hooks = c('explicit', 'knitr', 'shiny', 'testthat', 'rstudio', 'r', 'wd')
+path_tests = mget(paste0(path_test_hooks, '_path'))
