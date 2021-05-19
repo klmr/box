@@ -1,6 +1,6 @@
 <!-- README.md is generated from README.rmd. Please edit that file instead! -->
 
-```{r, echo = FALSE}
+```{r echo = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = '#>',
@@ -18,11 +18,18 @@ desc = setNames(as.list(desc), colnames(desc))
 
 > `r desc$Title`
 
+<div id='tldr'>
+
+* [Get started][]
+* [Documentation][]
+
+</div>
+
 ## 📦 Installation
 
 ‘box’ can be installed from CRAN:
 
-```{r, eval = FALSE}
+```{r eval = FALSE}
 install.packages('box')
 ```
 
@@ -31,7 +38,7 @@ Note that the main branch cannot be installed directly, since it intentionally
 misses generated files; instead, ‘box’ needs to be installed from the
 auto-generated `dev` branch:
 
-```{r, eval = FALSE}
+```{r eval = FALSE}
 if (! requireNamespace('pak')) {
     install.packages('pak', repos = 'https://r-lib.github.io/p/pak/dev/')
 }
@@ -92,7 +99,7 @@ library(ggplot2)
 
 You’d write
 
-```{r, eval = FALSE}
+```{r eval = FALSE}
 box::use(ggplot2[...])
 ```
 
@@ -200,6 +207,7 @@ submodules.
 [roxygen2]: https://roxygen2.r-lib.org/
 [pep8]: https://www.python.org/dev/peps/pep-0008/#imports
 [Get started]: https://klmr.me/box/articles/box.html
+[Documentation]: https://klmr.me/box/reference/index.html
 [C++]: https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Rs-using
 [Rust]: https://doc.rust-lang.org/book/ch07-04-bringing-paths-into-scope-with-the-use-keyword.html#the-glob-operator
 [Perl]: https://perldoc.perl.org/Exporter#Selecting-What-to-Export

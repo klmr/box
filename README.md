@@ -6,6 +6,13 @@
 
 > Write Reusable, Composable and Modular R Code
 
+<div id='tldr'>
+
+* [Get started][]
+* [Documentation][]
+
+</div>
+
 ## 📦 Installation
 
 ‘box’ can be installed from CRAN:
@@ -206,6 +213,7 @@ submodules.
 [roxygen2]: https://roxygen2.r-lib.org/
 [pep8]: https://www.python.org/dev/peps/pep-0008/#imports
 [Get started]: https://klmr.me/box/articles/box.html
+[Documentation]: https://klmr.me/box/reference/index.html
 [C++]: https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Rs-using
 [Rust]: https://doc.rust-lang.org/book/ch07-04-bringing-paths-into-scope-with-the-use-keyword.html#the-glob-operator
 [Perl]: https://perldoc.perl.org/Exporter#Selecting-What-to-Export
