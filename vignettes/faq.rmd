@@ -1,0 +1,94 @@
+---
+title: "Frequently asked questions"
+author: Konrad Rudolph
+date: "`r Sys.Date()`"
+output:
+    rmarkdown::html_vignette:
+        toc: true
+    md_document:
+        variant: gfm
+vignette: >
+    %\VignetteEngine{knitr::rmarkdown}
+    %\VignetteIndexEntry{Get started}
+    %\VignetteEncoding{UTF-8}
+---
+
+## General
+
+### Can I call `library()` inside a module?
+
+No, this usually won’t work: `library` (and `require`) attaches names
+*globally*, rather than inside the calling module. Inside a module, `box::use`
+must be used instead.
+
+
+### Can I use “meta” packages like ‘tidyverse’ with ‘box’?
+
+No. You can use *individual* packages from the tidyverse via `box::use`. But
+directly loading a “meta” package such as ‘tidverse’ is intentionally not
+supported.
+
+“Meta” packages such as ‘tidyverse’ are antithetical to the purpose of ‘box’:
+the whole point of ‘box’ is to make package imports *explicit*. Using “meta”
+packages would undermine this and is therefore discouraged.
+
+
+### How to organise globally installed modules?
+
+Module names need to be *fully qualified*, meaning that using them requires
+providing a name consisting of a prefix (at least one high-level namespace) and
+the module’s proper name. The choice of prefix is, to some extent, arbitrary.
+However, there are some common conventions that are worth following.
+
+For example, it is common practice to use a company or user name (look at code
+sharing websites such as GitHub for inspiration). A project consisting of
+several nested modules might also serve the same purpose. For example, if
+‘dplyr’ were implemented as a module, its common fully qualified name would
+probably be `tidyverse/dplyr`.
+
+As a concrete example, consider the following modules, stored in the module
+search path:
+
+```
+‹box.path›
+├── klmr
+│   ├── fun
+│   ├── ggplots
+│   └── sys
+├── mschubert
+│   └── ebits
+└── …
+```
+
+Using the `sys` module (more precisely, `klmr/sys`) requires the following R
+code:
+
+```{r eval = FALSE}
+box::use(klmr/sys)
+```
+
+
+## Common errors
+
+### “object 'lm' not found” inside a module
+
+Inside modules, only the ‘base’ package is attached. *All* other packages need
+to be attached, including all core R packages that are otherwise attached by
+default. This includes ‘stats’, ‘graphics’, ‘grDevices’, ‘utils’, ‘datasets’ and
+‘methods’. To use names from any of these packages, the packages needs to be
+loaded via `box::use` same as third-party packages.
+
+
+### “there is no package called ‘foo’” when running `box::use(foo)`, even though the module 'foo' exists
+
+`box::use(name)` never attempts to load a module, it always attempts to load a
+package called ‘name’, and fails if no such package exists. Modules need to be
+either *local* and start with `.` or `..`, or they need to be fully qualified.
+This means that the full module name contains at least one separator (`/`).
+
+In practice, this means that modules inside the global module search path
+(set via the environment variable `R_BOX_PATH` or `getOption('box.path')`),
+modules need to be located in nested folders.
+
+See [how to organise globally installed modules?](#how-to-organise-globally-installed-modules-)
+for details.

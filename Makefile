@@ -62,7 +62,7 @@ dev-site: README.md NAMESPACE
 	${rscript} -e "pkgdown::build_site(devel = TRUE)"
 
 ## Create just the specified article for the website
-article-%:
+/article-%:
 	${rscript} -e "pkgdown::build_article('$*')"
 
 ## Create just the references for the website

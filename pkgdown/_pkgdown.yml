@@ -1,6 +1,7 @@
 url: http://klmr.me/box
 
 home:
+    title: '‘box’: Write Reusable, Composable and Modular R Code'
     links:
         - text: Browse source code
           href: https://github.com/klmr/box
@@ -31,6 +32,8 @@ navbar:
             text: Articles
             menu:
                 - text: General topics
+                - text: Frequently asked questions
+                  href: articles/faq.html
                 - text: Testing modules
                   href: articles/testing.html
                 - text: Using compiled code

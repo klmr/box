@@ -71,6 +71,13 @@
 #' will \emph{not} be loaded, unless the import is explicitly declared as
 #' \code{box::use(./a/b)}.
 #'
+#' Modules in the module search path \emph{must be organised in subfolders}, and
+#' must be imported fully qualified. Keep in mind that \code{box::use(name)}
+#' will \emph{never} attempt to load a module; it always attempts to load a
+#' package. A common module organisation is by project, company or user name;
+#' for instance, fully qualified module names could mirror repository names on
+#' source code sharing websites (such as GitHub).
+#'
 #' Given a declaration \code{box::use(a/b)} and a search path \file{\var{p}}, if
 #' the file \file{\var{p}/a/b.r} does not exist, \pkg{box} alternatively looks
 #' for a nested file \file{\var{p}/a/b/__init__r} to load. Module path names are
