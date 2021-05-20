@@ -9,7 +9,7 @@ output:
         variant: gfm
 vignette: >
     %\VignetteEngine{knitr::rmarkdown}
-    %\VignetteIndexEntry{Get started}
+    %\VignetteIndexEntry{Frequently asked questions}
     %\VignetteEncoding{UTF-8}
 ---
 
