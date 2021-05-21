@@ -1,57 +1,56 @@
 url: http://klmr.me/box
 
 home:
-    title: '‘box’: Write Reusable, Composable and Modular R Code'
-    links:
-        - text: Browse source code
-          href: https://github.com/klmr/box
+  title: '‘box’: Write Reusable, Composable and Modular R Code'
 
 reference:
-    - title: Using modules & packages
-      desc: Functions for users of modules and packages
-      contents:
-        - use
-    - title: Writing modules
-      desc: Infrastructure and utility functions for use inside modules
-      contents:
-        - file
-        - name
-        - register_S3_method
-        - mod-hooks
-    - title: Interactive use
-      desc: Functions for use in interactive sessions and for testing
-      contents:
-        - help
-        - reload
-        - set_script_path
-        - unload
+  - title: Using modules & packages
+    desc: Functions for users of modules and packages
+    contents:
+      - use
+  - title: Writing modules
+    desc: Infrastructure and utility functions for use inside modules
+    contents:
+      - file
+      - name
+      - register_S3_method
+      - mod-hooks
+  - title: Interactive use
+    desc: Functions for use in interactive sessions and for testing
+    contents:
+      - help
+      - reload
+      - set_script_path
+      - unload
 
 navbar:
-    components:
-        articles:
-            text: Articles
-            menu:
-                - text: General topics
-                - text: Frequently asked questions
-                  href: articles/faq.html
-                - text: Testing modules
-                  href: articles/testing.html
-                - text: Using compiled code
-                  href: articles/compiled-code.html
-                - text: Migration guide for version 1.0
-                  href: articles/migration.html
-                - text: ---
-                - text: Implementation details
-                - text: The hierarchy of module environments
-                  href: articles/mod-env-hierarchy.html
+  components:
+    articles:
+      text: Articles
+      menu:
+        - text: General topics
+        - text: Frequently asked questions
+          href: articles/faq.html
+        - text: Testing modules
+          href: articles/testing.html
+        - text: Using compiled code
+          href: articles/compiled-code.html
+        - text: Migration guide for version 1.0
+          href: articles/migration.html
+        - text: ---
+        - text: Implementation details
+        - text: The hierarchy of module environments
+          href: articles/mod-env-hierarchy.html
 
 template:
-    params:
-        bootswatch: simplex
+  params:
+    bootswatch: simplex
 
 authors:
-    Konrad Rudolph:
-        href: https://klmr.me
+  Konrad Rudolph:
+    href: https://klmr.me
 
 repo:
-    branch: main
+  url:
+    home: https://github.com/klmr/box
+  branch: main
