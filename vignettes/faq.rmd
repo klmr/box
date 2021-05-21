@@ -68,7 +68,7 @@ box::use(klmr/sys)
 ```
 
 
-## Common errors
+## Common error messages
 
 ### “object 'lm' not found” inside a module
 
