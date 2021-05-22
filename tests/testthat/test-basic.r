@@ -13,13 +13,14 @@ module_path = function (mod) {
 test_that('module can be imported', {
     box::use(mod/a)
     expect_true(is_module_loaded(a))
-    expect_true('double' %in% ls(a))
+    expect_in('double', ls(a))
 })
 
 test_that('import works in global namespace', {
     in_globalenv({
         box::use(mod/a)
         expect_true(box:::is_mod_loaded(attr(a, 'info')))
+        # `expect_in` isn’t found here.
         expect_true('double' %in% ls(a))
     })
 })
@@ -30,8 +31,8 @@ test_that('module is uniquely identified by path', {
     expect_true(is_module_loaded(a))
     expect_true(is_module_loaded(ba))
     expect_not_identical(module_path(a), module_path(ba))
-    expect_true('double' %in% ls(a))
-    expect_false('double' %in% ls(ba))
+    expect_in('double', ls(a))
+    expect_not_in('double', ls(ba))
 })
 
 test_that('can use imported function', {
@@ -72,7 +73,7 @@ test_that('module bindings are locked', {
     expect_true(bindingIsLocked('modname', a))
 
     err = try({a$counter = 2L}, silent = TRUE)
-    expect_equal(class(err), 'try-error')
+    expect_s3_class(err, 'try-error')
 })
 
 test_that('modules don’t need exports', {
@@ -94,9 +95,10 @@ test_that('package exports do not leak into modules', {
     box::use(mod/a)
     ns_a = attr(a, 'namespace')
     # First, ensure this is run in the right environment:
-    expect_identical(get0('modname', envir = ns_a, inherits = FALSE), 'a')
-    expect_identical(get0('T', envir = ns_a), TRUE)
-    expect_identical(get0('t.test', envir = ns_a), NULL)
+    expect_equal(get0('modname', envir = ns_a, inherits = FALSE), 'a')
+    expect_true(get0('T', envir = ns_a))
+    expect_null(get0('t.test', envir = ns_a))
+    expect_not_null(get0('t.test', envir = .GlobalEnv))
 })
 
 test_that('partial name causes error', {

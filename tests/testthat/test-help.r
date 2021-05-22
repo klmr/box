@@ -26,10 +26,10 @@ test_that('documentation can be parsed', {
     a = help_test_env$a
     doc = parse_documentation(attr(a, 'info'), attr(a, 'namespace'))
     expect_length(doc, 1L)
-    expect_equal(names(doc), '.__module__.')
+    expect_named(doc, '.__module__.')
 
     c = a$b$c
     doc = parse_documentation(attr(c, 'info'), attr(c, 'namespace'))
     expect_length(doc, 2L)
-    expect_equal(names(doc), c('.__module__.', 'd'))
+    expect_named(doc, c('.__module__.', 'd'))
 })

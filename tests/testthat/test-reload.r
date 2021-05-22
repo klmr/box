@@ -40,7 +40,7 @@ test_that('module can be reloaded', {
 
     box::reload(a)
     expect_true(is_module_loaded(box:::path(a)))
-    expect_equal(length(box:::loaded_mods), 1L)
+    expect_length(box:::loaded_mods, 1L)
     expect_equal(a$get_counter(), counter)
 })
 

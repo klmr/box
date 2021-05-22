@@ -33,6 +33,11 @@ expect_not_in = function (name, list) {
     invisible(act$val)
 }
 
+expect_not_null = function (object, info = NULL, label = NULL) {
+    act_label = testthat::quasi_label(rlang::enquo(object), label)
+    testthat::expect_false(is.null(object), info = info, label = act_label)
+}
+
 in_globalenv = function (expr) {
     old_ls = ls(.GlobalEnv, all.names = TRUE)
     on.exit({

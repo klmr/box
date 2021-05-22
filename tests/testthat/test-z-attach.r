@@ -26,7 +26,7 @@ test_that('module can be attached to global environment', {
     in_globalenv({
         box::use(a = mod/a[...])
         mod_path = box:::path(a)
-        expect_equal(length(search()), searchlen + 1L)
+        expect_length(search(), searchlen + 1L)
         expect_true(mod_path %in% names(box:::loaded_mods))
         expect_equal(search()[2L], environmentName(a))
     })

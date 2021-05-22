@@ -11,7 +11,7 @@ test_that('box::file works for module', {
     box::use(mod/a)
     expect_true(grepl('/b$', box::file('b', module = a)))
     expect_true(grepl('/c\\.r$', box::file('c.r', module = a)))
-    expect_equal(length(box::file(c('b', 'c.r'), module = a)), 2L)
+    expect_length(box::file(c('b', 'c.r'), module = a), 2L)
 })
 
 test_that('box::base_path works', {
@@ -101,6 +101,6 @@ test_that('split_path is working on Unix', {
 test_that('split_path is working on Windows', {
     if (.Platform$OS.type != 'windows') skip('Only run on Windows')
 
-    # Standard paths
-    # UNC paths
+    # TODO: Standard paths
+    # TODO: UNC paths
 })
