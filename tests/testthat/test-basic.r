@@ -152,3 +152,8 @@ test_that('legacy function warning can be silenced', {
     expect_warning(box::use(mod/legacy/source), NA)
     expect_true(exists('source_test', envir = .GlobalEnv))
 })
+
+test_that('r/core can be imported', {
+    # All the test case logic is inside the `core_test` module.
+    box::use(mod/core_test)
+})

@@ -15,8 +15,14 @@
 #' @name paths
 mod_search_path = function (caller) {
     env_value = strsplit(Sys.getenv('R_BOX_PATH'), .Platform$path.sep)[[1L]]
-    c(env_value %||% getOption('box.path'), calling_mod_path(caller))
+    c(
+        env_value %||% getOption('box.path'),
+        system_mod_path,
+        calling_mod_path(caller)
+    )
 }
+
+system_mod_path = system.file('mod', package = 'box')
 
 #' \code{calling_mod_path} determines the path of the module code that is
 #' currently calling into the \pkg{box} package.

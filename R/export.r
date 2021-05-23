@@ -232,12 +232,14 @@ roxygen2_object = function (alias, value, type) {
 #' \code{srcref}, but extended to include the preceding comment block.
 #' @keywords internal
 add_comments = function (refs) {
+    if (length(refs) == 0L) return(list())
+
     block_end_lines = map_int(`[[`, refs, 3L)
     block_end_bytes = map_int(`[[`, refs, 4L)
     block_start_lines = c(1L, block_end_lines[-length(block_end_lines)] + 1L)
-    srcfile = attr(refs[[1L]], 'srcfile')
-    llocs = map(c, block_start_lines, list(1L), block_end_lines, block_end_bytes)
-    map(srcref, list(srcfile), llocs)
+    srcfiles = map(attr, refs, 'srcfile')
+    llocs = map(c, block_start_lines, 1L, block_end_lines, block_end_bytes)
+    map(srcref, srcfiles, llocs)
 }
 
 #' Find \code{@export} tags in code regions

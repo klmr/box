@@ -27,7 +27,8 @@ test_that('local path is searched globally', {
     old_opts = options(box.path = NULL)
     on.exit(options(old_opts))
 
-    expect_paths_equal(mod_search_path(environment()), getwd())
+    path = utils::tail(mod_search_path(environment()), 1L)
+    expect_paths_equal(path, getwd())
 })
 
 test_that('local path is searched in module', {
