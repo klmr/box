@@ -22,8 +22,6 @@ mod_search_path = function (caller) {
     )
 }
 
-system_mod_path = system.file('mod', package = 'box')
-
 #' \code{calling_mod_path} determines the path of the module code that is
 #' currently calling into the \pkg{box} package.
 #'

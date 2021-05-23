@@ -99,6 +99,14 @@ called_from_example = function () {
     stop(cond)
 }
 
+.onLoad = function (libname, pkgname) {
+    assign(
+        'system_mod_path',
+        system.file('mod', package = 'box'),
+        envir = topenv()
+    )
+}
+
 .onUnload = function (libpath) {
     eapply(loaded_mods, function (mod_ns) {
         call_hook(mod_ns, '.on_unload', mod_ns)
