@@ -15,11 +15,18 @@ vignette: >
 
 ## General
 
-### Can I call `library()` inside a module?
+### Can I call `library`/`require`/`source` inside a module?
 
 No, this usually won’t work: `library` (and `require`) attaches names
 *globally*, rather than inside the calling module. Inside a module, `box::use`
 must be used instead.
+
+Likewise, by default `source` evaluates the source code in the global rather
+than in a local environment. This behaviour can be changed by setting its
+`local` argument to a suitable value.
+
+Calling these functions inside a module will raise a warning (which can be
+silenced by setting `options(box.warn.legacy = FALSE)`).
 
 
 ### Can I use “meta” packages like ‘tidyverse’ with ‘box’?

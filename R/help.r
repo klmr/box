@@ -11,7 +11,7 @@
 #' @return \code{help} is called for its side-effect when called directly from
 #' the command prompt.
 #' @details
-#' See the vignette in \code{vignette('box', 'box')} for more information on
+#' See the vignette at \code{vignette('box', 'box')} for more information about
 #' displaying help for modules.
 #' @export
 help = function (topic, help_type = getOption('help_type', 'text')) {

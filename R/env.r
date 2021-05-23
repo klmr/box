@@ -31,12 +31,48 @@ enable_s3_lookup = function (ns_env, info) {
 }
 
 make_imports_env = function (info) {
+    parent_env = if (getOption('box.warn.legacy', 'TRUE')) {
+        legacy_intercept_env
+    } else {
+        baseenv()
+    }
     structure(
-        new.env(parent = baseenv()),
+        new.env(parent = parent_env),
         name = paste0('imports:', info$name),
         class = 'box$imports'
     )
 }
+
+legacy_warn_msg = paste0(
+    'Using %s inside a module may cause issues; see the FAQ at',
+    '`vignette(\'faq\', \'box\')` for details.'
+)
+
+box_library = function (...) {
+    warning(sprintf(legacy_warn_msg, dQuote('library')))
+    eval.parent(`[[<-`(match.call(), 1L, library))
+}
+
+box_require = function (...) {
+    warning(sprintf(legacy_warn_msg, dQuote('require')))
+    eval.parent(`[[<-`(match.call(), 1L, require))
+}
+
+box_source = function (file, local = FALSE, ...) {
+    if (is.logical(local) && ! local) {
+        warning(sprintf(legacy_warn_msg, dQuote('source')))
+    }
+    eval.parent(`[[<-`(match.call(), 1L, source))
+}
+
+legacy_intercept_env = list2env(
+    list(
+        library = box_library,
+        require = box_require,
+        source = box_source
+    ),
+    parent = baseenv()
+)
 
 #' \code{is_namespace} checks whether a given environment corresponds to a
 #' module namespace.

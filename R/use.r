@@ -41,8 +41,8 @@
 #' }
 #' }
 #'
-#' See the vignette at \code{vignette('box')} for detailed examples of the
-#' different types of use declarations listed above.
+#' See the vignette at \code{vignette('box', 'box')} for detailed examples of
+#' the different types of use declarations listed above.
 #'
 #' @section Import semantics:
 #' Modules and packages are loaded into dedicated namespace environments. Names

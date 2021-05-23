@@ -14,7 +14,7 @@
 #' module, e.g. \code{\link{print}}), then this needs to be made known
 #' explicitly.
 #'
-#' See the vignette in \code{vignette('box', 'box')} for more information on
+#' See the vignette at \code{vignette('box', 'box')} for more information about
 #' defining S3 methods inside modules.
 #'
 #' @note \strong{Do not} call \code{\link[base]{registerS3method}} inside a
