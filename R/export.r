@@ -32,10 +32,9 @@ parse_export_specs = function (info, exprs, mod_ns) {
 
     reexport_names = function (declaration, alias, export) {
         spec = parse_spec(declaration, alias)
-        import_ns = find_matching_import(namespace_info(mod_ns, 'imports'), spec)
-        info = attr(import_ns, 'info')
+        import = find_matching_import(namespace_info(mod_ns, 'imports'), spec)
 
-        if (is_mod_still_loading(info)) {
+        if (is_mod_still_loading(import$info)) {
             if (! is.null(spec$attach)) {
                 msg = paste0(
                     'Invalid attempt to export names from an incompletely ',
@@ -47,14 +46,14 @@ parse_export_specs = function (info, exprs, mod_ns) {
             return(spec$alias)
         }
 
-        export_names = mod_export_names(info, import_ns)
+        export_names = mod_export_names(import$info, import$ns)
         real_alias = if (is.null(spec$attach) || spec$explicit) spec$alias
         c(names(attach_list(spec, export_names)), real_alias)
     }
 
     find_matching_import = function (imports, reexport) {
         for (import in imports) {
-            if (identical(attr(import, 'spec'), reexport)) return(import)
+            if (identical(import$spec, reexport)) return(import)
         }
     }
 

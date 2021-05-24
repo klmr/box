@@ -30,6 +30,10 @@ enable_s3_lookup = function (ns_env, info) {
     # TODO: Create S3 methods table
 }
 
+import_decl = function (ns, spec, info) {
+    structure(list(ns = ns, spec = spec, info = info), class = 'box$import_decl')
+}
+
 make_imports_env = function (info) {
     parent_env = if (getOption('box.warn.legacy', 'TRUE')) {
         legacy_intercept_env

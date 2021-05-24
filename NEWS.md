@@ -1,5 +1,7 @@
 # box (development version)
 
+* Fix: Allow exporting modules that were previously imported using a different
+    prefix (#211)
 * Enhancement: Add standard module for core R packages (#200)
 * Enhancement: Warn when legacy functions are imported inside modules (#206)
 * Fix: Reload dependent modules (#39, #165, #195)

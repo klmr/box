@@ -264,9 +264,9 @@ register_as_import = function (spec, info, mod_ns, caller) {
     if (is_namespace(caller)) {
         # Import declarations are stored in a list in the module metadata
         # dictionary. They are looked up by their spec.
-        import_decl = structure(mod_ns, spec = spec, info = info)
+        import = import_decl(ns = mod_ns, spec = spec, info = info)
         existing_imports = namespace_info(caller, 'imports', list())
-        namespace_info(caller, 'imports') = c(existing_imports, import_decl)
+        namespace_info(caller, 'imports') = c(existing_imports, list(import))
     }
 }
 

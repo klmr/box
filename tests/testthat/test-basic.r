@@ -162,3 +162,7 @@ test_that('r/core can be imported', {
     # All the test case logic is inside the `core_test` module.
     box::use(mod/core_test)
 })
+
+test_that('modules can be imported and exported by different local names', {
+    expect_error(box::use(mod/issue211), NA)
+})
