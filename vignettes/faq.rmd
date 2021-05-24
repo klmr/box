@@ -25,8 +25,9 @@ Likewise, by default `source` evaluates the source code in the global rather
 than in a local environment. This behaviour can be changed by setting its
 `local` argument to a suitable value.
 
-Calling these functions inside a module will raise a warning (which can be
-silenced by setting `options(box.warn.legacy = FALSE)`).
+Calling these functions inside a module will raise a warning which can be
+silenced by setting `options(box.warn.legacy = FALSE)`. After changing this
+option, ‘box’ needs to be (unloaded and) reloaded for the change to take effect.
 
 
 ### Can I use “meta” packages like ‘tidyverse’ with ‘box’?

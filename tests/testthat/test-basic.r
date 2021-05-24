@@ -147,7 +147,11 @@ test_that('using legacy functions raises warning', {
 
 test_that('legacy function warning can be silenced', {
     old_opts = options(box.warn.legacy = FALSE)
-    on.exit(options(old_opts))
+    box:::set_import_env_parent()
+    on.exit({
+        options(old_opts)
+        box:::set_import_env_parent()
+    })
 
     expect_warning(box::use(mod/legacy/library), NA)
     expect_warning(box::use(mod/legacy/require), NA)

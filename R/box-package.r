@@ -105,6 +105,22 @@ called_from_example = function () {
         system.file('mod', package = 'box'),
         envir = topenv()
     )
+
+    set_import_env_parent()
+}
+
+import_env_parent = NULL
+
+# Separate function for unit testing.
+set_import_env_parent = function () {
+    utils::assignInMyNamespace(
+        'import_env_parent',
+        if (getOption('box.warn.legacy', 'TRUE')) {
+            legacy_intercept_env
+        } else {
+            baseenv()
+        }
+    )
 }
 
 .onUnload = function (libpath) {

@@ -35,13 +35,8 @@ import_decl = function (ns, spec, info) {
 }
 
 make_imports_env = function (info) {
-    parent_env = if (getOption('box.warn.legacy', 'TRUE')) {
-        legacy_intercept_env
-    } else {
-        baseenv()
-    }
     structure(
-        new.env(parent = parent_env),
+        new.env(parent = import_env_parent),
         name = paste0('imports:', info$name),
         class = 'box$imports'
     )
