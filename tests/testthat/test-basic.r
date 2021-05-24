@@ -83,6 +83,11 @@ test_that('modules don’t need exports', {
     expect_setequal(ls(), c('no_exports', 'no_names'))
 })
 
+test_that('modules can be empty', {
+    expect_error(box::use(mod/empty), NA)
+    expect_error(box::use(mod/export_empty), NA)
+})
+
 test_that('global scope is not leaking into modules', {
     in_globalenv({
         x = 1L
