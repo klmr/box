@@ -115,7 +115,7 @@ import_env_parent = NULL
 set_import_env_parent = function () {
     utils::assignInMyNamespace(
         'import_env_parent',
-        if (getOption('box.warn.legacy', 'TRUE')) {
+        if (getOption('box.warn.legacy', TRUE)) {
             legacy_intercept_env
         } else {
             baseenv()
