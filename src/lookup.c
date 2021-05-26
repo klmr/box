@@ -1,6 +1,12 @@
 #define R_NO_REMAP
 #include "Rinternals.h"
 #include "R_ext/Parse.h"
+#include "Rversion.h"
+
+#if R_VERSION < R_Version(3, 6, 2)
+// Declaration is internal before R 3.6.2.
+SEXP Rf_installTrChar(SEXP);
+#endif
 
 static SEXP parent_frame(void);
 static SEXP sys_call(SEXP parent);

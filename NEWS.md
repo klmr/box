@@ -1,5 +1,7 @@
 # box (development version)
 
+* Fix: prevent segfault in R ≤ 3.6.1 caused by missing declaration of internal R
+    symbol (#213)
 * Fix: Allow exporting modules that were previously imported using a different
     prefix (#211)
 * Enhancement: Add standard module for core R packages (#200)
