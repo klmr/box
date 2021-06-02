@@ -191,8 +191,8 @@ For instance, best practice in Python is to never use the equivalent of
 encourages][pep8] using `import pkg` or `from pkg import a, few, symbols`, which
 correspond to `box::use(pkg)` and `box::use(pkg[a, few, symbols])`,
 respectively. The same is true in many other languages, e.g. [C++][], [Rust][]
-and [Perl][]. Other languages (e.g. JavaScript and Go) are even stricter: they
-don’t allow unqualified imports at all.
+and [Perl][]. Other languages (e.g. JavaScript) are even stricter: they don’t
+allow unqualified imports at all.
 
 [*The Zen of Python*][pep20] puts this rule succinctly:
 
