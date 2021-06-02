@@ -6,7 +6,7 @@
 ^README\.rmd$
 ^LICENSE.md$
 ^pkgdown$
-^cran-comments.md$
+^cran$
 ^doc$
 ^docs$
 ^figures$

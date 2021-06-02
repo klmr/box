@@ -115,6 +115,7 @@ ${pkg_bundle_name}: DESCRIPTION NAMESPACE ${r_source_files}
 build-cran:
 	mkdir ${cran-tmpdir} \
 	&& git clone . ${cran-tmpdir} \
+	&& mv ${cran-tmpdir}/cran/LICENSE ${cran-tmpdir} \
 	&& ${MAKE} -C ${cran-tmpdir} knit-all \
 	&& scripts/precompile-vignettes ${cran-tmpdir} \
 	&& ${MAKE} -C ${cran-tmpdir} build \
