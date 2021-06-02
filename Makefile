@@ -113,9 +113,9 @@ ${pkg_bundle_name}: DESCRIPTION NAMESPACE ${r_source_files}
 .PHONY: build-cran
 ## Bundle the package with static vignette sources for submission to CRAN
 build-cran:
-	mkdir ${cran-tmpdir} \
+	${RM} -r ${cran-tmpdir} \
 	&& git clone . ${cran-tmpdir} \
-	&& mv ${cran-tmpdir}/cran/LICENSE ${cran-tmpdir} \
+	&& sed "s/@YEAR@/$$(date +%Y)/" cran/LICENSE >${cran-tmpdir}/LICENSE \
 	&& ${MAKE} -C ${cran-tmpdir} knit-all \
 	&& scripts/precompile-vignettes ${cran-tmpdir} \
 	&& ${MAKE} -C ${cran-tmpdir} build \
