@@ -10,6 +10,7 @@
 
 * [Get started][]
 * [Documentation][]
+* [Frequently asked questions][FAQ]
 
 </div>
 
@@ -214,6 +215,7 @@ submodules.
 [pep8]: https://www.python.org/dev/peps/pep-0008/#imports
 [Get started]: https://klmr.me/box/articles/box.html
 [Documentation]: https://klmr.me/box/reference/index.html
+[FAQ]: https://klmr.me/box/articles/faq.html
 [C++]: https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Rs-using
 [Rust]: https://doc.rust-lang.org/book/ch07-04-bringing-paths-into-scope-with-the-use-keyword.html#the-glob-operator
 [Perl]: https://perldoc.perl.org/Exporter#Selecting-What-to-Export
