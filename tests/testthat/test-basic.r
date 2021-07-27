@@ -157,7 +157,7 @@ test_that('legacy function warning can be silenced', {
     expect_warning(box::use(mod/legacy/require), NA)
 
     expect_false(exists('source_test', envir = .GlobalEnv))
-    on.exit(rm(source_test, envir = .GlobalEnv))
+    on.exit(rm(source_test, envir = .GlobalEnv), add = TRUE)
     expect_warning(box::use(mod/legacy/source), NA)
     expect_true(exists('source_test', envir = .GlobalEnv))
 })
