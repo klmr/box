@@ -38,7 +38,7 @@ navbar:
         - text: Migration guide for version 1.0
           href: articles/migration.html
         - text: Similar packages
-          href: articles/more.html
+          href: articles/related.html
         - text: ---
         - text: Implementation details
         - text: The hierarchy of module environments
