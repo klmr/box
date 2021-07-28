@@ -13,17 +13,16 @@ vignette: >
     %\VignetteEncoding{UTF-8}
 ---
 
-The need for tools that make R code more modular and improve code reuse is
+The need for tools to make R code more modular, and to improve code reuse, is
 demonstrated by the wealth of related packages that have sprung up over the
-years. Many of them have goals similar to ‘box’, although they differ wildly in
-how they approach this common goal, and not all goals are shared. I won’t
-compare them all here, since I’m afraid I might not do them justice. The
-following list, along with the descriptions (mostly) copied from the package
-metadata, shall therefore stand on its own, and the interested reader is invited
-to consult the original documentation.
+years. Many of them have objectives similar to ‘box’, although they vary wildly
+in how they approach their common goal, and not all objectives are shared. In
+the following I’ve listed the related R packages that I know of. The
+descriptions are (mostly) copied from the respective package metadata, and the
+interested reader is invited to consult the original documentation.
 
-The following is intended to be a fairly exhaustive list — so if you know of a
-missing package, please let me know.
+The list is intended to be a fairly exhaustive — so if you find a missing
+package please let me know.
 
 ## Tools for writing modular code
 
