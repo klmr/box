@@ -84,5 +84,8 @@ test_that('reload includes transitive dependencies', {
     # Unlike in the previous test, this test uses `.on_load` as an indicator of
     # reloading, to keep things simpler.
     box::use(mod/reload/a)
-    expect_message(box::reload(a), 'c loaded')
+    expect_messages(
+        box::reload(a),
+        has = c('^c unloaded', '^c loaded')
+    )
 })
