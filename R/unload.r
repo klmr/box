@@ -8,20 +8,29 @@
 #' @details
 #' Unloading a module causes it to be purged from the internal cache such that
 #' the next subsequent \code{box::use} declaration will reload the module from
-#' its source. \code{reload} is a shortcut for unloading a module and calling
-#' \code{box::use} in the same scope with the same parameters as the
-#' \code{box::use} call that originally loaded the current module instance.
+#' its source. \code{box::reload} unloads and reloads the specified modules and
+#' all its transitive module dependencies. \code{box::reload} is \emph{not}
+#' merely a shortcut for calling \code{box::unload} followed by \code{box::use},
+#' because \code{box::unload} only unloads the specified module itself, not any
+#' dependent modules.
 #'
 #' @note Any other references to the loaded modules remain unchanged, and will
-#' still work. Unloading and reloading modules is primarily useful for testing
-#' during development, and should not be used in production code.
+#' (usually) still work. Unloading and reloading modules is primarily useful for
+#' testing during development, and \emph{should not be used in production code:}
+#' in particular, unloading may break other module references if the
+#' \code{.on_unload} hook unloaded any binary shared libraries which are still
+#' referenced.
 #'
 #' \code{unload} and \code{reload} come with a few restrictions. \code{unload}
 #' attempts to detach names attached by the corresponding \code{box::use} call.
 #' \code{reload} attempts to re-attach these same names. This only works if the
 #' corresponding \code{box::use} declaration is located in the same scope.
 #'
-#' \code{reload} will re-execute the \code{.on_load} hook of the module.
+#' \code{unload} will execute the \code{.on_unload} hook of the module, if it
+#' exists.
+#' \code{reload} will re-execute the \code{.on_load} hook of the module and of
+#' all dependent modules during loading (after executing the corresponding
+#' \code{.on_unload} hooks during unloading).
 #' @seealso \code{\link{use}}, \link{mod-hooks}
 #' @export
 unload = function (mod) {
@@ -43,8 +52,7 @@ unload = function (mod) {
         }
     }
 
-    call_hook(mod_ns, '.on_unload', mod_ns)
-    deregister_mod(attr(mod, 'info'))
+    do_unload(mod_ns, attr(mod, 'info'))
 
     # Unset the mod reference in its scope, i.e. the caller’s environment or
     # some parent thereof.
@@ -64,13 +72,7 @@ reload = function (mod) {
     mod_ns = attr(mod, 'namespace')
     attached = attr(mod, 'attached')
 
-    call_hook(mod_ns, '.on_unload', mod_ns)
-    deregister_mod(info)
-
-    for (import in namespace_info(mod_ns, 'imports')) {
-        call_hook(import$ns, '.on_unload', import$ns)
-        deregister_mod(import$info)
-    }
+    unload_recursive(mod_ns, info)
 
     on.exit({
         warning(sprintf(
@@ -100,4 +102,19 @@ reload = function (mod) {
     load_and_register(spec, info, caller)
     # Loading worked, so cancel restoring the old module.
     on.exit()
+}
+
+#' @keywords internal
+do_unload = function (mod_ns, info) {
+    call_hook(mod_ns, '.on_unload', mod_ns)
+    deregister_mod(info)
+}
+
+#' @keywords internal
+unload_recursive = function (mod_ns, info) {
+    do_unload(mod_ns, info)
+
+    for (import in namespace_info(mod_ns, 'imports')) {
+        unload_recursive(import$ns, import$info)
+    }
 }
