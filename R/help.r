@@ -83,7 +83,7 @@ help = function (topic, help_type = getOption('help_type', 'text')) {
         }
     }
 
-    display_help(doc, paste0('module:', mod_name), help_type)
+    display_help(doc, mod_name, help_type)
 }
 
 #' Parse a module’s documentation

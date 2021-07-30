@@ -15,7 +15,7 @@ compile_help.text_help_format = function (x, rd) {
 }
 
 compile_help.html_help_format = function (x, rd) {
-    tools::Rd2HTML(rd, out = tempfile('Rtxt'), package = mock_package_name)
+    tools::Rd2HTML(rd, out = tempfile('Rtxt'), package = c(mock_package_name, NA_character_))
 }
 
 patch_topic_name.text_help_format = function (x, file, topic) {
@@ -28,21 +28,24 @@ patch_topic_name.text_help_format = function (x, file, topic) {
 }
 
 patch_topic_name.html_help_format = function (x, file, topic) {
-    topic = gsub('"', '&quot;',
-                 gsub('<', '&gt;',
-                      gsub('<', '&lt;',
-                           gsub('&', '&amp;', topic))))
+    from = c('&', '<', '>', '"')
+    to = c('&amp;', '&lt;', '&gt;', '&quot;')
+    replace = data.frame(rbind(from, to))
+    topic = Reduce(function (x, r) gsub(r[1L], r[2L], x), replace, topic)
     doc_text = readLines(file)
     doc_text = gsub(mock_package_name, topic, doc_text)
     writeLines(doc_text, file)
 }
 
 display_help_file.text_help_format = function (x, file, topic) {
-    file.show(file, title = gettextf('R Help on %s', dQuote(topic)),
-              delete.file = TRUE)
+    file.show(
+        file, title = gettextf('R Help on %s', dQuote(topic)),
+        delete.file = TRUE
+    )
 }
 
 display_help_file.html_help_format = function (x, file, topic) {
+    topic = sanitize_path(topic)
     port = tools::startDynamicHelp(NA)
     html_path = file.path(tempdir(), sprintf('.R/doc/html/%s.html', topic))
     dir.create(dirname(html_path), recursive = TRUE, showWarnings = FALSE)

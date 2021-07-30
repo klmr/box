@@ -1,5 +1,6 @@
 # box (development version)
 
+* Fix: make interactive HTML module help work on Windows (#223)
 * Fix: prevent segfault in R ≤ 3.6.1 caused by missing declaration of internal R
     symbol (#213)
 * Fix: Allow exporting modules that were previously imported using a different

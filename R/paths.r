@@ -67,3 +67,11 @@ split_path = function (path) {
 merge_path = function (components) {
     do.call('file.path', as.list(components))
 }
+
+#' \code{sanitize_path(path)} replaces invalid characters in the given
+#' \emph{relative} path, making the result a valid Windows path.
+#' @rdname paths
+sanitize_path = function (path) {
+    win32_reserved_path_chars = '[<>:"/\\|?*]'
+    gsub(win32_reserved_path_chars, '_', path)
+}
