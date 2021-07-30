@@ -15,7 +15,7 @@ compile_help.text_help_format = function (x, rd) {
 }
 
 compile_help.html_help_format = function (x, rd) {
-    tools::Rd2HTML(rd, out = tempfile('Rtxt'), package = mock_package_name)
+    tools::Rd2HTML(rd, out = tempfile('Rtxt'), package = c(mock_package_name, NA_character_))
 }
 
 patch_topic_name.text_help_format = function (x, file, topic) {
