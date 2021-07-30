@@ -9,5 +9,6 @@
 /pkgdown/favicon/
 /src/*.o
 /src/*.so
+/src/*.dll
 /vignettes/*.html
 /vignettes/*.R
