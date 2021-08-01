@@ -314,7 +314,14 @@ load_from_source = function (info, mod_ns) {
     # http://stackoverflow.com/q/5031630/1968 for a discussion of this.
     exprs = parse(info$source_path, keep.source = TRUE, encoding = 'UTF-8')
     eval(exprs, mod_ns)
-    namespace_info(mod_ns, 'exports') = parse_export_specs(info, exprs, mod_ns)
+
+    if (is.null(namespace_info(mod_ns, 'exports'))) {
+        exports = parse_export_specs(info, exprs, mod_ns)
+        is_legacy = length(exports) == 0L
+        namespace_info(mod_ns, 'legacy') = is_legacy
+        namespace_info(mod_ns, 'exports') = if (is_legacy) ls(mod_ns) else exports
+    }
+
     make_S3_methods_known(mod_ns)
 }
 

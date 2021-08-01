@@ -1,3 +1,29 @@
+#' Explicitly declare module exports
+#' @export
+export = function (...) {
+    mod_ns = mod_topenv(parent.frame())
+    if (! is_namespace(mod_ns)) {
+        stop(sprintf('%s can only be called from inside a module', dQuote('export')))
+    }
+
+    names = as.list(match.call())[-1L]
+    for (name in names) {
+        if (! is.name(name)) {
+            stop(sprintf(
+                '%s requires a list of unquoted names; %s is not a name',
+                dQuote('export()'), dQuote(deparse(name))
+            ))
+        }
+    }
+
+    namespace_info(mod_ns, 'exports') = union(
+        namespace_info(mod_ns, 'exports'),
+        as.character(unlist(names))
+    )
+    namespace_info(mod_ns, 'legacy') = FALSE
+    invisible()
+}
+
 #' Find exported names in parsed module source
 #'
 #' @param info The module info.
