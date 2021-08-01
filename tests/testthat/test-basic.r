@@ -178,8 +178,8 @@ test_that('legacy modules export all names', {
 
     box::use(
         mod/a,
-        mod/legacy/legacy,
-        mod/legacy/no_exports
+        mod/legacy,
+        mod/no_exports
     )
 
     expect_false(is_legacy(a))
@@ -188,4 +188,11 @@ test_that('legacy modules export all names', {
 
     expect_setequal(ls(legacy), c('a', 'b'))
     expect_setequal(ls(no_exports), character())
+})
+
+test_that('modules can specify explicit exports', {
+    box::use(ex = mod/explicit_exports)
+    expect_setequal(ls(ex), c('a', 'double', 'modname'))
+    expect_identical(ex$double, attr(ex, 'namespace')$double)
+    expect_equal(ex$modname, ex$a$modname)
 })
