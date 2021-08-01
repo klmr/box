@@ -51,7 +51,10 @@ test_that('reload checks its arguments', {
     expect_error(box::reload((a)))
 })
 
-test_that('reload includes submodules', {
+test_that('reload includes module dependencies', {
+    # This test case actually edits a dependency and reloads the edit. The
+    # purpose of this is to ensure that reloading doesn’t merely call `.on_load`
+    # again, but actually does reload the changes from disk.
     dir = tempfile_dir()
     on.exit(unlink(dir, recursive = TRUE))
 
@@ -75,4 +78,14 @@ test_that('reload includes submodules', {
     # * tricky packages loaded as modules, e.g. packages that call
     #   system.file(), and alike, and
     # * modules with S4 classes/object,
+})
+
+test_that('reload includes transitive dependencies', {
+    # Unlike in the previous test, this test uses `.on_load` as an indicator of
+    # reloading, to keep things simpler.
+    box::use(mod/reload/a)
+    expect_messages(
+        box::reload(a),
+        has = c('^c unloaded', '^c loaded')
+    )
 })

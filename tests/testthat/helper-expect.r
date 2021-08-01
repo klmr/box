@@ -4,38 +4,74 @@
 options(box.path = getwd())
 
 expect_not_identical = function (object, expected, info = NULL, label = NULL, expected.label = NULL) {
-    lab_act = testthat::quasi_label(rlang::enquo(object), label)
-    lab_exp = testthat::quasi_label(rlang::enquo(expected), expected.label)
-    ident = identical(object, expected)
+    act = testthat::quasi_label(rlang::enquo(object), label, arg = 'object')
+    exp = testthat::quasi_label(rlang::enquo(expected), expected.label, arg = 'expected')
+    ident = identical(act$val, exp$val)
 
-    msg = if (ident) 'Objects identical' else ''
-    testthat::expect_false(
-        ident, info = info,
-        label = sprintf('%s identical to %s.\n%s', lab_act, lab_exp, msg)
-    )
-}
-
-expect_in = function (name, list) {
-    act = testthat::quasi_label(rlang::enquo(list))
     testthat::expect(
-        name %in% list,
-        sprintf('%s is not in %s.', deparse(name), act$lab)
+        ! ident,
+        sprintf('%s identical to %s', act$lab, exp$lab),
+        info = info,
     )
     invisible(act$val)
 }
 
-expect_not_in = function (name, list) {
-    act = testthat::quasi_label(rlang::enquo(list))
+expect_in = function (object, list) {
+    act = testthat::quasi_label(rlang::enquo(list), arg = 'list')
     testthat::expect(
-        ! name %in% list,
-        sprintf('%s is in %s.', deparse(name), act$lab)
+        object %in% act$val,
+        sprintf('%s is not in %s.', deparse(object), act$lab)
+    )
+    invisible(act$val)
+}
+
+expect_not_in = function (object, list) {
+    act = testthat::quasi_label(rlang::enquo(list), arg = 'list')
+    testthat::expect(
+        ! object %in% act$val,
+        sprintf('%s is in %s.', deparse(object), act$lab)
     )
     invisible(act$val)
 }
 
 expect_not_null = function (object, info = NULL, label = NULL) {
-    act_label = testthat::quasi_label(rlang::enquo(object), label)
-    testthat::expect_false(is.null(object), info = info, label = act_label)
+    act = testthat::quasi_label(rlang::enquo(object), label, arg = 'object')
+    testthat::expect_false(is.null(object), info = info, label = act$lab)
+}
+
+expect_messages = function (object, has = NULL, has_not = NULL, info = NULL, label = NULL) {
+    self = environment()
+    messages = character(0L)
+
+    act = withCallingHandlers(
+        testthat::quasi_label(rlang::enquo(object), label, arg = 'object'),
+        message = function (m) {
+            self$messages = c(self$messages, m$message)
+            invokeRestart('muffleMessage')
+        }
+    )
+
+    pretty_messages = paste('*', messages, collapse = '')
+
+    find = function (pattern, x) any(grepl(pattern, x))
+
+    testthat::expect(
+        all(vapply(has, find, logical(1L), messages)),
+        sprintf(
+            '%s did not produce the expected message(s). It produced:\n%s',
+            act$lab, pretty_messages
+        ),
+        info = info
+    )
+
+    testthat::expect(
+        ! any(vapply(has_not, find, logical(1L), messages)),
+        sprintf(
+            '%s produces unexpected message(s). It produced:\n%s',
+            act$lab, pretty_messages
+        ),
+        info = info
+    )
 }
 
 in_globalenv = function (expr) {

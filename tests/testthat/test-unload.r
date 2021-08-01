@@ -27,3 +27,17 @@ test_that('unload checks its arguments', {
     box::use(mod/a)
     expect_error(box::unload((a)))
 })
+
+test_that('unloading calls unload hook', {
+    box::use(mod/reload/a)
+    expect_message(box::unload(a), '^a unloaded')
+})
+
+test_that('unloading does not unload dependencies', {
+    box::use(mod/reload/a)
+    expect_messages(
+        box::unload(a),
+        has = '^a unloaded',
+        has_not = '^c unloaded'
+    )
+})
