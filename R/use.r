@@ -62,6 +62,26 @@
 #' argument matching, in contrast with the behavior of the \code{$} operator in
 #' base R, which matches partial names.
 #'
+#' @section Export specification:
+#'
+#' Names defined in modules can be marked as \emph{exported} by prefixing them
+#' with an \code{@export} tag comment; that is, the name needs to be immediately
+#' prefixed by a comment that reads, verbatim, \code{#' @export}. That line may
+#' optionally be part of a \pkg{roxygen2} documentation for that name.
+#'
+#' Alternatively, exports may be specified via the
+#' \code{\link[=export]{box::export}} function, but using declarative
+#' \code{@export} tags is generally preferred.
+#'
+#' A module which has not declared any exports is treated as a \emph{legacy
+#' module} and exports \emph{all} default-visible names (that is, all names that
+#' do not start with a dot (\code{.}). This usage is present only for backwards
+#' compatibility with plain R scripts, and its usage is \emph{not recommended}
+#' when writing new modules.
+#'
+#' To define a module that exports no names, call \code{box::export()} without
+#' arguments. This prevents the module from being treated like a legacy module.
+#'
 #' @section Search path:
 #' Modules are searched in the module search path, given by
 #' \code{getOption('box.path')}. This is a character vector of paths to search,
@@ -161,6 +181,7 @@
 #' \code{\link{unload}} and \code{\link{reload}} aid during module development
 #' by performing dynamic unloading and reloading of modules in a running R
 #' session.
+#' \code{\link{export}} can be used inside a module to declare module exports.
 #' @export
 use = function (...) {
     caller = parent.frame()

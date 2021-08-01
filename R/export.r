@@ -1,4 +1,32 @@
 #' Explicitly declare module exports
+#'
+#' \code{box::export} can be used as an alternative to the \code{@export}
+#' tag comment to declare a module’s exports.
+#'
+#' @param ... zero or more unquoted names that should be exported from the
+#' module.
+#' @return \code{box::export} has no return value. It is called for its
+#' side-effect.
+#'
+#' @details
+#' \code{box::export} can be called inside a module to specify the module’s
+#' exports. If a module contains a call to \code{box::export}, this call
+#' overrides any declarations made via the \code{@export} tag comment. When a
+#' module contains multiple calls to \code{box::export}, the union of all thus
+#' defined names is exported.
+#'
+#' A module can also contain an argument-less call to \code{box::export}. This
+#' ensures that the module does not export any names. Otherwise, a module that
+#' defines names but does not mark them as exported would be treated as a
+#' \emph{legacy module}, and all default-visible names would be exported from
+#' it. Default-visible names are names not starting with a dot (\code{.}).
+#'
+#' @note The preferred way of declaring exports is via the \code{@export} tag
+#' comment. The main purpose of \code{box::export} is to prevent exports, by
+#' being called without arguments.
+#'
+#' @seealso
+#' \code{\link{use}} for information on declaring exports via \code{@export}.
 #' @export
 export = function (...) {
     mod_ns = mod_topenv(parent.frame())
