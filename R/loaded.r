@@ -110,11 +110,7 @@ base_path = function (mod) {
 #' @export
 set_script_path = function (path = NULL) {
     old_path = script_path_env$value
-    if (is.null(path)) {
-        script_path_env$value = NULL
-    } else {
-        script_path_env$value = dirname(path)
-    }
+    script_path_env$value = if (is.null(path)) NULL else dirname(path)
     invisible(old_path)
 }
 
@@ -154,7 +150,7 @@ script_path = function () {
 #' user, if such a path was set.
 #' @rdname path
 explicit_path = function () {
-    if (! is.null((path = script_path_env$value))) path
+    script_path_env$value
 }
 
 #' @param args command line arguments passed to R; by default, the arguments of
