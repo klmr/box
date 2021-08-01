@@ -1,5 +1,17 @@
 # box (development version)
 
+## Breaking changes
+
+* Modules without any `@export` declarations now export all visible names (=
+    names not starting with a dot); to obtain the previous semantics of a module
+    without exports, add a call to `box::export()` to the module source code.
+
+## General
+
+* Enhancement: support legacy modules (aka. R scripts) better by exporting all
+    visible names (#207)
+* Enhancement: permit specifying exports via a function call instead of via
+    `@export` declarations (#227)
 * Fix: make interactive HTML module help work on Windows (#223)
 * Fix: prevent segfault in R ≤ 3.6.1 caused by missing declaration of internal R
     symbol (#213)

@@ -170,3 +170,29 @@ test_that('r/core can be imported', {
 test_that('modules can be imported and exported by different local names', {
     expect_error(box::use(mod/issue211), NA)
 })
+
+test_that('legacy modules export all names', {
+    is_legacy = function (mod) {
+        box:::namespace_info(attr(mod, 'namespace'), 'legacy', default = FALSE)
+    }
+
+    box::use(
+        mod/a,
+        mod/legacy,
+        mod/no_exports
+    )
+
+    expect_false(is_legacy(a))
+    expect_true(is_legacy(legacy))
+    expect_false(is_legacy(no_exports))
+
+    expect_setequal(ls(legacy), c('a', 'b'))
+    expect_setequal(ls(no_exports), character())
+})
+
+test_that('modules can specify explicit exports', {
+    box::use(ex = mod/explicit_exports)
+    expect_setequal(ls(ex), c('a', 'double', 'modname'))
+    expect_identical(ex$double, attr(ex, 'namespace')$double)
+    expect_equal(ex$modname, ex$a$modname)
+})

@@ -11,6 +11,7 @@ reference:
   - title: Writing modules
     desc: Infrastructure and utility functions for use inside modules
     contents:
+      - export
       - file
       - name
       - register_S3_method
