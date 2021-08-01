@@ -52,7 +52,7 @@ unload = function (mod) {
         }
     }
 
-    do_unload(mod_ns, attr(mod, 'info'))
+    unload_mod(mod_ns, attr(mod, 'info'))
 
     # Unset the mod reference in its scope, i.e. the caller’s environment or
     # some parent thereof.
@@ -72,7 +72,7 @@ reload = function (mod) {
     mod_ns = attr(mod, 'namespace')
     attached = attr(mod, 'attached')
 
-    unload_recursive(mod_ns, info)
+    unload_mod_recursive(mod_ns, info)
 
     on.exit({
         warning(sprintf(
@@ -105,16 +105,16 @@ reload = function (mod) {
 }
 
 #' @keywords internal
-do_unload = function (mod_ns, info) {
+unload_mod = function (mod_ns, info) {
     call_hook(mod_ns, '.on_unload', mod_ns)
     deregister_mod(info)
 }
 
 #' @keywords internal
-unload_recursive = function (mod_ns, info) {
-    do_unload(mod_ns, info)
+unload_mod_recursive = function (mod_ns, info) {
+    unload_mod(mod_ns, info)
 
     for (import in namespace_info(mod_ns, 'imports')) {
-        unload_recursive(import$ns, import$info)
+        unload_mod_recursive(import$ns, import$info)
     }
 }
