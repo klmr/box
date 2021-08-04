@@ -143,7 +143,12 @@ testthat_path = function () {
 #' active RStudio script file is saved.
 #' @rdname path
 rstudio_path = function () {
-    if (! 'rstudioapi' %in% loadedNamespaces() || ! rstudioapi::isAvailable()) return(NULL)
+    # `RSTUDIO` environment variable is set in terminal run inside RStudio, so
+    # we need to exclude that case; conversely, `.Platform$GUI` is apparently
+    # not yet set to "RStudio" during startup, so just checking that is
+    # insufficient. See comments at <https://stackoverflow.com/a/35849779/1968>.
+    if (Sys.getenv("RSTUDIO") != "1") return(NULL)
+    if (! identical(.Platform$GUI, "RStudio")) return(NULL)
 
     document_path = rstudioapi::getActiveDocumentContext()$path
     if (! identical(document_path, '')) dirname(document_path)
