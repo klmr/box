@@ -8,12 +8,15 @@
 
 ## General
 
-* Enhancement: support legacy modules (aka. R scripts) better by exporting all
+* Fix: Better detection of whether code is called from inside RStudio (#225)
+* Fix: Work around R bug in path handling on non-Windows platforms when paths
+    passed to the R binary contain spaces
+* Enhancement: Support legacy modules (aka. R scripts) better by exporting all
     visible names (#207)
-* Enhancement: permit specifying exports via a function call instead of via
+* Enhancement: Permit specifying exports via a function call instead of via
     `@export` declarations (#227)
-* Fix: make interactive HTML module help work on Windows (#223)
-* Fix: prevent segfault in R ≤ 3.6.1 caused by missing declaration of internal R
+* Fix: Make interactive HTML module help work on Windows (#223)
+* Fix: Prevent segfault in R ≤ 3.6.1 caused by missing declaration of internal R
     symbol (#213)
 * Fix: Allow exporting modules that were previously imported using a different
     prefix (#211)
