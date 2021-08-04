@@ -95,9 +95,20 @@ explicit_path = function () {
 #' @rdname path
 r_path = function (args = commandArgs()) {
     if (length((file_arg = grep('^--file=', args))) != 0L) {
-        dirname(sub('--file=', '', args[file_arg]))
+        unescape_path_arg(dirname(sub('--file=', '', args[file_arg])))
     } else if (length((f_arg = grep('^-f$', args))) != 0L) {
-        dirname(args[f_arg + 1L])
+        unescape_path_arg(dirname(args[f_arg + 1L]))
+    }
+}
+
+unescape_path_arg = if (tolower(Sys.info()[['sysname']]) == 'windows') {
+    identity 
+} else {
+    function (path) {
+        # Translated from src/unix/system.c:unescape_arg
+        # But only unescape spaces, not newlines, since the latter are only escaped
+        # when passing code via `-e`, never in file paths.
+        gsub('~+~', ' ', path, fixed = TRUE)
     }
 }
 
