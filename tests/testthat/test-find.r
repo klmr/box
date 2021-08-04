@@ -77,7 +77,7 @@ test_that('can execute a script with spaces in path', {
     dir.create(path)
     on.exit(unlink(path, recursive = TRUE))
     writeLines('.on_load = function (ns) cat("path with spaces\\n")', file.path(path, 'a.r'))
-    writeLines('options(error = recover); tryCatch(box::use(./a), error = identity)', file.path(path, 'script.r'))
+    writeLines('box::use(./a)', file.path(path, 'script.r'))
 
     rscript_out = rscript(file.path(path, 'script.r'))
     expect_equal(rscript_out, 'path with spaces')
