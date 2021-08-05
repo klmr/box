@@ -69,3 +69,16 @@ test_that('script path can be set manually', {
     box::set_script_path('mod/b/a.r')
     expect_equal(script_path(), 'mod/b')
 })
+
+test_that('can execute a script with spaces in path', {
+    # Generate the test case dynamically since `R CMD check` complains if there
+    # are paths with spaces in the package source directory.
+    path = 'support/path with spaces'
+    dir.create(path)
+    on.exit(unlink(path, recursive = TRUE))
+    writeLines('.on_load = function (ns) cat("path with spaces\\n")', file.path(path, 'a.r'))
+    writeLines('box::use(./a)', file.path(path, 'script.r'))
+
+    rscript_out = rscript(file.path(path, 'script.r'))
+    expect_equal(rscript_out, 'path with spaces')
+})

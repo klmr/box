@@ -1,4 +1,5 @@
 r_cmdline = function (cmd, ...) {
+    skip_on_os('windows')
     in_tests = grepl('tests/testthat$', getwd())
     rprofile = file.path(
         if (in_tests) '.' else 'tests/testthat',
@@ -14,10 +15,16 @@ r_cmdline = function (cmd, ...) {
 }
 
 rcmd = function (script_path) {
-    cmd = r_cmdline('"$R_HOME/bin/R" CMD BATCH', '--slave', '--no-timing')
     output_file = tempfile(fileext = '.rout')
     on.exit(unlink(output_file))
-    system(paste(cmd, script_path, output_file))
+    cmd = r_cmdline(
+        '"$R_HOME/bin/R" CMD BATCH',
+        '--slave',
+        '--no-timing',
+        script_path,
+        output_file
+    )
+    system(cmd)
     readLines(output_file)
 }
 

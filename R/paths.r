@@ -95,9 +95,20 @@ explicit_path = function () {
 #' @rdname path
 r_path = function (args = commandArgs()) {
     if (length((file_arg = grep('^--file=', args))) != 0L) {
-        dirname(sub('--file=', '', args[file_arg]))
+        unescape_path_arg(dirname(sub('--file=', '', args[file_arg])))
     } else if (length((f_arg = grep('^-f$', args))) != 0L) {
-        dirname(args[f_arg + 1L])
+        unescape_path_arg(dirname(args[f_arg + 1L]))
+    }
+}
+
+unescape_path_arg = if (tolower(Sys.info()[['sysname']]) == 'windows') {
+    identity 
+} else {
+    function (path) {
+        # Translated from src/unix/system.c:unescape_arg
+        # But only unescape spaces, not newlines, since the latter are only escaped
+        # when passing code via `-e`, never in file paths.
+        gsub('~+~', ' ', path, fixed = TRUE)
     }
 }
 
@@ -132,7 +143,12 @@ testthat_path = function () {
 #' active RStudio script file is saved.
 #' @rdname path
 rstudio_path = function () {
-    if (! 'rstudioapi' %in% loadedNamespaces() || ! rstudioapi::isAvailable()) return(NULL)
+    # `RSTUDIO` environment variable is set in terminal run inside RStudio, so
+    # we need to exclude that case; conversely, `.Platform$GUI` is apparently
+    # not yet set to "RStudio" during startup, so just checking that is
+    # insufficient. See comments at <https://stackoverflow.com/a/35849779/1968>.
+    if (Sys.getenv("RSTUDIO") != "1") return(NULL)
+    if (! identical(.Platform$GUI, "RStudio")) return(NULL)
 
     document_path = rstudioapi::getActiveDocumentContext()$path
     if (! identical(document_path, '')) dirname(document_path)
