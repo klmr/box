@@ -1,4 +1,5 @@
 r_cmdline = function (cmd, ...) {
+    skip_on_os('windows')
     in_tests = grepl('tests/testthat$', getwd())
     rprofile = file.path(
         if (in_tests) '.' else 'tests/testthat',
