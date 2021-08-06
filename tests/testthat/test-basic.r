@@ -165,6 +165,9 @@ test_that('legacy function warning can be silenced', {
 test_that('r/core can be imported', {
     # All the test case logic is inside the `core_test` module.
     box::use(mod/core_test)
+
+    # Ensure tests were actually run:
+    expect_gt(core_test$tests_run, 0L)
 })
 
 test_that('modules can be imported and exported by different local names', {
@@ -195,4 +198,16 @@ test_that('modules can specify explicit exports', {
     expect_setequal(ls(ex), c('a', 'double', 'modname'))
     expect_identical(ex$double, attr(ex, 'namespace')$double)
     expect_equal(ex$modname, ex$a$modname)
+})
+
+test_that('legcay modules do not call hooks', {
+    # Ensure module is first unloaded:
+    box::use(mod/legacy)
+    box::unload(legacy)
+
+    expect_messages(
+        box::use(mod/legacy),
+        has = 'legacy module loaded',
+        has_not = '\\.on_load is not called'
+    )
 })

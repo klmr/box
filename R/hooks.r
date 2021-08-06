@@ -1,5 +1,7 @@
 #' @keywords internal
 call_hook = function (ns, hook, ...) {
+    if (namespace_info(ns, 'legacy', FALSE)) return()
+
     hook_fn = get0(hook, ns, mode = 'function', inherits = FALSE)
     if (! is.null(hook_fn)) hook_fn(...)
 }

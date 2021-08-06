@@ -5,3 +5,5 @@
 .on_unload = function (ns) {
     message('c unloaded')
 }
+
+box::export()
