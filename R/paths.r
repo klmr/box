@@ -78,7 +78,7 @@ script_path = function () {
             return(path)
         }
     }
-    stop('Unreachable code')
+    throw('Unreachable code')
 }
 
 #' @return \code{explicit_path} returns the script path explicitly set by the

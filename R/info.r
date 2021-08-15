@@ -89,9 +89,9 @@ find_in_path = function (spec, base_paths) {
     which_base = which(map_lgl(any, hits))[1L]
 
     if (is.na(which_base)) {
-        stop(
-            'Unable to load module ', dQuote(spec_name(spec)),
-            '; not found in ', paste(dQuote(base_paths), collapse = ', ')
+        throw(
+            'Unable to load module {spec_name(spec);"}; ',
+            'not found in {base_paths;"}'
         )
     }
 

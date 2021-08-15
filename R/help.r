@@ -21,10 +21,7 @@ help = function (topic, help_type = getOption('help_type', 'text')) {
     subject = target[[2L]]
 
     if (! inherits(target_mod, 'box$mod')) {
-        stop(
-            dQuote(deparse(topic)), ' is not a valid module help topic',
-            call. = FALSE
-        )
+        throw('{topic;"} is not a valid module help topic')
     }
 
     if (subject != '.__module__.') {
@@ -52,10 +49,7 @@ help = function (topic, help_type = getOption('help_type', 'text')) {
     }
 
     if (! requireNamespace('roxygen2')) {
-        stop(
-            sprintf('Displaying documentation requires %s installed', sQuote('roxygen2')),
-            call. = FALSE
-        )
+        throw('Displaying documentation requires {"roxygen2";\'} installed')
     }
 
     mod_ns = attr(target_mod, 'namespace')
@@ -70,16 +64,9 @@ help = function (topic, help_type = getOption('help_type', 'text')) {
 
     if (is.null(doc)) {
         if (subject == '.__module__.') {
-            stop(
-                'No documentation available for ', dQuote(mod_name),
-                call. = FALSE
-            )
+            throw('No documentation available for {mod_name;"}')
         } else {
-            stop(
-                'No documentation available for ', dQuote(subject),
-                ' in module ', dQuote(mod_name),
-                call. = FALSE
-            )
+            throw('No documentation available for {subject;"} in module {mod_name;"}')
         }
     }
 
@@ -160,13 +147,12 @@ help_topic_target = function (topic, caller) {
             mod = Recall(mod, expr[[2L]])
             as.character(expr[[3L]])
         } else {
-            stop(
-                dQuote(deparse(topic)), ' is not a valid module help topic',
-                call. = FALSE
-            )
+            throw('{topic;"} is not a valid module help topic', call = call)
         }
         get(name, envir = mod)
     }
+
+    call = sys.call(-1L)
 
     if (is.name(topic)) {
         obj = inner_mod(caller, topic)

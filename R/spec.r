@@ -272,8 +272,5 @@ parse_error = function (...) {
             as.character(x)
         }
     }
-    stop(simpleError(
-        paste(map_chr(chr, list(...)), collapse = ''),
-        call = sys.call(-1L)
-    ))
+    throw(map_chr(chr, list(...)), call = sys.call(-1L))
 }

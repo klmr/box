@@ -34,7 +34,7 @@ test_that('format modifiers work', {
 })
 
 test_that('invalid formats raise an error', {
-    expect_error(
+    expect_box_error(
         fmt('{12;1?}'),
         sprintf('unrecognized format modifier %s', dQuote('1\\?'))
     )

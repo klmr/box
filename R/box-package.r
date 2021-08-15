@@ -80,23 +80,20 @@ called_from_example = function () {
         called_from_example()
     ) return()
 
-    template = paste0(
-        'The %s package is not supposed to be attached.\n\n',
-        'Please consult the user guide at %s.'
-    )
-    help = sprintf('`vignette(\'%s\', package = \'%s\')`', pkgname, pkgname)
     is_bad_call = function (call) {
-        c = call[[1L]]
-        identical(c, quote(library)) || identical(c, quote(require))
+        as.character(call[[1L]]) %in% c('library', 'require')
     }
+
     # Deparsed to silence spurious `R CMD check` warnign
-    default = parse(text = 'library(box)')[[1L]]
+    default = call('library', quote(box))
     bad_call = Filter(is_bad_call, sys.calls())[1L][[1L]] %||% default
-    cond = structure(
-        list(message = sprintf(template, shQuote(pkgname), help), call = bad_call),
-        class = c('box_attach_error', 'error', 'condition')
+    throw(
+        'The {pkgname;\'} package is not supposed to be attached.\n\n',
+        'Please consult the user guide at `{vignette}`.',
+        vignette = call('vignette', pkgname, package = pkgname),
+        call = bad_call,
+        subclass = 'box_attach_error'
     )
-    stop(cond)
 }
 
 .onLoad = function (libname, pkgname) {
