@@ -42,24 +42,24 @@ make_imports_env = function (info) {
     )
 }
 
-legacy_warn_msg = paste0(
-    'Using %s inside a module may cause issues; see the FAQ at',
-    '`vignette(\'faq\', \'box\')` for details.'
+legacy_warn_msg = c(
+    'Using {call;"} inside a module may cause issues; see the FAQ at ',
+    '`{call("vignette", "faq", package = "box")}` for details.'
 )
 
 box_library = function (...) {
-    warning(sprintf(legacy_warn_msg, dQuote('library')))
+    warning(fmt(legacy_warn_msg, call = 'library'))
     eval.parent(`[[<-`(match.call(), 1L, library))
 }
 
 box_require = function (...) {
-    warning(sprintf(legacy_warn_msg, dQuote('require')))
+    warning(fmt(legacy_warn_msg, call = 'require'))
     eval.parent(`[[<-`(match.call(), 1L, require))
 }
 
 box_source = function (file, local = FALSE, ...) {
     if (is.logical(local) && ! local) {
-        warning(sprintf(legacy_warn_msg, dQuote('source')))
+        warning(fmt(legacy_warn_msg, call = 'source'))
     }
     eval.parent(`[[<-`(match.call(), 1L, source))
 }
