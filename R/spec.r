@@ -85,10 +85,7 @@ spec_name = function (spec) {
     r_name = function (names) {
         map_chr(
             function (n) {
-                if (is.na(n)) '\u2026' else sprintf(
-                    '\x1b[33m%s\x1b[0m',
-                    deparse(as.name(n), backtick = TRUE)
-                )
+                if (is.na(n)) '\u2026' else fmt('\x1b[33m{as.name(n)}\x1b[0m')
             },
             names
         )
@@ -113,17 +110,15 @@ spec_name = function (spec) {
     mod_or_pkg = function (spec) {
         if (inherits(spec, 'box$mod_spec')) {
             prefix = paste(r_name(spec$prefix), collapse = '/')
-            sprintf('mod(%s/\x1b[4;33m%s\x1b[0m)', prefix, r_name(spec$name))
+            fmt('mod({prefix}/\x1b[4;33m{r_name(spec$name)}\x1b[0m)')
         } else {
-            sprintf('pkg(\x1b[4;33m%s\x1b[0m)', r_name(spec$name))
+            fmt('pkg(\x1b[4;33m{r_name(spec$name)}\x1b[0m)')
         }
     }
 
-    sprintf(
-        'mod_spec(%s%s%s)',
-        if (x$explicit) paste(r_name(x$alias), '= ') else '',
-        mod_or_pkg(x),
-        format_attach(x$attach)
+    fmt(
+        'mod_spec({alias}{mod_or_pkg(x)}{format_attach(x$attach)})',
+        alias = if (x$explicit) paste(r_name(x$alias), '= ') else ''
     )
 }
 

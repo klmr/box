@@ -160,7 +160,7 @@ strict_extract = function (e1, e2) {
 `print.box$mod` = function (x, ...) {
     spec = attr(x, 'spec')
     type = if (inherits(spec, 'pkg_spec')) 'package' else 'module'
-    cat(sprintf('<%s: %s>\n', type, spec_name(spec)))
+    cat(fmt('<{type}: {spec_name(spec)}>\n'))
     invisible(x)
 }
 
