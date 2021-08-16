@@ -66,18 +66,19 @@ fmt = function (..., envir = parent.frame()) {
                 val = eval(parse(text = expr), envir = vars)
 
                 mod = pos[row, 'mod']
-                if (mod != 0L) {
+                res = if (mod == 0L) {
+                    chr(val)
+                } else {
                     fmt = substr(str, mod, mod + len[row, 'mod'] - 1L);
                     switch(
                         substr(fmt, nchar(fmt), nchar(fmt)),
-                        `"` = toString(dQuote(chr(val))),
-                        `'` = toString(sQuote(chr(val))),
+                        `"` = dQuote(chr(val)),
+                        `'` = sQuote(chr(val)),
                         f = sprintf(paste0('%', fmt), val),
                         throw('unrecognized format modifier {fmt;"}')
                     )
-                } else {
-                    paste(chr(val), collapse = ', ')
                 }
+                paste(res, collapse = ', ')
             }
         )
     }, seq_along(what))
