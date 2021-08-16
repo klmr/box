@@ -108,6 +108,15 @@ chr.name = function (x) {
     deparse(x, backtick = TRUE)
 }
 
+#' @return \code{html_escape(x)} returns the HTML-escaped version of \code{x}.
+#' @rdname fmt
+html_escape = function (x) {
+    from = c('&', '<', '>', '"', "'")
+    to = c('&amp;', '&lt;', '&gt;', '&quot;', '&apos;')
+    substitutions = transpose(from, to)
+    Reduce(function (x, r) gsub(r[1L], r[2L], x), substitutions, x)
+}
+
 #' @rdname fmt
 interleave = function (a, b) {
     index = order(c(seq_along(a), seq_along(b)))

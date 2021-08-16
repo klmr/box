@@ -22,6 +22,13 @@
 #' # [1] "a" "b"
 #' flatmap_chr(identity, list(c('a', 'b'), 'c'))
 #' # [1] "a" "b" "c"
+#'
+#' transpose(1 : 2, 3 : 4)
+#' # [[1]]
+#' # [1] 1 3
+#' #
+#' # [[2]]
+#' # [1] 2 4
 #' }
 #' @noRd
 map = function (.f, ...) {
@@ -56,4 +63,11 @@ map_lgl = function (.f, ...) {
 
 map_chr = function (.f, ...) {
     vmap(.f = .f, ..., .default = character(0L))
+}
+
+#' @return \code{transpose} returns a list of the element-wise concatenated
+#' input vectors; that is, a \dQuote{transposed list} of those elements.
+#' @rdname map
+transpose = function (...) {
+    map(c, ...)
 }

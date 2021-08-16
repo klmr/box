@@ -28,13 +28,8 @@ patch_topic_name.text_help_format = function (x, file, topic) {
 }
 
 patch_topic_name.html_help_format = function (x, file, topic) {
-    from = c('&', '<', '>', '"')
-    to = c('&amp;', '&lt;', '&gt;', '&quot;')
-    replace = data.frame(rbind(from, to))
-    topic = Reduce(function (x, r) gsub(r[1L], r[2L], x), replace, topic)
     doc_text = readLines(file)
-    doc_text = gsub(mock_package_name, topic, doc_text)
-    writeLines(doc_text, file)
+    writeLines(gsub(mock_package_name, html_escape(topic), doc_text), file)
 }
 
 display_help_file.text_help_format = function (x, file, topic) {
