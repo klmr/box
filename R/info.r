@@ -32,16 +32,13 @@ pkg_info = function (spec) {
 
 #' @export
 `as.character.box$mod_info` = function (x, ...) {
-    sprintf(
-        '<mod_info: \x1B[33m%s\x1B[0m at \x1B[33m%s\x1B[0m>',
-        x$name, x$source_path
-    )
+    fmt('<mod_info: \x1B[33m{x$name}\x1B[0m at \x1B[33m{x$source_path}\x1B[0m>')
 }
 
 #' @export
 `as.character.box$pkg_info` = function (x, ...) {
     path = getNamespaceInfo(x$name, 'path')
-    sprintf('<mod_info: \x1B[33m%s\x1B[0m>', path)
+    fmt('<mod_info: \x1B[33m{path}\x1B[0m>')
 }
 
 is_absolute = function (spec) {
@@ -89,9 +86,9 @@ find_in_path = function (spec, base_paths) {
     which_base = which(map_lgl(any, hits))[1L]
 
     if (is.na(which_base)) {
-        stop(
-            'Unable to load module ', dQuote(spec_name(spec)),
-            '; not found in ', paste(dQuote(base_paths), collapse = ', ')
+        throw(
+            'Unable to load module {spec_name(spec);"}; ',
+            'not found in {base_paths;"}'
         )
     }
 

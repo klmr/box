@@ -39,6 +39,17 @@ expect_not_null = function (object, info = NULL, label = NULL) {
     testthat::expect_false(is.null(object), info = info, label = act$lab)
 }
 
+expect_box_error = function (object, regexp = NULL, class = NULL, ..., info = NULL, label = NULL) {
+    expect_error(
+        object = object,
+        regexp = regexp,
+        class = c(class, 'box_error'),
+        ...,
+        info = info,
+        label = label
+    )
+}
+
 expect_messages = function (object, has = NULL, has_not = NULL, info = NULL, label = NULL) {
     self = environment()
     messages = character(0L)

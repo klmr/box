@@ -75,9 +75,9 @@ reload = function (mod) {
     unload_mod_recursive(mod_ns, info)
 
     on.exit({
-        warning(sprintf(
-            'Reloading module %s failed, attempting to restore the old instance.',
-            dQuote(deparse(substitute(mod)))
+        warning(fmt(
+            'Reloading module {mod;"} failed, attempting to restore the old instance.',
+            mod = substitute(mod)
         ))
         register_mod(info, mod_ns)
     })

@@ -254,7 +254,7 @@ use_one = function (declaration, alias, caller) {
     # Permit empty expression resulting from trailing comma.
     if (identical(declaration, quote(expr =)) && identical(alias, '')) return()
     spec = parse_spec(declaration, alias)
-    info = rethrow_on_error(find_mod(spec, caller), sys.call(-1L))
+    info = rethrow_on_error(find_mod(spec, caller), call = sys.call(-1L))
     load_and_register(spec, info, caller)
 }
 
@@ -425,13 +425,12 @@ attach_list = function (spec, exports) {
     is_wildcard = is.na(spec$attach)
     name_spec = spec$attach[! is_wildcard]
 
-    if (! all(is_wildcard) && any((missing = ! name_spec %in% exports))) {
-        stop(sprintf(
-            'Name%s %s not exported by %s',
-            if (length(name_spec[missing]) > 1L) 's' else '',
-            paste(dQuote(name_spec[missing]), collapse = ', '),
-            spec_name(spec)
-        ))
+    if (! all(is_wildcard) && any((what = ! name_spec %in% exports))) {
+        missing = name_spec[what]
+        throw(
+            'Name{s} {missing;"} not exported by {spec_name(spec);"}',
+            s = if (length(missing) > 1L) 's' else ''
+        )
     }
 
     if (any(is_wildcard)) {

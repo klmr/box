@@ -14,7 +14,7 @@ test_that('partial attach works globally', {
 })
 
 test_that('Invalid attach specifier raises error', {
-    expect_error(
+    expect_box_error(
         box::use(mod/a[foo, bar]),
         regexp = 'Names .* not exported by'
     )

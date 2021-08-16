@@ -134,14 +134,14 @@ test_that('wildcard attachments can contain aliases', {
 })
 
 test_that('non-existent aliases raise error', {
-    expect_error(box::use(devtools[foobar123]))
-    expect_error(box::use(devtools[test = foobar123]))
-    expect_error(box::use(devtools[..., test = foobar123]))
+    expect_box_error(box::use(devtools[foobar123]))
+    expect_box_error(box::use(devtools[test = foobar123]))
+    expect_box_error(box::use(devtools[..., test = foobar123]))
 })
 
 test_that('only exported things can be attached', {
     expect_in('yesno', ls(getNamespace('devtools')))
-    expect_error(box::use(devtools[yesno]), 'not exported')
+    expect_box_error(box::use(devtools[yesno]), 'not exported')
 })
 
 test_that('packages that attach things are not aliased', {

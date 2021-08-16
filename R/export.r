@@ -31,16 +31,16 @@
 export = function (...) {
     mod_ns = mod_topenv(parent.frame())
     if (! is_namespace(mod_ns)) {
-        stop(sprintf('%s can only be called from inside a module', dQuote('export')))
+        throw('{"export";"} can only be called from inside a module')
     }
 
     names = as.list(match.call())[-1L]
     for (name in names) {
         if (! is.name(name)) {
-            stop(sprintf(
-                '%s requires a list of unquoted names; %s is not a name',
-                dQuote('export()'), dQuote(deparse(name))
-            ))
+            throw(
+                '{"export()";"} requires a list of unquoted names; ',
+                '{name;"} is not a name'
+            )
         }
     }
 
@@ -90,11 +90,12 @@ parse_export_specs = function (info, exprs, mod_ns) {
 
         if (is_mod_still_loading(import$info)) {
             if (! is.null(spec$attach)) {
-                msg = paste0(
+                throw(
                     'Invalid attempt to export names from an incompletely ',
-                    'loaded, cyclic import (module %s) in line %d.'
+                    'loaded, cyclic import (module {name;"}) in line {line}.',
+                    name = spec$name,
+                    line = attr(export, 'location')[1L]
                 )
-                stop(sprintf(msg, dQuote(spec$name), attr(export, 'location')[1L]))
             }
 
             return(spec$alias)
@@ -112,13 +113,14 @@ parse_export_specs = function (info, exprs, mod_ns) {
     }
 
     block_error = function (export) {
-        code = deparse(attr(export, 'call'), backtick = TRUE)
-        location = attr(export, 'location')[1L]
-        msg = paste0(
-            'The %s tag may only be applied to assignments or %s ',
-            'statements.\nUsed incorrectly in line %d:\n    %s'
+        throw(
+            'The {"@export";"} tag may only be applied to assignments or ',
+            '{"use";"} declarations.\n',
+            'Used incorrectly in line {location}:\n',
+            '    {paste(code, collapse = "\n    ")}',
+            code = deparse(attr(export, 'call'), backtick = TRUE),
+            location = attr(export, 'location')[1L]
         )
-        stop(sprintf(msg, dQuote('@export'), dQuote('use'), location, paste(code, collapse = '\n    ')))
     }
 
     exports = parse_export_tags(info, exprs, mod_ns)
