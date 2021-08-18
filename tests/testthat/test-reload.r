@@ -89,3 +89,8 @@ test_that('reload includes transitive dependencies', {
         has = c('^c unloaded', '^c loaded')
     )
 })
+
+test_that('reload of transitive imports skips packages', {
+    box::use(mod/reload/pkg)
+    expect_error(box::reload(pkg), NA)
+})
