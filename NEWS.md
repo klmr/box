@@ -8,6 +8,8 @@
 
 ## General
 
+* Enhancement: More descriptive error messages when a module cannot be found or
+    when there’s a syntactic error in a `box::use` declaration
 * Fix: Better detection of whether code is called from inside RStudio (#225)
 * Fix: Work around R bug in path handling on non-Windows platforms when paths
     passed to the R binary contain spaces

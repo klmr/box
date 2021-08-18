@@ -188,7 +188,7 @@ use = function (...) {
     call = match.call()
     imports = call[-1L]
     aliases = names(imports) %||% character(length(imports))
-    map(use_one, imports, aliases, list(caller))
+    map(use_one, imports, aliases, list(caller), use_call = list(sys.call()))
     invisible()
 }
 
@@ -242,6 +242,7 @@ use = function (...) {
 #' surrounding \code{use} call
 #' @param alias the use alias, if given, otherwise \code{NULL}
 #' @param caller the client’s calling environment (parent frame)
+#' @param use_call the \code{use} call which is invoking this code
 #' @return \code{use_one} does not currently return a value. — This might change
 #' in the future.
 #' @note If a module is still being loaded (because it is part of a cyclic
@@ -250,12 +251,15 @@ use = function (...) {
 #' its names are available yet.
 #' @keywords internal
 #' @name importing
-use_one = function (declaration, alias, caller) {
+use_one = function (declaration, alias, caller, use_call) {
     # Permit empty expression resulting from trailing comma.
     if (identical(declaration, quote(expr =)) && identical(alias, '')) return()
-    spec = parse_spec(declaration, alias)
-    info = rethrow_on_error(find_mod(spec, caller), call = sys.call(-1L))
-    load_and_register(spec, info, caller)
+
+    rethrow_on_error({
+        spec = parse_spec(declaration, alias)
+        info = find_mod(spec, caller)
+        load_and_register(spec, info, caller)
+    }, call = use_call)
 }
 
 #' @param spec a module use declaration specification

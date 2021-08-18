@@ -26,7 +26,7 @@ test_that('modules without attaching can be parsed', {
 test_that('parse errors are correctly handled', {
     expect_box_error(
         test_use(foo/bar[]),
-        '^Expected at least one identifier in attach list'
+        '^Expected at least one name in attach list'
     )
 })
 
@@ -86,10 +86,10 @@ test_that('`./` can only be used as a prefix', {
     expect_box_error(test_use(././b[foo]), 'can only be used as a prefix')
     expect_box_error(test_use(a/b/.[foo]), 'can only be used as a prefix')
 
-    expect_box_error(test_use(../../b), NA)
+    expect_error(test_use(../../b), NA)
     expect_box_error(test_use(.././b), 'can only be used as a prefix')
     expect_box_error(test_use(../.), 'can only be used as a prefix')
-    expect_box_error(test_use(../../b[foo]), NA)
+    expect_error(test_use(../../b[foo]), NA)
     expect_box_error(test_use(.././b[foo]), 'can only be used as a prefix')
     expect_box_error(test_use(../.[foo]), 'can only be used as a prefix')
 
@@ -257,4 +257,17 @@ test_that('wildcards can be mixed with aliases', {
 test_that('wildcard can’t have alias', {
     expect_box_error(test_use(foo[x = ...]), 'cannot be aliased')
     expect_box_error(test_use(foo[x = a, y = ...]), 'cannot be aliased')
+})
+
+test_that('trailing comma is accepted', {
+    expect_error(test_use(mod/a, ), NA)
+    expect_error(test_use(mod/a, mod/b, ), NA)
+    expect_error(test_use(mod/a[modname, double, ]), NA)
+})
+
+test_that('aliases need a name', {
+    expect_box_error(test_use(alias =), 'alias without name provided in use declaration')
+    expect_box_error(box::use(mod/a, alias =), 'alias without name provided in use declaration')
+    expect_box_error(test_use(foo/bar[alias = , y]), 'alias without name provided in attach list')
+    expect_box_error(test_use(foo/bar[x, alias = ]), 'alias without name provided in attach list')
 })
