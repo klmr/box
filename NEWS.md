@@ -23,6 +23,7 @@
 * Enhancement: Add standard module for core R packages (#200)
 * Enhancement: Warn when legacy functions are imported inside modules (#206)
 * Fix: Reload dependent modules (#39, #165, #195)
+* Enhancement: Support empty modules
 * Fix: Don’t crash in the presence of nested, expanded functions inside modules
     (#203)
 
