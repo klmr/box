@@ -112,9 +112,16 @@ unload_mod = function (mod_ns, info) {
 
 #' @keywords internal
 unload_mod_recursive = function (mod_ns, info) {
+    UseMethod('unload_mod_recursive')
+}
+
+`unload_mod_recursive.box$ns` = function (mod_ns, info) {
     unload_mod(mod_ns, info)
 
     for (import in namespace_info(mod_ns, 'imports')) {
         unload_mod_recursive(import$ns, import$info)
     }
 }
+
+# Package namespace
+unload_mod_recursive.environment = function (mod_ns, info) {}
