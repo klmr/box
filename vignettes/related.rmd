@@ -39,9 +39,9 @@ package please let me know.
 * ‘[**Shiny**’ modules][Shiny]: ‘Shiny’ modules address the namespacing problem
   in Shiny UI and server logic, adding a level of abstraction beyond functions.
 
-* ‘**[tidymodules][]**’ ‘tidymodules’ offers a robust framework for developing
-  ‘Shiny’ modules based on R6 classes which should facilitates inter-modules
-  communication.
+* ‘[Novartis/**tidymodules**][tidymodules]’: ‘tidymodules’ offers a robust
+  framework for developing ‘Shiny’ modules based on R6 classes which should
+  facilitates inter-modules communication.
 
 * ‘**[supreme][]**’: A modeling tool helping users better structure ‘Shiny’
   applications developed with ‘Shiny’ modules. Users are able to: 1. Visualize
@@ -76,8 +76,11 @@ purpose was *loading* code, they’re instead listed below.
 * ‘[jonocarroll/**importAs**][importAs]’: Import namespaces as shorthand symbols
   rather than full package names, in a python-esque fashion.
 
-* ‘[joshkatz/**needs**][needs]’: A simple function for easier package loading
+* ‘[**needs**][needs]’: A simple function for easier package loading
   and auto-installation.
+
+* ‘[**importar**][importar]’: Enables ‘Python’-like importing/loading
+  of packages or functions with aliasing to prevent namespace conflicts.
 
 * [**xfun**::pkg_attach()][xfun]: A vectorized version of `library()`
 
@@ -98,7 +101,7 @@ purpose was *loading* code, they’re instead listed below.
 [importAs]: https://jonocarroll.github.io/importAs/
 [modules]: https://cran.r-project.org/package=modules
 [mvbutils]: https://cran.r-project.org/package=mvbutils
-[needs]: https://github.com/joshkatz/needs
+[needs]: https://cran.r-project.org/package=needs
 [pacman]: http://trinker.github.io/pacman/
 [pkgload]: https://cran.r-project.org/web/packages/pkgload/index.html
 [pysty]: https://trinkerrstuff.wordpress.com/2018/02/22/minimal-explicit-python-style-package-loading-for-r/
@@ -107,3 +110,4 @@ purpose was *loading* code, they’re instead listed below.
 [supreme]: https://strboul.github.io/supreme/
 [tidymodules]: https://opensource.nibr.com/tidymodules/
 [xfun]: https://yihui.org/en/2018/09/xfun-pkg-attach/
+[importar]: https://cran.r-project.org/package=importar
