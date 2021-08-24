@@ -41,3 +41,24 @@ test_that('unloading does not unload dependencies', {
         has_not = '^c unloaded'
     )
 })
+
+test_that('`unload` shows expected errors', {
+    old_opts = options(useFancyQuotes = FALSE)
+    on.exit(options(old_opts))
+
+    expect_box_error(
+        box::unload(mod/a),
+        '"unload" expects a module object, got "mod/a"'
+    )
+    expect_box_error(
+        box::unload(./a),
+        '"unload" expects a module object, got "./a"'
+    )
+    expect_box_error(box::unload(na), 'object "na" not found')
+
+    x = 1L
+    expect_box_error(
+        box::unload(x),
+        '"unload" expects a module object, got "x", which is of type "integer" instead'
+    )
+})

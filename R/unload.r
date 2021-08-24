@@ -1,7 +1,9 @@
 #' Unload or reload a given module
 #'
-#' Unload a given module or reload it from its source.
-#' @param mod the module reference to be unloaded or reloaded
+#' Given a module which has been previously loaded and is assigned to an alias
+#' \code{mod}, \code{unload(mod} unloads it; \code{reload(mod)} unloads and
+#' reloads it from its source.
+#' @param mod a module object to be unloaded or reloaded
 #' @return \code{box::unload} and \code{box::reload} are called for their
 #' side-effect. They do not return anything.
 #'
@@ -34,8 +36,23 @@
 #' @seealso \code{\link{use}}, \link{mod-hooks}
 #' @export
 unload = function (mod) {
-    stopifnot(is.name(substitute(mod)))
-    stopifnot(inherits(mod, 'box$mod'))
+    modname = substitute(mod)
+    expect(
+        is.name(modname),
+        '{"unload";"} expects a module object, got {modname;"}, ',
+        'which is not a module alias variable'
+    )
+
+    mod_ref = as.character(modname)
+    expect(
+        exists(mod_ref, envir = parent.frame()),
+        'object {mod_ref;"} not found'
+    )
+    expect(
+        inherits(mod, 'box$mod'),
+        '{"unload";"} expects a module object, got {modname;"}, ',
+        'which is of type {class(mod);"} instead'
+    )
 
     mod_ns = attr(mod, 'namespace')
     attached = attr(mod, 'attached')
@@ -56,15 +73,29 @@ unload = function (mod) {
 
     # Unset the mod reference in its scope, i.e. the caller’s environment or
     # some parent thereof.
-    mod_ref = as.character(substitute(mod))
     rm(list = mod_ref, envir = parent.frame(), inherits = TRUE)
 }
 
 #' @name unload
 #' @export
 reload = function (mod) {
-    stopifnot(is.name(substitute(mod)))
-    stopifnot(inherits(mod, 'box$mod'))
+    modname = substitute(mod)
+    expect(
+        is.name(modname),
+        '{"reload";"} expects a module object, got {modname;"}, ',
+        'which is not a module alias variable'
+    )
+
+    mod_ref = as.character(modname)
+    expect(
+        exists(mod_ref, envir = parent.frame()),
+        'object {mod_ref;"} not found'
+    )
+    expect(
+        inherits(mod, 'box$mod'),
+        '{"reload";"} expects a module object, got {modname;"}, ',
+        'which is of type {class(mod);"} instead'
+    )
 
     caller = parent.frame()
     spec = attr(mod, 'spec')
@@ -75,10 +106,7 @@ reload = function (mod) {
     unload_mod_recursive(mod_ns, info)
 
     on.exit({
-        warning(fmt(
-            'Reloading module {mod;"} failed, attempting to restore the old instance.',
-            mod = substitute(mod)
-        ))
+        warning(fmt('Reloading module {modname;"} failed, attempting to restore the old instance.'))
         register_mod(info, mod_ns)
     })
 

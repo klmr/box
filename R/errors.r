@@ -36,6 +36,11 @@ rethrow_on_error = function (expr, call = sys.call(sys.parent())) {
     tryCatch(expr, error = function (error) rethrow(error, call))
 }
 
+expect = function (condition, ..., call = sys.call(sys.parent()), subclass = NULL) {
+    if (condition) return()
+    throw(fmt(..., envir = parent.frame()), call = call, subclass = subclass)
+}
+
 box_error_class = c('box_error', 'error', 'condition')
 
 #' @param message the error message

@@ -94,3 +94,24 @@ test_that('reload of transitive imports skips packages', {
     box::use(mod/reload/pkg)
     expect_error(box::reload(pkg), NA)
 })
+
+test_that('`reload` shows expected errors', {
+    old_opts = options(useFancyQuotes = FALSE)
+    on.exit(options(old_opts))
+
+    expect_box_error(
+        box::reload(mod/a),
+        '"reload" expects a module object, got "mod/a"'
+    )
+    expect_box_error(
+        box::reload(./a),
+        '"reload" expects a module object, got "./a"'
+    )
+    expect_box_error(box::reload(na), 'object "na" not found')
+
+    x = 1L
+    expect_box_error(
+        box::reload(x),
+        '"reload" expects a module object, got "x", which is of type "integer" instead'
+    )
+})
