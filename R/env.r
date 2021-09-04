@@ -98,6 +98,7 @@ namespace_info = function (ns, which, default = NULL) {
 
 #' Get a module’s name
 #'
+#' @usage \special{box::name()}
 #' @return \code{box::name} returns a character string containing the name of
 #' the module, or \code{NULL} if called from outside a module.
 #' @note Because this function returns \code{NULL} if not invoked inside a

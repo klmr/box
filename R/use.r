@@ -3,8 +3,24 @@
 #' \code{box::use} imports one or more modules and/or packages, and makes them
 #' available in the calling environment.
 #'
+#' @usage \special{box::use(prefix/mod, \dots)}
+#' @usage \special{box::use(pkg, \dots)}
+#' @usage \special{box::use(alias = prefix/mod, \dots)}
+#' @usage \special{box::use(alias = pkg, \dots)}
+#' @usage \special{box::use(prefix/mod[attach_list], \dots)}
+#' @usage \special{box::use(pkg[attach_list], \dots)}
+#'
+#' @param prefix/mod a qualified module name
+#' @param pkg a package name
+#' @param alias an alias name
+#' @param attach_list a list of names to attached, optionally witha aliases of
+#' the form \code{alias = name}; or the special placeholder name \code{\dots}
+#' @param \dots further import declarations
+#' @return \code{box::use} has no return value. It is called for its
+#' side effect.
+#'
 #' @details
-#' \code{box::use(...)} specifies a list of one or more import declarations,
+#' \code{box::use(\dots)} specifies a list of one or more import declarations,
 #' given as individual arguments to \code{box::use}, separated by comma. Each
 #' import declaration takes one of the following forms:
 #'
@@ -36,7 +52,7 @@
 #'
 #'      The \code{\var{attach_list}} is a comma-separated list of names,
 #'      optionally with aliases assigned via \code{alias = name}. The list can
-#'      also contain the special symbol \code{...}, which causes \emph{all}
+#'      also contain the special symbol \code{\dots}, which causes \emph{all}
 #'      exported names of the module/package to be imported.
 #' }
 #' }
@@ -60,7 +76,7 @@
 #' Member access of (non-attached) exported names of modules and packages
 #' happens via the \code{$} operator. This operator does not perform partial
 #' argument matching, in contrast with the behavior of the \code{$} operator in
-#' base R, which matches partial names.
+#' base \R, which matches partial names.
 #'
 #' @section Export specification:
 #'
@@ -76,11 +92,11 @@
 #' A module which has not declared any exports is treated as a \emph{legacy
 #' module} and exports \emph{all} default-visible names (that is, all names that
 #' do not start with a dot (\code{.}). This usage is present only for backwards
-#' compatibility with plain R scripts, and its usage is \emph{not recommended}
+#' compatibility with plain \R scripts, and its usage is \emph{not recommended}
 #' when writing new modules.
 #'
 #' To define a module that exports no names, call \code{box::export()} without
-#' arguments. This prevents the module from being treated like a legacy module.
+#' arguments. This prevents the module from being treated as a legacy module.
 #'
 #' @section Search path:
 #' Modules are searched in the module search path, given by
@@ -111,11 +127,11 @@
 #' \code{:} on most other platforms).
 #'
 #' The \emph{current directory} is context-dependent: inside a module, the
-#' directory corresponds to the module’s directory. Inside an R code file
+#' directory corresponds to the module’s directory. Inside an \R code file
 #' invoked from the command line, it corresponds to the directory containing
 #' that file. If the code is running inside a \pkg{Shiny} application or a
 #' \pkg{knitr} document, the directory of the execution is used. Otherwise (e.g.
-#' in an interactive R session), the current working directory as given by
+#' in an interactive \R session), the current working directory as given by
 #' \code{getwd()} is used.
 #'
 #' Local import declarations (that is, module prefixes that start with \code{./}
@@ -127,13 +143,13 @@
 #' @section S3 support:
 #' Modules can contain S3 generics and methods. To override known generics
 #' (= those defined outside the module), methods inside a module need to be
-#' registered using \code{\link{register_S3_method}}. See the documentation
-#' there for details.
+#' registered using \code{\link[=register_S3_method]{box::register_S3_method}}.
+#' See the documentation there for details.
 #'
 #' @section Module names:
-#' A module’s full name consists of one or more R names separated by \code{/}.
-#' Since \code{box::use} declarations contain R expressions, the names need to
-#' be valid R names. Non-syntactic names need to be wrapped in backticks; see
+#' A module’s full name consists of one or more \R names separated by \code{/}.
+#' Since \code{box::use} declarations contain \R expressions, the names need to
+#' be valid \R names. Non-syntactic names need to be wrapped in backticks; see
 #' \link[base]{Quotes}.
 #'
 #' Furthermore, since module names usually correspond to file or folder names,
@@ -141,11 +157,6 @@
 #'
 #' @section Encoding:
 #' All module source code files are assumed to be UTF-8 encoded.
-#'
-#' @param ... one or more module import declarations, see \sQuote{Details} for a
-#' description of the format.
-#' @return \code{box::use} has no return value. It is called for its
-#' side-effect.
 #'
 #' @examples
 #' local({
@@ -175,13 +186,14 @@
 #'     bye('Eve')
 #' })
 #' @seealso
-#' \code{\link{name}} and \code{\link{file}} give information about loaded
-#' modules.
-#' \code{\link{help}} displays help for a module’s exported names.
-#' \code{\link{unload}} and \code{\link{reload}} aid during module development
-#' by performing dynamic unloading and reloading of modules in a running R
-#' session.
-#' \code{\link{export}} can be used inside a module to declare module exports.
+#' \code{\link[=name]{box::name}} and \code{\link[=file]{box::file}} give
+#' information about loaded modules.
+#' \code{\link[=help]{box::help}} displays help for a module’s exported names.
+#' \code{\link[=unload]{box::unload}} and \code{\link[=reload]{box::reload}} aid
+#' during module development by performing dynamic unloading and reloading of
+#' modules in a running \R session.
+#' \code{\link[=export]{box::export}} can be used inside a module to declare
+#' module exports.
 #' @export
 use = function (...) {
     caller = parent.frame()

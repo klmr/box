@@ -1,12 +1,13 @@
 #' Register S3 methods
 #'
-#' \code{register_S3_method} makes an S3 method for a given generic and class
-#' known inside a module.
+#' \code{box::register_S3_method} makes an S3 method for a given generic and
+#' class known inside a module.
 #'
+#' @usage \special{box::register_S3_method(name, class, method)}
 #' @param name the name of the generic as a character string.
 #' @param class the class name.
 #' @param method the method to register.
-#' @return \code{register_S3_method} is called for its side-effect.
+#' @return \code{register_S3_method} is called for its side effect.
 #'
 #' @details Methods for generics defined in the same module do not need to be
 #' registered explicitly, and indeed \emph{should not} be registered. However,
@@ -18,7 +19,7 @@
 #' defining S3 methods inside modules.
 #'
 #' @note \strong{Do not} call \code{\link[base]{registerS3method}} inside a
-#' module. Only use \code{register_S3_method}. This is important for the
+#' module. Only use \code{box::register_S3_method}. This is important for the
 #' module’s own book-keeping.
 #' @export
 register_S3_method = function (name, class, method) {

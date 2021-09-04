@@ -10,10 +10,6 @@
 #' interpolates all embedded expressions as explained in the \sQuote{Details}.
 #' Named arguments are treated as locally defined variables, and are added to
 #' (and override, in case of name reuse) names defined in the calling scope.
-#' \code{chr(x)} returns a string representation of a value or unevaluated
-#' expression \code{x}.
-#' \code{interleave(a, b)} returns a vector \code{c(a[1], b[1], a[2], b[2],
-#' \dots, a[n - 1], b[n - 1], a[n])}.
 #' @details
 #' \code{fmt} interpolates embedded expressions in a string.
 #' \code{chr} converts a value to a character vector; unlike
@@ -86,7 +82,8 @@ fmt = function (..., envir = parent.frame()) {
     paste(interleave(glue, interp), collapse = '')
 }
 
-#' \code{chr}
+#' @return \code{chr(x)} returns a string representation of a value or
+#' unevaluated expression \code{x}.
 #' @rdname fmt
 chr = function (x) {
     UseMethod('chr')
@@ -117,6 +114,8 @@ html_escape = function (x) {
     Reduce(function (x, r) gsub(r[1L], r[2L], x), substitutions, x)
 }
 
+#' @return \code{interleave(a, b)} returns a vector \code{c(a[1], b[1], a[2],
+#' b[2], \dots, a[n - 1], b[n - 1], a[n])}.
 #' @rdname fmt
 interleave = function (a, b) {
     index = order(c(seq_along(a), seq_along(b)))

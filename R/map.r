@@ -5,21 +5,23 @@
 #' \code{flatmap} performs a recursive map: the return type is always a vector
 #' of some type given by the \code{.default}, and if the return value of calling
 #' \code{.f} is a vector, it is flattened into the enclosing vector (see
-#' examples).
-#' @param .f An n-ary function where n is the number of further arguments given.
-#' @param ... Lists of arguments to map over in parallel.
-#' @param .default The default value returned by flatmap for an empty input.
+#' \sQuote{Examples}).
+#' \code{transpose} is a special \code{map} application that concatenates its
+#' inputs to compute a transposed list.
+#' @param .f an n-ary function where n is the number of further arguments given
+#' @param \dots lists of arguments to map over in parallel
+#' @param .default the default value returned by \code{flatmap} for an empty
+#' input
 #' @return \code{map} returns a (potentially nested) list of values resulting
-#' from applying \code{.f} to the arguments. \code{flatmap} returns a vector
-#' with type given by \code{.default}, or \code{.default}, if the input is
-#' empty.
-#' @keywords internal
-#' @examples
-#' \dontrun{
+#' from applying \code{.f} to the arguments.
+#' @section Examples:
+#' \preformatted{
 #' flatmap_chr(identity, NULL)
 #' # character(0)
+#'
 #' flatmap_chr(identity, c('a', 'b'))
 #' # [1] "a" "b"
+#'
 #' flatmap_chr(identity, list(c('a', 'b'), 'c'))
 #' # [1] "a" "b" "c"
 #'
@@ -30,37 +32,41 @@
 #' # [[2]]
 #' # [1] 2 4
 #' }
-#' @noRd
+#' @keywords internal
 map = function (.f, ...) {
     if (length(..1) == 0L) list() else Map(.f, ..., USE.NAMES = FALSE)
 }
 
+#' @return \code{flatmap} returns a vector with type given by \code{.default},
+#' or \code{.default}, if the input is empty.
 #' @rdname map
-#' @noRd
 flatmap = function (.f, ..., .default) {
     Reduce(c, map(.f, ...), .default)
 }
 
 #' @rdname map
-#' @noRd
 flatmap_chr = function (.f, ...) {
     flatmap(.f, ..., .default = character(0L))
 }
 
+#' @rdname map
 vmap = function (.f, .x, ..., .default) {
     # FIXME: Find a more efficient implementation.
     fun_value = eval(call(class(.default), 1L))
     vapply(X = .x, FUN = .f, FUN.VALUE = fun_value, ..., USE.NAMES = FALSE)
 }
 
+#' @rdname map
 map_int = function (.f, ...) {
     vmap(.f = .f, ..., .default = integer(0L))
 }
 
+#' @rdname map
 map_lgl = function (.f, ...) {
     vmap(.f = .f, ..., .default = logical(0L))
 }
 
+#' @rdname map
 map_chr = function (.f, ...) {
     vmap(.f = .f, ..., .default = character(0L))
 }

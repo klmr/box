@@ -3,10 +3,11 @@
 #' \code{box::export} can be used as an alternative to the \code{@export}
 #' tag comment to declare a module’s exports.
 #'
-#' @param ... zero or more unquoted names that should be exported from the
+#' @usage \special{box::export(\dots)}
+#' @param \dots zero or more unquoted names that should be exported from the
 #' module.
 #' @return \code{box::export} has no return value. It is called for its
-#' side-effect.
+#' side effect.
 #'
 #' @details
 #' \code{box::export} can be called inside a module to specify the module’s
@@ -26,7 +27,8 @@
 #' being called without arguments.
 #'
 #' @seealso
-#' \code{\link{use}} for information on declaring exports via \code{@export}.
+#' \code{\link[=use]{box::use}} for information on declaring exports via
+#' \code{@export}.
 #' @export
 export = function (...) {
     mod_ns = mod_topenv(parent.frame())

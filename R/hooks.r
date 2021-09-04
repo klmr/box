@@ -11,8 +11,7 @@ call_hook = function (ns, hook, ...) {
 #' Modules can declare functions to be called when a module is first loaded.
 #'
 #' @param ns the module namespace environment
-#' @return \code{.on_load} is called for its side-effect. Any return value is
-#' ignored.
+#' @return Any return values of the hook functions are ignored.
 #'
 #' @note The API for hook functions is still subject to change. In particular,
 #' there might in the future be a way to subscribe to module events of other
@@ -31,6 +30,11 @@ call_hook = function (ns, hook, ...) {
 #' namespace is passed as an argument. It is primarily useful to clean up
 #' resources used by the module. Note that, as for packages, \code{.on_unload}
 #' is \emph{not} necessarily called when R is shut down.
+#'
+#' \emph{Legacy modules} cannot use hooks. To use hooks, the module needs to
+#' contain an export specification (if the module should not export any names,
+#' specify an explicit, empty export list via
+#' \code{\link[=export]{box::export()}}.
 #'
 #' @name mod-hooks
 #' @keywords utilities

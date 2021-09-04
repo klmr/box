@@ -1,17 +1,18 @@
 #' Set the base path of the script
 #'
+#' @usage \special{box::set_script_path(path)}
 #' @param path character string containing the relative or absolute path to the
-#' currently executing R code file, or \code{NULL} to reset the path.
+#' currently executing \R code file, or \code{NULL} to reset the path.
 #' @return \code{box::set_script_path} returns the previously set script path,
 #' or \code{NULL} if none was explicitly set.
 #'
 #' @details
-#' \pkg{box} needs to know the base path of the topmost calling R context (i.e.
-#' the script) to find relative import locations. In most cases, \code{box} can
+#' \pkg{box} needs to know the base path of the topmost calling \R context (i.e.
+#' the script) to find relative import locations. In most cases, \pkg{box} can
 #' figure the path out automatically. However, in some cases third-party
 #' packages load code in a way in which \pkg{box} cannot find the correct path
-#' of the script any more. \code{set_script_path} can be used in these cases to
-#' set the path of the currently executing R script manually.
+#' of the script any more. \code{box::set_script_path} can be used in these
+#' cases to set the path of the currently executing \R script manually.
 #' @export
 set_script_path = function (path = NULL) {
     old_path = script_path_env$value

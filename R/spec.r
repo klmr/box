@@ -44,7 +44,7 @@ parse_spec = function (expr, alias) {
 
 #' @param spec named list of information the parser constructed from a given
 #' spec expression
-#' @param ... further information about a spec, not represented by the spec
+#' @param \dots further information about a spec, not represented by the spec
 #' expression parse tree
 #' @keywords internal
 #' @name spec

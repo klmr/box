@@ -1,15 +1,16 @@
 #' Display module documentation
 #'
-#' \code{help} displays help on a module’s objects and functions in much
+#' \code{box::help} displays help on a module’s objects and functions in much
 #' the same way \code{\link[utils]{help}} does for package contents.
 #'
+#' @usage \special{box::help(topic, help_type = getOption("help_type", "text"))}
 #' @param topic either the fully-qualified name of the object or function to get
 #'  help for, in the format \code{module$function}; or a name that was exported
 #'  and attached from an imported module or package.
 #' @param help_type character string specifying the output format; currently,
 #'  only \code{'text'} is supported.
-#' @return \code{help} is called for its side-effect when called directly from
-#' the command prompt.
+#' @return \code{box::help} is called for its side effect when called directly
+#' from the command prompt.
 #' @details
 #' See the vignette at \code{vignette('box', 'box')} for more information about
 #' displaying help for modules.

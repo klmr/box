@@ -67,6 +67,10 @@ e.g.:
 ```{r file = 'inst/box/hello_world.r'}
 ```
 
+Existing R scripts without `@export` directives can also be used as modules. In
+that case, all names inside the file will be exported, unless they start with a
+dot (`.`).
+
 Such modules can be stored in a central **module search path** (configured via
 `options('box.path')`) analogous to the R package library, or locally in
 individual projects. Let’s assume the module we just defined is stored in a file
@@ -174,14 +178,27 @@ creating unintentional, far-reaching side effects.
 ‘box’ itself is never loaded via `library`. Instead, its functionality is always
 used explicitly via `box::use`.
 
+## Getting help
+
+If you encounter a bug or have a feature request, please [post an issue report
+on GitHub][new-issue]. For general questions, posting on Stack Overflow,
+[tagged as <span style="display: inline-block; padding: 0 2px; border: solid var(--default) 1px; border-radius: 3px; white-space: nowrap;">r-box</span>][so:r-box],
+is also an option.
+
 ## Why ‘box’?
 
-‘box’ promotes the opposite philosophy of what’s common in R: some notable
-packages export and attach many hundreds and, in at least one notable case,
-*over a thousand* names. This works adequately for small-ish analysis scripts
-but breaks down for even moderately large software projects because it makes it
-non-obvious where names are imported from, and increases the risk of name
-clashes.
+‘box’ makes it drastically easier to *write reusable code*: instead of needing
+to create a package, each R code file *is already a module* which can be
+imported using `box::use`. Modules can also be nested inside directories, such
+that self-contained projects can be easily split into separate or interdependent
+submodules.
+
+To make code reuse more scalable for larger projects, ‘box’ promotes the
+opposite philosophy of what’s common in R: some notable packages export and
+attach many hundreds and, in at least one notable case, *over a thousand* names.
+This works adequately for small-ish analysis scripts but breaks down for even
+moderately large software projects because it makes it non-obvious where names
+are imported from, and increases the risk of name clashes.
 
 To make code more explicit, readable and maintainable, software engineering best
 practices encourage limiting both the scope of names, as well as the number of
@@ -199,17 +216,13 @@ allow unqualified imports at all.
 
 > Explicit is better than implicit.
 
-‘box’ also makes it drastically easier to *write* reusable code: instead of
-needing to create a package, each R code file *is already a module* which can be
-imported using `box::use`. Modules can also be nested inside directories, such
-that self-contained projects can be easily split into separate or interdependent
-submodules.
-
 [roxygen2]: https://roxygen2.r-lib.org/
 [pep8]: https://www.python.org/dev/peps/pep-0008/#imports
 [Get started]: https://klmr.me/box/articles/box.html
 [Documentation]: https://klmr.me/box/reference/index.html
 [FAQ]: https://klmr.me/box/articles/faq.html
+[new-issue]: https://github.com/klmr/box/issues/new
+[so:r-box]: https://stackoverflow.com/questions/tagged/r-box?tab=Newest
 [C++]: https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Rs-using
 [Rust]: https://doc.rust-lang.org/book/ch07-04-bringing-paths-into-scope-with-the-use-keyword.html#the-glob-operator
 [Perl]: https://perldoc.perl.org/Exporter#Selecting-What-to-Export
