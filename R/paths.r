@@ -102,7 +102,7 @@ r_path = function (args = commandArgs()) {
 }
 
 unescape_path_arg = if (tolower(Sys.info()[['sysname']]) == 'windows') {
-    identity 
+    identity
 } else {
     function (path) {
         # Translated from src/unix/system.c:unescape_arg

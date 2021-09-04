@@ -87,9 +87,10 @@ purpose was *loading* code, they’re instead listed below.
 
 ## Tools for organising code
 
-* ‘**[RSuite][]**’: Supports safe and reproducible solutions development in R. It will help you with 
-  environment separation per project, dependency management, local packages creation and preparing 
-  deployment packs for your solutions.
+* ‘**[RSuite][]**’: Supports safe and reproducible solutions development in R.
+  It will help you with environment separation per project, dependency
+  management, local packages creation and preparing deployment packs for your
+  solutions.
 
 * ‘**[mvbutils][]**’: Hierarchical workspace tree, code editing and backup, easy
   package prep, editing of packages while loaded, per-object lazy-loading, easy
