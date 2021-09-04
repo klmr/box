@@ -98,7 +98,7 @@ NAMESPACE: ${r_source_files} ${c_source_files} DESCRIPTION
 README.md: README.rmd NAMESPACE DESCRIPTION man/figures/logo.png
 	${rscript} -e "devtools::load_all(export_all = FALSE); knitr::knit('$<')"
 
-man/figures/logo.png: man/figures/logo.svg
+man/figures/logo.png: figures/logo.svg
 	${inkscape} -w 240 --export-filename ${@:.png=.tmp.png} $<
 	pngcrush ${@:.png=.tmp.png} $@
 	${RM} ${@:.png=.tmp.png}
@@ -132,13 +132,13 @@ export-favicon = \
 	${inkscape} -w $$sz -h $$sz --export-area $1 --export-filename=${@D}/tmp-${@F} $< \
 	&& pngcrush -q ${@D}/tmp-${@F} $@ && rm ${@D}/tmp-${@F}
 
-${favicons_small}: man/figures/logo.svg | pkgdown/favicon
+${favicons_small}: figures/logo.svg | pkgdown/favicon
 	$(call export-favicon,-11:1000:181:1192)
 
-${favicons_large}: man/figures/logo.svg | pkgdown/favicon
+${favicons_large}: figures/logo.svg | pkgdown/favicon
 	$(call export-favicon,-51:0:711:760)
 
-${favicon_default}: man/figures/logo.svg | pkgdown/favicon
+${favicon_default}: figures/logo.svg | pkgdown/favicon
 	${inkscape} -w 180 -h 180 --export-area -51:0:711:760 --export-filename=${@D}/tmp-${@F} $<
 	pngcrush -q ${@D}/tmp-${@F} $@ && rm ${@D}/tmp-${@F}
 
