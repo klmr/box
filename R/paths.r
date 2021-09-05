@@ -75,7 +75,7 @@ script_path = function () {
         path = test()
         if (! is.null(path)) {
             # Don’t cache result, since it might change suddenly, due to knitr
-            # or Shiny running in the same proces.
+            # or Shiny running in the same process.
             return(path)
         }
     }
