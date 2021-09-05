@@ -93,3 +93,8 @@ test_that('can execute a script with spaces in path', {
     rscript_out = rscript(file.path(path, 'script.r'))
     expect_equal(rscript_out, 'path with spaces')
 })
+
+test_that('modules are found during Shiny startup', {
+    script_path = rscript('support/run-shiny.r')
+    expect_paths_equal(script_path, 'support/shiny-app')
+})
