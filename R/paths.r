@@ -1,10 +1,14 @@
 #' Set the base path of the script
 #'
+#' \code{box::set_script_path(path)} explicitly tells \pkg{box} the path of a
+#' given script from which it is called; \code{box::script_path()} returns the
+#' previously set path.
 #' @usage \special{box::set_script_path(path)}
 #' @param path character string containing the relative or absolute path to the
 #' currently executing \R code file, or \code{NULL} to reset the path.
-#' @return \code{box::set_script_path} returns the previously set script path,
-#' or \code{NULL} if none was explicitly set.
+#' @return Both \code{box::script_path} and \code{box::set_script_path} return
+#' the previously set script path, or \code{NULL} if none was explicitly set.
+#' \code{box::set_script_path} returns its value invisibly.
 #'
 #' @details
 #' \pkg{box} needs to know the base path of the topmost calling \R context (i.e.
@@ -13,11 +17,29 @@
 #' packages load code in a way in which \pkg{box} cannot find the correct path
 #' of the script any more. \code{box::set_script_path} can be used in these
 #' cases to set the path of the currently executing \R script manually.
+#'
+#' @note
+#' \pkg{box} \emph{should} be able to figure out the script path automatically.
+#' Using \code{box::set_script_path} should therefore never be necessary.
+#' \href{https://github.com/klmr/box/issues/new}{Please file an issue} if you
+#' encounter a situation that necessitates using \code{box::set_script_path}!
+#'
+#' @examples
+#' box::set_script_path('scripts/my_script.r')
+#' @name script_path
 #' @export
 set_script_path = function (path = NULL) {
-    old_path = script_path_env$value
+    old_path = script_path()
+    script_path_env$script_path = path
     script_path_env$value = if (is.null(path)) NULL else dirname(path)
     invisible(old_path)
+}
+
+#' @usage \special{box::script_path()}
+#' @rdname script_path
+#' @export
+script_path = function () {
+    script_path_env$script_path
 }
 
 #' Get a module’s path

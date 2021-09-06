@@ -5,11 +5,17 @@
 * Modules without any `@export` declarations now export all visible names (=
     names not starting with a dot); to obtain the previous semantics of a module
     without exports, add a call to `box::export()` to the module source code.
+* `box::set_script_path` now returns the *full* path previously set, as
+    documented, not just its parent directory’s path. Existing code that relies
+    on this function’s previously incorrect behaviour will need to be updated.
 
 ## General
 
-* Enhancement: More descriptive error messages when calling `unload` or `reload`
-    with an invalid argument (#232)
+* Fix: Return the full path from `box::set_script_path`, not just the parent
+    directory’s path; `box::script_path` now also returns that path without
+    requiring the user to set a new path (#239)
+* Enhancement: More descriptive error messages when calling `box::unload` or
+    `box::reload` with an invalid argument (#232)
 * Enhancement: More descriptive error messages when a module cannot be found or
     when there’s a syntactic error in a `box::use` declaration
 * Fix: Better detection of whether code is called from inside RStudio (#225)

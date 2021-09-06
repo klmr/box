@@ -70,6 +70,14 @@ test_that('script path can be set manually', {
     expect_equal(module_path(), 'mod/b')
 })
 
+test_that('script path can be queried', {
+    path = 'some/script.r'
+    box::set_script_path(path)
+    expect_equal(box::script_path(), path)
+    expect_equal(box::set_script_path(), path)
+    expect_null(box::script_path())
+})
+
 test_that('can execute a script with spaces in path', {
     # Generate the test case dynamically since `R CMD check` complains if there
     # are paths with spaces in the package source directory.
