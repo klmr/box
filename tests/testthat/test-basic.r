@@ -6,7 +6,7 @@ is_module_loaded = function (mod) {
 
 test_teardown(clear_mods())
 
-module_path = function (mod) {
+module_source_path = function (mod) {
     attr(mod, 'info')$source_path
 }
 
@@ -30,7 +30,7 @@ test_that('module is uniquely identified by path', {
     box::use(ba = mod/b/a)
     expect_true(is_module_loaded(a))
     expect_true(is_module_loaded(ba))
-    expect_not_identical(module_path(a), module_path(ba))
+    expect_not_identical(module_source_path(a), module_source_path(ba))
     expect_in('double', ls(a))
     expect_not_in('double', ls(ba))
 })

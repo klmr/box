@@ -1,10 +1,14 @@
 #' Set the base path of the script
 #'
+#' \code{box::set_script_path(path)} explicitly tells \pkg{box} the path of a
+#' given script from which it is called; \code{box::script_path()} returns the
+#' previously set path.
 #' @usage \special{box::set_script_path(path)}
 #' @param path character string containing the relative or absolute path to the
 #' currently executing \R code file, or \code{NULL} to reset the path.
-#' @return \code{box::set_script_path} returns the previously set script path,
-#' or \code{NULL} if none was explicitly set.
+#' @return Both \code{box::script_path} and \code{box::set_script_path} return
+#' the previously set script path, or \code{NULL} if none was explicitly set.
+#' \code{box::set_script_path} returns its value invisibly.
 #'
 #' @details
 #' \pkg{box} needs to know the base path of the topmost calling \R context (i.e.
@@ -13,11 +17,29 @@
 #' packages load code in a way in which \pkg{box} cannot find the correct path
 #' of the script any more. \code{box::set_script_path} can be used in these
 #' cases to set the path of the currently executing \R script manually.
+#'
+#' @note
+#' \pkg{box} \emph{should} be able to figure out the script path automatically.
+#' Using \code{box::set_script_path} should therefore never be necessary.
+#' \href{https://github.com/klmr/box/issues/new}{Please file an issue} if you
+#' encounter a situation that necessitates using \code{box::set_script_path}!
+#'
+#' @examples
+#' box::set_script_path('scripts/my_script.r')
+#' @name script_path
 #' @export
 set_script_path = function (path = NULL) {
-    old_path = script_path_env$value
+    old_path = script_path()
+    script_path_env$script_path = path
     script_path_env$value = if (is.null(path)) NULL else dirname(path)
     invisible(old_path)
+}
+
+#' @usage \special{box::script_path()}
+#' @rdname script_path
+#' @export
+script_path = function () {
+    script_path_env$script_path
 }
 
 #' Get a module’s path
@@ -46,16 +68,15 @@ path = function (mod) {
 #' base directory, or the current working directory if not invoked on a module.
 #' @rdname path
 base_path = function (mod) {
-    path = tryCatch(dirname(path(mod)), error = function (e) script_path())
-    normalizePath(path, winslash = '/')
+    normalizePath(module_path(mod), winslash = '/')
 }
 
 script_path_env = new.env(parent = emptyenv())
 
-#' @return \code{script_path} returns a character string that contains the
+#' @return \code{module_path} returns a character string that contains the
 #' directory in which the calling R code is run. See \sQuote{Details}.
 #' @details
-#' \code{script_path} takes a best guess at a script’s path, since R does not
+#' \code{module_path} takes a best guess at a script’s path, since R does not
 #' provide a sure-fire way for determining the path of the currently executing
 #' code. The following calling situations are covered:
 #'
@@ -70,9 +91,9 @@ script_path_env = new.env(parent = emptyenv())
 #'  \item Script run interactively (use \code{getwd()})
 #' }
 #' @rdname path
-script_path = function () {
+module_path = function (mod) {
     for (test in path_tests) {
-        path = test()
+        path = test(mod)
         if (! is.null(path)) {
             # Don’t cache result, since it might change suddenly, due to knitr
             # or Shiny running in the same process.
@@ -82,10 +103,17 @@ script_path = function () {
     throw('Unreachable code')
 }
 
+#' @return \code{mod_path} returns the script path associated with a \pkg{box}
+#' module
+#' @rdname path
+mod_path = function (mod) {
+    tryCatch(dirname(path(mod)), error = function (e) NULL)
+}
+
 #' @return \code{explicit_path} returns the script path explicitly set by the
 #' user, if such a path was set.
 #' @rdname path
-explicit_path = function () {
+explicit_path = function (...) {
     script_path_env$value
 }
 
@@ -94,7 +122,8 @@ explicit_path = function () {
 #' @return \code{r_path} returns the directory in which the current script is
 #' run via \command{Rscript}, \command{R CMD BATCH} or \command{R -f}.
 #' @rdname path
-r_path = function (args = commandArgs()) {
+r_path = function (...) {
+    args = commandArgs()
     if (length((file_arg = grep('^--file=', args))) != 0L) {
         unescape_path_arg(dirname(sub('--file=', '', args[file_arg])))
     } else if (length((f_arg = grep('^-f$', args))) != 0L) {
@@ -117,7 +146,7 @@ unescape_path_arg = if (tolower(Sys.info()[['sysname']]) == 'windows') {
 #' document is run, or \code{NULL} if not called from within a \pkg{knitr}
 #' document.
 #' @rdname path
-knitr_path = function () {
+knitr_path = function (...) {
     if (! 'knitr' %in% loadedNamespaces()) return(NULL)
 
     knitr_input = suppressWarnings(knitr::current_input(dir = TRUE))
@@ -128,7 +157,7 @@ knitr_path = function () {
 #' application is running, or \code{NULL} if not called from within a
 #' \pkg{Shiny} application.
 #' @rdname path
-shiny_path = function () {
+shiny_path = function (...) {
     if ('shiny' %in% loadedNamespaces() && shiny::isRunning()) getwd()
 }
 
@@ -136,14 +165,14 @@ shiny_path = function () {
 #' code is being executed, or \code{NULL} if not called from within a
 #' \pkg{testthat} test case.
 #' @rdname path
-testthat_path = function () {
+testthat_path = function (...) {
     if (identical(Sys.getenv("TESTTHAT"), "true")) getwd()
 }
 
 #' @return \code{rstdio_path} returns the directory in which the currently
 #' active RStudio script file is saved.
 #' @rdname path
-rstudio_path = function () {
+rstudio_path = function (...) {
     # `RSTUDIO` environment variable is set in terminal run inside RStudio, so
     # we need to exclude that case; conversely, `.Platform$GUI` is apparently
     # not yet set to "RStudio" during startup, so just checking that is
@@ -157,12 +186,12 @@ rstudio_path = function () {
 
 #' @return \code{wd_path} returns the current working directory.
 #' @rdname path
-wd_path = function () {
+wd_path = function (...) {
     # Fallback
     getwd()
 }
 
-path_test_hooks = c('explicit', 'knitr', 'shiny', 'testthat', 'rstudio', 'r', 'wd')
+path_test_hooks = c('mod', 'explicit', 'knitr', 'shiny', 'testthat', 'rstudio', 'r', 'wd')
 path_tests = mget(paste0(path_test_hooks, '_path'))
 
 #' Path related functions
@@ -198,13 +227,8 @@ mod_search_path = function (caller) {
 #' @rdname paths
 calling_mod_path = function (caller) {
     calling_ns = mod_topenv(caller)
-
     # FIXME: Make work for modules imported inside package, if necessary.
-    if (is_namespace(calling_ns)) {
-        dirname(namespace_info(calling_ns, 'info')$source_path)
-    } else {
-        script_path()
-    }
+    module_path(calling_ns)
 }
 
 #' \code{split_path(path)} is a platform independent and filesystem logic

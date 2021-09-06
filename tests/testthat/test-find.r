@@ -64,10 +64,18 @@ test_that('all module file candidates are found', {
 test_that('script path can be set manually', {
     on.exit(box::set_script_path())
 
-    expect_paths_equal(script_path(), getwd())
+    expect_paths_equal(module_path(), getwd())
 
     box::set_script_path('mod/b/a.r')
-    expect_equal(script_path(), 'mod/b')
+    expect_equal(module_path(), 'mod/b')
+})
+
+test_that('script path can be queried', {
+    path = 'some/script.r'
+    box::set_script_path(path)
+    expect_equal(box::script_path(), path)
+    expect_equal(box::set_script_path(), path)
+    expect_null(box::script_path())
 })
 
 test_that('can execute a script with spaces in path', {

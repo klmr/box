@@ -21,6 +21,7 @@ reference:
     contents:
       - help
       - reload
+      - script_path
       - set_script_path
       - unload
 
