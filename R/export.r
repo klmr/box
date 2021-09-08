@@ -93,8 +93,8 @@ parse_export_specs = function (info, exprs, mod_ns) {
         if (is_mod_still_loading(import$info)) {
             if (! is.null(spec$attach)) {
                 throw(
-                    'Invalid attempt to export names from an incompletely ',
-                    'loaded, cyclic import (module {name;"}) in line {line}.',
+                    'invalid attempt to export names from an incompletely ',
+                    'loaded, cyclic import (module {name;"}) in line {line}',
                     name = spec$name,
                     line = attr(export, 'location')[1L]
                 )
@@ -116,9 +116,9 @@ parse_export_specs = function (info, exprs, mod_ns) {
 
     block_error = function (export) {
         throw(
-            'The {"@export";"} tag may only be applied to assignments or ',
-            '{"use";"} declarations.\n',
-            'Used incorrectly in line {location}:\n',
+            'the {"@export";"} tag may only be applied to assignments or ',
+            '{"use";"} declarations;\n',
+            'used incorrectly in line {location}:\n',
             '    {paste(code, collapse = "\n    ")}',
             code = deparse(attr(export, 'call'), backtick = TRUE),
             location = attr(export, 'location')[1L]

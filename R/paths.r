@@ -100,7 +100,7 @@ module_path = function (mod) {
             return(path)
         }
     }
-    throw('Unreachable code')
+    throw('unreachable code')
 }
 
 #' @return \code{mod_path} returns the script path associated with a \pkg{box}

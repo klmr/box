@@ -87,7 +87,7 @@ find_in_path = function (spec, base_paths) {
 
     if (is.na(which_base)) {
         throw(
-            'Unable to load module {spec_name(spec);"}; ',
+            'unable to load module {spec_name(spec);"}; ',
             'not found in {base_paths;"}'
         )
     }

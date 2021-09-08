@@ -26,7 +26,7 @@ test_that('modules without attaching can be parsed', {
 test_that('parse errors are correctly handled', {
     expect_box_error(
         test_use(foo/bar[]),
-        '^Expected at least one name in attach list'
+        '^expected at least one name in attach list'
     )
 })
 

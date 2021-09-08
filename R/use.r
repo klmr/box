@@ -444,7 +444,7 @@ attach_list = function (spec, exports) {
     if (! all(is_wildcard) && any((what = ! name_spec %in% exports))) {
         missing = name_spec[what]
         throw(
-            'Name{s} {missing;"} not exported by {spec_name(spec);"}',
+            'name{s} {missing;"} not exported by {spec_name(spec);"}',
             s = if (length(missing) > 1L) 's' else ''
         )
     }

@@ -143,15 +143,15 @@ parse_spec_impl = function (expr) {
                     c(parse_pkg_name(name), parse_attach_spec(expr))
                 }
             } else {
-                throw('Unexpected token in {expr;"}')
+                throw('unexpected token in {expr;"}')
             }
         } else if (identical(expr[[1L]], quote(`/`))) {
             parse_mod(expr)
         } else {
-            throw('Unexpected token in {expr;"}')
+            throw('unexpected token in {expr;"}')
         }
     } else {
-        throw('Unexpected token in {expr;"}')
+        throw('unexpected token in {expr;"}')
     }
 }
 
@@ -171,11 +171,11 @@ parse_mod = function (expr) {
 
     if (any(diff(which(c(TRUE, prefix$prefix == '..'))) > 1L)) {
         # At least one gap in the sequence of `..` from the start
-        throw('Token {"..";"} can only be used as a prefix')
+        throw('token {"..";"} can only be used as a prefix')
     }
 
     if (any(prefix$prefix[-1L] == '.')) {
-        throw('Token {".";"} can only be used as a prefix')
+        throw('token {".";"} can only be used as a prefix')
     }
 
     if (is.call(mod)) {
@@ -185,12 +185,12 @@ parse_mod = function (expr) {
                 parse_attach_spec(mod)
             )
         } else {
-            throw('Expected module name or attach list, got {mod;"}')
+            throw('expected module name or attach list, got {mod;"}')
         }
     } else if (is.name(mod)) {
         list(mod = c(parse_mod_name(mod, prefix), prefix), attach = NULL)
     } else {
-        throw('Expected module name or attach list, got {mod;"}')
+        throw('expected module name or attach list, got {mod;"}')
     }
 }
 
@@ -199,13 +199,13 @@ parse_mod_prefix = function (expr) {
         list(prefix = deparse(expr))
     } else if (is.call(expr) && identical(expr[[1L]], quote(`/`))) {
         if (! is.name(expr[[3L]])) {
-            throw('Expected name in module prefix, got {expr[[3L]];"}')
+            throw('expected name in module prefix, got {expr[[3L]];"}')
         } else {
             suffix = deparse(expr[[3L]])
             list(prefix = c(parse_mod_prefix(expr[[2L]])$prefix, suffix))
         }
     } else {
-        throw('Expected module prefix, got {expr;"}')
+        throw('expected module prefix, got {expr;"}')
     }
 }
 
@@ -217,7 +217,7 @@ parse_mod_name = function (expr, prefix) {
         back_inside_path = ! all(prefix == '..') && name == '..'
 
         if (dot_after_prefix || back_inside_path) {
-            throw('Token {expr;"} can only be used as a prefix')
+            throw('token {expr;"} can only be used as a prefix')
         }
     }
 
@@ -234,17 +234,17 @@ assign_missing_names = function (syms) {
     x[x == '...'] = NA_character_
 
     if (any((dup = duplicated(names(x))))) {
-        throw('Cannot attach duplicate names, found duplicated {unique(names(x)[dup]);"}')
+        throw('cannot attach duplicate names, found duplicated {unique(names(x)[dup]);"}')
     }
     if (any(names(syms)[is.na(x)] != '')) {
-        throw('Wildcard imports cannot be aliased')
+        throw('wildcard imports cannot be aliased')
     }
     x
 }
 
 parse_attach_list = function (expr) {
     if (length(expr) == 1L && identical(expr[[1L]], quote(expr =))) {
-        throw('Expected at least one name in attach list')
+        throw('expected at least one name in attach list')
     } else {
         names = stats::setNames(map_chr(parse_name, expr), names(expr))
 
@@ -271,7 +271,7 @@ parse_attach_list = function (expr) {
 
 parse_name = function (expr) {
     if (length(expr) != 1L || ! is.name(expr)) {
-        throw('Expected name, got {expr;"}')
+        throw('expected name, got {expr;"}')
     } else {
         deparse(expr) %||% NA_character_
     }

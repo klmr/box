@@ -50,7 +50,7 @@ help = function (topic, help_type = getOption('help_type', 'text')) {
     }
 
     if (! requireNamespace('roxygen2')) {
-        throw('Displaying documentation requires {"roxygen2";\'} installed')
+        throw('displaying documentation requires {"roxygen2";\'} installed')
     }
 
     mod_ns = attr(target_mod, 'namespace')
@@ -65,9 +65,9 @@ help = function (topic, help_type = getOption('help_type', 'text')) {
 
     if (is.null(doc)) {
         if (subject == '.__module__.') {
-            throw('No documentation available for {mod_name;"}')
+            throw('no documentation available for {mod_name;"}')
         } else {
-            throw('No documentation available for {subject;"} in module {mod_name;"}')
+            throw('no documentation available for {subject;"} in module {mod_name;"}')
         }
     }
 

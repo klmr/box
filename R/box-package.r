@@ -90,7 +90,7 @@ called_from_example = function () {
     default = call('library', quote(box))
     bad_call = Filter(is_bad_call, sys.calls())[1L][[1L]] %||% default
     throw(
-        'The {pkgname;\'} package is not supposed to be attached.\n\n',
+        'the {pkgname;\'} package is not supposed to be attached!\n\n',
         'Please consult the user guide at `{vignette}`.',
         vignette = call('vignette', pkgname, package = pkgname),
         call = bad_call,
