@@ -158,7 +158,16 @@ knitr_path = function (...) {
 #' \pkg{Shiny} application.
 #' @rdname path
 shiny_path = function (...) {
-    if ('shiny' %in% loadedNamespaces() && shiny::isRunning()) getwd()
+    if (! 'shiny' %in% loadedNamespaces()) return()
+    in_shiny =
+        (packageVersion('shiny') < '1.6.0' && shiny::isRunning()) ||
+        {
+            # `isRunning` no longer works in Shiny 1.6.0:
+            # <https://github.com/rstudio/shiny/issues/3499>
+            shiny_ns = getNamespace('shiny')
+            any(map_lgl(identical, lapply(sys.frames(), topenv), shiny_ns))
+        }
+    if (in_shiny) getwd()
 }
 
 #' @return \code{testthat_path} returns the directory in which \pkg{testthat}
