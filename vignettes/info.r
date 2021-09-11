@@ -4,3 +4,5 @@
         'Module path: "', basename(box::file()), '"'
     )
 }
+
+box::export() # Mark as a ‘box’ module.
