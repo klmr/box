@@ -60,6 +60,7 @@ authors:
     href: https://klmr.me
 
 repo:
-  url:
-    home: https://github.com/klmr/box
   branch: main
+
+development:
+  mode: auto
