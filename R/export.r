@@ -1,7 +1,8 @@
 #' Explicitly declare module exports
 #'
-#' \code{box::export} can be used as an alternative to the \code{@export}
-#' tag comment to declare a module’s exports.
+#' \code{box::export} explicitly marks a source file as a \pkg{box} module. If
+#' can be used as an alternative to the \code{@export} tag comment to declare a
+#' module’s exports.
 #'
 #' @usage \special{box::export(\dots)}
 #' @param \dots zero or more unquoted names that should be exported from the
@@ -21,10 +22,12 @@
 #' defines names but does not mark them as exported would be treated as a
 #' \emph{legacy module}, and all default-visible names would be exported from
 #' it. Default-visible names are names not starting with a dot (\code{.}).
+#' Another use of \code{box::export()} is to enable a module without exports to
+#' use \link[=mod-hooks]{module event hooks}.
 #'
 #' @note The preferred way of declaring exports is via the \code{@export} tag
-#' comment. The main purpose of \code{box::export} is to prevent exports, by
-#' being called without arguments.
+#' comment. The main purpose of \code{box::export} is to explicitly prevent
+#' exports, by being called without arguments.
 #'
 #' @seealso
 #' \code{\link[=use]{box::use}} for information on declaring exports via
