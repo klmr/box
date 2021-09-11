@@ -10,5 +10,6 @@
 /src/*.o
 /src/*.so
 /src/*.dll
+/tests/testthat/_snaps/
 /vignettes/*.html
 /vignettes/*.R

@@ -200,22 +200,22 @@ normal R source file, which happens to live in a directory named `bio`.
 In fact, there are only three things worth mentioning:
 
 1. Documentation. Functions in the module file can be documented using
-   ‘[roxygen2](https://cran.r-project.org/package=roxygen2)’
-   syntax. It works the same as for packages. The ‘box’ package parses the
-   documentation and makes it available via `box::help`. *Displaying module help
-   requires that ‘roxygen2’ is installed.*
+   ‘[roxygen2](https://cran.r-project.org/package=roxygen2)’ syntax. It works
+   the same as for packages. The ‘box’ package parses the documentation and
+   makes it available via `box::help`. *Displaying module help requires that
+   ‘roxygen2’ is installed.*
 
 2. Export declarations. Similar to packages, modules explicitly need to declare
    which names they export; they do this using the annotation comment `#'
    @export` in front of the name. Again, this works similarly to ‘roxygen2’ (but
    does *not* require having that package installed).
 
-3. The module exports [S3 functions](http://adv-r.had.co.nz/S3.html). The
-   ‘box’ package takes care to register such functions automatically but
-   this only works for *user generics* that are defined inside the same module.
-   When overriding “known generics” (such as `print`), we need to register
-   these manually via `register_S3_method` (this is necessary since these
-   functions are inherently ambiguous and there is no automatic way of finding
+3. The module exports [S3 functions](https://adv-r.hadley.nz/s3.html). The ‘box’
+   package takes care to register such functions automatically but this only
+   works for *user generics* that are defined inside the same module. When
+   overriding “known generics” (such as `print`), we need to register these
+   manually via `register_S3_method` (this is necessary since these functions
+   are inherently ambiguous and there is no automatic way of finding
    them).
 
 ## Nesting modules
