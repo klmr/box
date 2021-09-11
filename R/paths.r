@@ -160,7 +160,7 @@ knitr_path = function (...) {
 shiny_path = function (...) {
     if (! 'shiny' %in% loadedNamespaces()) return()
     in_shiny =
-        (packageVersion('shiny') < '1.6.0' && shiny::isRunning()) ||
+        (utils::packageVersion('shiny') < '1.6.0' && shiny::isRunning()) ||
         {
             # `isRunning` no longer works in Shiny 1.6.0:
             # <https://github.com/rstudio/shiny/issues/3499>
