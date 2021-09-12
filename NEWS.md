@@ -1,4 +1,4 @@
-# box 1.0.3
+# box 1.1.0
 
 ## Breaking changes
 

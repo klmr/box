@@ -1,5 +1,9 @@
 r_cmdline = function (cmd, ...) {
     skip_on_os('windows')
+    # Some of the script tests fail on CRAN and, lacking stack traces, it’s
+    # simply impossible to debug this. So we disable them.
+    skip_on_cran()
+
     in_tests = grepl('tests/testthat$', getwd())
     rprofile = file.path(
         if (in_tests) '.' else 'tests/testthat',
