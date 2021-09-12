@@ -17,7 +17,9 @@ if (($# == 0)); then
 fi
 
 yaml_header() {
-    sed -n '/^----*/,/^----*/p' "$1"
+    # Anchor at first line to prevent matching subsequent text chunks between
+    # lines consisting of `---` (= horizontal rulers).
+    sed -n '1,/^----*/p' "$1"
 }
 
 pkgdir=$1
@@ -37,6 +39,7 @@ for i in "${!vignettes[@]}"; do
     # Substituting the code fence headers of the R code is done so that the
     # vignette builder produces *.R output files. Without this, no such R files
     # are produced.
+    # FIXME: New versions of knitr/rmarkdown now insert a YAML header into the compiled .md document; this needs to be removed.
     # shellcheck disable=SC2016
-    (echo "$header"; sed '/^``` *r$/s//```{r eval = FALSE}/' "$m") >"$v"
+    (echo "$header"; sed -e '1,/^----*/d' -e '/^``` *r$/s//```{r eval = FALSE}/' "$m") >"$v"
 done

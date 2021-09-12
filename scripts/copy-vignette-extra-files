@@ -27,7 +27,7 @@ all_files = dir(
 )
 
 all_files_posix = file.path(
-    'vignettes', 
+    'vignettes',
     if (.Platform$file.sep != '/') {
         # To match patterns in vignettes/.install_extras
         gsub(.Platform$file.sep, '/', all_files, fixed = TRUE)
