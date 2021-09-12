@@ -1,14 +1,10 @@
-## Changes
+## Major changes
 
-* Fix test failure due to an update in the 'devtools' dependency.
-* Fix: remove unnecessary 'LazyData' statement from 'DESCRIPTION'.
+This release of 'box' attempts to use a new style of documentation which diverges from the conventional R style, but which is (substantially) more appropriate for this package.
 
-Other changes:
+In particular, all uses of exported functions are explicitly qualified with the package name throughout the documentation, to mirror actual usage. Inside the \usage{} section, this is achieved via the use of \special{} tags.
 
-* Enhancement: Make box::help() work with attached objects
-* Enhancement: Allow trailing comma in attach list
-* Fix: Make box::use(.) syntax work
-
+Furthermore, the function box::use() permits multiple different syntax forms, akin to "overloads" in other languages, and these are documented as separate entries in the \usage{}. The \arguments{} section is adapted to match that. The resulting rendered documentation displays correctly in all common formats (text, HTML, PDF) so I hope that this is acceptable for CRAN submission.
 
 ## Test environments
 
