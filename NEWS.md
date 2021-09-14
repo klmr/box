@@ -1,3 +1,8 @@
+# box (development version)
+
+* Feature: Add `purge_cache` function (@kamilzyla, #236)
+
+
 # box 1.1.0
 
 ## Breaking changes
@@ -11,7 +16,7 @@
 
 ## General
 
-* Fix: work around broken `isRunning` function in Shiny ≥1.6.0 (#237)
+* Fix: Work around broken `isRunning` function in Shiny ≥1.6.0 (#237)
 * Fix: Return the full path from `box::set_script_path`, not just the parent
     directory’s path; `box::script_path` now also returns that path without
     requiring the user to set a new path (#239)
