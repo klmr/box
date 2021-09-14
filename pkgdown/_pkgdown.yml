@@ -20,6 +20,7 @@ reference:
     desc: Functions for use in interactive sessions and for testing
     contents:
       - help
+      - purge_cache
       - reload
       - script_path
       - set_script_path

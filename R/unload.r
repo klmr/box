@@ -1,7 +1,7 @@
 #' Unload or reload modules
 #'
 #' Given a module which has been previously loaded and is assigned to an alias
-#' \code{mod}, \code{box::unload(mod} unloads it; \code{box::reload(mod)}
+#' \code{mod}, \code{box::unload(mod)} unloads it; \code{box::reload(mod)}
 #' unloads and reloads it from its source. \code{box::purge_cache()} marks all
 #' modules as unloaded.
 #' @usage \special{box::unload(mod)}
