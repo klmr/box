@@ -3,6 +3,20 @@
 
 options(box.path = getwd())
 
+expect_not_equal = function (object, expected, info = NULL, label = NULL, expected.label = NULL) {
+    act = testthat::quasi_label(rlang::enquo(object), label, arg = 'object')
+    exp = testthat::quasi_label(rlang::enquo(expected), expected.label, arg = 'expected')
+    cmp = testthat::compare(act$val, exp$val)
+    val = deparse(act$val)
+
+    testthat::expect(
+        ! cmp$equal,
+        sprintf('%s is equal to %s.\n%s == %s', act$lab, exp$lab, val, val),
+        info = info
+    )
+    invisible(act$value)
+}
+
 expect_not_identical = function (object, expected, info = NULL, label = NULL, expected.label = NULL) {
     act = testthat::quasi_label(rlang::enquo(object), label, arg = 'object')
     exp = testthat::quasi_label(rlang::enquo(expected), expected.label, arg = 'expected')

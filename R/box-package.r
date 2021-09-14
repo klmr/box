@@ -28,9 +28,12 @@
 #'
 #' \itemize{
 #'  \item \code{\link[=help]{box::help}}
-#'  \item \code{\link[=unload]{box::unload}}, \code{\link[=reload]{box::reload}}
+#'  \item \code{\link[=unload]{box::unload}},
+#'      \code{\link[=reload]{box::reload}},
+#'      \code{\link[=unload]{box::purge_cache}}
 #'  \item \code{\link[=set_script_path]{box::set_script_path}}
-#'  \item \code{\link[=script_path]{box::script_path}}
+#'  \item \code{\link[=script_path]{box::script_path}},
+#'      \code{\link[=script_path]{box::set_script_path}}
 #' }
 #'
 #' @useDynLib box, .registration = TRUE
@@ -123,7 +126,5 @@ set_import_env_parent = function () {
 }
 
 .onUnload = function (libpath) {
-    eapply(loaded_mods, function (mod_ns) {
-        call_hook(mod_ns, '.on_unload', mod_ns)
-    }, all.names = TRUE)
+    purge_cache()
 }

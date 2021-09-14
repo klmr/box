@@ -1,15 +1,16 @@
-#' Unload or reload a given module
+#' Unload or reload modules
 #'
 #' Given a module which has been previously loaded and is assigned to an alias
-#' \code{mod}, \code{unload(mod} unloads it; \code{reload(mod)} unloads and
-#' reloads it from its source.
+#' \code{mod}, \code{box::unload(mod)} unloads it; \code{box::reload(mod)}
+#' unloads and reloads it from its source. \code{box::purge_cache()} marks all
+#' modules as unloaded.
 #' @usage \special{box::unload(mod)}
 #' @param mod a module object to be unloaded or reloaded
-#' @return \code{box::unload} and \code{box::reload} are called for their
-#' side effect. They do not return anything.
+#' @return These functions are called for their side effect. They do not return
+#' anything.
 #'
 #' @details
-#' Unloading a module causes it to be purged from the internal cache such that
+#' Unloading a module causes it to be removed from the internal cache such that
 #' the next subsequent \code{box::use} declaration will reload the module from
 #' its source. \code{box::reload} unloads and reloads the specified modules and
 #' all its transitive module dependencies. \code{box::reload} is \emph{not}
@@ -24,17 +25,22 @@
 #' \code{.on_unload} hook unloaded any binary shared libraries which are still
 #' referenced.
 #'
-#' \code{box::unload} and \code{box::reload} come with a few restrictions.
+#' These functions come with a few restrictions.
 #' \code{box::unload} attempts to detach names attached by the corresponding
 #' \code{box::use} call.
 #' \code{box::reload} attempts to re-attach these same names. This only works if
 #' the corresponding \code{box::use} declaration is located in the same scope.
+#' \code{box::purge_cache} only removes the internal cache of modules, it does
+#' not actually invalidate any module references or names attached from loaded
+#' modules.
 #'
 #' \code{box::unload} will execute the \code{.on_unload} hook of the module, if
 #' it exists.
 #' \code{box::reload} will re-execute the \code{.on_load} hook of the module and
 #' of all dependent modules during loading (after executing the corresponding
 #' \code{.on_unload} hooks during unloading).
+#' \code{box::purge_cache} will execute any existing \code{.on_unload} hooks in
+#' all loaded modules.
 #' @seealso \code{\link[=use]{box::use}}, \link[=mod-hooks]{module hooks}
 #' @export
 unload = function (mod) {
@@ -133,6 +139,16 @@ reload = function (mod) {
     load_and_register(spec, info, caller)
     # Loading worked, so cancel restoring the old module.
     on.exit()
+}
+
+#' @usage \special{box::purge_cache()}
+#' @name unload
+#' @export
+purge_cache = function () {
+    eapply(loaded_mods, function (mod_ns) {
+        call_hook(mod_ns, '.on_unload', mod_ns)
+    }, all.names = TRUE)
+    rm(list = names(loaded_mods), envir = loaded_mods)
 }
 
 #' @keywords internal

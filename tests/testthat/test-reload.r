@@ -6,7 +6,7 @@ is_module_loaded = function (path) {
 
 unload_all = function () {
     modenv = box:::loaded_mods
-    rm(list = ls(modenv), envir = modenv)
+    rm(list = names(modenv), envir = modenv)
 }
 
 tempfile_dir = function (...) {
