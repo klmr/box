@@ -62,3 +62,22 @@ test_that('`unload` shows expected errors', {
         '"unload" expects a module object, got "x", which is of type "integer" instead'
     )
 })
+
+test_that('purging cache marks modules as unloaded', {
+    box::use(mod/a)
+    path = box::path(a)
+
+    expect_true(is_module_loaded(path))
+    box::purge_cache()
+    expect_false(is_module_loaded(path))
+})
+
+test_that('after purging the cache, modules get reloaded', {
+    box::use(mod/a)
+    a$inc()
+    counter = a$get_counter()
+
+    box::purge_cache()
+    box::use(mod/a)
+    expect_not_equal(a$get_counter(), counter)
+})
