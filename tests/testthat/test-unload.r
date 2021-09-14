@@ -65,7 +65,7 @@ test_that('`unload` shows expected errors', {
 
 test_that('purging cache marks modules as unloaded', {
     box::use(mod/a)
-    path = box::path(a)
+    path = box:::path(a)
 
     expect_true(is_module_loaded(path))
     box::purge_cache()
