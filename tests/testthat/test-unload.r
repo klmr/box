@@ -81,3 +81,8 @@ test_that('after purging the cache, modules get reloaded', {
     box::use(mod/a)
     expect_not_equal(a$get_counter(), counter)
 })
+
+test_that('purging the cache executes `.on_unload` hooks', {
+    box::use(mod/reload/a)
+    expect_message(box::purge_cache(), '^a unloaded')
+})

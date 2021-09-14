@@ -123,7 +123,5 @@ set_import_env_parent = function () {
 }
 
 .onUnload = function (libpath) {
-    eapply(loaded_mods, function (mod_ns) {
-        call_hook(mod_ns, '.on_unload', mod_ns)
-    }, all.names = TRUE)
+    purge_cache()
 }
