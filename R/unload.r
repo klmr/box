@@ -135,6 +135,12 @@ reload = function (mod) {
     on.exit()
 }
 
+#' Delete the cache of loaded modules
+#' @export
+purge_cache = function () {
+    rm(list = names(loaded_mods), envir = loaded_mods)
+}
+
 #' @keywords internal
 unload_mod = function (mod_ns, info) {
     call_hook(mod_ns, '.on_unload', mod_ns)
