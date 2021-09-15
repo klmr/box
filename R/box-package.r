@@ -41,6 +41,46 @@
 #' @docType package
 '_PACKAGE'
 
+.onLoad = function (libname, pkgname) {
+    assign(
+        'system_mod_path',
+        system.file('mod', package = 'box'),
+        envir = topenv()
+    )
+
+    set_import_env_parent()
+}
+
+.onUnload = function (libpath) {
+    purge_cache()
+}
+
+.onAttach = function (libname, pkgname) {
+    # Do not permit attaching ‘box’, except during build/check/CI.
+    if (
+        called_from_devtools() ||
+        called_from_pkgdown() ||
+        called_from_ci() ||
+        # `utils::example` also attaches the package.
+        called_from_example()
+    ) return()
+
+    is_bad_call = function (call) {
+        as.character(call[[1L]]) %in% c('library', 'require')
+    }
+
+    # Deparsed to silence spurious `R CMD check` warnign
+    default = call('library', quote(box))
+    bad_call = Filter(is_bad_call, sys.calls())[1L][[1L]] %||% default
+    throw(
+        'the {pkgname;\'} package is not supposed to be attached!\n\n',
+        'Please consult the user guide at `{vignette}`.',
+        vignette = call('vignette', pkgname, package = pkgname),
+        call = bad_call,
+        subclass = 'box_attach_error'
+    )
+}
+
 called_from_devtools = function () {
     isNamespaceLoaded('devtools') && {
         is_devtools_ns = function (x) identical(x, getNamespace('devtools'))
@@ -75,42 +115,6 @@ called_from_example = function () {
     any(map_lgl(is_example_call, seq_len(sys.nframe())))
 }
 
-.onAttach = function (libname, pkgname) {
-    # Do not permit attaching ‘box’, except during build/check/CI.
-    if (
-        called_from_devtools() ||
-        called_from_pkgdown() ||
-        called_from_ci() ||
-        # `utils::example` also attaches the package.
-        called_from_example()
-    ) return()
-
-    is_bad_call = function (call) {
-        as.character(call[[1L]]) %in% c('library', 'require')
-    }
-
-    # Deparsed to silence spurious `R CMD check` warnign
-    default = call('library', quote(box))
-    bad_call = Filter(is_bad_call, sys.calls())[1L][[1L]] %||% default
-    throw(
-        'the {pkgname;\'} package is not supposed to be attached!\n\n',
-        'Please consult the user guide at `{vignette}`.',
-        vignette = call('vignette', pkgname, package = pkgname),
-        call = bad_call,
-        subclass = 'box_attach_error'
-    )
-}
-
-.onLoad = function (libname, pkgname) {
-    assign(
-        'system_mod_path',
-        system.file('mod', package = 'box'),
-        envir = topenv()
-    )
-
-    set_import_env_parent()
-}
-
 import_env_parent = NULL
 
 # Separate function for unit testing.
@@ -123,8 +127,4 @@ set_import_env_parent = function () {
             baseenv()
         }
     )
-}
-
-.onUnload = function (libpath) {
-    purge_cache()
 }
