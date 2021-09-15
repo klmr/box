@@ -54,7 +54,8 @@ check: documentation
 ## Create package website
 site: README.md NAMESPACE NEWS.md ${favicons}
 	${rscript} -e "pkgdown::build_site()"
-	scripts/copy-vignette-extra-files . docs/articles
+	scripts/copy-vignette-extra-files . docs/articles \
+	|| scripts/copy-vignette-extra-files . docs/dev/articles \
 
 .PHONY: dev-site
 ## Create package website [dev mode]
