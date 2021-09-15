@@ -7,7 +7,7 @@
 #' @param name the name of the generic as a character string.
 #' @param class the class name.
 #' @param method the method to register.
-#' @return \code{register_S3_method} is called for its side effect.
+#' @return \code{box::register_S3_method} is called for its side effect.
 #'
 #' @details Methods for generics defined in the same module do not need to be
 #' registered explicitly, and indeed \emph{should not} be registered. However,
