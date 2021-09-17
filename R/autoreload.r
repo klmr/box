@@ -82,15 +82,25 @@ autoreload = local({
     add_include = function (spec, caller) {
         spec = parse_spec(spec, '')
         info = find_mod(spec, caller)
-        self$excludes = setdiff(self$excludes, info$source_path)
-        self$includes = c(self$includes, info$source_path)
+
+        if (length(self$includes) > 0L) {
+            self$includes = c(self$includes, info$source_path)
+        } else if (length(self$excludes) > 0L) {
+            self$excludes = setdiff(self$excludes, info$source_path)
+        } else {
+            self$includes = info$source_path
+        }
     }
 
     add_exclude = function (spec, caller) {
         spec = parse_spec(spec, '')
         info = find_mod(spec, caller)
-        self$includes = setdiff(self$includes, info$source_path)
-        self$excludes = c(self$excludes, info$source_path)
+
+        if (length(self$includes) > 0L) {
+            self$includes = setdiff(self$includes, info$source_path)
+        } else {
+            self$excludes = c(self$excludes, info$source_path)
+        }
     }
 
     included = function (info) {
