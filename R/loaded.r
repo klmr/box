@@ -41,7 +41,7 @@ register_mod = function (info, mod_ns) {
     # At worst, this means loading the module redundantly in auto-reload mode.
     # Doing it the other way round might cause file changes not to be noticed.
     add_timestamp(info)
-    attr(loaded_mods[[info$source_path]], 'loading') = TRUE
+    namespace_info(loaded_mods[[info$source_path]], 'loading') = TRUE
 }
 
 #' @rdname loaded
@@ -59,10 +59,10 @@ loaded_mod = function (info) {
 #' @rdname loaded
 is_mod_still_loading = function (info) {
     # pkg_info has no `source_path` but already finished loading anyway.
-    ! is.null(info$source_path) && attr(loaded_mods[[info$source_path]], 'loading')
+    ! is.null(info$source_path) && namespace_info(loaded_mods[[info$source_path]], 'loading')
 }
 
 #' @rdname loaded
 mod_loading_finished = function (info, mod_ns) {
-    attr(loaded_mods[[info$source_path]], 'loading') = FALSE
+    namespace_info(loaded_mods[[info$source_path]], 'loading') = FALSE
 }
