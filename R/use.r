@@ -499,6 +499,7 @@ assign_alias = function (spec, mod_exports, caller) {
     if (exists(spec$alias, caller, inherits = FALSE) && bindingIsLocked(spec$alias, caller)) {
         box_unlock_binding(spec$alias, caller)
     }
+    attr(mod_exports, 'parent') = caller
     assign(spec$alias, mod_exports, envir = caller)
 }
 

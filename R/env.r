@@ -153,7 +153,7 @@ make_export_env = function (info, spec, ns) {
     structure(
         new.env(parent = emptyenv()),
         name = paste0('mod:', spec_name(spec)),
-        class = 'box$mod',
+        class = autoreload$export_env_class(info),
         spec = spec,
         info = info,
         namespace = ns
@@ -175,6 +175,9 @@ strict_extract = function (e1, e2) {
 
 #' @export
 `$.box$ns` = strict_extract
+
+#' @export
+`$.box$autoreload` = autoreload$extract
 
 #' @export
 `print.box$mod` = function (x, ...) {

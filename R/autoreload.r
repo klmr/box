@@ -67,16 +67,16 @@ autoreload = local({
     init = function (on_access) {
         reset()
         if (on_access) {
-            throw('Not yet implemented')
-        } else {
-            self$is_mod_loaded = is_mod_loaded_reload
+            self$export_env_class = export_env_class_reload
         }
+        self$is_mod_loaded = is_mod_loaded_reload
     }
 
     reset = function () {
         self$includes = character()
         self$excludes = character()
         self$is_mod_loaded = is_mod_loaded_basic
+        self$export_env_class = export_env_class_basic
     }
 
     add_include = function (spec, caller) {
@@ -111,6 +111,29 @@ autoreload = local({
         } else {
             path %in% includes
         }
+    }
+
+    extract = function (e1, e2) {
+        ns = attr(e1, 'namespace')
+        info = namespace_info(ns, 'info')
+        new_mod = if (needs_reloading(info, ns)) {
+            spec = attr(e1, 'spec')
+            parent = attr(e1, 'parent')
+            load_and_register(spec, info, parent)
+            get(spec$alias, envir = parent)
+        } else {
+            e1
+        }
+
+        strict_extract(new_mod, e2)
+    }
+
+    export_env_class_basic = function (info, ns) {
+        'box$mod'
+    }
+
+    export_env_class_reload = function (info) {
+        c(if (included(info)) 'box$autoreload', 'box$mod')
     }
 
     is_mod_loaded_basic = function (info) {
