@@ -118,11 +118,16 @@ autoreload = local({
     }
 
     is_mod_loaded_reload = function (info) {
-        is_mod_loaded_basic(info) && ! needs_reloading(info)
+        is_mod_loaded_basic(info) && ! needs_reloading(info, loaded_mod(info))
     }
 
-    needs_reloading = function (info) {
-        included(info) && is_file_modified(info)
+    needs_reloading = function (info, ns) {
+        included(info) && (
+            is_file_modified(info, ns) || {
+                imports = namespace_info(ns, 'imports')
+                any(map_lgl(function (x) needs_reloading(x$info, x$ns), imports))
+            }
+        )
     }
 
     reset()
@@ -130,18 +135,12 @@ autoreload = local({
     self
 })
 
-add_timestamp = function (info) {
+add_timestamp = function (info, ns) {
     timestamp = file.mtime(info$source_path)
-    mod_timestamps[[info$source_path]] = timestamp
+    namespace_info(ns, 'timestamp') = timestamp
 }
 
-remove_timestamp = function (info) {
-    rm(list = info$source_path, envir = mod_timestamps)
+is_file_modified = function (info, ns) {
+    timestamp = namespace_info(ns, 'timestamp')
+    file.mtime(info$source_path) > timestamp
 }
-
-is_file_modified = function (info) {
-    prev = mod_timestamps[[info$source_path]]
-    is.null(prev) || file.mtime(info$source_path) > prev
-}
-
-mod_timestamps = new.env(parent = emptyenv())

@@ -40,7 +40,7 @@ register_mod = function (info, mod_ns) {
     # conditions in the presence of concurrent file modifications.
     # At worst, this means loading the module redundantly in auto-reload mode.
     # Doing it the other way round might cause file changes not to be noticed.
-    add_timestamp(info)
+    add_timestamp(info, mod_ns)
     namespace_info(loaded_mods[[info$source_path]], 'loading') = TRUE
 }
 
