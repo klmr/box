@@ -8,6 +8,8 @@
 #' \sQuote{Examples}).
 #' \code{transpose} is a special \code{map} application that concatenates its
 #' inputs to compute a transposed list.
+#' \code{foreach} is a special \code{map} application that does not return a
+#' value; it is therefore expected that \code{.f} causes a side-effect.
 #' @param .f an n-ary function where n is the number of further arguments given
 #' @param \dots lists of arguments to map over in parallel
 #' @param .default the default value returned by \code{flatmap} for an empty
@@ -76,4 +78,13 @@ map_chr = function (.f, ...) {
 #' @rdname map
 transpose = function (...) {
     map(c, ...)
+}
+
+#' @return \code{foreach} does not return any value.
+#' @rdname map
+foreach = function (.f, ...) {
+    args = list(...)
+    for (i in seq_along(..1)) {
+        do.call(.f, lapply(args, `[[`, i))
+    }
 }

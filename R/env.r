@@ -215,17 +215,17 @@ find_import_env.environment = function (x, spec, info, mod_ns) {
 }
 
 import_into_env = function (to_env, to_names, from_env, from_names) {
-    for (i in seq_along(to_names)) {
+    foreach(function (from, to) {
         if (
-            exists(from_names[i], from_env, inherits = FALSE)
-            && bindingIsActive(from_names[i], from_env)
-            && ! inherits((fun = activeBindingFunction(from_names[i], from_env)), 'box$placeholder')
+            exists(from, from_env, inherits = FALSE)
+            && bindingIsActive(from, from_env)
+            && ! inherits((fun = activeBindingFunction(from, from_env)), 'box$placeholder')
         ) {
-            makeActiveBinding(to_names[i], fun, to_env)
+            makeActiveBinding(to, fun, to_env)
         } else {
-            assign(to_names[i], env_get(from_env, from_names[i]), envir = to_env)
+            assign(to, env_get(from_env, from), envir = to_env)
         }
-    }
+    }, from_names, to_names)
 }
 
 env_get = function (env, name) {
