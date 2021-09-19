@@ -455,7 +455,11 @@ attach_to_caller = function (spec, info, mod_exports, mod_ns, caller) {
 
     import_env = find_import_env(caller, spec, info, mod_ns)
     attr(mod_exports, 'attached') = environmentName(import_env)
-    import_into_env(import_env, names(attach_list), mod_exports, attach_list)
+    autoreload$import_into_env(
+        spec, info,
+        import_env, names(attach_list),
+        mod_ns, attach_list
+    )
 }
 
 #' @return \code{attach_list} returns a named character vector of the names in

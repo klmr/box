@@ -63,11 +63,13 @@ spec_list = function (specs) {
 
 autoreload = local({
     self = environment()
+    top = topenv()
 
     init = function (on_access) {
         reset()
         if (on_access) {
             self$export_env_class = export_env_class_reload
+            self$import_into_env = import_into_env_reload
         }
         self$is_mod_loaded = is_mod_loaded_reload
     }
@@ -77,6 +79,7 @@ autoreload = local({
         self$excludes = character()
         self$is_mod_loaded = is_mod_loaded_basic
         self$export_env_class = export_env_class_basic
+        self$import_into_env = import_into_env_basic
     }
 
     add_include = function (spec, caller) {
@@ -120,7 +123,7 @@ autoreload = local({
             spec = attr(e1, 'spec')
             parent = attr(e1, 'parent')
             load_and_register(spec, info, parent)
-            get(spec$alias, envir = parent)
+            get(spec$alias, envir = parent, inherits = FALSE)
         } else {
             e1
         }
@@ -142,6 +145,43 @@ autoreload = local({
 
     is_mod_loaded_reload = function (info) {
         is_mod_loaded_basic(info) && ! needs_reloading(info, loaded_mod(info))
+    }
+
+    import_into_env_basic = function (spec, info, to_env, to_names, from_env, from_names) {
+        top$import_into_env(to_env, to_names, from_env, from_names)
+    }
+
+    import_into_env_reload = function (spec, info, to_env, to_names, from_env, from_names) {
+        foreach(function (from, to) {
+            fun = if (
+                exists(from, from_env, inherits = FALSE) &&
+                bindingIsActive(from, from_env) &&
+                ! inherits(active_binding_function(from, from_env), 'box$placeholder')
+            ) {
+                function (value) {
+                    new_env = if (needs_reloading(info, from_env)) {
+                        load_and_register(spec, info, to_env)
+                        loaded_mod(info)
+                    } else {
+                        from_env
+                    }
+
+                    fun = active_binding_function(from, new_env)
+                    fun(value)
+                }
+            } else {
+                function () {
+                    new_env = if (needs_reloading(info, from_env)) {
+                        load_and_register(spec, info, to_env)
+                        loaded_mod(info)
+                    } else {
+                        from_env
+                    }
+                    get(from, envir = new_env)
+                }
+            }
+            makeActiveBinding(to, fun, to_env)
+        }, from_names, to_names)
     }
 
     needs_reloading = function (info, ns) {
