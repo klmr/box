@@ -14,6 +14,8 @@ create_simple_test_module = function (dir) {
 }
 
 edit_simple_test_module = function (dir) {
+    # Ensure file modification timestamp is different.
+    Sys.sleep(0.001)
     a = file.path(dir, 'mod', 'a.r')
     writeLines(c("#' @export", 'f = function () 2L'), a)
 }
@@ -31,6 +33,8 @@ create_dependent_test_module = function (dir) {
 }
 
 edit_dependent_test_module = function (dir) {
+    # Ensure file modification timestamp is different.
+    Sys.sleep(0.001)
     mod = file.path(dir, 'mod')
     writeLines(c("#' @export", 'f = function () 2L'), file.path(mod, 'b.r'))
 }
