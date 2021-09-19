@@ -10,24 +10,29 @@ create_simple_test_module = function (dir) {
     mod = file.path(dir, 'mod')
     dir.create(mod)
     a = file.path(mod, 'a.r')
-    writeLines("#' @export\nf = function () 1L", a)
+    writeLines(c("#' @export", 'f = function () 1L'), a)
 }
 
 edit_simple_test_module = function (dir) {
     a = file.path(dir, 'mod', 'a.r')
-    writeLines("#' @export\nf = function () 2L", a)
+    writeLines(c("#' @export", 'f = function () 2L'), a)
 }
 
 create_dependent_test_module = function (dir) {
     mod = file.path(dir, 'mod')
     dir.create(mod)
-    writeLines("#' @export\nbox::use(./b[f])", file.path(mod, 'a.r'))
-    writeLines("#' @export\nf = function () 1L", file.path(mod, 'b.r'))
+    writeLines(c(
+        "#' @export",
+        'box::use(b = ./b[f])',
+        "#' @export",
+        'g = function () b$f()'
+    ), file.path(mod, 'a.r'))
+    writeLines(c("#' @export", 'f = function () 1L'), file.path(mod, 'b.r'))
 }
 
 edit_dependent_test_module = function (dir) {
     mod = file.path(dir, 'mod')
-    writeLines("#' @export\nf = function () 2L", file.path(mod, 'b.r'))
+    writeLines(c("#' @export", 'f = function () 2L'), file.path(mod, 'b.r'))
 }
 
 test_teardown(box:::autoreload$reset())
@@ -135,12 +140,16 @@ test_that('auto-reloading dependent modules works with `box::use`', {
     box::use(mod/a)
 
     expect_equal(a$f(), 1L)
+    expect_equal(a$g(), 1L)
+
 
     edit_dependent_test_module(dir)
 
     box::use(mod/a)
 
     expect_equal(a$f(), 2L)
+    expect_equal(a$g(), 2L)
+
 })
 
 test_that('auto-reloading simple modules works with module name', {
@@ -175,10 +184,12 @@ test_that('auto-reloading dependent modules works with module name', {
     box::use(mod/a)
 
     expect_equal(a$f(), 1L)
+    expect_equal(a$g(), 1L)
 
     edit_dependent_test_module(dir)
 
     expect_equal(a$f(), 2L)
+    expect_equal(a$g(), 2L)
 })
 
 test_that('auto-reloading simple modules works with attached name', {
@@ -210,11 +221,13 @@ test_that('auto-reloading dependent modules works with attached name', {
     create_dependent_test_module(dir)
 
     box::enable_autoreload(on_access = TRUE)
-    box::use(mod/a[f])
+    box::use(mod/a[f, g])
 
     expect_equal(f(), 1L)
+    expect_equal(g(), 1L)
 
     edit_dependent_test_module(dir)
 
     expect_equal(f(), 2L)
+    expect_equal(g(), 2L)
 })
