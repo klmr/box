@@ -1,0 +1,36 @@
+name: ⚠ Bug Report
+description: File a bug report
+labels: ["⚠️ bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+
+        Please also have a look at [existing open bug reports][bugs] to avoid duplicates.
+
+        [bugs]: https://github.com/klmr/box/labels/%E2%9A%A0%EF%B8%8F%20bug
+  - type: textarea
+    id: description
+    attributes:
+      label: Error description
+      placeholder: >
+        A brief description of the steps necessary to reproduce the issue, as
+        well as the expected and actual output.
+    validations:
+      required: true
+  - type: textarea
+    id: r-version
+    attributes:
+      label: R version
+      description: The output of running `R.version` in R
+      render: plain text
+    validations:
+      required: true
+  - type: input
+    id: box-version
+    attributes:
+      label: ‘box’ version
+      description: The output of running `packageVersion('box')` in R
+    validations:
+      required: true

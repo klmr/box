@@ -1,0 +1,16 @@
+name: ✨ Feature request
+description: Request a new feature
+labels: ["✨ new feature"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before requesting a new feature, please first have a look at [existing feature requests][] to avoid duplicate requests.
+
+        [existing feature requests]: https://github.com/klmr/box/labels/%E2%9C%A8%20new%20feature
+  - type: textarea
+    id: description
+    attributes:
+      label: Please describe your feature request
+    validations:
+      required: true

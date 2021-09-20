@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: ❔ Frequently asked questions
+    url: https://klmr.me/box/articles/faq.html
+    about: The ‘box’ website contains a list of frequently asked questions
+  - name: 💬 ‘box’ questions on Stack Overflow
+    url: https://stackoverflow.com/questions/tagged/r-box?sort=Newest
+    about: When asking questions about ‘box’ on Stack Overflow, please use the [r-box] tag
+  - name: 💬 General questions and discussions
+    url: https://github.com/klmr/box/discussions/categories/q-a
+    about: You can also use the GitHub Discussions board for questions and answers
