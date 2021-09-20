@@ -183,7 +183,8 @@ used explicitly via `box::use`.
 If you encounter a bug or have a feature request, please [post an issue report
 on GitHub][new-issue]. For general questions, posting on Stack Overflow,
 [tagged as <span style="display: inline-block; padding: 0 2px; border: solid var(--default) 1px; border-radius: 3px; white-space: nowrap;">r-box</span>][so:r-box],
-is also an option.
+is also an option. Finally, there’s a [GitHub Discussions][] board at your
+disposal.
 
 ## Why ‘box’?
 
@@ -223,6 +224,7 @@ allow unqualified imports at all.
 [FAQ]: https://klmr.me/box/articles/faq.html
 [new-issue]: https://github.com/klmr/box/issues/new
 [so:r-box]: https://stackoverflow.com/questions/tagged/r-box?tab=Newest
+[GitHub Discussions]: https://github.com/klmr/box/discussions
 [C++]: https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Rs-using
 [Rust]: https://doc.rust-lang.org/book/ch07-04-bringing-paths-into-scope-with-the-use-keyword.html#the-glob-operator
 [Perl]: https://perldoc.perl.org/Exporter#Selecting-What-to-Export
