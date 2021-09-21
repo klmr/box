@@ -185,12 +185,20 @@ autoreload = local({
     }
 
     needs_reloading = function (info, ns) {
+        UseMethod('needs_reloading')
+    }
+
+    `needs_reloading.box$mod_info` = function (info, ns) {
         included(info) && (
             is_file_modified(info, ns) || {
                 imports = namespace_info(ns, 'imports')
                 any(map_lgl(function (x) needs_reloading(x$info, x$ns), imports))
             }
         )
+    }
+
+    `needs_reloading.box$pkg_info` = function (info, ns) {
+        FALSE
     }
 
     reset()

@@ -153,11 +153,23 @@ make_export_env = function (info, spec, ns) {
     structure(
         new.env(parent = emptyenv()),
         name = paste0('mod:', spec_name(spec)),
-        class = autoreload$export_env_class(info),
+        class = export_env_class(info),
         spec = spec,
         info = info,
         namespace = ns
     )
+}
+
+export_env_class = function (info) {
+    UseMethod('export_env_class')
+}
+
+`export_env_class.box$mod_info` = function (info) {
+    autoreload$export_env_class(info)
+}
+
+`export_env_class.box$pkg_info` = function (info) {
+    'box$mod'
 }
 
 strict_extract = function (e1, e2) {

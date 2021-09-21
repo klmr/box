@@ -10,7 +10,11 @@ create_simple_test_module = function (dir) {
     mod = file.path(dir, 'mod')
     dir.create(mod)
     a = file.path(mod, 'a.r')
-    writeLines(c("#' @export", 'f = function () 1L'), a)
+    writeLines(c(
+        'box::use(stats)',
+        "#' @export",
+        'f = function () 1L'
+    ), a)
 }
 
 edit_simple_test_module = function (dir) {
