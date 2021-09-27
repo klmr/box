@@ -169,13 +169,15 @@ effects:
 ```r
 log = function (msg) {
     box::use(glue[glue])
+    # We can now use `glue` inside the function:
     message(glue('[LOG MESSAGE] {msg}'))
 }
 
 log('test')
 #> [LOG MESSAGE] test
-
-# … 'glue' is still undefined at this point!
+# … But `glue` remains undefined in the outer scope:
+glue('test')
+#> Error in glue("test"): could not find function "glue"
 ```
 
 This makes it easy to encapsulate code with external dependencies without
