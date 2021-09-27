@@ -187,10 +187,9 @@ used explicitly via `box::use`.
 ## Getting help
 
 If you encounter a bug or have a feature request, please [post an issue report
-on GitHub][new-issue]. For general questions, posting on Stack Overflow,
-[tagged as <span style="display: inline-block; padding: 0 2px; border: solid var(--default) 1px; border-radius: 3px; white-space: nowrap;">r-box</span>][so:r-box],
-is also an option. Finally, there’s a [GitHub Discussions][] board at your
-disposal.
+on GitHub][new-issue]. For general questions, posting on Stack Overflow, [tagged
+as <span class="so-tag">r-box</span>][so:r-box], is also an option. Finally,
+there’s a [GitHub Discussions][] board at your disposal.
 
 ## Why ‘box’?
 

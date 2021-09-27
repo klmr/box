@@ -87,3 +87,16 @@ span.pp { color: #AD0000; font-style: italic; }
     margin-top: 1.5rem !important;
     width: 120px;
 }
+
+.so-tag {
+    background: #e1ecf4;
+    border-radius: 3px;
+    display: inline-block;
+    line-height: 1;
+    padding: 0.3em 0.3em;
+    white-space: nowrap;
+}
+
+.so-tag:hover {
+    background: #d0e3f1;
+}
