@@ -13,13 +13,12 @@ vignette: >
     %\VignetteEncoding{UTF-8}
 ---
 ```{r include = FALSE}
-devtools::load_all()
+devtools::load_all(export_all = FALSE, helpers = FALSE, attach_testthat = FALSE)
 detach('package:box') # No need to keep the package attached.
+detach('devtools_shims')
 
-# The module does not export any symbols. We use `[...]` solely to prevent the
-# declaration to create a module alias in the calling environment, so this
-# implementation detail isn’t shown in subsequent `ls()` calls.
-box::use(./source_file[...])
+# Hide (unused) module alias from subsequent `ls()` call output.
+box::use(.sf = ./source_file[...])
 ```
 
 ## Using modules
@@ -195,28 +194,27 @@ specification, as this makes it clearer which names are being referring to.
 
 The module `bio/seq`, which we have used in the previous section, is implemented
 in the file [`bio/seq.r`](bio/seq.r). The file `seq.r` is, by and large, a
-normal R source file, which happens to live in a directory named `bio`.
+regular R source file, which happens to live in a directory named `bio`.
 
 In fact, there are only three things worth mentioning:
 
-1. Documentation. Functions in the module file can be documented using
+1. Documentation: functions in the module file can be documented using
    ‘[roxygen2](https://cran.r-project.org/package=roxygen2)’ syntax. It works
    the same as for packages. The ‘box’ package parses the documentation and
    makes it available via `box::help`. *Displaying module help requires that
    ‘roxygen2’ is installed.*
 
-2. Export declarations. Similar to packages, modules explicitly need to declare
+2. Export declarations: similar to packages, modules explicitly need to declare
    which names they export; they do this using the annotation comment `#'
-   @export` in front of the name. Again, this works similarly to ‘roxygen2’ (but
-   does *not* require having that package installed).
+   @export` in front of the name assignment. Again, this works similarly to
+   ‘roxygen2’ (but does *not* require having that package installed).
 
-3. The module exports [S3 functions](https://adv-r.hadley.nz/s3.html). The ‘box’
-   package takes care to register such functions automatically but this only
-   works for *user generics* that are defined inside the same module. When
-   overriding “known generics” (such as `print`), we need to register these
-   manually via `register_S3_method` (this is necessary since these functions
-   are inherently ambiguous and there is no automatic way of finding
-   them).
+3. [S3 functions](https://adv-r.hadley.nz/s3.html): ‘box’ registers and exports
+   such functions automatically as necessary, but this only works for *user
+   generics* that are defined inside the same module. When overriding “known
+   generics” (such as `print`), we need to register these manually via
+   `register_S3_method` (this is necessary since these functions are inherently
+   ambiguous and there is no automatic way of finding them).
 
 ## Nesting modules
 
@@ -232,7 +230,13 @@ relative path prevents lookup in the import search path (that we set via
 `options(box.path = …)`); instead, only the current directory (that is, the
 directory containing the `bio` module) is considered.
 
-We can now use the `bio` module:
+When applied to a `box::use` declaration, `@export` causes all names which are
+imported by that declaration to also be exported: any module name created by the
+declaration (here, `seq`) is exported as-is. Furthermore, any attached name is
+likewise exported. Refer to the `box::use` documentation and examples for more
+details on which names are exported.
+
+Coming back to our example module, we can now use the `bio` module:
 
 ```{r}
 options(box.path = NULL) # Reset search path

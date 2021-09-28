@@ -21,8 +21,9 @@
 #'
 #' @details
 #' \code{box::use(\dots)} specifies a list of one or more import declarations,
-#' given as individual arguments to \code{box::use}, separated by comma. Each
-#' import declaration takes one of the following forms:
+#' given as individual arguments to \code{box::use}, separated by comma.
+#' \code{box::use} permits using a trailing comma after the last import
+#' declaration. Each import declaration takes one of the following forms:
 #'
 #' \describe{
 #' \item{\code{\var{prefix}/\var{mod}}:}{
@@ -159,32 +160,57 @@
 #' All module source code files are assumed to be UTF-8 encoded.
 #'
 #' @examples
-#' local({
-#'     # Set the module search path for the example module.
-#'     old_opts = options(box.path = system.file(package = 'box'))
-#'     on.exit(options(old_opts))
+#' # Set the module search path for the example module.
+#' old_opts = options(box.path = system.file(package = 'box'))
 #'
-#'     # Basic usage
-#'     # The file `box/hello_world.r` exports the functions `world` and `bye`.
-#'     box::use(box/hello_world)
-#'     hello_world$hello('Robert')
-#'     hello_world$bye('Robert')
+#' # Basic usage
+#' # The file `box/hello_world.r` exports the functions `hello` and `bye`.
+#' box::use(box/hello_world)
+#' hello_world$hello('Robert')
+#' hello_world$bye('Robert')
 #'
-#'     # Using an alias
-#'     box::use(world = box/hello_world)
-#'     world$hello('John')
+#' # Using an alias
+#' box::use(world = box/hello_world)
+#' world$hello('John')
 #'
-#'     # Attaching exported names
-#'     box::use(box/hello_world[hello])
-#'     hello('Jenny')
-#'     # Exported but not attached, thus access fails:
-#'     try(bye('Jenny'))
+#' # Attaching exported names
+#' box::use(box/hello_world[hello])
+#' hello('Jenny')
+#' # Exported but not attached, thus access fails:
+#' try(bye('Jenny'))
 #'
-#'     # Attach everything, give 'world' an alias:
-#'     box::use(box/hello_world[hi = hello, ...])
-#'     hi('Eve')
-#'     bye('Eve')
-#' })
+#' # Attach everything, give `hello` an alias:
+#' box::use(box/hello_world[hi = hello, ...])
+#' hi('Eve')
+#' bye('Eve')
+#'
+#' # Reset the module search path
+#' on.exit(options(old_opts))
+#'
+#' \dontrun{
+#' # The following code illustrates different import declaration syntaxes
+#' # inside a single `box::use` declaration:
+#'
+#' box::use(
+#'     global/mod,
+#'     mod2 = ./local/mod,
+#'     purrr,
+#'     tbl = tibble,
+#'     dplyr = dplyr[filter, select],
+#'     stats[st_filter = filter, ...],
+#' )
+#'
+#' # This declaration makes the following names available in the caller’s scope:
+#' #
+#' # 1. `mod`, which refers to the module environment for  `global/mod`
+#' # 2. `mod2`, which refers to the module environment for `./local/mod`
+#' # 3. `purrr`, which refers to the package environment for ‘purrr’
+#' # 4. `tbl`, which refers to the package environment for ‘tibble’
+#' # 5. `dplyr`, which refers to the package environment for ‘dplyr’
+#' # 6. `filter` and `select`, which refer to the names exported by ‘dplyr’
+#' # 7. `st_filter`, which refers to `stats::filter`
+#' # 8. all other exported names from the ‘stats’ package
+#' }
 #' @seealso
 #' \code{\link[=name]{box::name}} and \code{\link[=file]{box::file}} give
 #' information about loaded modules.
@@ -192,8 +218,8 @@
 #' \code{\link[=unload]{box::unload}} and \code{\link[=reload]{box::reload}} aid
 #' during module development by performing dynamic unloading and reloading of
 #' modules in a running \R session.
-#' \code{\link[=export]{box::export}} can be used inside a module to declare
-#' module exports.
+#' \code{\link[=export]{box::export}} can be used as an alternative to
+#' \code{@export} comments inside a module to declare module exports.
 #' @export
 use = function (...) {
     caller = parent.frame()
