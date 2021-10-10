@@ -268,6 +268,6 @@ test_that('trailing comma is accepted', {
 test_that('aliases need a name', {
     expect_box_error(test_use(alias =), 'alias without name provided in use declaration')
     expect_box_error(box::use(mod/a, alias =), 'alias without name provided in use declaration')
-    expect_box_error(test_use(foo/bar[alias = , y]), 'alias without name provided in attach list')
-    expect_box_error(test_use(foo/bar[x, alias = ]), 'alias without name provided in attach list')
+    expect_box_error(test_use(foo/bar[alias =, y]), 'alias without name provided in attach list')
+    expect_box_error(test_use(foo/bar[x, alias =]), 'alias without name provided in attach list')
 })

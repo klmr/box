@@ -175,7 +175,7 @@ shiny_path = function (...) {
 #' \pkg{testthat} test case.
 #' @rdname path
 testthat_path = function (...) {
-    if (identical(Sys.getenv("TESTTHAT"), "true")) getwd()
+    if (identical(Sys.getenv('TESTTHAT'), 'true')) getwd()
 }
 
 #' @return \code{rstdio_path} returns the directory in which the currently
@@ -186,8 +186,8 @@ rstudio_path = function (...) {
     # we need to exclude that case; conversely, `.Platform$GUI` is apparently
     # not yet set to "RStudio" during startup, so just checking that is
     # insufficient. See comments at <https://stackoverflow.com/a/35849779/1968>.
-    if (Sys.getenv("RSTUDIO") != "1") return(NULL)
-    if (! identical(.Platform$GUI, "RStudio")) return(NULL)
+    if (Sys.getenv('RSTUDIO') != '1') return(NULL)
+    if (! identical(.Platform$GUI, 'RStudio')) return(NULL)
 
     document_path = rstudioapi::getActiveDocumentContext()$path
     if (! identical(document_path, '')) dirname(document_path)
