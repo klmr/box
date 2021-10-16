@@ -35,7 +35,7 @@ fmt = function (..., envir = parent.frame()) {
     dots = list(...)
     named = nzchar(names(dots))
     str = paste(unlist(dots[(! named) %||% TRUE]), collapse = '')
-    vars = list2env(dots[named], parent = envir)
+    vars = dots[named]
 
     matches = gregexpr(
         '(?<op>\\{\\{)|(?<cp>\\}\\})|\\{(?<expr>[^};]+)(;(?<mod>[^}]+))?\\}',
@@ -59,7 +59,7 @@ fmt = function (..., envir = parent.frame()) {
                 p = Find(identity, pos[row, ])
                 l = Find(identity, len[row, ])
                 expr = substr(str, p, p + l - 1L)
-                val = eval(parse(text = expr), envir = vars)
+                val = eval(parse(text = expr), envir = vars, enclos = envir)
 
                 mod = pos[row, 'mod']
                 res = if (mod == 0L) {
