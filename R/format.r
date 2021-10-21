@@ -97,6 +97,26 @@ chr.call = function (x) {
     deparse(x)
 }
 
+chr.for = function (x) {
+    deparse(x)
+}
+
+chr.if = function (x) {
+    deparse(x)
+}
+
+chr.while = function (x) {
+    deparse(x)
+}
+
+`chr.(` = function (x) {
+    deparse(x)
+}
+
+`chr.{` = function (x) {
+    deparse(x)
+}
+
 chr.expression = function (x) {
     chr(x[[1L]])
 }
