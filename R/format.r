@@ -93,27 +93,21 @@ chr.default = function (x) {
     as.character(x)
 }
 
-chr.call = function (x) {
+chr.call =
+chr.for =
+chr.if =
+chr.while =
+`chr.(` =
+`chr.{` =
+`chr.=` = function (x) {
     deparse(x)
 }
 
-chr.for = function (x) {
-    deparse(x)
-}
-
-chr.if = function (x) {
-    deparse(x)
-}
-
-chr.while = function (x) {
-    deparse(x)
-}
-
-`chr.(` = function (x) {
-    deparse(x)
-}
-
-`chr.{` = function (x) {
+# Needs to be defined with `value` as the scond argument to silence a spurious
+# R CMD check warning in R ≤ 4.1:
+#   The argument of a replacement function which corresponds to the right hand
+#   side must be named ‘value’.
+`chr.<-` = function (x, value) {
     deparse(x)
 }
 
