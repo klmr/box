@@ -143,22 +143,22 @@ parse_spec_impl = function (expr) {
                     c(parse_pkg_name(name), parse_attach_spec(expr))
                 }
             } else {
-                throw('unexpected token in {expr;"}')
+                throw('expected a name in {expr;"}, got {describe_token(name)}')
             }
         } else if (identical(expr[[1L]], quote(`/`))) {
             parse_mod(expr)
         } else {
-            throw('unexpected token in {expr;"}')
+            throw('expected {"/";"} in {expr;"}, got {expr[[1L]];"}')
         }
     } else {
-        throw('unexpected token in {expr;"}')
+        throw('expected a module or package name, got {describe_token(expr)}')
     }
 }
 
 parse_pkg_name = function (expr) {
     name = parse_name(expr)
     if (is.na(name)) {
-        throw('alias without name provided in use declaration')
+        throw('alias without a name provided in use declaration')
     }
     list(pkg = list(name = name))
 }
@@ -171,11 +171,11 @@ parse_mod = function (expr) {
 
     if (any(diff(which(c(TRUE, prefix$prefix == '..'))) > 1L)) {
         # At least one gap in the sequence of `..` from the start
-        throw('token {"..";"} can only be used as a prefix')
+        throw('{"..";"} can only be used as a prefix')
     }
 
-    if (any(prefix$prefix[-1L] == '.')) {
-        throw('token {".";"} can only be used as a prefix')
+    if ('.' %in% prefix$prefix[-1L]) {
+        throw('{".";"} can only be used as a prefix')
     }
 
     if (is.call(mod)) {
@@ -185,12 +185,12 @@ parse_mod = function (expr) {
                 parse_attach_spec(mod)
             )
         } else {
-            throw('expected module name or attach list, got {mod;"}')
+            throw('expected a name in {expr;"}, got {describe_token(mod)}')
         }
     } else if (is.name(mod)) {
         list(mod = c(parse_mod_name(mod, prefix), prefix), attach = NULL)
     } else {
-        throw('expected module name or attach list, got {mod;"}')
+        throw('expected a name in {expr;"}, got {describe_token(mod)}')
     }
 }
 
@@ -199,13 +199,13 @@ parse_mod_prefix = function (expr) {
         list(prefix = deparse(expr))
     } else if (is.call(expr) && identical(expr[[1L]], quote(`/`))) {
         if (! is.name(expr[[3L]])) {
-            throw('expected name in module prefix, got {expr[[3L]];"}')
+            throw('expected a name in module prefix, got {describe_token(expr[[3L]])}')
         } else {
             suffix = deparse(expr[[3L]])
             list(prefix = c(parse_mod_prefix(expr[[2L]])$prefix, suffix))
         }
     } else {
-        throw('expected module prefix, got {expr;"}')
+        throw('expected a module prefix, got {describe_token(expr)}')
     }
 }
 
@@ -217,7 +217,7 @@ parse_mod_name = function (expr, prefix) {
         back_inside_path = ! all(prefix == '..') && name == '..'
 
         if (dot_after_prefix || back_inside_path) {
-            throw('token {expr;"} can only be used as a prefix')
+            throw('{expr;"} can only be used as a prefix')
         }
     }
 
@@ -259,7 +259,7 @@ parse_attach_list = function (expr) {
                 index != length(names) ||
                 nzchar(names(names)[index] %||% '')
             ) {
-                throw('alias without name provided in attach list')
+                throw('alias without a name provided in attach list')
             }
 
             names[-index]
@@ -271,8 +271,12 @@ parse_attach_list = function (expr) {
 
 parse_name = function (expr) {
     if (length(expr) != 1L || ! is.name(expr)) {
-        throw('expected name, got {expr;"}')
+        throw('expected a name, got {describe_token(expr)}')
     } else {
         deparse(expr) %||% NA_character_
     }
+}
+
+describe_token = function (expr) {
+    fmt('{class(expr)} literal {expr;"}')
 }
