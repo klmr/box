@@ -445,7 +445,7 @@ mod_export_names = function (info, mod_ns) {
 }
 
 `mod_export_names.box$pkg_info` = function (info, mod_ns) {
-    getNamespaceExports(mod_ns)
+    c(getNamespaceExports(mod_ns), ls(getNamespaceInfo(mod_ns, 'lazydata')))
 }
 
 #' @rdname importing

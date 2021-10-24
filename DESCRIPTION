@@ -34,6 +34,7 @@ Suggests:
     rlang,
     roxygen2 (>= 7.0.2),
     shiny,
+    stringr,
     testthat (>= 3.0.3)
 Enhances:
     rstudioapi

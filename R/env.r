@@ -201,9 +201,26 @@ import_into_env = function (to_env, to_names, from_env, from_names) {
         ) {
             makeActiveBinding(to_names[i], fun, to_env)
         } else {
-            assign(to_names[i], get(from_names[i], from_env), envir = to_env)
+            assign(to_names[i], env_get(from_env, from_names[i]), envir = to_env)
         }
     }
+}
+
+env_get = function (env, name) {
+    UseMethod('env_get')
+}
+
+# Method for package namespace environments. This distinction is necessary since
+# lazydata in packages can’t be loaded via `get`.
+env_get.environment = function (env, name) {
+    getExportedValue(env, name)
+}
+
+`env_get.box$mod` =
+`env_get.box$ns` = function (env, name) {
+    # Explicitly allow inherited values, which is used to support re-exporting
+    # imports in modules.
+    get(name, envir = env)
 }
 
 active_binding_function = if (as.integer(version$major) >= 4L) {

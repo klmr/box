@@ -167,3 +167,20 @@ test_that('S3 lookup works for partial exports', {
     expected = roxygen2::roxy_tag_parse(x)
     expect_equal(actual, expected)
 })
+
+test_that('packages with lazydata can be loaded', {
+    # Data inside ‘datasets’ is available via `get`.
+    expect_error(box::use(datasets), NA)
+    expect_error(get('mtcars', asNamespace('datasets')), NA)
+
+    # ‘stringr’ uses lazydata; `get` doesn’t work.
+    expect_error(box::use(stringr), NA)
+    expect_error(get('fruit', asNamespace('stringr')))
+    expect_in('fruit', ls(stringr))
+    expect_type(stringr$fruit, 'character')
+
+    # Test that attach lists work
+    expect_error(box::use(stringr[ff = fruit, ...]), NA)
+    expect_equal(ff, stringr$fruit)
+    expect_equal(words, stringr$words)
+})
