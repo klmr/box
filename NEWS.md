@@ -1,5 +1,6 @@
 # box (development version)
 
+* Enhancement: Improve error messages for invalid `use` declarations (#253)
 * Feature: Add `purge_cache` function (@kamilzyla, #236)
 
 
