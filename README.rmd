@@ -37,13 +37,10 @@ install.packages('box')
 Alternatively, the current development version can be installed from GitHub.
 Note that the main branch cannot be installed directly, since it intentionally
 misses generated files; instead, ‘box’ needs to be installed from the
-auto-generated `dev` branch:
+auto-generated `dev` branch, which is built on [R-universe][]:
 
 ```{r eval = FALSE}
-if (! requireNamespace('pak')) {
-    install.packages('pak', repos = 'https://r-lib.github.io/p/pak/dev/')
-}
-pak::pkg_install('klmr/box@dev')
+install.packages('box', repos = 'https://klmr.r-universe.dev')
 ```
 
 ## 🥜 Usage in a nutshell
@@ -218,6 +215,7 @@ allow unqualified imports at all.
 
 > Explicit is better than implicit.
 
+[R-universe]: https://klmr.r-universe.dev/ui
 [roxygen2]: https://roxygen2.r-lib.org/
 [pep8]: https://www.python.org/dev/peps/pep-0008/#imports
 [Get started]: https://klmr.me/box/articles/box.html
