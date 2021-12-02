@@ -59,7 +59,7 @@ fmt = function (..., envir = parent.frame()) {
                 p = Find(identity, pos[row, ])
                 l = Find(identity, len[row, ])
                 expr = substr(str, p, p + l - 1L)
-                val = eval(parse(text = expr), envir = vars, enclos = envir)
+                val = eval(str2lang(expr), envir = vars, enclos = envir)
 
                 mod = pos[row, 'mod']
                 res = if (mod == 0L) {
