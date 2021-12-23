@@ -6,6 +6,10 @@
 
 > Write Reusable, Composable and Modular R Code
 
+
+[![CRAN status badge](https://www.r-pkg.org/badges/version/box)][CRAN]
+[![R-universe status badge](https://klmr.r-universe.dev/badges/box)][R-universe]
+
 <div id='tldr'>
 
 * [Get started][]
@@ -221,7 +225,8 @@ allow unqualified imports at all.
 
 > Explicit is better than implicit.
 
-[R-universe]: https://klmr.r-universe.dev/ui
+[CRAN]: https://cran.r-project.org/package=box
+[R-universe]: https://klmr.r-universe.dev/
 [roxygen2]: https://roxygen2.r-lib.org/
 [pep8]: https://www.python.org/dev/peps/pep-0008/#imports
 [Get started]: https://klmr.me/box/articles/box.html
