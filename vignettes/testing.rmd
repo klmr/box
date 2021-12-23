@@ -87,7 +87,7 @@ following contents:
 The `__init__.r` file corresponds closely to the file `tests/testthat.R` in a
 standard R package structure. It loads ‘testthat’ and launches the tests:
 
-```{r file = 'bio/__tests__/__init__.r'}
+```{r box_file = 'bio/__tests__/__init__.r'}
 ```
 
 This first loads and attaches the ‘testthat’ package. Although attaching is not
@@ -104,7 +104,7 @@ The `helper-module.r` file is a ‘testthat’ helper; these are sourced
 automatically by ‘testthat’ in the environment where the tests are run. We use
 this mechanism to load our module in the test environment:
 
-```{r file = 'bio/__tests__/helper-module.r'}
+```{r box_file = 'bio/__tests__/helper-module.r'}
 ```
 
 And, again, attaching isn’t strictly necessary here. Note also that, depending
@@ -117,7 +117,7 @@ necessary, and never hurts.
 With this set-up, the actual unit test files look exactly like regular
 ‘testthat’ test files. For instance, here’s `__tests__/test-seq.r`:
 
-```{r file = 'bio/__tests__/test-seq.r'}
+```{r box_file = 'bio/__tests__/test-seq.r'}
 ```
 
 

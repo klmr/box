@@ -48,7 +48,7 @@ To demonstrate these steps, we will use an example module named `c` that uses
 compiled code written in C. Here is the C code that we want to make usable in an
 R module, which is saved in the file `c/hello.c`:
 
-```{r file = 'c/hello.c'}
+```{r box_file = 'c/hello.c'}
 ```
 
 In addition, compiled code often includes specific compilation instructions.
@@ -56,7 +56,7 @@ While this is unnecessary for this simple example, it’s included anyway for
 completeness. For R, these compilation instructions are contained in a file
 called [`Makevars`][Makevars]:
 
-```{r file = 'c/Makevars'}
+```{r box_file = 'c/Makevars'}
 ```
 
 ## Compile code
@@ -69,7 +69,7 @@ and not intended for direct consumption of the module user.
 
 The module specifies which object files to compile, and invokes `R CMD SHLIB`:
 
-```{r file = 'c/__setup__.r'}
+```{r box_file = 'c/__setup__.r'}
 ```
 
 In principle, only the last line in this file should need to be changed for

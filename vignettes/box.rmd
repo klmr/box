@@ -222,7 +222,7 @@ Modules can also form nested hierarchies. In fact, here is the implementation of
 `bio` (in [`bio/__init__.r`](bio/__init__.r): since `bio` is a directory rather
 than a file, the module implementation resides in the nested file `__init__.r`):
 
-```{r file = 'bio/__init__.r'}
+```{r box_file = 'bio/__init__.r'}
 ```
 
 The submodule is specified as `./seq` rather than `seq`: the explicitly provided
@@ -271,7 +271,7 @@ in a different scope, will refer to the already loaded, cached module, and will
 
 We can illustrate this by loading a module which has side-effects, `info`.
 
-```{r file = 'info.r'}
+```{r box_file = 'info.r'}
 ```
 
 Let’s use it:
