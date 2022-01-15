@@ -21,8 +21,9 @@
 #' @note
 #' \pkg{box} \emph{should} be able to figure out the script path automatically.
 #' Using \code{box::set_script_path} should therefore never be necessary.
-#' \href{https://github.com/klmr/box/issues/new}{Please file an issue} if you
-#' encounter a situation that necessitates using \code{box::set_script_path}!
+#' \href{https://github.com/klmr/box/issues/new?assignees=&labels=\%E2\%9A\%A0\%EF\%B8\%8F+bug&title=\%5Bset_script_path\%5D\%20&template=bug-report.yml}{Please
+#' file an issue} if you encounter a situation that necessitates using
+#' \code{box::set_script_path}!
 #'
 #' @examples
 #' box::set_script_path('scripts/my_script.r')
