@@ -9,4 +9,7 @@ b = 'reexport$b'
 c = 'reexport$c'
 
 #' @export
-box::use(sub = ./reexport_sub[d = c, e = b])
+box::use(
+    sub = ./reexport_sub[d = c, e = b]
+    , # Keep trailing comma to test regression of fix for #263.
+)

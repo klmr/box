@@ -90,6 +90,8 @@ parse_export_specs = function (info, exprs, mod_ns) {
     }
 
     reexport_names = function (declaration, alias, export) {
+        # Permit empty expression resulting from trailing comma.
+        if (identical(declaration, quote(expr =)) && identical(alias, '')) return()
         spec = parse_spec(declaration, alias)
         import = find_matching_import(namespace_info(mod_ns, 'imports'), spec)
 
