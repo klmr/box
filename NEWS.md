@@ -1,5 +1,6 @@
 # box (development version)
 
+* Fix: Make S3 method detection code more robust (#266)
 * Fix: Support trailing comma in reexports (#263)
 * Feature: Support lazy data loading for packages (#219)
 * Enhancement: Improve error messages for invalid `use` declarations (#253)

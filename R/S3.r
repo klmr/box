@@ -62,13 +62,18 @@ is_S3 = function (expr) {
             # the general case (namely, the function body itself could redefine
             # them).
             if (identical(fun, quote(UseMethod))) return(TRUE)
+
             # Make sure nested function definitions are *not* getting
             # traversed: `UseMethod` inside a nested function does not make
             # the containing function a generic.
             if (identical(fun, quote(`function`))) return(FALSE)
-            Recall(as.list(expr)[-1])
+
+            # Without `as.list`, missing arguments in call expressions cause
+            # missing values in our code. Rather than handle these as speciak
+            # cases, we use `as.list` to flatten those into empty expressions.
+            Recall(as.list(expr)[-1L])
         } else {
-            Recall(fun) || Recall(expr[-1L])
+            Recall(fun) || Recall(as.list(expr)[-1L])
         }
     } else if (is.recursive(expr)) {
         Recall(expr[[1L]]) || Recall(expr[-1L])
