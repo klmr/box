@@ -103,7 +103,7 @@ chr.while =
     deparse(x)
 }
 
-# Needs to be defined with `value` as the scond argument to silence a spurious
+# Needs to be defined with `value` as the second argument to silence a spurious
 # R CMD check warning in R ≤ 4.1:
 #   The argument of a replacement function which corresponds to the right hand
 #   side must be named ‘value’.
