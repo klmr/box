@@ -34,7 +34,7 @@ box::use(testthat[...])
 
     box::use(r/core[...])
 
-    imports = ls(parent.env(environment()))
+    imports = ls(parent.env(environment()), all.names = TRUE)
 
     for (name in names) {
         label = sprintf("'%s' %%in%% imports", name)
