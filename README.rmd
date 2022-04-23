@@ -65,7 +65,7 @@ regular R files form reusable **R modules** that can be used elsewhere. Just put
 the **export directive** `#' @export` in front of names that should be exported,
 e.g.:
 
-```{r file = 'inst/box/hello_world.r'}
+```{r box_file = 'inst/box/hello_world.r'}
 ```
 
 Existing R scripts without `@export` directives can also be used as modules. In
