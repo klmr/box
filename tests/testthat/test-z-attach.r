@@ -4,6 +4,21 @@ context('attaching')
 
 test_mod_envname = 'mod:mod/a'
 
+test_that('‘box’ cannot be attached', {
+    skip_on_cran()
+    detach('package:box')
+    # Temporarily unset environment indicating that we’re inside testing mode:
+    envs = c('_R_CHECK_PACKAGE_NAME_', 'R_TESTS')
+    old_env = Sys.getenv(envs)
+    on.exit({
+        do.call('Sys.setenv', as.list(old_env))
+        Sys.unsetenv('R_BOX_TEST_ALLOW_DEVTOOLS')
+    })
+    Sys.unsetenv(envs)
+    Sys.setenv(R_BOX_TEST_ALLOW_DEVTOOLS = 'TRUE')
+    expect_error(attachNamespace('box'), 'Please consult the user guide at `vignette\\("box", package = "box"\\)`')
+})
+
 test_that('attach works locally inside module', {
     box::use(mod/no_exports)
     # `no_exports` attaches `a`. So check that `a` is *not* attached here.

@@ -69,8 +69,10 @@
         as.character(call[[1L]]) %in% c('library', 'require')
     }
 
-    # Deparsed to silence spurious `R CMD check` warnign
-    default = call('library', quote(box))
+    # `unname` prevents the name from being displayed as `c(name = "box")`.
+    pkgname = unname(pkgname)
+    # Deparsed to silence spurious `R CMD check` warning.
+    default = call('library', as.name(pkgname))
     bad_call = Filter(is_bad_call, sys.calls())[1L][[1L]] %||% default
     throw(
         'the {pkgname;\'} package is not supposed to be attached!\n\n',
@@ -82,7 +84,8 @@
 }
 
 called_from_devtools = function () {
-    isNamespaceLoaded('devtools') && {
+    isNamespaceLoaded('devtools') &&
+    ! nzchar(Sys.getenv('R_BOX_TEST_ALLOW_DEVTOOLS')) && {
         is_devtools_ns = function (x) identical(x, getNamespace('devtools'))
         any(map_lgl(is_devtools_ns, lapply(sys.frames(), topenv)))
     }
