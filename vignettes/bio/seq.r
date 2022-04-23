@@ -36,13 +36,13 @@ seq = function (...) {
 
 #' Print one or more biological sequences
 `print.bio/seq` = function (x) {
-    box::use(stringr[str_trunc])
+    box::use(stringr[trunc = str_trunc])
 
     if (is.null(names(x))) names(x) = paste('seq', seq_along(x))
 
     cat(
         sprintf('%d DNA sequence%s:\n', length(x), if (length(x) == 1L) '' else 's'),
-        sprintf('  >%s\n  %s\n', names(x), str_trunc(x, 30L)),
+        sprintf('  >%s\n  %s\n', names(x), trunc(x, 30L)),
         sep = ''
     )
     invisible(x)
