@@ -90,7 +90,7 @@ purpose was *loading* code, they’re instead listed below.
 * ‘**[RSuite][]**’: Supports safe and reproducible solutions development in R.
   It will help you with environment separation per project, dependency
   management, local packages creation and preparing deployment packs for your
-  solutions.
+  solutions. (Archived as of `r Sys.Date()`)
 
 * ‘**[mvbutils][]**’: Hierarchical workspace tree, code editing and backup, easy
   package prep, editing of packages while loaded, per-object lazy-loading, easy
@@ -106,7 +106,7 @@ purpose was *loading* code, they’re instead listed below.
 [pacman]: http://trinker.github.io/pacman/
 [pkgload]: https://cran.r-project.org/web/packages/pkgload/index.html
 [pysty]: https://trinkerrstuff.wordpress.com/2018/02/22/minimal-explicit-python-style-package-loading-for-r/
-[RSuite]: https://rsuite.io/
+[RSuite]: https://cran.r-project.org/package=RSuite
 [Shiny]: https://shiny.rstudio.com/articles/modules.html
 [supreme]: https://strboul.github.io/supreme/
 [tidymodules]: https://opensource.nibr.com/tidymodules/
