@@ -39,7 +39,17 @@ for i in "${!vignettes[@]}"; do
     # Substituting the code fence headers of the R code is done so that the
     # vignette builder produces *.R output files. Without this, no such R files
     # are produced.
-    # FIXME: New versions of knitr/rmarkdown now insert a YAML header into the compiled .md document; this needs to be removed.
-    # shellcheck disable=SC2016
-    (echo "$header"; sed -e '1,/^----*/d' -e '/^``` *r$/s//```{r eval = FALSE}/' "$m") >"$v"
+
+    # Some versions of knitr/rmarkdown now insert a YAML header into the
+    # compiled .md document. This needs to be removed.
+    if head -n1 "$m" | grep -q '^---*$'; then
+        {
+            echo "$header"
+            # shellcheck disable=SC2016
+            sed -e '1,/^----*/d' -e '/^``` *r$/s//```{r eval = FALSE}/' "$m"
+        } >"$v"
+    else
+        # shellcheck disable=SC2016
+        { echo "$header"; sed '/^``` *r$/s//```{r eval = FALSE}/' "$m"; } >"$v"
+    fi
 done
