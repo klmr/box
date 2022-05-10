@@ -28,7 +28,7 @@ so the following document aims at explaining the gist.
 
 Fundamentally, module environments follow a similar architecture to package
 environments, but they deviate in crucial ways. For a good explanation of
-package environments, see [*How R Searches and Finds Stuff*](http://blog.obeautifulcode.com/R/How-R-Searches-And-Finds-Stuff/)
+package environments, see [*How R Searches and Finds Stuff*](https://blog.thatbuthow.com/how-r-searches-and-finds-stuff/)
 by Suraj Gupta, and [*Environments*](http://adv-r.had.co.nz/Environments.html)
 in *Advanced R* by Hadley Wickham. The following assumes that the reader has a
 more than passing familiarity with these concepts.
