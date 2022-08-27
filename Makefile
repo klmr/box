@@ -34,6 +34,7 @@ inkscape = $(shell command -v inkscape || echo /Applications/Inkscape.app/Conten
 test: documentation
 	${rscript} -e "devtools::test(export_all = FALSE)"
 
+## Run a single, named unit test
 /test-%: documentation
 	${rscript} -e "devtools::test(filter = '$*', export_all = FALSE)"
 
