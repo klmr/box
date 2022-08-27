@@ -27,10 +27,8 @@
 install.packages('box')
 ```
 
-Alternatively, the current development version can be installed from GitHub.
-Note that the main branch cannot be installed directly, since it intentionally
-misses generated files; instead, ‘box’ needs to be installed from the
-auto-generated `dev` branch, which is built on [R-universe][]:
+Alternatively, the current development version can be installed from
+[R-universe][] (note that it *cannot* be installed directly from GitHub!):
 
 
 ```r
