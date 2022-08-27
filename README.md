@@ -74,12 +74,12 @@ dot (`.`).
 Such modules can be stored in a central **module search path** (configured via
 `options('box.path')`) analogous to the R package library, or locally in
 individual projects. Let’s assume the module we just defined is stored in a file
-`hello_world.r` inside a directory `box`, which is inside the module search
+`hello_world.r` inside a directory `mod`, which is inside the module search
 path. Then the following code imports and uses it:
 
 
 ```r
-box::use(box/hello_world)
+box::use(mod/hello_world)
 
 hello_world$hello('Ross')
 #> Hello, Ross!

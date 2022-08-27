@@ -164,23 +164,23 @@
 #' old_opts = options(box.path = system.file(package = 'box'))
 #'
 #' # Basic usage
-#' # The file `box/hello_world.r` exports the functions `hello` and `bye`.
-#' box::use(box/hello_world)
+#' # The file `mod/hello_world.r` exports the functions `hello` and `bye`.
+#' box::use(mod/hello_world)
 #' hello_world$hello('Robert')
 #' hello_world$bye('Robert')
 #'
 #' # Using an alias
-#' box::use(world = box/hello_world)
+#' box::use(world = mod/hello_world)
 #' world$hello('John')
 #'
 #' # Attaching exported names
-#' box::use(box/hello_world[hello])
+#' box::use(mod/hello_world[hello])
 #' hello('Jenny')
 #' # Exported but not attached, thus access fails:
 #' try(bye('Jenny'))
 #'
 #' # Attach everything, give `hello` an alias:
-#' box::use(box/hello_world[hi = hello, ...])
+#' box::use(mod/hello_world[hi = hello, ...])
 #' hi('Eve')
 #' bye('Eve')
 #'
