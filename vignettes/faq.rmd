@@ -58,7 +58,7 @@ box::use(klmr/sys)
 
 ## Common error messages
 
-### “object 'lm' not found” inside a module
+### “object 'X' not found” inside a module
 
 Inside modules, only the ‘base’ package is attached. *All* other packages need to be attached, including all core R packages that are otherwise attached by default. This includes ‘stats’, ‘graphics’, ‘grDevices’, ‘utils’, ‘datasets’ and ‘methods’.
 
@@ -74,10 +74,10 @@ This module ships with ‘box’ and is always findable, regardless of the value
 
 
 
-### “there is no package called ‘foo’” when running `box::use(foo)`, even though the module 'foo' exists
+### “there is no package called ‘X’” when running `box::use(X)`, even though the module 'X' exists
 
-`box::use(name)` never attempts to load a module, it always attempts to load a package called ‘name’, and fails if no such package exists. Modules need to be either *local* and start with `.` or `..`, or they need to be fully qualified. This means that the full module name contains at least one separator (`/`).
+`box::use(name)` never attempts to load a module, it always attempts to load a *package* called ‘name’, and fails if no such package exists. Modules need to be either *local* and start with `.` or `..`, or they need to be fully qualified. This means that the full module name contains at least one separator (`/`).
 
-In practice, this means that modules inside the global module search path (set via the environment variable `R_BOX_PATH` or `getOption('box.path')`), modules need to be located in nested folders.
+In practice, this means that modules inside the global module search path (set via the environment variable `R_BOX_PATH` or via `getOption('box.path')`), modules need to be located in nested folders.
 
 See [how to organise globally installed modules?](#how-to-organise-globally-installed-modules-) for details.
