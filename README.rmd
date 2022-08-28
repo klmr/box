@@ -52,14 +52,15 @@ install.packages('box', repos = 'https://klmr.r-universe.dev')
 1. It enables *writing modular code* by treating files and folders of R code as
    independent (potentially nested) modules, without requiring the user to wrap
    reusable code into packages.
-2. It provides a new syntax to import reusable code (both from packages and from
-   modules) which is more powerful and less error-prone than `library` or
-   `require`, by limiting the number of names that are made available.
+2. It provides a new syntax to import reusable code (both from packages and
+   modules) that is more powerful and less error-prone than `library` by
+   allowing explicit control over what names to import, and by restricting the
+   scope of the import.
 
 ### Reusable code modules
 
 Code doesn’t have to be wrapped into an R package to be reusable. With ‘box’,
-regular R files form reusable **R modules** that can be used elsewhere. Just put
+regular R files are reusable **R modules** that can be used elsewhere. Just put
 the **export directive** `#' @export` in front of names that should be exported,
 e.g.:
 
@@ -90,7 +91,7 @@ For more information on writing modules refer to the *[Get started][]* vignette.
 
 ### Loading code
 
-`box::use` is a **universal import declaration**. It works for packages just as
+`box::use` provides a **universal import declaration**. It works for packages just as
 well as for modules. In fact, ‘box’ completely replaces the base R `library` and
 `require` functions. `box::use` is more explicit, more flexible, and less
 error-prone than `library`. At its simplest, it provides a direct replacement:
@@ -210,8 +211,8 @@ For instance, best practice in Python is to never use the equivalent of
 encourages][pep8] using `import pkg` or `from pkg import a, few, symbols`, which
 correspond to `box::use(pkg)` and `box::use(pkg[a, few, symbols])`,
 respectively. The same is true in many other languages, e.g. [C++][], [Rust][]
-and [Perl][]. Other languages (e.g. JavaScript) are even stricter: they don’t
-allow unqualified imports at all.
+and [Perl][]. Some languages (e.g. JavaScript) are even stricter: they don’t
+support unqualified wildcard imports at all.
 
 [*The Zen of Python*][pep20] puts this rule succinctly:
 
