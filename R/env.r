@@ -223,7 +223,7 @@ env_get.environment = function (env, name) {
     get(name, envir = env)
 }
 
-active_binding_function = if (as.integer(version$major) >= 4L) {
+active_binding_function = if (getRversion() >= '4.0.0') {
     function (sym, env) activeBindingFunction(sym, env)
 } else {
     function (sym, env) {
