@@ -39,6 +39,7 @@
 #' @useDynLib box, .registration = TRUE
 #' @name box
 #' @docType package
+#' @keywords internal
 '_PACKAGE'
 
 .onLoad = function (libname, pkgname) {
