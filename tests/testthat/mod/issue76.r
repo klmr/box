@@ -13,10 +13,12 @@ h = function() {
     helper()
 }
 
+ns = environment()
+
 #' @export
 helper_var = 0L
 
-helper = function() { helper_var <<- helper_var + 1L }
+helper = function() { ns$helper_var = helper_var + 1L }
 
 f()
 g()

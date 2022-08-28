@@ -7,10 +7,11 @@ on_load_called = 0L
 
 #' @export
 register_unload_callback = local({
+    self = environment()
     unloaded = NULL
 
     function (callback) {
-        unloaded <<- callback
+        self$unloaded = callback
     }
 }, envir = (callback = new.env()))
 

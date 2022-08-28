@@ -86,6 +86,6 @@ test_that('nested functions are parsed correctly', {
 
 test_that('functions with missing arguments are parsed correctly', {
     expect_error(is_S3(quote(tag$span('foo', ))), NA)
-    expect_error(is_S3(quote(base$quote(expr = ))), NA)
-    expect_error(is_S3(quote((quote)(expr = ))), NA)
+    expect_error(is_S3(quote(base$quote(expr =))), NA)
+    expect_error(is_S3(quote((quote)(expr =))), NA)
 })

@@ -20,11 +20,12 @@ private_modname = box::name()
 # Variables at namespace scope are locked so mutable variables need to be
 # wrapped inside a closure.
 make_counter = function () {
+    self = environment()
     counter = 1L
 
     list(
         get = function () counter,
-        inc = function () counter <<- counter + 1L
+        inc = function () self$counter = counter + 1L
     )
 }
 

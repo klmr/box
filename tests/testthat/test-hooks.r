@@ -17,10 +17,11 @@ test_that('on_load hook is invoked only once', {
 })
 
 test_that('on_unload hook is invoked during unloading', {
+    self = environment()
     unload_called = 0L
 
     box::use(mod/hooks/a)
-    a$register_unload_callback(function () unload_called <<- unload_called + 1L)
+    a$register_unload_callback(function () self$unload_called = unload_called + 1L)
 
     expect_equal(unload_called, 0L)
     box::unload(a)
@@ -28,10 +29,11 @@ test_that('on_unload hook is invoked during unloading', {
 })
 
 test_that('hooks are invoked during reloading', {
+    self = environment()
     unload_called = 0L
 
     box::use(mod/hooks/a)
-    a$register_unload_callback(function () unload_called <<- unload_called + 1L)
+    a$register_unload_callback(function () self$unload_called = unload_called + 1L)
 
     expect_equal(unload_called, 0L)
     box::reload(a)
