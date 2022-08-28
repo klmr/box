@@ -48,13 +48,14 @@ navbar:
           href: articles/mod-env-hierarchy.html
 
 template:
-  bootstrap: 4
+  bootstrap: 5
   params:
     highlightcss: false
   bslib:
     primary: "#6877a1"
     secondary: "#6877a1"
-    link_hover_color: "#edeef3"
+    link_hover_color: "#33374d"
+    dropdown_link_active_color: "#edeef3"
 
 authors:
   Konrad Rudolph:
