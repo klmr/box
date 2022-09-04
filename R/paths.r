@@ -69,7 +69,7 @@ path = function (mod) {
 #' base directory, or the current working directory if not invoked on a module.
 #' @rdname path
 base_path = function (mod) {
-    normalizePath(module_path(mod), winslash = '/')
+    normalizePath(module_path(mod), winslash = '/', mustWork = FALSE)
 }
 
 script_path_env = new.env(parent = emptyenv())
@@ -183,15 +183,41 @@ testthat_path = function (...) {
 #' active RStudio script file is saved.
 #' @rdname path
 rstudio_path = function (...) {
-    # `RSTUDIO` environment variable is set in terminal run inside RStudio, so
-    # we need to exclude that case; conversely, `.Platform$GUI` is apparently
-    # not yet set to "RStudio" during startup, so just checking that is
-    # insufficient. See comments at <https://stackoverflow.com/a/35849779/1968>.
-    if (Sys.getenv('RSTUDIO') != '1') return(NULL)
+    # .Platform$GUI is not yet set to "RStudio" during startup, so checking for
+    # it *might* be insufficient in corner cases.
+    # However, we cannot merely check whether the `RSTUDIO` environment
+    # variable is set, because it is also set inside the RStudio terminal; and
+    # when ‘box’ is invoked from a script that is run in the terminal, we do
+    # *not* want to use RStudio’s active document, since that isn’t the script
+    # from which we are called.
+    # See also comments at <https://stackoverflow.com/a/35849779/1968>.
     if (! identical(.Platform$GUI, 'RStudio')) return(NULL)
 
-    document_path = rstudioapi::getActiveDocumentContext()$path
-    if (! identical(document_path, '')) dirname(document_path)
+    document_path = if (requireNamespace('rstudioapi', quietly = TRUE)) {
+        rstudioapi::getActiveDocumentContext()$path
+    } else {
+        # ‘rstudioapi’ might not be installed. Attempt to use the internal API
+        # as a fallback.
+        if ('tools:rstudio' %in% search()) {
+            as.environment("tools:rstudio")$.rs.api.getActiveDocumentContext()$path
+        } else {
+            warning(fmt(
+                'It looks like the code is run from inside RStudio but',
+                '{"box";\'} is unable to identify the calling document. This',
+                'should not happen. Please consider filing a bug report at',
+                '<https://github.com/klmr/box/issues/new/choose>.'
+            ))
+            return(NULL)
+        }
+    }
+
+    if (identical(document_path, '')) {
+        # The active document wasn’t saved yet, or the code is invoked from the
+        # R REPL/console.
+        getwd()
+    } else {
+        dirname(document_path)
+    }
 }
 
 #' @return \code{wd_path} returns the current working directory.

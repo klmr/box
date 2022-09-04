@@ -1,5 +1,6 @@
 # box (development version)
 
+* Fix: Support RStudio without installed ‘rstudioapi’ (#293)
 * Fix: Make S3 method detection code more robust (#266)
 * Fix: Support trailing comma in reexports (#263)
 * Feature: Support lazy data loading for packages (#219)
