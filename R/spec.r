@@ -196,12 +196,12 @@ parse_mod = function (expr) {
 
 parse_mod_prefix = function (expr) {
     if (is.name(expr)) {
-        list(prefix = deparse(expr))
+        list(prefix = deparse1(expr))
     } else if (is.call(expr) && identical(expr[[1L]], quote(`/`))) {
         if (! is.name(expr[[3L]])) {
             throw('expected a name in module prefix, got {describe_token(expr[[3L]])}')
         } else {
-            suffix = deparse(expr[[3L]])
+            suffix = deparse1(expr[[3L]])
             list(prefix = c(parse_mod_prefix(expr[[2L]])$prefix, suffix))
         }
     } else {
@@ -273,7 +273,7 @@ parse_name = function (expr) {
     if (length(expr) != 1L || ! is.name(expr)) {
         throw('expected a name, got {describe_token(expr)}')
     } else {
-        deparse(expr) %||% NA_character_
+        deparse1(expr) %||% NA_character_
     }
 }
 

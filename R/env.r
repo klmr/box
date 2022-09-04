@@ -197,7 +197,7 @@ import_into_env = function (to_env, to_names, from_env, from_names) {
         if (
             exists(from_names[i], from_env, inherits = FALSE) &&
             bindingIsActive(from_names[i], from_env) &&
-            ! inherits((fun = active_binding_function(from_names[i], from_env)), 'box$placeholder')
+            ! inherits((fun = activeBindingFunction(from_names[i], from_env)), 'box$placeholder')
         ) {
             makeActiveBinding(to_names[i], fun, to_env)
         } else {
@@ -221,14 +221,6 @@ env_get.environment = function (env, name) {
     # Explicitly allow inherited values, which is used to support re-exporting
     # imports in modules.
     get(name, envir = env)
-}
-
-active_binding_function = if (getRversion() >= '4.0.0') {
-    function (sym, env) activeBindingFunction(sym, env)
-} else {
-    function (sym, env) {
-        as.list(`class<-`(env, NULL), all.names = TRUE)[[sym]]
-    }
 }
 
 #' Wrap \dQuote{unsafe calls} functions

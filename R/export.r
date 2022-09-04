@@ -253,7 +253,7 @@ parse_object = function (info, expr, mod_ns) {
                     }
 
                     obj = if (bindingIsActive(name, mod_ns)) {
-                        roxygen2_object(name, active_binding_function(name, mod_ns), 'active')
+                        roxygen2_object(name, activeBindingFunction(name, mod_ns), 'active')
                     } else {
                         value = get(name, mod_ns)
                         if (is.function(value)) {

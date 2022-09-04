@@ -34,7 +34,7 @@ rethrow = function (error, call = sys.call(sys.parent())) {
                 tb = tb[- seq(start + 1L, start + 4L)]
                 if (getRversion() < '4.0.0') {
                     # Prior to R 4.0.0, `.Traceback` contains deparsed calls.
-                    tb = map(deparse, tb)
+                    tb = map(deparse1, tb)
                 }
                 if (getRversion() >= '4.1.0') box_unlock_binding('.Traceback', .BaseNamespaceEnv)
                 .BaseNamespaceEnv$.Traceback = tb

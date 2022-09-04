@@ -100,7 +100,7 @@ chr.while =
 `chr.(` =
 `chr.{` =
 `chr.=` = function (x) {
-    deparse(x)
+    deparse1(x)
 }
 
 # Needs to be defined with `value` as the second argument to silence a spurious
@@ -108,7 +108,7 @@ chr.while =
 #   The argument of a replacement function which corresponds to the right hand
 #   side must be named ‘value’.
 `chr.<-` = function (x, value) {
-    deparse(x)
+    deparse1(x)
 }
 
 chr.expression = function (x) {
@@ -116,7 +116,7 @@ chr.expression = function (x) {
 }
 
 chr.name = function (x) {
-    deparse(x, backtick = TRUE)
+    deparse1(x, backtick = TRUE)
 }
 
 #' @return \code{html_escape(x)} returns the HTML-escaped version of \code{x}.
