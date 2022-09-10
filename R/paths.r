@@ -198,17 +198,18 @@ rstudio_path = function (...) {
     } else {
         # ‘rstudioapi’ might not be installed. Attempt to use the internal API
         # as a fallback.
-        if ('tools:rstudio' %in% search()) {
-            as.environment("tools:rstudio")$.rs.api.getActiveDocumentContext()$path
-        } else {
-            warning(fmt(
-                'It looks like the code is run from inside RStudio but',
-                '{"box";\'} is unable to identify the calling document. This',
-                'should not happen. Please consider filing a bug report at',
-                '<https://github.com/klmr/box/issues/new/choose>.'
-            ))
-            return(NULL)
-        }
+        tryCatch(
+            as.environment("tools:rstudio")$.rs.api.getActiveDocumentContext()$path,
+            error = function (.) {
+                warning(fmt(
+                    'It looks like the code is run from inside RStudio but ',
+                    '{"box";\'} is unable to identify the calling document. This ',
+                    'should not happen. Please consider filing a bug report at ',
+                    '<https://github.com/klmr/box/issues/new/choose>.'
+                ))
+                return(NULL)
+            }
+        )
     }
 
     if (identical(document_path, '')) {

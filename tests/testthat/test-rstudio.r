@@ -59,7 +59,7 @@ test_that('Path of active file in RStudio is found without ‘rstudioapi’', {
 
 test_that('Path of active file in RStudio is found with ‘rstudioapi’', {
     skip_on_cran()
-    skip_if(is.na(packageDescription('rstudioapi')))
+    skip_if_not_installed('rstudioapi')
 
     file_path = with_mock_rstudio({
         with_mock_rstudio_tools_path('/rstudio/test.r', box::file())
