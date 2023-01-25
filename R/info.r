@@ -54,7 +54,7 @@ find_mod = function (spec, caller) {
 }
 
 `find_mod.box$pkg_spec` = function (spec, caller) {
-    pkg_info(spec)
+    if (pkg_exists(spec$name)) pkg_info(spec) else find_global_mod(spec, caller)
 }
 
 find_local_mod = function (spec, caller) {
@@ -64,6 +64,17 @@ find_local_mod = function (spec, caller) {
 find_global_mod = function (spec, caller) {
     # In the future, this may be augmented by pluggable ways of loading modules.
     find_in_path(spec, mod_search_path(caller))
+}
+
+pkg_exists = function(name) {
+  out = logical(length(name))
+  lib.loc = .libPaths()
+  for (i in seq_along(name)) {
+    pkg = name[i]
+    paths = file.path(lib.loc, pkg)
+    out[i] = any(file.exists(file.path(paths, "DESCRIPTION")))
+  }
+  out
 }
 
 #' Find a module’s source location
@@ -100,7 +111,13 @@ find_in_path = function (spec, base_paths) {
 mod_file_candidates = function (spec, base_paths) {
     mod_path_prefix = merge_path(spec$prefix)
     ext = c('.r', '.R')
-    simple_mod = file.path(mod_path_prefix, paste0(spec$name, ext))
-    nested_mod = file.path(mod_path_prefix, spec$name, paste0('__init__', ext))
+    simple_mod = file_path(mod_path_prefix, paste0(spec$name, ext))
+    nested_mod = file_path(mod_path_prefix, spec$name, paste0('__init__', ext))
     map(file.path, base_paths, list(c(simple_mod, nested_mod)))
+}
+
+file_path = function(..., fsep = .Platform$file.sep) {
+  lst = list(...)
+  lst <- lst[vapply(lst, length, integer(1))>0]
+  .Internal(file.path(lst, fsep))
 }

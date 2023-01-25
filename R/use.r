@@ -294,6 +294,7 @@ use_one = function (declaration, alias, caller, use_call) {
     if (identical(declaration, quote(expr =)) && identical(alias, '')) return()
 
     rethrow_on_error({
+      browser()
         spec = parse_spec(declaration, alias)
         info = find_mod(spec, caller)
         load_and_register(spec, info, caller)
