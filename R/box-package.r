@@ -45,6 +45,7 @@
 .onLoad = function (libname, pkgname) {
     ns = topenv()
     ns$system_mod_path = system.file('mod', package = 'box')
+    ns$mod_doc_pkg_library = file.path(R_user_dir(pkgname, 'cache'), 'doc')
 
     set_import_env_parent()
 }

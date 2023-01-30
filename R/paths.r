@@ -306,3 +306,12 @@ sanitize_path_fragment = function (path) {
     # clashes e.g. for path names of the interactive HTML help.
     gsub(win32_reserved_path_chars, '-', path)
 }
+
+#' @rdname paths
+hash_path = function (path) {
+    hashfile = tempfile('box-hash-')
+    on.exit(unlink(hashfile))
+    # Write the exact path name without trailing newline.
+    writeBin(charToRaw(path), hashfile)
+    unname(tools::md5sum(hashfile))
+}
