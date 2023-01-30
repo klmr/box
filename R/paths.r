@@ -270,7 +270,7 @@ calling_mod_path = function (caller) {
 
 #' \code{split_path(path)} is a platform independent and filesystem logic
 #' aware alternative to \code{strsplit(path, '/')[[1L]]}.
-#' @param path the path to split
+#' @param path the path
 #' @return \code{split_path} returns a character vector of path components that
 #' logically represent \code{path}.
 #' @rdname paths
@@ -296,10 +296,13 @@ merge_path = function (components) {
     do.call('file.path', as.list(components))
 }
 
-#' \code{sanitize_path(path)} replaces invalid characters in the given
+#' \code{sanitize_path_fragment(path)} replaces invalid characters in the given
 #' \emph{relative} path, making the result a valid Windows path.
 #' @rdname paths
-sanitize_path = function (path) {
+sanitize_path_fragment = function (path) {
     win32_reserved_path_chars = '[<>:"/\\|?*]'
-    gsub(win32_reserved_path_chars, '_', path)
+    # Replace invalid chars with `-`, which is unlikely to appear in R names.
+    # This isn’t particularly important, but it decreases the risk of name
+    # clashes e.g. for path names of the interactive HTML help.
+    gsub(win32_reserved_path_chars, '-', path)
 }

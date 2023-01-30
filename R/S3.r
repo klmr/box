@@ -97,8 +97,7 @@ make_S3_methods_known = function (module) {
     functions = lsf(module)
     generics = Filter(function (f) is_S3_user_generic(f, module), functions)
 
-    find_methods = function (generic)
-        grep(sprintf('^%s\\.[^.]', generic), functions, value = TRUE)
+    find_methods = function (generic) grep(fmt('^{generic}\\.[^.]'), functions, value = TRUE)
 
     methods = map(find_methods, generics)
 

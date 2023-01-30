@@ -40,7 +40,7 @@ display_help_file.text_help_format = function (x, file, topic) {
 }
 
 display_help_file.html_help_format = function (x, file, topic) {
-    topic = sanitize_path(topic)
+    topic = sanitize_path_fragment(topic)
     port = tools::startDynamicHelp(NA)
     html_path = file.path(tempdir(), sprintf('.R/doc/html/%s.html', topic))
     dir.create(dirname(html_path), recursive = TRUE, showWarnings = FALSE)

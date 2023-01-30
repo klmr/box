@@ -66,10 +66,12 @@ spec_name = function (spec) {
     UseMethod('spec_name')
 }
 
+#' @export
 `spec_name.box$mod_spec` = function (spec) {
     paste(paste(spec$prefix, collapse = '/'), spec$name, sep = '/')
 }
 
+#' @export
 `spec_name.box$pkg_spec` = function (spec) {
     spec$name
 }
