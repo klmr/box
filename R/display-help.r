@@ -15,7 +15,11 @@ compile_help.text_help_format = function (x, rd) {
 }
 
 compile_help.html_help_format = function (x, rd) {
-    tools::Rd2HTML(rd, out = tempfile('Rtxt'), package = c(mock_package_name, NA_character_))
+    withCallingHandlers(
+        tools::Rd2HTML(rd, out = tempfile('Rtxt'), package = c(mock_package_name, NA_character_)),
+        message = function (.) tryInvokeRestart('muffleMessage'),
+        warning = function (.) tryInvokeRestart('muffleWarning')
+    )
 }
 
 patch_topic_name.text_help_format = function (x, file, topic) {
