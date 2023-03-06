@@ -10,7 +10,7 @@ static const R_CallMethodDef methods[] = {
     {NULL, NULL, 0}
 };
 
-void R_init_box(DllInfo* info) {
+void R_init_box(DllInfo *info) {
     R_registerRoutines(info, NULL, methods, NULL, NULL);
     R_useDynamicSymbols(info, FALSE);
     R_forceSymbols(info, TRUE);
