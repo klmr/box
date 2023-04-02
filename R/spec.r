@@ -4,7 +4,8 @@
 # spec        → pkg_name (“[” attach_spec “]”)? !“/” /
 #               mod
 # pkg_name    → name
-# mod         → mod_prefix “/” mod_name (“[” attach_spec “]”)?
+# mod         → mod_prefix “/” mod_name (“[” attach_spec “]”)? /
+#               “mod” “(” mod_prefix “)” (“[” attach_spec “]”)?
 # mod_prefix  → name !“/” /
 #               mod_prefix “/” name
 # mod_name    → name
@@ -127,28 +128,32 @@ spec_name = function (spec) {
 parse_spec_impl = function (expr) {
     if (is.name(expr)) {
         if (identical(expr, quote(.))) {
-            list(prefix = '.', name = '__init__')
+            list(mod = list(prefix = '.', name = '__init__'))
         } else if (identical(expr, quote(..))) {
-            list(prefix = '..', name = '.')
+            list(mod = list(prefix = '..', name = '.'))
         } else {
             c(parse_pkg_name(expr), list(attach = NULL))
         }
     } else if (is.call(expr)) {
         if (identical(expr[[1L]], quote(`[`))) {
-            if (is.name((name = expr[[2L]]))) {
+            name = expr[[2L]]
+            if (is.name((name))) {
                 if (identical(name, quote(.))) {
-                    c(list(prefix = '.', name = '__init__'), parse_attach_spec(expr))
+                    c(list(mod = list(prefix = '.', name = '__init__')), parse_attach_spec(expr))
                 } else if (identical(name, quote(..))) {
-                    # parse_mod(bquote(../.(`[[<-`(expr, 2L, quote(.)))))
-                    c(list(prefix = '..', name = '.'), parse_attach_spec(expr))
+                    c(list(mod = list(prefix = '..', name = '.')), parse_attach_spec(expr))
                 } else {
                     c(parse_pkg_name(name), parse_attach_spec(expr))
                 }
+            } else if (is.call(name) && identical(name[[1L]], quote(mod))) {
+                c(parse_bare_mod(name[[2L]]), parse_attach_spec(expr))
             } else {
                 throw('expected a name in {expr;"}, got {describe_token(name)}')
             }
         } else if (identical(expr[[1L]], quote(`/`))) {
             parse_mod(expr)
+        } else if (identical(expr[[1L]], quote(mod))) {
+            c(parse_bare_mod(expr[[2L]]), list(attach = NULL))
         } else {
             throw('expected {"/";"} in {expr;"}, got {expr[[1L]];"}')
         }
@@ -193,6 +198,36 @@ parse_mod = function (expr) {
         list(mod = c(parse_mod_name(mod, prefix), prefix), attach = NULL)
     } else {
         throw('expected a name in {expr;"}, got {describe_token(mod)}')
+    }
+}
+
+parse_bare_mod = function (expr) {
+    if (is.call(expr)) {
+        if (identical(expr[[1L]], quote(`/`))) {
+            prefix = parse_mod_prefix(expr[[2L]])
+            mod = expr[[3L]]
+
+            # Runs of `..` from the start are valid; `..` in the middle is not:
+
+            if (any(diff(which(c(TRUE, prefix$prefix == '..'))) > 1L)) {
+                # At least one gap in the sequence of `..` from the start
+                throw('{"..";"} can only be used as a prefix')
+            }
+
+            if ('.' %in% prefix$prefix[-1L]) {
+                throw('{".";"} can only be used as a prefix')
+            }
+
+            if (is.name(mod)) {
+                list(mod = c(name = parse_name(mod), prefix))
+            } else {
+                throw('expected mod name in {expr;"}, got {describe_token(mod)}')
+            }
+        } else {
+            throw('expected mod name in {expr;"}, got {describe_token(expr[[1L]])}')
+        }
+    } else if (is.name(expr)) {
+        list(mod = list(name = parse_name(expr), prefix = NULL))
     }
 }
 
@@ -280,5 +315,9 @@ parse_name = function (expr) {
 }
 
 describe_token = function (expr) {
-    fmt('{class(expr)} literal {expr;"}')
+    if (is.name(expr) || is.call(expr)) {
+        fmt('{expr;"}')
+    } else {
+        fmt('{class(expr)} literal {expr;"}')
+    }
 }
