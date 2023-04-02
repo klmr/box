@@ -1,7 +1,7 @@
 context('RStudio')
 
 with_mock_rstudio = function (expr) {
-    Sys.setenv(RSTUDIO = "1")
+    Sys.setenv(RSTUDIO = '1')
 
     old_gui = .Platform$GUI
     unlockBinding('.Platform', .BaseNamespaceEnv)
@@ -9,7 +9,7 @@ with_mock_rstudio = function (expr) {
     Sys.unsetenv('TESTTHAT')
 
     on.exit({
-        Sys.unsetenv("RSTUDIO")
+        Sys.unsetenv('RSTUDIO')
         .BaseNamespaceEnv$.Platform$GUI = old_gui
         lockBinding('.Platform', .BaseNamespaceEnv)
         Sys.setenv(TESTTHAT = 'true')

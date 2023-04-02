@@ -257,9 +257,9 @@ parse_attach_list = function (expr) {
             #   box::use(./a[x, y, ])
             index = which(missing_names)
             if (
-                length(index) != 1L ||
-                index != length(names) ||
-                nzchar(names(names)[index] %||% '')
+                length(index) != 1L
+                || index != length(names)
+                || nzchar(names(names)[index] %||% '')
             ) {
                 throw('alias without a name provided in attach list')
             }

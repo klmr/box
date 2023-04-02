@@ -65,7 +65,7 @@ fmt = function (..., envir = parent.frame()) {
                 res = if (mod == 0L) {
                     chr(val)
                 } else {
-                    fmt = substr(str, mod, mod + len[row, 'mod'] - 1L);
+                    fmt = substr(str, mod, mod + len[row, 'mod'] - 1L)
                     switch(
                         substr(fmt, nchar(fmt), nchar(fmt)),
                         `"` = dQuote(chr(val)),

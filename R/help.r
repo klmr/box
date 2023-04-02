@@ -27,8 +27,8 @@ help = function (topic, help_type = getOption('help_type', 'text')) {
 
     if (subject != '.__module__.') {
         obj = if (
-            exists(subject, target_mod, inherits = FALSE) &&
-            ! bindingIsActive(subject, target_mod)
+            exists(subject, target_mod, inherits = FALSE)
+            && ! bindingIsActive(subject, target_mod)
         ) get(subject, envir = target_mod, inherits = FALSE)
 
         if (inherits(obj, 'box$mod')) {

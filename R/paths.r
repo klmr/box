@@ -199,7 +199,7 @@ rstudio_path = function (...) {
         # ‘rstudioapi’ might not be installed. Attempt to use the internal API
         # as a fallback.
         tryCatch(
-            as.environment("tools:rstudio")$.rs.api.getActiveDocumentContext()$path,
+            as.environment('tools:rstudio')$.rs.api.getActiveDocumentContext()$path,
             error = function (.) {
                 warning(fmt(
                     'It looks like the code is run from inside RStudio but ',

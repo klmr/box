@@ -56,11 +56,11 @@
 .onAttach = function (libname, pkgname) {
     # Do not permit attaching ‘box’, except during build/check/CI.
     if (
-        called_from_devtools() ||
-        called_from_pkgdown() ||
-        called_from_ci() ||
+        called_from_devtools()
+        || called_from_pkgdown()
+        || called_from_ci()
         # `utils::example` also attaches the package.
-        called_from_example()
+        || called_from_example()
     ) return()
 
     is_bad_call = function (call) {
@@ -82,11 +82,11 @@
 }
 
 called_from_devtools = function () {
+    is_devtools_ns = function (x) identical(x, getNamespace('devtools'))
+
     isNamespaceLoaded('devtools') &&
-    ! nzchar(Sys.getenv('R_BOX_TEST_ALLOW_DEVTOOLS')) && {
-        is_devtools_ns = function (x) identical(x, getNamespace('devtools'))
+        ! nzchar(Sys.getenv('R_BOX_TEST_ALLOW_DEVTOOLS')) &&
         any(map_lgl(is_devtools_ns, lapply(sys.frames(), topenv)))
-    }
 }
 
 called_from_pkgdown = function () {

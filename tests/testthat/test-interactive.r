@@ -17,7 +17,9 @@ interactive_r(code = {
     library(testthat)
     devtools::load_all()
 
-    RecordReporter = R6::R6Class('RecordReporter', inherit = Reporter,
+    RecordReporter = R6::R6Class(
+        'RecordReporter',
+        inherit = Reporter,
         public = list(
             events = NULL,
 

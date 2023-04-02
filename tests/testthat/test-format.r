@@ -41,7 +41,7 @@ test_that('invalid formats raise an error', {
 })
 
 test_that('deparsed expression forms a single string', {
-    expr = quote(long_call(with + some, "arguments in it", that_total, over, 60L - ...chars))
+    expr = quote(long_call(with + some, 'arguments in it', that_total, over, 60L - ...chars))
     actual = fmt('{expr;"}')
 
     expect_equal(actual, dQuote(deparse1(expr)))
