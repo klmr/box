@@ -44,7 +44,7 @@
 
 .onLoad = function (libname, pkgname) {
     ns = topenv()
-    ns$system_mod_path = system.file('mod', package = 'box')
+    ns$system_mod_path = system.file('mod', package = pkgname)
 
     set_import_env_parent()
 }

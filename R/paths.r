@@ -161,8 +161,7 @@ knitr_path = function (...) {
 shiny_path = function (...) {
     if (! 'shiny' %in% loadedNamespaces()) return()
     in_shiny =
-        (utils::packageVersion('shiny') < '1.6.0' && shiny::isRunning()) ||
-        {
+        (utils::packageVersion('shiny') < '1.6.0' && shiny::isRunning()) || {
             # `isRunning` no longer works in Shiny 1.6.0:
             # <https://github.com/rstudio/shiny/issues/3499>
             shiny_ns = getNamespace('shiny')
@@ -201,13 +200,14 @@ rstudio_path = function (...) {
         tryCatch(
             as.environment('tools:rstudio')$.rs.api.getActiveDocumentContext()$path,
             error = function (.) {
+                bug_reports_url = utils::packageDescription(.packageName)$BugReports
                 warning(fmt(
                     'It looks like the code is run from inside RStudio but ',
-                    '{"box";\'} is unable to identify the calling document. This ',
-                    'should not happen. Please consider filing a bug report at ',
-                    '<https://github.com/klmr/box/issues/new/choose>.'
+                    '{.packageName;\'} is unable to identify the calling ',
+                    'document. This should not happen. Please consider filing ',
+                    'a bug report at <{bug_reports_url}>.'
                 ))
-                return(NULL)
+                ''
             }
         )
     }
