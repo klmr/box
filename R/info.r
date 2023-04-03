@@ -41,8 +41,8 @@ pkg_info = function (spec) {
     fmt('<mod_info: \x1B[33m{path}\x1B[0m>')
 }
 
-is_absolute = function (spec) {
-    spec$prefix[1L] %in% c('.', '..')
+is_local = function (spec) {
+    ! is.null(spec$prefix) && spec$prefix[1L] %in% c('.', '..')
 }
 
 find_mod = function (spec, caller) {
@@ -50,7 +50,7 @@ find_mod = function (spec, caller) {
 }
 
 `find_mod.box$mod_spec` = function (spec, caller) {
-    if (is_absolute(spec)) find_local_mod(spec, caller) else find_global_mod(spec, caller)
+    if (is_local(spec)) find_local_mod(spec, caller) else find_global_mod(spec, caller)
 }
 
 `find_mod.box$pkg_spec` = function (spec, caller) {
@@ -98,7 +98,8 @@ find_in_path = function (spec, base_paths) {
 }
 
 mod_file_candidates = function (spec, base_paths) {
-    mod_path_prefix = merge_path(spec$prefix)
+    # Fallback for unscoped, global module names.
+    mod_path_prefix = merge_path(spec$prefix) %||% '.'
     ext = c('.r', '.R')
     simple_mod = file.path(mod_path_prefix, paste0(spec$name, ext))
     nested_mod = file.path(mod_path_prefix, spec$name, paste0('__init__', ext))

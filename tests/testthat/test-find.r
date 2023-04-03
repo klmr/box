@@ -98,3 +98,17 @@ test_that('modules are found during Shiny startup', {
     script_path = rscript('support/run-shiny.r')
     expect_paths_equal(script_path, 'support/shiny-app')
 })
+
+test_that('unscoped modules can be found', {
+    spec = parse_spec(quote(mod(a)), '')
+    candidates = mod_file_candidates(spec, 'x')
+    expect_setequal(
+        unlist(candidates),
+        c('x/./a.r', 'x/./a.R', 'x/./a/__init__.r', 'x/./a/__init__.R')
+    )
+
+    old_opts = options(box.path = file.path(getOption('box.path'), 'mod'))
+    on.exit(options(old_opts))
+
+    expect_error(find_mod(spec, environment()), NA)
+})
