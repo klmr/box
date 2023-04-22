@@ -8,6 +8,16 @@
 * Feature: Add `purge_cache` function (@kamilzyla, #236)
 
 
+# box 1.1.2
+
+(Version update for technical reasons; no changes.)
+
+
+# box 1.1.1
+
+(Version update for technical reasons; no changes.)
+
+
 # box 1.1.0
 
 ## Breaking changes
