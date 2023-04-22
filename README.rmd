@@ -2,9 +2,9 @@
 
 ```{r echo = FALSE}
 knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = '#>',
-  fig.path = 'man/figures/'
+    collapse = TRUE,
+    comment = '#>',
+    fig.path = 'man/figures/'
 )
 
 options(box.path = 'inst')
