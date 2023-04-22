@@ -110,7 +110,26 @@ name = function () {
     if (is_namespace(mod_ns)) namespace_info(mod_ns, 'info')$name
 }
 
-# FIXME: Export?
+#' Get a module’s namespace environment
+#'
+#' Called inside a module, \code{box::topenv()} returns the module namespace
+#' environment. Otherwise, it behaves similarly to \code{\link[base]{topenv}}.
+#' @usage \special{box::topenv()}
+#' @usage \special{box::topenv(env)}
+#' @param module a module environment
+#' @return \code{box::topenv()} returns the top-level module environment of the
+#' module it is called from, or the nearest top-level non-module environment
+#' otherwise; this is usually \code{.GlobalEnv}.
+#'
+#' \code{box::topenv(env)} returns the nearest top-level environment that is a
+#' direct or indirect parent of \code{env}.
+#' @export
+topenv = function (module) {
+    if (missing(module)) module = current_mod()
+    if (inherits(module, 'box$mod')) attr(module, 'namespace')
+    else mod_topenv(module)
+}
+
 current_mod = function (env = parent.frame(2L)) {
     mod_topenv(env)
 }
@@ -126,7 +145,7 @@ mod_topenv = function (env = parent.frame()) {
 #' environment.
 #' @name namespace
 is_mod_topenv = function (env) {
-    is_namespace(env) || identical(env, topenv(env)) || identical(env, emptyenv())
+    is_namespace(env) || identical(env, base::topenv(env)) || identical(env, emptyenv())
 }
 
 #' @keywords internal

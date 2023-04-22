@@ -1,5 +1,6 @@
 # box (development version)
 
+* Feature: Add `topenv` function (#310)
 * Fix: Support RStudio without installed ‘rstudioapi’ (#293)
 * Fix: Make S3 method detection code more robust (#266)
 * Fix: Support trailing comma in reexports (#263)

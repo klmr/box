@@ -1,9 +1,10 @@
 #' Find the full file names of files in modules
 #'
-#' @usage \special{box::file(\dots, module = current_module())}
+#' @usage \special{box::file(\dots)}
+#' @usage \special{box::file(\dots, module)}
 #' @param \dots character vectors of files or subdirectories inside a module; if
 #'  none is given, return the root directory of the module
-#' @param module a module environment (default: current module)
+#' @param module a module environment
 #' @return A character vector containing the absolute paths to the files
 #'  specified in \code{\dots}.
 #'
@@ -16,6 +17,7 @@
 #' argument \code{mustWork = TRUE}).
 #' @seealso \code{\link[base]{system.file}}
 #' @export
-file = function (..., module = current_mod()) {
+file = function (..., module) {
+    if (missing(module)) module = current_mod()
     file.path(base_path(module), ...)
 }

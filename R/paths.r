@@ -165,7 +165,7 @@ shiny_path = function (...) {
             # `isRunning` no longer works in Shiny 1.6.0:
             # <https://github.com/rstudio/shiny/issues/3499>
             shiny_ns = getNamespace('shiny')
-            any(map_lgl(identical, lapply(sys.frames(), topenv), shiny_ns))
+            any(map_lgl(identical, lapply(sys.frames(), base::topenv), shiny_ns))
         }
     if (in_shiny) getwd()
 }

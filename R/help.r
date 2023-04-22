@@ -194,7 +194,7 @@ call_help = function (call, caller) {
     candidates = utils::getAnywhere('help')
     envs = map(environment, candidates$objs)
     valid = candidates$visible & map_lgl(is.function, candidates$objs)
-    other_helps = candidates$objs[valid & ! map_lgl(identical, envs, topenv())]
+    other_helps = candidates$objs[valid & ! map_lgl(identical, envs, base::topenv())]
 
     call[[1L]] = other_helps[[1L]]
     eval(call, envir = caller)

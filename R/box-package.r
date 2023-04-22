@@ -43,7 +43,7 @@
 '_PACKAGE'
 
 .onLoad = function (libname, pkgname) {
-    ns = topenv()
+    ns = base::topenv()
     ns$system_mod_path = system.file('mod', package = pkgname)
 
     set_import_env_parent()
@@ -86,13 +86,13 @@ called_from_devtools = function () {
 
     isNamespaceLoaded('devtools') &&
         ! nzchar(Sys.getenv('R_BOX_TEST_ALLOW_DEVTOOLS')) &&
-        any(map_lgl(is_devtools_ns, lapply(sys.frames(), topenv)))
+        any(map_lgl(is_devtools_ns, lapply(sys.frames(), base::topenv)))
 }
 
 called_from_pkgdown = function () {
     isNamespaceLoaded('pkgdown') && {
         is_pkgdown_ns = function (x) identical(x, getNamespace('pkgdown'))
-        any(map_lgl(is_pkgdown_ns, lapply(sys.frames(), topenv)))
+        any(map_lgl(is_pkgdown_ns, lapply(sys.frames(), base::topenv)))
     }
 }
 
@@ -112,7 +112,7 @@ called_from_example = function () {
     # etc.
     is_example_call = function (i)
         identical(sys.call(i)[[1L]], example) &&
-            identical(topenv(sys.frame(i)), utils_ns)
+            identical(base::topenv(sys.frame(i)), utils_ns)
     any(map_lgl(is_example_call, seq_len(sys.nframe())))
 }
 
