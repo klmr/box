@@ -28,14 +28,14 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 Suggests:
     devtools,
-    knitr,
+    knitr (>= 1.40),
     rmarkdown,
     R6,
     rlang,
-    roxygen2 (>= 7.0.2),
+    roxygen2 (>= 7.2.1),
     shiny,
     stringr,
-    testthat (>= 3.0.3)
+    testthat (>= 3.1.7)
 Enhances:
     rstudioapi
 VignetteBuilder: knitr
