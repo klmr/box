@@ -1,13 +1,18 @@
-# box (development version)
+# box 1.1.3
 
-* Feature: Add `topenv` function (#310)
-* Fix: Work around R HTML help display regression that caused warnings (#255, #278)
-* Fix: Support RStudio without installed ‘rstudioapi’ (#293)
-* Fix: Make S3 method detection code more robust (#266)
-* Fix: Support trailing comma in reexports (#263)
-* Feature: Support lazy data loading for packages (#219)
-* Enhancement: Improve error messages for invalid `use` declarations (#253)
-* Feature: Add `purge_cache` function (@kamilzyla, #236)
+## Bug fixes
+
+* Silence warnings caused by an internal change of the R HTML help display functionality (#255, #278).
+* Support loading modules inside RStudio even when ‘rstudioapi’ is not installed (#293).
+* Do not crash in the presence of missing arguments in function calls inside modules (#266).
+* Support trailing comma in in reexports via `box::use()` (#263).
+
+## New and improved features
+
+* Add `box::topenv()` function, analogous to `base::topenv()` (#310).
+* Support lazy loading data from packages (#219).
+* Improve error messages for invalid `box::use()` declarations (#253).
+* Add `box::purge_cache()` function to force reloading all modules (@kamilzyla, #236).
 
 
 # box 1.1.2
