@@ -69,7 +69,7 @@ is_S3 = function (expr) {
             if (identical(fun, quote(`function`))) return(FALSE)
 
             # Without `as.list`, missing arguments in call expressions cause
-            # missing values in our code. Rather than handle these as speciak
+            # missing values in our code. Rather than handle these as special
             # cases, we use `as.list` to flatten those into empty expressions.
             Recall(as.list(expr)[-1L])
         } else {
