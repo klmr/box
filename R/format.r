@@ -103,13 +103,22 @@ chr.while =
     deparse1(x)
 }
 
-# Needs to be defined with `value` as the second argument to silence a spurious
-# R CMD check warning in R ≤ 4.1:
-#   The argument of a replacement function which corresponds to the right hand
-#   side must be named ‘value’.
-`chr.<-` = function (x, value) {
-    deparse1(x)
-}
+# The following is required because of a bug in `R CMD CHECK` which erroneously
+# flags up a regular declaration of `chr.<-` because it thinks the function is a
+# *replacement function*, which requires a `value` argument.
+# Adding a dummy `value` argument as a workaround to silence this warning, which
+# used to work before R 4.3.0, now fails as well because `R CMD CHECK` rightly
+# complains that this function has a different signature than the generic.
+# See <https://stackoverflow.com/q/69674485/1968> for more information.
+# Alternatively we could export the definitions and add the following:
+#
+# #' @rawNamespace S3method(chr, "<-", "chr.=")
+#
+# … however, these are internal functions that should not be exported.
+
+# Use `get` to avoid spurious `R CMD CHECK` warnings about using `.S3method`
+# inside a package: in this particular instance *this is what we want!*
+wrap_unsafe_function(.BaseNamespaceEnv, '.S3method')('chr', '<-', `chr.=`)
 
 chr.expression = function (x) {
     chr(x[[1L]])
