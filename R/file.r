@@ -1,4 +1,4 @@
-#' Find the full file names of files in modules
+#' Find the full paths of files in modules
 #'
 #' @usage \special{box::file(\dots)}
 #' @usage \special{box::file(\dots, module)}

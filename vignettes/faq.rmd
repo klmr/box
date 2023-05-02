@@ -62,7 +62,7 @@ box::use(klmr/sys)
 
 Inside modules, only the ‘base’ package is attached. *All* other packages need to be attached, including all core R packages that are otherwise attached by default. This includes ‘stats’, ‘graphics’, ‘grDevices’, ‘utils’, ‘datasets’ and ‘methods’.
 
-To use names from any of these packages, the packages needs to be loaded via `box::use` same as third-party packages. Alternatively, the standard module `r/core` can be used (and, optionally, attached):
+To use names from any of these packages, the packages need to be loaded via `box::use`, same as third-party packages. Alternatively, the standard module `r/core` can be used (and, optionally, attached):
 
 ```{r eval = FALSE}
 box::use(r/core[...])
@@ -70,7 +70,7 @@ box::use(r/core[...])
 
 This is equivalent to using and attaching the default R packages ‘methods’, ‘stats’, ‘graphics’, ‘grDevices’ and ‘utils’, and is therefore similar to the state of a regular R session.
 
-This module ships with ‘box’ and is always findable, regardless of the value of the module search path.
+This module ships with ‘box’ and is always findable.
 
 
 
