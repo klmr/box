@@ -98,3 +98,8 @@ test_that('modules are found during Shiny startup', {
     script_path = rscript('support/run-shiny.r')
     expect_paths_equal(script_path, 'support/shiny-app')
 })
+
+test_that('modules are found inside .Rprofile', {
+    profile_path = rscript('foo/bar.r', wd = test_path('support/profile'))
+    expect_paths_equal(profile_path, test_path('support/profile'))
+})
