@@ -1,22 +1,28 @@
 # Set up R so that R called from a unit test finds everything in order.
 
-# First, load the original user profile, if any. The environment variable is
-# set by the test code calling R to the value of `R_PROFILE_USER`.
+local({
+    # First, find the original user profile, if any. The environment variable is
+    # set by the test code calling R to the value of `R_PROFILE_USER`.
 
-user_profile = Sys.getenv('R_ORIGINAL_PROFILE_USER', '~/.Rprofile')
-if (identical(user_profile, '')) {
-    user_profile = '~/.Rprofile'
-}
+    user_profile = Sys.getenv('R_ORIGINAL_PROFILE_USER')
+    if (user_profile == '') {
+        user_profile = if (file.exists('.Rprofile')) '.Rprofile' else '~/.Rprofile'
+    }
 
-if (file.exists(user_profile)) {
-    source(user_profile)
-}
+    # Next, ensure that the ‘box’ package that’s loaded is the source version
+    # we’re currently testing, rather than something loaded by the user
+    # configuration.
 
-# Next, ensure that the ‘box’ package that’s loaded is the source version we’re
-# currently testing, rather than something loaded by the user configuration.
+    unloadNamespace('box')
+    devtools::load_all(Sys.getenv('BOX_TESTING_BASEDIR'), quiet = TRUE, export_all = FALSE)
+    detach('package:box')
 
-unloadNamespace('box')
-devtools::load_all(quiet = TRUE)
+    # … and load the original user profile, if it exists.
+
+    if (file.exists(user_profile)) {
+        sys.source(user_profile, envir = .GlobalEnv)
+    }
+})
 
 # This is required by `interactive_r` to verify that invocation succeeded.
 
