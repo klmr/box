@@ -54,6 +54,19 @@ help = function (topic, help_type = getOption('help_type', 'text')) {
     }
 
     mod_ns = attr(target_mod, 'namespace')
+
+    if (exists('obj')) {
+      obj_path = attr(attr(obj, 'srcref'), 'srcfile')$filename
+      if (obj_path != info$source_path) {
+        # i.e. if obj does not come directly from this module
+        # (i.e. if this module re-exports it from some other module)
+        # Then use the name from this module, and borrow the content of the
+        # other module in order to fetch the docs in a moment
+        info = mod_info(list(name = mod_name), obj_path)
+        mod_ns = load_mod(info)
+      }
+    }
+
     all_docs = namespace_info(mod_ns, 'doc')
 
     if (is.null(all_docs)) {
