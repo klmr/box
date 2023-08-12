@@ -1,6 +1,6 @@
 Package: box
 Title: Write Reusable, Composable and Modular R Code
-Version: 1.1.3
+Version: 1.1.3.9000
 Authors@R: c(
         person(
             'Konrad', 'Rudolph',
@@ -21,7 +21,7 @@ Description: A modern module system for R. Organise code into hierarchical,
     composable, reusable modules, and use it effortlessly across projects via a
     flexible, declarative dependency loading syntax.
 Depends:
-    R (>= 3.5.0)
+    R (>= 3.6.3)
 Imports:
     tools
 License: MIT + file LICENSE

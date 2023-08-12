@@ -1,3 +1,14 @@
+# box (development version)
+
+## Breaking hcanges
+
+* ‘box’ no longer supports R 3.5 since the R build infrastructure (in particular ‘devtools’) no longer supports it.
+
+## Bug fixes
+
+* Replace call to function that was added in R 4.0.0 to make package work again in R 3.6.3 (#335).
+
+
 # box 1.1.3
 
 ## Bug fixes
