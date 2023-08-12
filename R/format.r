@@ -115,10 +115,7 @@ chr.while =
 # #' @rawNamespace S3method(chr, "<-", "chr.=")
 #
 # … however, these are internal functions that should not be exported.
-
-# Use `get` to avoid spurious `R CMD CHECK` warnings about using `.S3method`
-# inside a package: in this particular instance *this is what we want!*
-wrap_unsafe_function(.BaseNamespaceEnv, '.S3method')('chr', '<-', `chr.=`)
+registerS3method('chr', '<-', `chr.=`, environment())
 
 chr.expression = function (x) {
     chr(x[[1L]])
