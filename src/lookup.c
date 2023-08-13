@@ -24,10 +24,11 @@ static SEXP sys_call(SEXP parent);
 SEXP strict_extract(SEXP e1, SEXP e2) {
     if (! Rf_isEnvironment(e1)) {
         Rf_error("first argument was not a module environment");
-        return R_NilValue;
     }
 
-    SEXP name = PROTECT(Rf_installTrChar(STRING_ELT(e2, 0)));
+    // Return value of `install` does not need to be protected:
+    // <https://github.com/kalibera/cran-checks/blob/master/rchk/PROTECT.md>
+    SEXP name = Rf_installTrChar(STRING_ELT(e2, 0));
     SEXP ret = Rf_findVarInFrame(e1, name);
 
     if (ret == R_UnboundValue) {
@@ -40,11 +41,8 @@ SEXP strict_extract(SEXP e1, SEXP e2) {
             Rf_translateChar(STRING_ELT(e2, 0)),
             Rf_translateChar(PRINTNAME(fst_arg))
         );
-        UNPROTECT(4);
-        return R_NilValue;
     }
 
-    UNPROTECT(1);
     return ret;
 }
 
