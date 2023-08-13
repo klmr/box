@@ -21,7 +21,7 @@ Description: A modern module system for R. Organise code into hierarchical,
     composable, reusable modules, and use it effortlessly across projects via a
     flexible, declarative dependency loading syntax.
 Depends:
-    R (>= 3.6.3)
+    R (>= 3.6.0)
 Imports:
     tools
 License: MIT + file LICENSE

@@ -4,6 +4,13 @@ if (getRversion() < '4.0.0') {
     }
 
     activeBindingFunction = function (sym, env) {
+        class = class(env)
+        on.exit({class(env) = class})
         as.list(`class<-`(env, NULL), all.names = TRUE)[[sym]]
+    }
+
+    tryInvokeRestart = function (r, ...) {
+        if (! isRestart(r)) r = findRestart(r)
+        if (! is.null(r)) invokeRestart(r, ...)
     }
 }
