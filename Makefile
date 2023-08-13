@@ -1,4 +1,5 @@
-rscript = Rscript --no-save --no-restore
+R_HOME ?= $(shell Rscript -e 'cat(Sys.getenv("R_HOME"))')
+rscript = ${R_HOME}/bin/Rscript --no-save --no-restore
 unexport R_PROFILE_USER
 
 # Helper functions for a recursive wildcard function.
