@@ -22,6 +22,8 @@ jobs:
           - {os: windows-latest, r: 'release'}
           - {os: macOS-latest, r: 'release'}
           - {os: ubuntu-20.04, r: '3.6'}
+          - {os: ubuntu-20.04, r: '4.0'}
+          - {os: ubuntu-20.04, r: '4.1'}
           - {os: ubuntu-20.04, r: 'oldrel'}
           - {os: ubuntu-20.04, r: 'release'}
           - {os: ubuntu-20.04, r: 'devel', http-user-agent: 'release'}
