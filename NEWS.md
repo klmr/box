@@ -1,6 +1,6 @@
 # box (development version)
 
-## Breaking hcanges
+## Breaking changes
 
 * ‘box’ no longer supports R 3.5 since the R build infrastructure (in particular ‘devtools’) no longer supports it.
 
