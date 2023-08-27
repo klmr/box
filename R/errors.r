@@ -30,7 +30,7 @@ rethrow = function (error, call = sys.call(sys.parent())) {
                 # In all versions of R currently supported, `tryCatch` inserts 4
                 # calls into the call stack, which we excise here.
                 tb = error$traceback
-                start = Position(function (x) identical(x[[1L]], quote(rethrow_on_error)), tb)
+                start = Position(function (x) x[[1L]] %==% quote(rethrow_on_error), tb)
                 tb = tb[- seq(start + 1L, start + 4L)]
                 if (getRversion() < '4.0.0') {
                     # Prior to R 4.0.0, `.Traceback` contains deparsed calls.

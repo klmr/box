@@ -175,7 +175,7 @@ shiny_path = function (...) {
 #' \pkg{testthat} test case.
 #' @rdname path
 testthat_path = function (...) {
-    if (identical(Sys.getenv('TESTTHAT'), 'true')) getwd()
+    if (Sys.getenv('TESTTHAT') %==% 'true') getwd()
 }
 
 #' @return \code{rstdio_path} returns the directory in which the currently
@@ -190,7 +190,7 @@ rstudio_path = function (...) {
     # *not* want to use RStudio’s active document, since that isn’t the script
     # from which we are called.
     # See also comments at <https://stackoverflow.com/a/35849779/1968>.
-    if (! identical(.Platform$GUI, 'RStudio')) return(NULL)
+    if (! .Platform$GUI %==% 'RStudio') return(NULL)
 
     document_path = if (requireNamespace('rstudioapi', quietly = TRUE)) {
         rstudioapi::getActiveDocumentContext()$path
@@ -212,7 +212,7 @@ rstudio_path = function (...) {
         )
     }
 
-    if (identical(document_path, '')) {
+    if (document_path %==% '') {
         # The active document wasn’t saved yet, or the code is invoked from the
         # R REPL/console.
         getwd()
@@ -275,7 +275,7 @@ calling_mod_path = function (caller) {
 #' logically represent \code{path}.
 #' @rdname paths
 split_path = function (path) {
-    if (identical(path, dirname(path))) {
+    if (path %==% dirname(path)) {
         path
     } else {
         c(Recall(dirname(path)), basename(path))

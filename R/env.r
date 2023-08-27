@@ -145,7 +145,7 @@ mod_topenv = function (env = parent.frame()) {
 #' environment.
 #' @name namespace
 is_mod_topenv = function (env) {
-    is_namespace(env) || identical(env, base::topenv(env)) || identical(env, emptyenv())
+    is_namespace(env) || env %==% base::topenv(env) || env %==% emptyenv()
 }
 
 #' @keywords internal
@@ -201,7 +201,7 @@ find_import_env = function (x, spec, info, mod_ns) {
 }
 
 find_import_env.environment = function (x, spec, info, mod_ns) {
-    env = if (identical(x, .GlobalEnv)) {
+    env = if (x %==% .GlobalEnv) {
         # We need to use `attach` here: attempting to set
         # `parent.env(.GlobalEnv)` causes R to segfault.
         box_attach(NULL, name = paste0('mod:', spec_name(spec)))

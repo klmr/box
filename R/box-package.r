@@ -82,7 +82,7 @@
 }
 
 called_from_devtools = function () {
-    is_devtools_ns = function (x) identical(x, getNamespace('devtools'))
+    is_devtools_ns = function (x) x %==% getNamespace('devtools')
 
     isNamespaceLoaded('devtools') &&
         ! nzchar(Sys.getenv('R_BOX_TEST_ALLOW_DEVTOOLS')) &&
@@ -91,7 +91,7 @@ called_from_devtools = function () {
 
 called_from_pkgdown = function () {
     isNamespaceLoaded('pkgdown') && {
-        is_pkgdown_ns = function (x) identical(x, getNamespace('pkgdown'))
+        is_pkgdown_ns = function (x) x %==% getNamespace('pkgdown')
         any(map_lgl(is_pkgdown_ns, lapply(sys.frames(), base::topenv)))
     }
 }
@@ -111,8 +111,8 @@ called_from_example = function () {
     #   get('example')(…)
     # etc.
     is_example_call = function (i)
-        identical(sys.call(i)[[1L]], example) &&
-            identical(base::topenv(sys.frame(i)), utils_ns)
+        sys.call(i)[[1L]] %==% example &&
+            base::topenv(sys.frame(i)) %==% utils_ns
     any(map_lgl(is_example_call, seq_len(sys.nframe())))
 }
 

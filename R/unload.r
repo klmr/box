@@ -66,7 +66,7 @@ unload = function (mod) {
     attached = attr(mod, 'attached')
 
     if (! is.null(attached)) {
-        if (identical(attached, '')) {
+        if (attached %==% '') {
             caller = parent.frame()
             parent.env(caller) = parent.env(parent.env(caller))
         } else {
@@ -120,7 +120,7 @@ reload = function (mod) {
     })
 
     if (! is.null(attached)) {
-        if (identical(attached, '')) {
+        if (attached %==% '') {
             attached_env = parent.env(caller)
             parent.env(caller) = parent.env(attached_env)
             on.exit((parent.env(caller) = attached_env), add = TRUE)

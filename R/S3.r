@@ -61,12 +61,12 @@ is_S3 = function (expr) {
             # functions since that would require evaluating the function body in
             # the general case (namely, the function body itself could redefine
             # them).
-            if (identical(fun, quote(UseMethod))) return(TRUE)
+            if (fun %==% quote(UseMethod)) return(TRUE)
 
             # Make sure nested function definitions are *not* getting
             # traversed: `UseMethod` inside a nested function does not make
             # the containing function a generic.
-            if (identical(fun, quote(`function`))) return(FALSE)
+            if (fun %==% quote(`function`)) return(FALSE)
 
             # Without `as.list`, missing arguments in call expressions cause
             # missing values in our code. Rather than handle these as special

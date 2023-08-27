@@ -291,7 +291,7 @@ use = function (...) {
 #' @name importing
 use_one = function (declaration, alias, caller, use_call) {
     # Permit empty expression resulting from trailing comma.
-    if (identical(declaration, quote(expr =)) && identical(alias, '')) return()
+    if (declaration %==% quote(expr =) && alias %==% '') return()
 
     rethrow_on_error({
         spec = parse_spec(declaration, alias)
@@ -513,7 +513,7 @@ assign_temp_alias = function (spec, caller) {
         if (missing(mod_exports)) {
             # Find from where I’m called, and infer the target of the export.
             mod_exports_frame_index = utils::tail(which(map_lgl(
-                function (call) identical(call[[1L]], quote(mod_exports)),
+                function (call) call[[1L]] %==% quote(mod_exports),
                 sys.calls()
             )), 1L)
             frame = sys.frame(mod_exports_frame_index)

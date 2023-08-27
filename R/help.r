@@ -144,7 +144,7 @@ help_topic_target = function (topic, caller) {
     inner_mod = function (mod, expr) {
         name = if (is.name(expr)) {
             as.character(expr)
-        } else if (is.call(expr) && identical(expr[[1L]], quote(`$`))) {
+        } else if (is.call(expr) && expr[[1L]] %==% quote(`$`)) {
             mod = Recall(mod, expr[[2L]])
             as.character(expr[[3L]])
         } else {
@@ -173,7 +173,7 @@ help_topic_target = function (topic, caller) {
 #' @name help-internal
 #' @keywords internal
 find_env = function (name, caller) {
-    while (! identical(caller, emptyenv())) {
+    while (! caller %==% emptyenv()) {
         if (exists(name, envir = caller, inherits = FALSE)) return(caller)
         caller = parent.env(caller)
     }

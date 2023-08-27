@@ -96,7 +96,7 @@ spec_name = function (spec) {
     format_attach = function (a) {
         with_alias = function (names, aliases) {
             mapply(
-                function (n, a) if (n == '\u2026' || identical(n, a)) n else paste(a, '=', n),
+                function (n, a) if (n == '\u2026' || n %==% a) n else paste(a, '=', n),
                 names, aliases
             )
         }
@@ -126,19 +126,19 @@ spec_name = function (spec) {
 
 parse_spec_impl = function (expr) {
     if (is.name(expr)) {
-        if (identical(expr, quote(.))) {
+        if (expr %==% quote(.)) {
             list(prefix = '.', name = '__init__')
-        } else if (identical(expr, quote(..))) {
+        } else if (expr %==% quote(..)) {
             list(prefix = '..', name = '.')
         } else {
             c(parse_pkg_name(expr), list(attach = NULL))
         }
     } else if (is.call(expr)) {
-        if (identical(expr[[1L]], quote(`[`))) {
+        if (expr[[1L]] %==% quote(`[`)) {
             if (is.name((name = expr[[2L]]))) {
-                if (identical(name, quote(.))) {
+                if (name %==% quote(.)) {
                     c(list(prefix = '.', name = '__init__'), parse_attach_spec(expr))
-                } else if (identical(name, quote(..))) {
+                } else if (name %==% quote(..)) {
                     # parse_mod(bquote(../.(`[[<-`(expr, 2L, quote(.)))))
                     c(list(prefix = '..', name = '.'), parse_attach_spec(expr))
                 } else {
@@ -147,7 +147,7 @@ parse_spec_impl = function (expr) {
             } else {
                 throw('expected a name in {expr;"}, got {describe_token(name)}')
             }
-        } else if (identical(expr[[1L]], quote(`/`))) {
+        } else if (expr[[1L]] %==% quote(`/`)) {
             parse_mod(expr)
         } else {
             throw('expected {"/";"} in {expr;"}, got {expr[[1L]];"}')
@@ -181,7 +181,7 @@ parse_mod = function (expr) {
     }
 
     if (is.call(mod)) {
-        if (identical(mod[[1L]], quote(`[`))) {
+        if (mod[[1L]] %==% quote(`[`)) {
             c(
                 list(mod = c(parse_mod_name(mod[[2L]], prefix), prefix)),
                 parse_attach_spec(mod)
@@ -199,7 +199,7 @@ parse_mod = function (expr) {
 parse_mod_prefix = function (expr) {
     if (is.name(expr)) {
         list(prefix = deparse1(expr))
-    } else if (is.call(expr) && identical(expr[[1L]], quote(`/`))) {
+    } else if (is.call(expr) && expr[[1L]] %==% quote(`/`)) {
         if (! is.name(expr[[3L]])) {
             throw('expected a name in module prefix, got {describe_token(expr[[3L]])}')
         } else {
@@ -245,7 +245,7 @@ assign_missing_names = function (syms) {
 }
 
 parse_attach_list = function (expr) {
-    if (length(expr) == 1L && identical(expr[[1L]], quote(expr =))) {
+    if (length(expr) == 1L && expr[[1L]] %==% quote(expr =)) {
         throw('expected at least one name in attach list')
     } else {
         names = stats::setNames(map_chr(parse_name, expr), names(expr))

@@ -91,7 +91,7 @@ parse_export_specs = function (info, exprs, mod_ns) {
 
     reexport_names = function (declaration, alias, export) {
         # Permit empty expression resulting from trailing comma.
-        if (identical(declaration, quote(expr =)) && identical(alias, '')) return()
+        if (declaration %==% quote(expr =) && alias %==% '') return()
         spec = parse_spec(declaration, alias)
         import = find_matching_import(namespace_info(mod_ns, 'imports'), spec)
 
@@ -115,7 +115,7 @@ parse_export_specs = function (info, exprs, mod_ns) {
 
     find_matching_import = function (imports, reexport) {
         for (import in imports) {
-            if (identical(import$spec, reexport)) return(import)
+            if (import$spec %==% reexport) return(import)
         }
     }
 
@@ -169,7 +169,7 @@ block_is_assign = function (block) {
 #' @keywords internal
 #' @rdname parse_export_specs
 block_is_use_call = function (block) {
-    identical(attr(block, 'call')[[1L]], use_call)
+    attr(block, 'call')[[1L]] %==% use_call
 }
 
 #' @keywords internal
@@ -229,14 +229,14 @@ create_export_block = function (expr, ref, info, mod_ns) {
 #' @rdname create_export_block
 parse_object = function (info, expr, mod_ns) {
     if (is.character(expr)) {
-        if (identical(expr, '_PACKAGE')) {
+        if (expr %==% '_PACKAGE') {
             value = list(path = info$source_path)
             roxygen2_object(expr, value, 'package')
         } else {
             roxygen2_object(expr, expr, 'data')
         }
     } else if (is.call(expr)) {
-        if (identical(expr[[1L]], use_call)) {
+        if (expr[[1L]] %==% use_call) {
             roxygen2_object('use', list(pkg = 'box', fun = 'use'), 'import')
         } else {
             # Attempt to extract a name from the LHS: recurse until the
