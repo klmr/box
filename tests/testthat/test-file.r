@@ -104,3 +104,7 @@ test_that('split_path is working on Windows', {
     # TODO: Standard paths
     # TODO: UNC paths
 })
+
+test_that('`box::file()` checks its arguments', {
+    expect_error(box::file('a', mustWork = FALSE), 'unexpected named argument')
+})

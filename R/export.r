@@ -39,6 +39,8 @@ export = function (...) {
         throw('{"export";"} can only be called from inside a module')
     }
 
+    check_dots_unnamed()
+
     names = as.list(match.call())[-1L]
     for (name in names) {
         if (! is.name(name)) {

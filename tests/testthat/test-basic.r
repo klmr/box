@@ -200,6 +200,20 @@ test_that('modules can specify explicit exports', {
     expect_equal(ex$modname, ex$a$modname)
 })
 
+test_that('`box::export()` checks its arguments', {
+    # Create a test module namespace since `box::export()` can only be called inside a module.
+    test_spec = box:::mod_spec(list(mod = 'test', name = 'test', explicit = FALSE))
+    test_info = box:::mod_info(test_spec, '.')
+    test_ns = box:::make_namespace(test_info)
+    test_ns$a = 1
+
+    expect_error(local(box::export(a), envir = test_ns), NA)
+    expect_error(
+        local(box::export(a = a), envir = test_ns),
+        'unexpected named argument'
+    )
+})
+
 test_that('legcay modules do not call hooks', {
     # Ensure module is first unloaded:
     box::use(mod/legacy)
