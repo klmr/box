@@ -22,7 +22,7 @@
 #' defining S3 methods inside modules.
 #'
 #' @note \strong{Do not} call \code{\link[base]{registerS3method}} inside a
-#' module. Only use \code{box::register_S3_method}. This is important for the
+#' module, only use \code{box::register_S3_method}. This is important for the
 #' module’s own book-keeping.
 #' @export
 register_S3_method = function (name, class, method) {
