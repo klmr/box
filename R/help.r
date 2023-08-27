@@ -159,13 +159,13 @@ help_topic_target = function (topic, caller) {
         obj = inner_mod(caller, topic)
 
         if (inherits(obj, 'box$mod')) {
-            list(obj, '.__module__.')
+            list(obj, '.__module__.', chr(topic))
         } else {
             name = as.character(topic)
-            list(find_env(name, caller), name)
+            list(find_env(name, caller), name, chr(topic))
         }
     } else {
-        list(inner_mod(caller, topic[[2L]]), as.character(topic[[3L]]))
+        list(inner_mod(caller, topic[[2L]]), as.character(topic[[3L]]), chr(topic[[3L]]))
     }
 }
 
