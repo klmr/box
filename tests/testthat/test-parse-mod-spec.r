@@ -1,18 +1,5 @@
 context('spec parser')
 
-test_use = function (...) {
-    call = match.call()
-    parse_spec(call[[2L]], names(call)[[2L]] %||% '')
-}
-
-is_mod_spec = function (x) {
-    inherits(x, 'box$mod_spec')
-}
-
-is_pkg_spec = function (x) {
-    inherits(x, 'box$pkg_spec')
-}
-
 test_that('modules without attaching can be parsed', {
     m = test_use(foo/bar)
     expect_true(is_mod_spec(m))
@@ -270,4 +257,62 @@ test_that('aliases need a name', {
     expect_box_error(box::use(mod/a, alias =), 'alias without a name provided in use declaration')
     expect_box_error(test_use(foo/bar[alias =, y]), 'alias without a name provided in attach list')
     expect_box_error(test_use(foo/bar[x, alias =]), 'alias without a name provided in attach list')
+})
+
+test_that('module names can be disambiguated explicitly', {
+    # Helper to generate a mod spec for a global, prefix-less module *without*
+    # relying on the disambiguation syntax; since that is what we want to test
+    # here, so we can’t rely on it working correctly.
+    fake_global_mod = function (...) {
+        call = match.call()
+        call[[1L]] = quote(test_use)
+        x = eval.parent(call)
+        x['prefix'] = list(NULL)
+        x
+    }
+
+    # Test the helper.
+    fake = fake_global_mod(foo/bar)
+    expect_identical(
+        fake,
+        structure(
+            list(
+                name = 'bar',
+                prefix = NULL,
+                attach = NULL,
+                alias = 'bar',
+                explicit = FALSE
+            ),
+            class = c('box$mod_spec', 'box$spec')
+        )
+    )
+
+    m = test_use(mod(foo/bar))
+    expect_true(is_mod_spec(m))
+    expect_identical_spec(m, test_use(foo/bar))
+
+    n = test_use(mod(foo))
+    expect_identical_spec(n, fake_global_mod(x/foo))
+
+    expect_identical_spec(test_use(foo = mod(foo)), fake_global_mod(foo = x/foo))
+
+    o = test_use(mod(foo)[bar])
+    expect_true(is_mod_spec(o))
+    expect_null(o$prefix)
+    expect_equal(o$name, 'foo')
+    expect_equal(o$attach, c(bar = 'bar'))
+
+    p = test_use(mod(foo/bar)[baz])
+    expect_true(is_mod_spec(p))
+    expect_equal(p$prefix, 'foo')
+    expect_equal(p$name, 'bar')
+    expect_equal(p$attach, c(baz = 'baz'))
+
+    expect_box_error(test_use(mod(foo[bar])))
+    expect_box_error(test_use(mod(foo/bar[baz])))
+
+    expect_error(test_use(mod(./foo)), NA)
+    expect_error(test_use(mod(../../foo)), NA)
+    expect_box_error(test_use(mod(foo/./bar)))
+    expect_box_error(test_use(mod(foo/../bar)))
 })
