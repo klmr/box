@@ -8,6 +8,10 @@
 
 * Replace call to function that was added in R 4.0.0 to make package work again in R 3.6.3 (#335).
 
+## New and improved features
+
+* The `method` argument of `box::register_S3_method()` is now optional (#305).
+
 
 # box 1.1.3
 

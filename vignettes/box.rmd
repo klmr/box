@@ -75,7 +75,7 @@ Note how we automatically get pretty-printed ([FASTA][]) output because the `pri
 getS3method('print', 'bio/seq')
 ```
 
-The source code for `print.bio/seq` contains an interesting `use` declaration. It show-cases an alternative way of invoking `box::use`, which we’ll explore now.
+The source code for `print.bio/seq` contains an interesting `use` declaration: it showcases an alternative way of invoking `box::use`, which we’ll explore now.
 
 ## Attaching modules
 
@@ -103,7 +103,7 @@ The `box::use` directive can now use `bio/seq` instead of `./bio/seq` as the mod
 
 **Note** that non-local module names *must* be fully qualified, nested modules: `box::use(foo/bar)` works, `box::use(bar)` does not (instead, it is assumed that `bar` refers to a *package*)!
 
-In the declaration above we use `[revcomp]` to specify that the `revcomp` name from the `bio/seq` module should be attached in the calling environment. The `[…]` part is an *attach specification*: a comma-separated list of names inside the parentheses specifies which names to attach. The special symbol `...` specifies that *all exported names* should be attached. This has an effect similar to conventional package loading via `library` (or `attach`ing an environment): all the attached names are now available for direct use without necessitating the `seq$` qualifier:
+In the declaration above we use `[revcomp, is_valid]` to specify that the names `revcomp` `is_valid` from the `bio/seq` module should be attached in the calling environment. The `[…]` part is an *attach specification*: a comma-separated list of names inside the parentheses specifies which names to attach. The special symbol `...` can be used to specify that *all exported names* should be attached. This has an effect similar to conventional package loading via `library` (or `attach`ing an environment): all the attached names are now available for direct use without necessitating the `seq$` qualifier:
 
 ```{r}
 is_valid(s)

@@ -6,14 +6,17 @@
 #' @usage \special{box::register_S3_method(name, class, method)}
 #' @param name the name of the generic as a character string.
 #' @param class the class name.
-#' @param method the method to register.
+#' @param method the method to register (optional).
 #' @return \code{box::register_S3_method} is called for its side effect.
 #'
-#' @details Methods for generics defined in the same module do not need to be
-#' registered explicitly, and indeed \emph{should not} be registered. However,
-#' if the user wants to add a method for a known generic (defined outside the
-#' module, e.g. \code{\link{print}}), then this needs to be made known
-#' explicitly.
+#' @details If \code{method} is missing, it defaults to a function named
+#' \code{name.class} in the calling module. If no such function exists, an error
+#' is raised.
+#'
+#' Methods for generics defined in the same module do not need to be registered
+#' explicitly, and indeed \emph{should not} be registered. However, if the user
+#' wants to add a method for a known generic (defined outside the module, e.g.
+#' \code{\link{print}}), then this needs to be made known explicitly.
 #'
 #' See the vignette at \code{vignette('box', 'box')} for more information about
 #' defining S3 methods inside modules.
@@ -23,7 +26,14 @@
 #' module’s own book-keeping.
 #' @export
 register_S3_method = function (name, class, method) {
-    module = environment(method)
+    if (missing(method)) {
+        module = current_mod()
+        method = rethrow_on_error(
+            get(paste0(name, '.', class), envir = module, mode = 'function', inherits = FALSE)
+        )
+    } else {
+        module = environment(method)
+    }
     attr(module, 'S3') = c(attr(module, 'S3'), paste(name, class, sep = '.'))
     registerS3method(name, class, method, module)
 }

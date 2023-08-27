@@ -48,7 +48,7 @@ seq = function (...) {
     invisible(x)
 }
 
-box::register_S3_method('print', 'bio/seq', `print.bio/seq`)
+box::register_S3_method('print', 'bio/seq')
 
 #' Reverse complement
 #'

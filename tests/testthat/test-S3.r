@@ -43,13 +43,19 @@ test_that('S3 methods are found', {
     expect_identical(print, print_dot_test)
 })
 
-test_that('can call S3 methods without attaching', {
+test_that('S3 methods can be called without attaching', {
     box::use(mod/s3)
     expect_equal(s3$test(1), 'test.default')
     expect_equal(s3$test('a'), 'test.character')
 
     foo = structure(42, class = 'test')
     expect_equal(print(foo), 's3$print.test')
+})
+
+test_that('`box::register_S3_method()` correctly infers method', {
+    box::use(mod/s3)
+    foo = structure(42, class = 'test2')
+    expect_equal(print(foo), 's3$print.test2')
 })
 
 test_that('S3 methods are not registered twice', {

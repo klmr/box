@@ -9,6 +9,10 @@ print.test = function (x) 's3$print.test'
 
 box::register_S3_method('print', 'test', print.test)
 
+print.test2 = function (x) 's3$print.test2'
+
+box::register_S3_method('print', 'test2')
+
 #' @export
 se = function (...) UseMethod('se')
 
