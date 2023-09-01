@@ -23,11 +23,11 @@ Likewise, by default `source` evaluates the source code in the global rather tha
 
 Calling these functions inside a module will raise a warning which can be silenced by setting `options(box.warn.legacy = FALSE)`. After changing this option, ‘box’ needs to be (unloaded and) reloaded for the change to take effect.
 
-### Can I use “meta” packages like ‘tidyverse’ with ‘box’?
+### Can I use “meta packages” like ‘tidyverse’ with ‘box’?
 
-No. You can use *individual* packages from the tidyverse via `box::use`. But directly loading a “meta” package such as ‘tidverse’ is intentionally not supported.
+No. You can use *individual* packages from the tidyverse via `box::use`. But directly loading a “meta package” such as ‘tidverse’ is intentionally not supported.
 
-“Meta” packages such as ‘tidyverse’ are antithetical to the purpose of ‘box’: the whole point of ‘box’ is to make package imports *explicit*. Using “meta” packages would undermine this and is therefore discouraged.
+“Meta packages” such as ‘tidyverse’ are antithetical to the purpose of ‘box’: the whole point of ‘box’ is to make package imports *explicit*, and to limit the number of names that are attached in the current scope. Using “meta packages” would undermine this and is therefore discouraged.
 
 
 ### How to organise globally installed modules?
