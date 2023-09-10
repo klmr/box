@@ -79,6 +79,11 @@
 #' argument matching, in contrast with the behavior of the \code{$} operator in
 #' base \R, which matches partial names.
 #'
+#' \strong{Note} that replacement functions (i.e. functions of the form
+#' \code{fun<-}) must be \emph{attached} to be usable, because \R syntactically
+#' does not allow assignment calls where the left-hand side of the assignment
+#' contains \code{$}.
+#'
 #' @section Export specification:
 #'
 #' Names defined in modules can be marked as \emph{exported} by prefixing them
