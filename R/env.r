@@ -8,17 +8,22 @@
 #' The namespace contains a module’s content. This schema is very much like R
 #' package organisation. A good resource for this is:
 #' <http://obeautifulcode.com/R/How-R-Searches-And-Finds-Stuff/>
+#' @note Module namespaces aren’t actual R package namespaces. This is
+#' intentional, since R makes strong assumptions about package namespaces that
+#' are violated here. In particular, such namespaces would have to be registered
+#' in R’s internal namespace registry, and their (de)serialisation is handled by
+#' R code which assumes that they belong to actual packges that can be loaded
+#' via `loadNamespace`.
 #' @name namespace
 #' @keywords internal
 make_namespace = function (info) {
     # Packages use `baseenv()` instead of `emptyenv()` for the parent
     # environment of `.__NAMESPACE__.`. I don’t know why: there should never be
     # any need for inherited name lookup. We’re only using an environment for
-    # `.__module__.` to get efficient name lookup and a mutable value store.
+    # `.__module__.` to get a mutable value store.
     ns_attr = new.env(parent = emptyenv())
     ns_attr$info = info
     ns_env = new.env(parent = make_imports_env(info))
-    # FIXME: Why not use `.__NAMESPACE__.` here?
     ns_env$.__module__. = ns_attr
     # TODO: Set exports here!
     enable_s3_lookup(ns_env, info)
