@@ -31,7 +31,7 @@ First, we load the module:
 box::use(./bio/seq)
 ```
 
-The function `box::use` accepts a list of *unquoted*, *qualified* module names. Each of these module names will load a single module and make it available to the caller in some form. In the code above, we’ve loaded a single module, `seq/seq`. `bio` serves as a *parent module* that may group several submodules. Since the module name inside `box::use` starts with `./`, the module location is resolved *locally*, i.e. relative to the path of the currently running code.
+The function `box::use` accepts a list of *unquoted*, *qualified* module names. Each of these module names will load a single module and make it available to the caller in some form. In the code above, we’ve loaded a single module, `bio/seq`. `bio` serves as a *parent module* that may group several submodules. Since the module name inside `box::use` starts with `./`, the module location is resolved *locally*, i.e. relative to the path of the currently running code.
 
 In the above, `seq` is the module’s *proper name*. `bio/seq` is its *fully qualified name*. And `./bio/seq` is its *`use` declaration*.
 
@@ -56,7 +56,7 @@ It appears that `seq` exports `r length(ls(seq))` different names. To access exp
 box::help(seq$revcomp)
 ```
 
-Now let’s actually *use* the module. The `seq` function inside the `dna/seq` module constructs a set of (optionally named) biological sequences:
+Now let’s actually *use* the module. The `seq` function inside the `bio/seq` module constructs a set of (optionally named) biological sequences:
 
 ```{r}
 s = seq$seq(
@@ -75,7 +75,7 @@ Note how we automatically get pretty-printed ([FASTA][]) output because the `pri
 getS3method('print', 'bio/seq')
 ```
 
-The source code for `print.bio/seq` contains an interesting `use` declaration: it showcases an alternative way of invoking `box::use`, which we’ll explore now.
+The source code for `` `print.bio/seq` `` contains an interesting `use` declaration: it showcases an alternative way of invoking `box::use`, which we’ll explore now.
 
 ## Attaching modules
 
