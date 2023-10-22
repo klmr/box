@@ -45,6 +45,8 @@ navbar:
           href: articles/related.html
         - text: ---
         - text: Implementation details
+        - text: Contributing
+          href: articles/contributing.html
         - text: The hierarchy of module environments
           href: articles/mod-env-hierarchy.html
 

@@ -14,6 +14,7 @@
 
 * [Get started][]
 * [Documentation][]
+* [Contributing][]
 * [Frequently asked questions][FAQ]
 
 </div>
@@ -166,6 +167,7 @@ For instance, best practice in Python is to never use the equivalent of `library
 [pep8]: https://www.python.org/dev/peps/pep-0008/#imports
 [Get started]: https://klmr.me/box/articles/box.html
 [Documentation]: https://klmr.me/box/reference/index.html
+[Contributing]: https://klmr.me/box/articles/contributing.html
 [FAQ]: https://klmr.me/box/articles/faq.html
 [new-issue]: https://github.com/klmr/box/issues/new/choose
 [so:r-box]: https://stackoverflow.com/questions/tagged/r-box?tab=Newest

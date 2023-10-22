@@ -26,39 +26,39 @@ pre .pkg::before, pre .pkg::after {
 /* Syntax highlighting ---------------------------------------------------- */
 
 pre, pre code {
-  white-space: pre-wrap;
-  word-break: break-all;
-  overflow-wrap: break-word;
+    white-space: pre-wrap;
+    word-break: break-all;
+    overflow-wrap: break-word;
 }
 
 pre {
-  background-color: #f8f8f8;
-  color: #333;
-  padding: 9.5px;
-  border-radius: 4px;
-  border: 1px solid rgba(0,0,0,0.1);
+    background-color: #f8f8f8;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    color: #333;
+    padding: 9.5px;
 }
 
 pre .img {
-  margin: 5px 0;
+    margin: 5px 0;
 }
 
 pre .img img {
-  background-color: #fff;
-  display: block;
-  height: auto;
+    background-color: #fff;
+    display: block;
+    height: auto;
 }
 
 code a, pre a {
-  color: #375f84;
+    color: #375f84;
 }
 
 pre code {
-  padding: 0;
+    padding: 0;
 }
 
 a.sourceLine:hover {
-  text-decoration: none;
+    text-decoration: none;
 }
 
 span.error   {font-weight: bolder;}
@@ -99,4 +99,22 @@ span.pp { color: #AD0000; font-style: italic; }
 
 .so-tag:hover {
     background: #d0e3f1;
+}
+
+div.rationale {
+    background-color: #f8f8f8;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    color: #333;
+    font-size: 0.8em;
+    margin-bottom: 1rem;
+    padding: 9.5px;
+}
+
+div .rationale:before {
+    color: rgba(0, 0, 0, 0.1);
+    content: "ℹ︎";
+    float: right;
+    font-family: monospace;
+    font-size: 1em;
 }
