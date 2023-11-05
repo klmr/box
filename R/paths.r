@@ -190,7 +190,7 @@ rstudio_path = function (...) {
     # *not* want to use RStudio’s active document, since that isn’t the script
     # from which we are called.
     # See also comments at <https://stackoverflow.com/a/35849779/1968>.
-    if (! .Platform$GUI %==% 'RStudio') return(NULL)
+    if (.Platform$GUI %!=% 'RStudio') return(NULL)
 
     document_path = if (requireNamespace('rstudioapi', quietly = TRUE)) {
         rstudioapi::getActiveDocumentContext()$path

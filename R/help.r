@@ -173,7 +173,7 @@ help_topic_target = function (topic, caller) {
 #' @name help-internal
 #' @keywords internal
 find_env = function (name, caller) {
-    while (! caller %==% emptyenv()) {
+    while (caller %!=% emptyenv()) {
         if (exists(name, envir = caller, inherits = FALSE)) return(caller)
         caller = parent.env(caller)
     }
