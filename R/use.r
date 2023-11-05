@@ -132,6 +132,11 @@
 #' separated by the platform’s path separator (i.e. \code{;} on Windows, and
 #' \code{:} on most other platforms).
 #'
+#' \strong{Deprecation warning:} in the next major version, \pkg{box} will read
+#' environment variables only \emph{once}, at package load time. Modifying the
+#' value of \env{R_BOX_PATH} afterwards will have no effect, unless the package
+#' is unloaded and reloaded.
+#'
 #' The \emph{current directory} is context-dependent: inside a module, the
 #' directory corresponds to the module’s directory. Inside an \R code file
 #' invoked from the command line, it corresponds to the directory containing
