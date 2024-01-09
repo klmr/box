@@ -29,14 +29,19 @@ loaded_mods = new.env(parent = emptyenv())
 #' @param info the mod info of a module
 #' @rdname loaded
 is_mod_loaded = function (info) {
-    info$source_path %in% names(loaded_mods)
+    autoreload$is_mod_loaded(info)
 }
 
 #' @param mod_ns module namespace environment
 #' @rdname loaded
 register_mod = function (info, mod_ns) {
     loaded_mods[[info$source_path]] = mod_ns
-    attr(loaded_mods[[info$source_path]], 'loading') = TRUE
+    # The timestamp is saved *before* the source file is loaded to prevent race
+    # conditions in the presence of concurrent file modifications.
+    # At worst, this means loading the module redundantly in auto-reload mode.
+    # Doing it the other way round might cause file changes not to be noticed.
+    add_timestamp(info, mod_ns)
+    namespace_info(loaded_mods[[info$source_path]], 'loading') = TRUE
 }
 
 #' @rdname loaded
@@ -54,10 +59,10 @@ loaded_mod = function (info) {
 #' @rdname loaded
 is_mod_still_loading = function (info) {
     # pkg_info has no `source_path` but already finished loading anyway.
-    ! is.null(info$source_path) && attr(loaded_mods[[info$source_path]], 'loading')
+    ! is.null(info$source_path) && namespace_info(loaded_mods[[info$source_path]], 'loading')
 }
 
 #' @rdname loaded
 mod_loading_finished = function (info, mod_ns) {
-    attr(loaded_mods[[info$source_path]], 'loading') = FALSE
+    namespace_info(loaded_mods[[info$source_path]], 'loading') = FALSE
 }

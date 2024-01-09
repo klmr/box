@@ -2,6 +2,14 @@ clear_mods = function () {
     rm(list = names(box:::loaded_mods), envir = box:::loaded_mods)
 }
 
+# Undo “user-friendly” stack traces to make them more useful.
+utils::assignInNamespace(
+    'rethrow_on_error',
+    function (expr, call) expr,
+    ns = getNamespace('box'),
+    envir = getNamespace('box')
+)
+
 .setup_fun = NULL
 .teardown_fun = NULL
 

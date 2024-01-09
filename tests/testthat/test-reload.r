@@ -4,11 +4,6 @@ is_module_loaded = function (path) {
     path %in% names(box:::loaded_mods)
 }
 
-unload_all = function () {
-    modenv = box:::loaded_mods
-    rm(list = names(modenv), envir = modenv)
-}
-
 tempfile_dir = function (...) {
     file = tempfile()
     dir.create(file)
@@ -28,10 +23,6 @@ edit_nested_test_module = function (dir) {
 }
 
 test_that('module can be reloaded', {
-    # Required since other tests have side-effects.
-    # Tear-down would be helpful here, but not supported by testthat.
-    unload_all()
-
     box::use(mod/a)
     expect_equal(length(box:::loaded_mods), 1L)
     counter = a$get_counter()
