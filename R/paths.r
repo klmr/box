@@ -96,8 +96,8 @@ module_path = function (mod) {
     for (test in path_tests) {
         path = test(mod)
         if (! is.null(path)) {
-            # Don’t cache result, since it might change suddenly, due to knitr
-            # or Shiny running in the same process.
+            # Don’t cache result, since it might change suddenly, e.g. due to
+            # knitr or Shiny running in the same process.
             return(path)
         }
     }
@@ -118,8 +118,6 @@ explicit_path = function (...) {
     script_path_env$value
 }
 
-#' @param args command line arguments passed to R; by default, the arguments of
-#' the current process.
 #' @return \code{r_path} returns the directory in which the current script is
 #' run via \command{Rscript}, \command{R CMD BATCH} or \command{R -f}.
 #' @rdname path

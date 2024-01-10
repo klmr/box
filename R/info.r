@@ -2,7 +2,8 @@
 #'
 #' A \code{mod_info} represents an existing, installed module and its runtime
 #' physical location (usually in the file system).
-#' @param mod_spec a \code{mod_spec}.
+#' @param spec a \code{mod_spec} or \code{pkg_spec} (for \code{mod_info} and
+#' \code{pkg_info}, respectively)
 #' @param source_path character string full path to the physical module
 #' location.
 #' @return \code{mod_info} and \code{pkg_info} return a structure representing
@@ -17,7 +18,6 @@ mod_info = function (spec, source_path) {
 }
 
 #' A \code{pkg_info} represents an existing, installed package.
-#' @param pkg_spec a \code{pkg_spec}
 #' @keywords internal
 #' @name info
 pkg_info = function (spec) {
