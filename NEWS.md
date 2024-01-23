@@ -6,6 +6,7 @@
 
 ## Bug fixes
 
+* Fix backports definitions so that they work in binary packages that were created using newer R versions (#347).
 * Replace call to function that was added in R 4.0.0 to make package work again in R 3.6.3 (#335).
 
 ## New and improved features

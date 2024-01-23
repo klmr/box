@@ -46,6 +46,8 @@
     ns = base::topenv()
     ns$system_mod_path = system.file('mod', package = pkgname)
 
+    define_backports(ns)
+
     set_import_env_parent()
 }
 
