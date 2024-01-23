@@ -1,6 +1,6 @@
 R_HOME ?= $(shell Rscript -e 'cat(Sys.getenv("R_HOME"))')
 rscript = ${R_HOME}/bin/Rscript --no-save --no-restore
-unexport R_PROFILE_USER
+r = ${R_HOME}/bin/R --no-save --no-restore
 
 # Helper functions for a recursive wildcard function.
 match_files = $(filter $(subst *,%,$2),$1)
@@ -111,7 +111,7 @@ man/figures/logo.png: figures/logo.svg
 build: ${pkg_bundle_name}
 
 ${pkg_bundle_name}: DESCRIPTION NAMESPACE ${r_source_files}
-	R CMD build .
+	${r} CMD build .
 
 .PHONY: build-cran
 ## Bundle the package with static vignette sources for submission to CRAN
