@@ -2,6 +2,7 @@
 
 ## Breaking changes
 
+* *Deprecation warning:* in the next major version, ‘box’ will read the environment variable `R_BOX_PATH` only *once*, at package load time. Modifying its value afterwards will have no effect, unless the package is unloaded and reloaded.
 * ‘box’ no longer supports R 3.5 since the R build infrastructure (in particular ‘devtools’) no longer supports it.
 
 ## Bug fixes
@@ -11,6 +12,7 @@
 
 ## New and improved features
 
+* Prevent accidental misuse by checking that arguments to `box::file()` and `box::export()` are unnamed (#334).
 * The `method` argument of `box::register_S3_method()` is now optional (#305).
 
 
