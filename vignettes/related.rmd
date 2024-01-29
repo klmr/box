@@ -27,8 +27,6 @@ The list is intended to be a fairly exhaustive — so if you find a missing pack
 
 * ‘[Novartis/**tidymodules**][tidymodules]’: ‘tidymodules’ offers a robust framework for developing ‘Shiny’ modules based on R6 classes which should facilitates inter-modules communication.
 
-* ‘**[supreme][]**’: A modeling tool helping users better structure ‘Shiny’ applications developed with ‘Shiny’ modules. Users are able to: 1. Visualize relationship of modules in existing applications 2. Design new applications from scratch.
-
 
 ## Tools for loading code
 
@@ -67,7 +65,6 @@ The packages listed above also provide means for loading code; however, I won’
 [pysty]: https://trinkerrstuff.wordpress.com/2018/02/22/minimal-explicit-python-style-package-loading-for-r/
 [RSuite]: https://cran.r-project.org/package=RSuite
 [Shiny]: https://shiny.rstudio.com/articles/modules.html
-[supreme]: https://strboul.github.io/supreme/
 [tidymodules]: https://opensource.nibr.com/tidymodules/
 [xfun]: https://yihui.org/en/2018/09/xfun-pkg-attach/
 [importar]: https://cran.r-project.org/package=importar
