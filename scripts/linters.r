@@ -1,62 +1,76 @@
-# Some of the functions below are no longer exported despite the ‘lintr’
-# vignette implying that they can/should be used (e.g. `ids_with_tokens`).
-# So we just attach the entire namespace.
-attach(asNamespace('lintr'), warn.conflicts = FALSE)
-
-arrow_assignment_linter = function (source_file) {
-    lapply(
-        ids_with_token(source_file, 'LEFT_ASSIGN'),
-        function (id) {
-            parsed = with_id(source_file, id)
-            if (parsed$text != '<<-') {
-                Lint(
-                    filename = source_file$filename,
-                    line_number = parsed$line1,
-                    column_number = parsed$col1,
-                    type = "style",
-                    message = "Use =, not <-, for assignment.",
-                    line = source_file$lines[as.character(parsed$line1)],
-                    linter = "assignment_linter"
-                )
+arrow_assignment_linter = function () {
+    lintr::Linter(\(source_file) {
+        lapply(
+            lintr::ids_with_token(source_file, 'LEFT_ASSIGN'),
+            \(id) {
+                parsed = lintr::with_id(source_file, id)
+                if (parsed$text != '<<-') {
+                    lintr::Lint(
+                        filename = source_file$filename,
+                        line_number = parsed$line1,
+                        column_number = parsed$col1,
+                        type = 'style',
+                        message = 'Use =, not <-, for assignment.',
+                        line = source_file$lines[as.character(parsed$line1)],
+                        linter = 'assignment_linter'
+                    )
+                }
             }
-        }
-    )
+        )
+    })
 }
 
-double_quotes_linter = function (source_file) {
-    re = rex::rex(start, '"', any_non_single_quotes, '"', end)
+function_definition_linter = function () {
+    bad_line_fun_xpath = '(//FUNCTION | //OP-LAMBDA)[@line1 != following-sibling::OP-LEFT-PAREN/@line1]'
+    bad_line_call_xpath = '//SYMBOL_FUNCTION_CALL[@line1 != parent::expr/following-sibling::OP-LEFT-PAREN/@line1]'
+    bad_col_fun_xpath = '//FUNCTION[
+    @line1 = following-sibling::OP-LEFT-PAREN/@line1
+    and @col2 != following-sibling::OP-LEFT-PAREN/@col1 - 2
+    ]'
+    bad_col_call_xpath = '//SYMBOL_FUNCTION_CALL[
+    line1 = parent::expr/following-sibling::OP-LEFT-PAREN/@line1
+    and @col2 != parent::expr/following-sibling::OP-LEFT-PAREN/@col1 - 1
+    ]'
 
-    lapply(
-        ids_with_token(source_file, 'STR_CONST'),
-        function(id) {
-            parsed = with_id(source_file, id)
-            if (rex::re_matches(parsed$text, re)) {
-                Lint(
-                    filename = source_file$filename,
-                    line_number = parsed$line1,
-                    column_number = parsed$col1,
-                    type = "style",
-                    message = "Only use single quotes.",
-                    line = source_file$lines[as.character(parsed$line1)],
-                    ranges = list(c(parsed$col1, parsed$col2)),
-                    linter = "single_quotes_linter"
-                )
-            }
+    lintr::Linter(\(source_expression) {
+        if (! lintr::is_lint_level(source_expression, 'expression')) {
+            return(list())
         }
-    )
-}
 
-s3_object_length_linter = function (length = 30L) {
-    make_object_linter(
-        function (source_file, token) {
-            parts = stringr::str_split(token, '\\.', 2L)[[1L]]
-            if (any(nchar(parts) > length)) {
-                object_lint(
-                    source_file, token,
-                    paste('Variable and function names should not be longer than', length, 'characters.'),
-                    'object_length_linter'
-                )
-            }
-        }
-    )
+        xml = source_expression$xml_parsed_content
+
+        bad_line_fun_exprs = xml2::xml_find_all(xml, bad_line_fun_xpath)
+        bad_line_fun_lints = lintr::xml_nodes_to_lints(
+            bad_line_fun_exprs,
+            source_expression = source_expression,
+            lint_message = 'Left parenthesis should be on the same line as the \'function\' symbol.'
+        )
+
+        bad_line_call_exprs = xml2::xml_find_all(xml, bad_line_call_xpath)
+        bad_line_call_lints = lintr::xml_nodes_to_lints(
+            bad_line_call_exprs,
+            source_expression = source_expression,
+            lint_message = 'Left parenthesis should be on the same line as the function\'s symbol.'
+        )
+
+        bad_col_fun_exprs = xml2::xml_find_all(xml, bad_col_fun_xpath)
+        bad_col_fun_lints = lintr::xml_nodes_to_lints(
+            bad_col_fun_exprs,
+            source_expression = source_expression,
+            lint_message = 'Add spaces before the left parenthesis in a function definition.',
+            range_start_xpath = 'number(./@col2 + 1)',
+            range_end_xpath = 'number(./following-sibling::OP-LEFT-PAREN/@col1)'
+        )
+
+        bad_col_call_exprs = xml2::xml_find_all(xml, bad_col_call_xpath)
+        bad_col_call_lints = lintr::xml_nodes_to_lints(
+            bad_col_call_exprs,
+            source_expression = source_expression,
+            lint_message = 'Remove spaces before the left parenthesis in a function call.',
+            range_start_xpath = 'number(./@col2 + 1)',
+            range_end_xpath = 'number(./parent::expr/following-sibling::OP-LEFT-PAREN/@col1 - 1)'
+        )
+
+        c(bad_line_fun_lints, bad_line_call_lints, bad_col_fun_lints, bad_col_call_lints)
+    })
 }
