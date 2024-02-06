@@ -55,7 +55,7 @@ The packages listed above also provide means for loading code; however, I won’
 
 
 [conflicted]: https://conflicted.r-lib.org/
-[import]: https://import.rticulate.org/
+[import]: https://cran.r-project.org/package=import
 [importAs]: https://jonocarroll.github.io/importAs/
 [modules]: https://cran.r-project.org/package=modules
 [mvbutils]: https://cran.r-project.org/package=mvbutils
