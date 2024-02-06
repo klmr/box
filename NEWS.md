@@ -1,4 +1,4 @@
-# box (development version)
+# box 1.2.0
 
 ## Breaking changes
 
