@@ -148,7 +148,7 @@ ${favicon_default}: figures/logo.svg | pkgdown/favicon
 	pngcrush -q ${@D}/tmp-${@F} $@ && rm ${@D}/tmp-${@F}
 
 .PHONY: lint
-## Link the package source
+## Lint the package source
 lint:
 	${rscript} -e "lintr::lint_package('.')"
 

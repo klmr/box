@@ -4,7 +4,7 @@ help_format = function (format) {
 
 compile_help = function (x, rd) UseMethod('compile_help')
 
-patch_topic_name = function(x, file, topic) UseMethod('patch_topic_name')
+patch_topic_name = function (x, file, topic) UseMethod('patch_topic_name')
 
 display_help_file = function (x, file, topic) UseMethod('display_help_file')
 
