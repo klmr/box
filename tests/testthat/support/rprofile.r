@@ -23,7 +23,7 @@ local({
         sys.source(user_profile, envir = .GlobalEnv)
     }
 
-    old_first = get0('.First', envir = .GlobalEnv, ifnotfound = function () {})
+    old_first = get0('.First', envir = .GlobalEnv, mode = 'function', ifnotfound = function () {})
     .GlobalEnv$.First = function () {
         old_first()
         # This is required by `interactive_r` to verify that invocation succeeded.
