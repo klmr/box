@@ -1,4 +1,4 @@
-R_HOME ?= $(shell Rscript -e 'cat(Sys.getenv("R_HOME"))')
+R_HOME ?= $(shell Rscript --vanilla -e 'cat(Sys.getenv("R_HOME"))')
 rscript = ${R_HOME}/bin/Rscript --no-save --no-restore
 r = ${R_HOME}/bin/R --no-save --no-restore
 
