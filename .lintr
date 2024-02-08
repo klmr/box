@@ -2,12 +2,17 @@ linters: {
     source('scripts/linters.r')
     lintr::linters_with_defaults(
         assignment_linter = arrow_assignment_linter(),
+        # It’s a shame to have to omit this linter, but it forbids usage of empty
+        # braces, such as `{}`, and it isn’t configurable. Furthermore, its
+        # implementation is long and complex, and maintaining a modified version is
+        # therefore too brittle.
         brace_linter = NULL,
         commented_code_linter = NULL,
-        lintr::indentation_linter(4L),
+        lintr::indentation_linter(4L, 'always'),
         function_left_parentheses_linter = function_definition_linter(),
         infix_spaces_linter = NULL,
         lintr::line_length_linter(120L),
+        object_length_linter = simple_object_length_linter(),
         object_name_linter = NULL,
         object_usage_linter = NULL,
         quotes_linter = lintr::quotes_linter('\'')
