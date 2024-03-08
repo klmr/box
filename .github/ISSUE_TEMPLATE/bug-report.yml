@@ -15,8 +15,7 @@ body:
     attributes:
       label: Error description
       placeholder: >
-        A brief description of the steps necessary to reproduce the issue, as
-        well as the expected and actual output.
+        A brief description of the steps necessary to reproduce the issue, as well as the expected and actual output. Please post code and error messages *as text*, not as screenshots.
     validations:
       required: true
   - type: textarea
