@@ -8,7 +8,6 @@
 SEXP Rf_installTrChar(SEXP);
 #endif
 
-static SEXP parent_frame(void);
 static SEXP sys_call(SEXP parent);
 
 /**
@@ -35,9 +34,8 @@ SEXP strict_extract(SEXP call, SEXP op, SEXP args, SEXP rho) {
     SEXP ret = Rf_findVarInFrame(e1, name);
 
     if (ret == R_UnboundValue) {
-        SEXP parent = PROTECT(parent_frame());
         /* renamed to avoid clash with strict_extract argument */
-        SEXP call_for_error = PROTECT(sys_call(parent));
+        SEXP call_for_error = PROTECT(sys_call(rho));
         SEXP fst_arg = PROTECT(CADR(call_for_error));
 
         Rf_errorcall(
@@ -48,17 +46,6 @@ SEXP strict_extract(SEXP call, SEXP op, SEXP args, SEXP rho) {
     }
 
     return ret;
-}
-
-// Cached version of an R function that calls `sys.frame(-1L)`.
-static SEXP parent_frame_func = NULL;
-
-static void init_parent_frame_func(void);
-
-// Return the calling R frame.
-static SEXP parent_frame(void) {
-    if (! parent_frame_func) init_parent_frame_func();
-    return Rf_eval(parent_frame_func, R_EmptyEnv);
 }
 
 // Return the call that describes the R function which invoked the parent
@@ -72,27 +59,4 @@ static SEXP sys_call(SEXP parent) {
 
     UNPROTECT(3);
     return call;
-}
-
-// Create a new R closure from the given formals and body.
-static SEXP new_function(SEXP formals, SEXP body) {
-    SEXP def_args = PROTECT(Rf_cons(formals, PROTECT(Rf_cons(body, R_NilValue))));
-    SEXP def_expr = PROTECT(Rf_lcons(Rf_install("function"), def_args));
-    SEXP fun = Rf_eval(def_expr, R_BaseEnv);
-
-    UNPROTECT(3);
-    return fun;
-}
-
-static void init_parent_frame_func(void) {
-    ParseStatus status;
-    SEXP code = PROTECT(Rf_mkString("as.call(list(sys.frame, -1L))"));
-    SEXP expr = PROTECT(VECTOR_ELT(PROTECT(R_ParseVector(code, -1, &status, R_NilValue)), 0));
-    SEXP body = PROTECT(Rf_eval(expr, R_BaseEnv));
-    SEXP func = PROTECT(new_function(R_NilValue, body));
-    parent_frame_func = Rf_lcons(func, R_NilValue);
-    R_PreserveObject(parent_frame_func);
-    MARK_NOT_MUTABLE(parent_frame_func);
-
-    UNPROTECT(5);
 }
