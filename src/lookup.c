@@ -27,6 +27,9 @@ SEXP strict_extract(SEXP call, SEXP op, SEXP args, SEXP rho) {
     if (! Rf_isEnvironment(e1)) {
         Rf_error("first argument was not a module environment");
     }
+    if (!IS_SCALAR(e2, STRSXP)) {
+        Rf_error("second argument was not a character string");
+    }
 
     // Return value of `install` does not need to be protected:
     // <https://github.com/kalibera/cran-checks/blob/master/rchk/PROTECT.md>
@@ -36,7 +39,8 @@ SEXP strict_extract(SEXP call, SEXP op, SEXP args, SEXP rho) {
     if (ret == R_UnboundValue) {
         /* renamed to avoid clash with strict_extract argument */
         SEXP call_for_error = PROTECT(sys_call(rho));
-        SEXP fst_arg = PROTECT(CADR(call_for_error));
+        /* fst_arg does not need to be protected since call_for_error is protected */
+        SEXP fst_arg = CADR(call_for_error);
 
         Rf_errorcall(
             call_for_error, "name '%s' not found in '%s'",
@@ -45,6 +49,15 @@ SEXP strict_extract(SEXP call, SEXP op, SEXP args, SEXP rho) {
         );
     }
 
+    /* if ret is a promise, evaluate it */
+    if (TYPEOF(ret) == PROMSXP) {
+        if (PRVALUE(ret) == R_UnboundValue) {
+            PROTECT(ret);
+            ret = Rf_eval(ret, R_EmptyEnv);
+            UNPROTECT(1);
+        }
+        else ret = PRVALUE(ret);
+    }
     return ret;
 }
 
