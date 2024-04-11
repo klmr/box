@@ -42,10 +42,31 @@ SEXP strict_extract(SEXP call, SEXP op, SEXP args, SEXP rho) {
         /* fst_arg does not need to be protected since call_for_error is protected */
         SEXP fst_arg = CADR(call_for_error);
 
+        if (TYPEOF(fst_arg) == SYMSXP) {
+            Rf_errorcall(
+                call_for_error, "name '%s' not found in '%s'",
+                Rf_translateChar(STRING_ELT(e2, 0)),
+                Rf_translateChar(PRINTNAME(fst_arg))
+            );
+        }
+
+        // while Rf_getAttrib should not allocate in this case,
+        // it is still regarded as an allocating function,
+        // so we should protect regardless to make rchk happy
+        SEXP name = PROTECT(Rf_getAttrib(e1, Rf_install("name")));
+        if (IS_SCALAR(name, STRSXP)) {
+            Rf_errorcall(
+                call_for_error, "name '%s' not found in '%s'",
+                Rf_translateChar(STRING_ELT(e2, 0)),
+                Rf_translateChar(STRING_ELT(name, 0))
+            );
+        }
+
+        // if both previous conditions were false, use the pointer??
         Rf_errorcall(
-            call_for_error, "name '%s' not found in '%s'",
+            call_for_error, "name '%s' not found in '<environment: %p>'",
             Rf_translateChar(STRING_ELT(e2, 0)),
-            Rf_translateChar(PRINTNAME(fst_arg))
+            (void *)e1
         );
     }
 
