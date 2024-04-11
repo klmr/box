@@ -21,7 +21,10 @@ static SEXP sys_call(SEXP parent);
  * Throws an error if {@code e1} is not an environment, or if {@code e2} does
  * not exist.
  */
-SEXP strict_extract(SEXP e1, SEXP e2) {
+SEXP strict_extract(SEXP call, SEXP op, SEXP args, SEXP rho) {
+    args = CDR(args);  /* skip the argument c_strict_extract */
+    SEXP e1 = CAR(args); args = CDR(args);
+    SEXP e2 = CAR(args); args = CDR(args);
     if (! Rf_isEnvironment(e1)) {
         Rf_error("first argument was not a module environment");
     }
@@ -33,11 +36,12 @@ SEXP strict_extract(SEXP e1, SEXP e2) {
 
     if (ret == R_UnboundValue) {
         SEXP parent = PROTECT(parent_frame());
-        SEXP call = PROTECT(sys_call(parent));
-        SEXP fst_arg = PROTECT(CADR(call));
+        /* renamed to avoid clash with strict_extract argument */
+        SEXP call_for_error = PROTECT(sys_call(parent));
+        SEXP fst_arg = PROTECT(CADR(call_for_error));
 
         Rf_errorcall(
-            call, "name '%s' not found in '%s'",
+            call_for_error, "name '%s' not found in '%s'",
             Rf_translateChar(STRING_ELT(e2, 0)),
             Rf_translateChar(PRINTNAME(fst_arg))
         );

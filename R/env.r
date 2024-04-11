@@ -172,7 +172,7 @@ strict_extract = function (e1, e2) {
     # In fact, the fastest code that manages to provide a readable error message
     # that contains the actual call ("foo$bar") rather than only mentioning the
     # `get` function call, is more than 350% slower.
-    .Call(c_strict_extract, e1, e2)
+    .External2(c_strict_extract, e1, e2)
 }
 
 #' @export
