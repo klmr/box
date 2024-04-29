@@ -27,7 +27,7 @@ SEXP strict_extract(SEXP call, SEXP op, SEXP args, SEXP rho) {
     if (! Rf_isEnvironment(e1)) {
         Rf_error("first argument was not a module environment");
     }
-    if (!IS_SCALAR(e2, STRSXP)) {
+    if (!(TYPEOF(e2) == STRSXP && XLENGTH(e2) == 1)) {
         Rf_error("second argument was not a character string");
     }
 
@@ -77,7 +77,7 @@ SEXP strict_extract(SEXP call, SEXP op, SEXP args, SEXP rho) {
         // it is still regarded as an allocating function,
         // so we should protect regardless to make rchk happy
         SEXP name = PROTECT(Rf_getAttrib(e1, Rf_install("name")));
-        if (IS_SCALAR(name, STRSXP)) {
+        if (TYPEOF(name) == STRSXP && XLENGTH(name) == 1) {
             Rf_errorcall(
                 call_for_error, "name '%s' not found in '%s'",
                 Rf_translateChar(STRING_ELT(e2, 0)),
