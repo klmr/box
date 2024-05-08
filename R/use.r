@@ -13,7 +13,7 @@
 #' @param prefix/mod a qualified module name
 #' @param pkg a package name
 #' @param alias an alias name
-#' @param attach_list a list of names to attached, optionally witha aliases of
+#' @param attach_list a list of names to attached, optionally with aliases of
 #' the form \code{alias = name}; or the special placeholder name \code{\dots}
 #' @param \dots further import declarations
 #' @return \code{box::use} has no return value. It is called for its
