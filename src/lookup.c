@@ -20,10 +20,7 @@ static SEXP sys_call(SEXP rho);
  * Throws an error if {@code e1} is not an environment, or if {@code e2} does
  * not exist.
  */
-SEXP strict_extract(SEXP call, SEXP op, SEXP args, SEXP rho) {
-    args = CDR(args);  /* skip the argument c_strict_extract */
-    SEXP e1 = CAR(args); args = CDR(args);
-    SEXP e2 = CAR(args); args = CDR(args);
+SEXP strict_extract(SEXP e1, SEXP e2, SEXP rho) {
     if (! Rf_isEnvironment(e1)) {
         Rf_error("first argument was not a module environment");
     }
@@ -37,12 +34,11 @@ SEXP strict_extract(SEXP call, SEXP op, SEXP args, SEXP rho) {
     SEXP ret = Rf_findVarInFrame(e1, name);
 
     if (ret == R_UnboundValue) {
-        /* renamed to avoid clash with strict_extract argument */
-        SEXP call_for_error = PROTECT(sys_call(rho));
+        SEXP call = PROTECT(sys_call(rho));
 
-        // this would only be NULL if the user did .External2(box:::c_strict_extract, e1, e2)
+        // this would only be NULL if the user did .Call(box:::c_strict_extract, e1, e2, environment())
         // unlikely that someone would do that, but they could
-        if (call_for_error != R_NilValue) {
+        if (call != R_NilValue) {
             // the previous code which used sys.call(-1) is incorrect.
             // there is no guarantee that the call before `$.box$mod`(utils, adist) is the call utils$adist.
             // it could be different due to inheritance or if the user directly calls `$.box$mod`.
@@ -54,24 +50,22 @@ SEXP strict_extract(SEXP call, SEXP op, SEXP args, SEXP rho) {
             // this essentially undoes that replacement.
 
             // duplicate the call if necessary before modifying it
-            if (MAYBE_REFERENCED(call_for_error)) {
-                call_for_error = PROTECT(Rf_shallow_duplicate(call_for_error));
+            if (MAYBE_REFERENCED(call)) {
+                call = PROTECT(Rf_shallow_duplicate(call));
             }
-            SETCAR(call_for_error, R_DollarSymbol);
+            SETCAR(call, R_DollarSymbol);
 
-            /* fst_arg does not need to be protected since call_for_error is protected */
-            SEXP fst_arg = CADR(call_for_error);
+            /* fst_arg does not need to be protected since call is protected */
+            SEXP fst_arg = CADR(call);
 
             if (TYPEOF(fst_arg) == SYMSXP) {
                 Rf_errorcall(
-                    call_for_error, "name '%s' not found in '%s'",
+                    call, "name '%s' not found in '%s'",
                     Rf_translateChar(STRING_ELT(e2, 0)),
                     Rf_translateChar(PRINTNAME(fst_arg))
                 );
             }
         }
-        // use the call to .External2() instead??
-        else call_for_error = call;
 
         // while Rf_getAttrib should not allocate in this case,
         // it is still regarded as an allocating function,
@@ -79,7 +73,7 @@ SEXP strict_extract(SEXP call, SEXP op, SEXP args, SEXP rho) {
         SEXP name = PROTECT(Rf_getAttrib(e1, Rf_install("name")));
         if (TYPEOF(name) == STRSXP && XLENGTH(name) == 1) {
             Rf_errorcall(
-                call_for_error, "name '%s' not found in '%s'",
+                call, "name '%s' not found in '%s'",
                 Rf_translateChar(STRING_ELT(e2, 0)),
                 Rf_translateChar(STRING_ELT(name, 0))
             );
@@ -87,7 +81,7 @@ SEXP strict_extract(SEXP call, SEXP op, SEXP args, SEXP rho) {
 
         // if both previous conditions were false, use the pointer??
         Rf_errorcall(
-            call_for_error, "name '%s' not found in '<environment: %p>'",
+            call, "name '%s' not found in '<environment: %p>'",
             Rf_translateChar(STRING_ELT(e2, 0)),
             (void *)e1
         );
@@ -102,6 +96,13 @@ SEXP strict_extract(SEXP call, SEXP op, SEXP args, SEXP rho) {
     void ENSURE_NAMED(SEXP x);
     ENSURE_NAMED(ret);
     return ret;
+}
+
+SEXP external_strict_extract(SEXP args) {
+    SEXP e1  = CAR(args); args = CDR(args);
+    SEXP e2  = CAR(args); args = CDR(args);
+    SEXP rho = CAR(args); args = CDR(args);
+    return strict_extract(e1, e2, rho);
 }
 
 // Return the call that describes the R function which invoked this C function, identified by `rho`.
