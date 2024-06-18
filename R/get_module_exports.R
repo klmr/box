@@ -46,7 +46,10 @@ get_exports = function (...) {
     call = match.call()
     imports = call[-1L]
     aliases = names(imports) %||% character(length(imports))
-    map(get_one, imports, aliases, list(caller), use_call = list(sys.call()))
+    unlist(
+        map(get_one, imports, aliases, list(caller), use_call = list(sys.call())),
+        recursive = FALSE
+    )
 }
 
 #' Get a module or package's exports without loading into the environment
