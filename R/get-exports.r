@@ -16,7 +16,7 @@
 #' @param attach_list a list of names to attached, optionally witha aliases of
 #' the form \code{alias = name}; or the special placeholder name \code{\dots}
 #' @param \dots further import declarations
-#' @return \code{box::get_module_exports} returns a list of attached packages, modules, and functions.
+#' @return \code{box::get_exports} returns a list of attached packages, modules, and functions.
 #'
 #' @examples
 #' # Set the module search path for the example module
