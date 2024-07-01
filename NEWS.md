@@ -1,3 +1,10 @@
+# box (development version)
+
+## Bug fixes
+
+* Suppress a spurious internal warning upon reloading a module, caused by a dependent module being imported more than once (#363).
+
+
 # box 1.2.0
 
 ## Breaking changes

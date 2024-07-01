@@ -115,3 +115,9 @@ test_that('`reload` shows expected errors', {
         '"reload" expects a module object, got "x", which is of type "integer" instead'
     )
 })
+
+test_that('reloading a module used twice does not cause a warning', {
+    box::use(mod/reload/nested/c)
+
+    expect_warning(box::reload(c), NA)
+})

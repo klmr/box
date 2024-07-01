@@ -41,7 +41,11 @@ register_mod = function (info, mod_ns) {
 
 #' @rdname loaded
 deregister_mod = function (info) {
-    rm(list = info$source_path, envir = loaded_mods)
+    # May already have been removed if called by `unload_mod_recursive`, where
+    # a given module is imported by multiple submodules.
+    if (exists(info$source_path, envir = loaded_mods)) {
+        rm(list = info$source_path, envir = loaded_mods)
+    }
 }
 
 #' @rdname loaded
