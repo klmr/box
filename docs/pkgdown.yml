@@ -1,0 +1,17 @@
+pandoc: 3.1.8
+pkgdown: 2.0.7.9000
+pkgdown_sha: 3979e7c0afbba4503248dc8a6d04fe0a2e03f26f
+articles:
+  box: box.html
+  compiled-code: compiled-code.html
+  contributing: contributing.html
+  faq: faq.html
+  migration: migration.html
+  mod-env-hierarchy: mod-env-hierarchy.html
+  related: related.html
+  testing: testing.html
+last_built: 2024-02-07T22:03Z
+urls:
+  reference: http://klmr.me/box/reference
+  article: http://klmr.me/box/articles
+
