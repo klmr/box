@@ -6,9 +6,9 @@
 /docs/
 /Meta/
 /pkgdown/favicon/
-/src/*.o
-/src/*.so
-/src/*.dll
 /tests/testthat/_snaps/
 /vignettes/*.html
 /vignettes/*.R
+*.o
+*.so
+*.dll

@@ -80,4 +80,4 @@ This module ships with ‘box’ and is always findable.
 
 In practice, this means that modules inside the global module search path (set via the environment variable `R_BOX_PATH` or via `getOption('box.path')`), modules need to be located in nested folders.
 
-See [how to organise globally installed modules?](#how-to-organise-globally-installed-modules-) for details.
+See [how to organise globally installed modules?](#how-to-organise-globally-installed-modules) for details.

@@ -36,6 +36,7 @@ pre {
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 4px;
     color: #333;
+    font-size: 0.8em;
     padding: 9.5px;
 }
 
@@ -117,4 +118,10 @@ div .rationale:before {
     float: right;
     font-family: monospace;
     font-size: 1em;
+}
+
+.dev-note blockquote {
+    background: #BBCCEE;
+    color: #6080C0;
+    border-left-color: #6080C0;
 }

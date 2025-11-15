@@ -1,5 +1,5 @@
 ---
-title: "The hierarchy of module environments"
+title: "Module environments"
 author: Konrad Rudolph
 date: "`r Sys.Date()`"
 output:
@@ -9,11 +9,16 @@ output:
         variant: gfm
 vignette: >
     %\VignetteEngine{knitr::rmarkdown}
-    %\VignetteIndexEntry{The hierarchy of module environments}
+    %\VignetteIndexEntry{Module environments}
     %\VignetteEncoding{UTF-8}
 ---
 
-> **Note:** This document describes internal implementation details. They are not required knowledge for users of the ‘box’ package and module authors.
+<div class="dev-note">
+
+> **Note:** This document describes internal implementation details. They are not required for users of the ‘box’ package and module authors.
+
+</div>
+
 
 ## Preliminaries
 

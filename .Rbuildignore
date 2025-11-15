@@ -19,3 +19,9 @@
 ^renv\.lock$
 ^scripts$
 ^tmp$
+
+# Exclude development vignettes from CRAN
+^vignettes/mod-env-hierarchy\.rmd$
+^vignettes/environment-schema\.png$
+^vignettes/extract-benchmark\.rmd$
+^vignettes/extract$

@@ -24,14 +24,14 @@
 ‘box’ can be installed from CRAN:
 
 
-```r
+``` r
 install.packages('box')
 ```
 
 Alternatively, the current development version can be installed from [R-universe][] (note that it *cannot* be installed directly from GitHub!):
 
 
-```r
+``` r
 install.packages('box', repos = 'https://klmr.r-universe.dev')
 ```
 
@@ -63,7 +63,7 @@ Existing R scripts without `@export` directives can also be used as modules. In 
 Such modules can be stored in a central **module search path** (configured via `options('box.path')`) analogous to the R package library, or locally in individual projects. Let’s assume the module we just defined is stored in a file `hello_world.r` inside a directory `mod`, which is inside the module search path. Then the following code imports and uses it:
 
 
-```r
+``` r
 box::use(mod/hello_world)
 
 hello_world$hello('Ross')
@@ -81,14 +81,14 @@ For more information on writing modules refer to the *[Get started][]* vignette.
 Instead of
 
 
-```r
+``` r
 library(ggplot2)
 ```
 
 You’d write
 
 
-```r
+``` r
 box::use(ggplot2[...])
 ```
 
@@ -99,7 +99,7 @@ Instead, we can also instruct `box::use` to not attach any names when loading a 
 The following `box::use` declaration illustrates these different cases:
 
 
-```r
+``` r
 box::use(
     purrr,                          # 1
     tbl = tibble,                   # 2
@@ -124,7 +124,7 @@ Thanks to aliases, we can safely use functions with the same name from multiple 
 Furthermore, unlike with `library`, the effects of `box::use` are restricted to the current scope: we can load and attach names *inside* a function, and this will not affect the calling scope (or elsewhere). So importing code happens *locally*, and functions which load packages no longer cause global side effects:
 
 
-```r
+``` r
 log = function (msg) {
     box::use(glue[glue])
     # We can now use `glue` inside the function:

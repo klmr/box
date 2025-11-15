@@ -1,4 +1,4 @@
-url: http://klmr.me/box
+url: https://klmr.me/box/
 
 home:
   title: '‘box’: Write Reusable, Composable and Modular R Code'
@@ -44,11 +44,13 @@ navbar:
         - text: Similar packages
           href: articles/related.html
         - text: ---
-        - text: Implementation details
+        - text: Notes for developers
         - text: Contributing
           href: articles/contributing.html
-        - text: The hierarchy of module environments
-          href: articles/mod-env-hierarchy.html
+        - text: Module environments
+          href: articles/mod-envs.html
+        - text: Module access benchmark
+          href: articles/extract-benchmark.html
 
 template:
   bootstrap: 5
