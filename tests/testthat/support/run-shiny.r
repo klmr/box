@@ -1,5 +1,5 @@
 app = box::file('shiny-app')
 tryCatch(
-    shiny::runApp(app, launch.browser = FALSE),
+    suppressMessages(shiny::runApp(app, launch.browser = FALSE)),
     error = invisible
 )

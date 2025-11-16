@@ -68,9 +68,14 @@ test_that('hidden objects are not exported', {
 test_that('module bindings are locked', {
     box::use(mod/a)
 
+    ns = attr(a, 'namespace')
+
     expect_true(environmentIsLocked(a))
+    expect_true(environmentIsLocked(ns))
     expect_true(bindingIsLocked('get_counter', a))
     expect_true(bindingIsLocked('modname', a))
+    expect_true(bindingIsLocked('get_counter', ns))
+    expect_true(bindingIsLocked('modname', ns))
 
     err = try({a$counter = 2L}, silent = TRUE)
     expect_s3_class(err, 'try-error')

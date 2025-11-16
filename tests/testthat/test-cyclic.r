@@ -2,12 +2,18 @@ context('circular dependencies')
 
 test_that('cyclic dependencies load in finite time', {
     box::use(mod/cyclic_a)
-    expect_true(TRUE)
+    ns = attr(cyclic_a, 'namespace')
+    expect_true(environmentIsLocked(cyclic_a))
+    expect_true(bindingIsLocked('name', cyclic_a))
+    expect_true(environmentIsLocked(ns))
+    expect_true(bindingIsLocked('name', ns))
 })
 
 test_that('cyclic import fully loads dependencies', {
     box::use(a = mod/cyclic_a)
     box::use(b = mod/cyclic_b)
+    ns_a = attr(a, 'namespace')
+    ns_b = attr(b, 'namespace')
 
     expect_equal(a$name, 'a')
     expect_equal(b$name, 'b')
@@ -19,4 +25,13 @@ test_that('cyclic import fully loads dependencies', {
     expect_equal(a$b$a$name, 'a')
     expect_equal(b$a$b$a_name(), 'a')
     expect_equal(b$a$b$name, 'b')
+
+    expect_true(environmentIsLocked(a))
+    expect_true(bindingIsLocked('name', a))
+    expect_true(environmentIsLocked(b))
+    expect_true(bindingIsLocked('name', b))
+    expect_true(environmentIsLocked(ns_a))
+    expect_true(bindingIsLocked('name', ns_a))
+    expect_true(environmentIsLocked(ns_b))
+    expect_true(bindingIsLocked('name', ns_b))
 })

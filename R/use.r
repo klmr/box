@@ -97,7 +97,7 @@
 #'
 #' A module which has not declared any exports is treated as a \emph{legacy
 #' module} and exports \emph{all} default-visible names (that is, all names that
-#' do not start with a dot (\code{.}). This usage is present only for backwards
+#' do not start with a dot (\code{.})). This usage is present only for backwards
 #' compatibility with plain \R scripts, and its usage is \emph{not recommended}
 #' when writing new modules.
 #'
@@ -314,12 +314,15 @@ use_one = function (declaration, alias, caller, use_call) {
 #' @param info the physical module information
 #' @rdname importing
 load_and_register = function (spec, info, caller) {
-    mod_ns = load_mod(info)
+    ret = load_mod(info)
+    mod_ns = ret$mod_ns
+    is_apex = ret$is_apex
+    on.exit(lock_all_environments(is_apex))
     register_as_import(spec, info, mod_ns, caller)
 
     if (is_mod_still_loading(info)) {
         # Module was cached but hasn’t fully loaded yet. This happens for
-        # cyclic imports (1. A -> 2. B -> 3. A)) in step (3). To proceed, we
+        # cyclic imports (1. A -> 2. B -> 3. A) in step (3). To proceed, we
         # take note of the issue and wait until we bounce back to step (1) to
         # perform deferred finalization.
 
@@ -374,7 +377,7 @@ export_and_attach = function (spec, info, mod_ns, caller) {
     finalize_deferred(info)
 
     mod_exports = mod_exports(info, spec, mod_ns)
-    lockEnvironment(mod_exports, bindings = TRUE)
+    defer_locking(mod_exports)
 
     assign_alias(spec, mod_exports, caller)
     attach_to_caller(spec, info, mod_exports, mod_ns, caller)
@@ -398,22 +401,35 @@ load_from_source = function (info, mod_ns) {
     make_S3_methods_known(mod_ns)
 }
 
-#' @return \code{load_mod} returns the module or package namespace environment
-#' of the specified module or package info.
+#' @return \code{load_mod} returns a named \code{list(mod_ns, is_apex)}
+#' containing the module or package namespace environment of the specified
+#' module or package info, as well as a flag specifying whether the loaded
+#' module is an “apex” module, i.e. not loaded from within another module. This
+#' information is then used to lock all environments that were created during
+#' the loading. — This must happen after nested modules are fully loaded, since
+#' deferred finalization otherwise cannot modify these environments during
+#' cyclic imports.
 #' @rdname importing
 load_mod = function (info) {
     UseMethod('load_mod')
 }
 
 `load_mod.box$mod_info` = function (info) {
-    if (is_mod_loaded(info)) return(loaded_mod(info))
+    if (is_mod_loaded(info)) {
+        return(list(mod_ns = loaded_mod(info), is_apex = is_at_apex()))
+    }
 
     # Load module/package and dependencies; register the module now, to allow
     # cyclic imports without recursing indefinitely — but deregister upon
     # failure to load.
-    on.exit(deregister_mod(info))
+
+    on.exit({
+        deregister_mod(info)
+        lock_all_environments(is_apex)
+    })
 
     mod_ns = make_namespace(info)
+    is_apex = defer_locking(mod_ns)
     register_mod(info, mod_ns)
     load_from_source(info, mod_ns)
     mod_loading_finished(info, mod_ns)
@@ -421,15 +437,14 @@ load_mod = function (info) {
     # Call `.on_load` hook just after loading is finished but before exporting
     # symbols, so that `.on_load` can modify these symbols.
     call_hook(mod_ns, '.on_load', mod_ns)
-    lockEnvironment(mod_ns, bindings = TRUE)
 
     on.exit()
-    mod_ns
+    list(mod_ns = mod_ns, is_apex = is_apex)
 }
 
 `load_mod.box$pkg_info` = function (info) {
     pkg = info$name
-    base::.getNamespace(pkg) %||% loadNamespace(pkg)
+    list(mod_ns = base::.getNamespace(pkg) %||% loadNamespace(pkg), is_apex = is_at_apex())
 }
 
 #' @return \code{mod_exports} returns an export environment containing the
@@ -517,6 +532,7 @@ assign_temp_alias = function (spec, caller) {
     create_mod_alias = is.null(spec$attach) || spec$explicit
     if (! create_mod_alias) return()
 
+    self = environment()
     callers = list()
 
     binding = function (mod_exports) {
@@ -527,25 +543,47 @@ assign_temp_alias = function (spec, caller) {
                 sys.calls()
             )), 1L)
             frame = sys.frame(mod_exports_frame_index)
-            env = frame$env
-            assign('callers', append(callers, env), envir = parent.env(environment()))
+            self$callers = c(callers, frame$env)
 
             # FIXME: Do we need to create transitive placeholder active bindings?
-            structure(list(), class = 'placeholder')
+            structure(list(), class = 'box$placeholder')
         } else {
             # Resolve assignments
             for (env in callers) {
-                box_unlock_binding(spec$alias, env)
                 assign(spec$alias, mod_exports, envir = env)
-                lockBinding(spec$alias, env)
+                defer_locking(env)
             }
+
             # Replace myself
-            unlock_environment(caller)
             rm(list = spec$alias, envir = caller)
             assign(spec$alias, mod_exports, envir = caller)
-            lockEnvironment(caller)
         }
     }
 
     makeActiveBinding(spec$alias, structure(binding, class = 'box$placeholder'), caller)
+}
+
+lock_info = new.env(parent = emptyenv())
+lock_info$envs = list()
+
+defer_locking = function (ns) {
+    is_apex = is_at_apex()
+    lock_info$envs = c(lock_info$envs, list(ns))
+    is_apex
+}
+
+is_at_apex = function () {
+    length(lock_info$envs) == 0L
+}
+
+lock_all_environments = function (is_apex) {
+    if (! is_apex) {
+        return()
+    }
+
+    for (ns in lock_info$envs) {
+        lockEnvironment(ns, bindings = TRUE)
+    }
+
+    lock_info$envs = list()
 }

@@ -1,8 +1,13 @@
-# box (development version)
+# box 1.2.1
 
 ## Bug fixes
 
 * Suppress a spurious internal warning upon reloading a module, caused by a dependent module being imported more than once (#363).
+
+
+## Miscellaneous
+
+* Changed the way environments are locked, since environment unlocking is no longer allowed by the CRAN policies.
 
 
 # box 1.2.0

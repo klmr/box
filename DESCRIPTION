@@ -1,6 +1,6 @@
 Package: box
 Title: Write Reusable, Composable and Modular R Code
-Version: 1.2.0.9000
+Version: 1.2.1
 Authors@R: c(
         person(
             'Konrad', 'Rudolph',
@@ -39,4 +39,4 @@ Suggests:
 Enhances:
     rstudioapi
 VignetteBuilder: knitr
-RoxygenNote: 7.2.1
+RoxygenNote: 7.3.2

@@ -189,10 +189,6 @@ strict_extract = function (e1, e2) {
     invisible(x)
 }
 
-unlock_environment = function (env) {
-    invisible(.Call(c_unlock_env, env))
-}
-
 find_import_env = function (x, spec, info, mod_ns) {
     UseMethod('find_import_env')
 }

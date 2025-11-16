@@ -99,7 +99,7 @@ After unloading the already loaded module, `options(box.path = …)` sets the mo
 The `box::use` directive can now use `bio/seq` instead of `./bio/seq` as the module name: rather than a relative name we specify a *global* name. In this example we set the search path to the current working directory but in normal usage it would be a global library location, e.g. (following the [XDG base directory specification][XDG]) `~/.local/share/R/modules` on Linux.
 
 [FASTA]: https://en.wikipedia.org/wiki/FASTA_format
-[XDG]: https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
+[XDG]: https://specifications.freedesktop.org/basedir/latest/
 
 **Note** that non-local module names *must* be fully qualified, nested modules: `box::use(foo/bar)` works, `box::use(bar)` does not (instead, it is assumed that `bar` refers to a *package*)!
 
