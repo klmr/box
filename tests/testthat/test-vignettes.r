@@ -31,9 +31,11 @@ test_that('vignettes don’t change', {
     skip_on_ci()
     skip_if(! dir.exists(out_dir))
 
-    if (! setequal(vignettes, sub('\\.md$', '.rmd', dir(out_dir, pattern = '\\.md$')))) {
-        fail('One or more rendered vignettes were missing. Run `make knit-all`!')
-        skip('Skipping vignette snapshot tests')
+    rendered_vignettes = dir(out_dir, pattern = '\\.md$')
+    missing_vignettes = setdiff(vignettes, sub('\\.md$', '.rmd', rendered_vignettes))
+    if (length(missing_vignettes) > 0L) {
+        fail(paste('Rendered vignettes for', toString(missing_vignettes), 'were missing. Run `make knit-all`!'))
+        return()
     }
 
     for (vignette in vignettes) {
