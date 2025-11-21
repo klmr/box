@@ -8,8 +8,7 @@
 SEXP Rf_installTrChar(SEXP);
 #endif
 
-static SEXP parent_frame(void);
-static SEXP sys_call(SEXP parent);
+static SEXP sys_call(SEXP rho);
 
 /**
  * Extract a named value from an environment (called as {@code e1$e2}).
@@ -21,9 +20,12 @@ static SEXP sys_call(SEXP parent);
  * Throws an error if {@code e1} is not an environment, or if {@code e2} does
  * not exist.
  */
-SEXP strict_extract(SEXP e1, SEXP e2) {
+SEXP strict_extract(SEXP e1, SEXP e2, SEXP rho) {
     if (! Rf_isEnvironment(e1)) {
         Rf_error("first argument was not a module environment");
+    }
+    if (!(TYPEOF(e2) == STRSXP && XLENGTH(e2) == 1)) {
+        Rf_error("second argument was not a character string");
     }
 
     // Return value of `install` does not need to be protected:
@@ -32,63 +34,85 @@ SEXP strict_extract(SEXP e1, SEXP e2) {
     SEXP ret = Rf_findVarInFrame(e1, name);
 
     if (ret == R_UnboundValue) {
-        SEXP parent = PROTECT(parent_frame());
-        SEXP call = PROTECT(sys_call(parent));
-        SEXP fst_arg = PROTECT(CADR(call));
+        SEXP call = PROTECT(sys_call(rho));
 
+        // this would only be NULL if the user did .Call(box:::c_strict_extract, e1, e2, environment())
+        // unlikely that someone would do that, but they could
+        if (call != R_NilValue) {
+            // the previous code which used sys.call(-1) is incorrect.
+            // there is no guarantee that the call before `$.box$mod`(utils, adist) is the call utils$adist.
+            // it could be different due to inheritance or if the user directly calls `$.box$mod`.
+            // so instead, return sys.call() i.e. `$.box$mod`(e1, e2) or `$.box$ns`(e1, e2)
+            //
+            // that being said, sys.call() prints ugly "Error in `$.box$mod`(utils, adist)"
+            // so change the first element to `$` which prints better "Error in utils$adist"
+            // idea taken from dispatchMethod in which the generic function name is replaced with the specific method name;
+            // this essentially undoes that replacement.
+
+            // duplicate the call if necessary before modifying it
+            if (MAYBE_REFERENCED(call)) {
+                call = PROTECT(Rf_shallow_duplicate(call));
+            }
+            SETCAR(call, R_DollarSymbol);
+
+            /* fst_arg does not need to be protected since call is protected */
+            SEXP fst_arg = CADR(call);
+
+            if (TYPEOF(fst_arg) == SYMSXP) {
+                Rf_errorcall(
+                    call, "name '%s' not found in '%s'",
+                    Rf_translateChar(STRING_ELT(e2, 0)),
+                    Rf_translateChar(PRINTNAME(fst_arg))
+                );
+            }
+        }
+
+        // while Rf_getAttrib should not allocate in this case,
+        // it is still regarded as an allocating function,
+        // so we should protect regardless to make rchk happy
+        SEXP name = PROTECT(Rf_getAttrib(e1, Rf_install("name")));
+        if (TYPEOF(name) == STRSXP && XLENGTH(name) == 1) {
+            Rf_errorcall(
+                call, "name '%s' not found in '%s'",
+                Rf_translateChar(STRING_ELT(e2, 0)),
+                Rf_translateChar(STRING_ELT(name, 0))
+            );
+        }
+
+        // if both previous conditions were false, use the pointer??
         Rf_errorcall(
-            call, "name '%s' not found in '%s'",
+            call, "name '%s' not found in '<environment: %p>'",
             Rf_translateChar(STRING_ELT(e2, 0)),
-            Rf_translateChar(PRINTNAME(fst_arg))
+            (void *)e1
         );
     }
 
+    /* if ret is a promise, evaluate it. see "SEXP do_get" */
+    if (TYPEOF(ret) == PROMSXP) {
+        PROTECT(ret);
+        ret = Rf_eval(ret, R_EmptyEnv);
+        UNPROTECT(1);
+    }
+    void ENSURE_NAMED(SEXP x);
+    ENSURE_NAMED(ret);
     return ret;
 }
 
-// Cached version of an R function that calls `sys.frame(-1L)`.
-static SEXP parent_frame_func = NULL;
-
-static void init_parent_frame_func(void);
-
-// Return the calling R frame.
-static SEXP parent_frame(void) {
-    if (! parent_frame_func) init_parent_frame_func();
-    return Rf_eval(parent_frame_func, R_EmptyEnv);
+SEXP external_strict_extract(SEXP args) {
+    SEXP e1  = CAR(args); args = CDR(args);
+    SEXP e2  = CAR(args); args = CDR(args);
+    SEXP rho = CAR(args); args = CDR(args);
+    return strict_extract(e1, e2, rho);
 }
 
-// Return the call that describes the R function which invoked the parent
-// function that calls this C function, identified by `parent`.
-static SEXP sys_call(SEXP parent) {
-    ParseStatus status;
-    SEXP code = PROTECT(Rf_mkString("sys.call(-1L)"));
-    SEXP expr = PROTECT(R_ParseVector(code, -1, &status, R_NilValue));
-    SEXP func = VECTOR_ELT(PROTECT(Rf_eval(expr, R_BaseEnv)), 0);
-    SEXP call = Rf_eval(func, parent);
+// Return the call that describes the R function which invoked this C function, identified by `rho`.
+static SEXP sys_call(SEXP rho) {
+    // Rf_lcons protects its arguments, so as long as only one of the arguments allocates, we do not need to protect them.
+    // the call we have built here is equivalent to `as.call(list(sys.call))`
+    SEXP expr = PROTECT(Rf_lcons(Rf_findVarInFrame(R_BaseEnv, Rf_install("sys.call")), R_NilValue));
+    // could alternatively use SEXP expr = PROTECT(Rf_lcons(Rf_eval(Rf_install("sys.call"), R_BaseEnv), R_NilValue));
+    SEXP call = Rf_eval(expr, rho);
 
-    UNPROTECT(3);
+    UNPROTECT(1);
     return call;
-}
-
-// Create a new R closure from the given formals and body.
-static SEXP new_function(SEXP formals, SEXP body) {
-    SEXP def_args = PROTECT(Rf_cons(formals, PROTECT(Rf_cons(body, R_NilValue))));
-    SEXP def_expr = PROTECT(Rf_lcons(Rf_install("function"), def_args));
-    SEXP fun = Rf_eval(def_expr, R_BaseEnv);
-
-    UNPROTECT(3);
-    return fun;
-}
-
-static void init_parent_frame_func(void) {
-    ParseStatus status;
-    SEXP code = PROTECT(Rf_mkString("as.call(list(sys.frame, -1L))"));
-    SEXP expr = PROTECT(VECTOR_ELT(PROTECT(R_ParseVector(code, -1, &status, R_NilValue)), 0));
-    SEXP body = PROTECT(Rf_eval(expr, R_BaseEnv));
-    SEXP func = PROTECT(new_function(R_NilValue, body));
-    parent_frame_func = Rf_lcons(func, R_NilValue);
-    R_PreserveObject(parent_frame_func);
-    MARK_NOT_MUTABLE(parent_frame_func);
-
-    UNPROTECT(5);
 }
