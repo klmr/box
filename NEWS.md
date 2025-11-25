@@ -4,6 +4,9 @@
 
 * Suppress a spurious internal warning upon reloading a module, caused by a dependent module being imported more than once (#363).
 
+## New feature
+
+* Add `box::get_exports()` function to provide functionality similar to `base::getNamespaceExports()`.
 
 ## Miscellaneous
 
