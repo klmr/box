@@ -120,7 +120,7 @@ build-cran:
 	${RM} -r ${cran-tmpdir} \
 	&& git clone . ${cran-tmpdir} \
 	&& sed "s/@YEAR@/$$(date +%Y)/" cran/LICENSE >${cran-tmpdir}/LICENSE \
-	&& echo 'renv::load("${PWD}")' >${cran-tmpdir}/.Rprofile \
+	&& echo 'if (file.exists("../renv/activate.R")) { oldwd = setwd(".."); source("renv/activate.R"); setwd(oldwd); renv::load("${PWD}") }' >${cran-tmpdir}/.Rprofile \
 	&& ${MAKE} -C ${cran-tmpdir} knit-all \
 	&& scripts/precompile-vignettes ${cran-tmpdir} \
 	&& ${MAKE} -C ${cran-tmpdir} build \

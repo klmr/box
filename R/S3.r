@@ -5,8 +5,8 @@
 #'
 #' @usage \special{box::register_S3_method(name, class, method)}
 #' @param name the name of the generic as a character string.
-#' @param class the class name.
-#' @param method the method to register (optional).
+#' @param class the class name as a character string.
+#' @param method the function to register as a method (optional).
 #' @return \code{box::register_S3_method} is called for its side effect.
 #'
 #' @details If \code{method} is missing, it defaults to a function named

@@ -172,6 +172,8 @@
 #' @examples
 #' # Set the module search path for the example module.
 #' old_opts = options(box.path = system.file(package = 'box'))
+#' old_env = Sys.getenv('R_BOX_PATH', NA)
+#' Sys.unsetenv('R_BOX_PATH')
 #'
 #' # Basic usage
 #' # The file `mod/hello_world.r` exports the functions `hello` and `bye`.
@@ -195,7 +197,10 @@
 #' bye('Eve')
 #'
 #' # Reset the module search path
-#' on.exit(options(old_opts))
+#' on.exit({
+#'   options(old_opts)
+#'   if (! is.na(old_env)) Sys.setenv(R_BOX_PATH = old_env)
+#' })
 #'
 #' \dontrun{
 #' # The following code illustrates different import declaration syntaxes
