@@ -29,7 +29,12 @@ SEXP strict_extract(SEXP e1, SEXP e2) {
     // Return value of `install` does not need to be protected:
     // <https://github.com/kalibera/cran-checks/blob/master/rchk/PROTECT.md>
     SEXP name = Rf_installTrChar(STRING_ELT(e2, 0));
-    SEXP ret = Rf_findVarInFrame(e1, name);
+    SEXP ret =
+#if R_VERSION < R_Version(4, 5, 0)
+        Rf_findVarInFrame(e1, name);
+#else
+        R_getVarEx(name, e1, FALSE, R_UnboundValue);
+#endif
 
     if (ret == R_UnboundValue) {
         SEXP parent = PROTECT(parent_frame());
