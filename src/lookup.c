@@ -41,12 +41,9 @@ SEXP strict_extract(SEXP e1, SEXP e2) {
         return ret;
     }
 #else
-    switch (R_GetBindingType(name, e1)) {
-    case R_BindingTypeUnbound:
-        break;
-    default:
-        return R_getVar(name, e1, /* inherits */ FALSE);
-    }
+    SEXP ret = R_getVarEx(name, e1, /* inherits */ FALSE, /* ifnotfound */ NULL);
+    if (ret)
+        return ret;
 #endif
 
         SEXP parent = PROTECT(parent_frame());
