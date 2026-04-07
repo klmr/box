@@ -29,14 +29,26 @@ SEXP strict_extract(SEXP e1, SEXP e2) {
     // Return value of `install` does not need to be protected:
     // <https://github.com/kalibera/cran-checks/blob/master/rchk/PROTECT.md>
     SEXP name = Rf_installTrChar(STRING_ELT(e2, 0));
-    SEXP ret =
-#if R_VERSION < R_Version(4, 5, 0)
-        Rf_findVarInFrame(e1, name);
+#if R_VERSION < R_Version(4,6,0)
+    SEXP ret = Rf_findVarInFrame(e1, name);
+    if (ret != R_UnboundValue) {
+        /* if ret is a promise, evaluate it */
+        if (TYPEOF(ret) == PROMSXP) {
+            PROTECT(ret);
+            ret = Rf_eval(ret, R_EmptyEnv);
+            UNPROTECT(1);
+        }
+        return ret;
+    }
 #else
-        R_getVarEx(name, e1, FALSE, R_UnboundValue);
+    switch (R_GetBindingType(name, e1)) {
+    case R_BindingTypeUnbound:
+        break;
+    default:
+        return R_getVar(name, e1, /* inherits */ FALSE);
+    }
 #endif
 
-    if (ret == R_UnboundValue) {
         SEXP parent = PROTECT(parent_frame());
         SEXP call = PROTECT(sys_call(parent));
         SEXP fst_arg = PROTECT(CADR(call));
@@ -46,9 +58,6 @@ SEXP strict_extract(SEXP e1, SEXP e2) {
             Rf_translateChar(STRING_ELT(e2, 0)),
             Rf_translateChar(PRINTNAME(fst_arg))
         );
-    }
-
-    return ret;
 }
 
 // Cached version of an R function that calls `sys.frame(-1L)`.
