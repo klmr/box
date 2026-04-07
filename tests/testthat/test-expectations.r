@@ -38,3 +38,35 @@ test_that('`expect_not_in` works', {
     expect_failure(expect_not_in(2, c(1, 2, 3)))
     expect_failure(expect_not_in('A', LETTERS))
 })
+
+test_that('`expect_messages` works', {
+    expect_messages(
+        {
+            message('foo')
+            message('bar')
+        },
+        c('foo', 'bar')
+    )
+
+    expect_failure(
+        expect_messages(
+            {
+                message('foo')
+                message('bar')
+            },
+            c('foo', 'baz')
+        ),
+        'did not produce the expected message'
+    )
+
+    expect_failure(
+        expect_messages(
+            {
+                message('foo')
+                message('bar')
+            },
+            has_not = 'foo'
+        ),
+        'produced unwanted message\\(s\\):\n\\* "foo"'
+    )
+})

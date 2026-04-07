@@ -29,3 +29,15 @@ test_that('active binding can be attached from .on_load()', {
     expect_equal(binding, 1L)
     expect_message(binding, 'get')
 })
+
+test_that('active binding is lazily evaluted', {
+    box::use(active = mod/active[...])
+
+    f = function (x) {
+        message('f')
+        x
+    }
+
+    expect_messages(f(active$binding), c('^f', '^get'))
+    expect_messages(f(binding), c('^f', '^get'))
+})
