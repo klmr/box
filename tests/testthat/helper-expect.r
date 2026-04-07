@@ -104,15 +104,17 @@ expect_messages = function (object, has = NULL, has_not = NULL, info = NULL, lab
         logical(1L)
     )
 
-    testthat::expect(
-        ! any(unexpected),
-        sprintf(
-            '%s produced unwanted message(s):\n%s',
-            act$lab,
-            pretty_messages(unexpected)
-        ),
-        info = info
-    )
+    if (any(unexpected)) {
+        testthat::expect(
+            FALSE,
+            sprintf(
+                '%s produced unwanted message(s):\n%s',
+                act$lab,
+                pretty_messages(unexpected)
+            ),
+            info = info
+        )
+    }
 }
 
 in_globalenv = function (expr) {
