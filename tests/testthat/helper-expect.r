@@ -80,7 +80,21 @@ expect_messages = function (object, has = NULL, has_not = NULL, info = NULL, lab
         paste('*', vapply(messages[which], deparse, character(1L)), collapse = '\n')
     }
 
-    expected = unlist(Map(grepl, has, messages))
+    if (! is.null(has) && length(has) != length(messages)) {
+        testthat::expect(
+            FALSE,
+            sprintf(
+                '%s did not produce %s message(s). It produced:\n%s\n\nExpected:\n%s',
+                act$lab,
+                length(messages),
+                pretty_messages(TRUE),
+                paste('*', vapply(has[TRUE], deparse, character(1L)), collapse = '\n')
+            ),
+            info = info
+        )
+    }
+
+    expected = unlist(box:::map(grepl, has, messages))
 
     if (! all(expected)) {
         # We can’t use `testthat::expect(all(expected), …)` here, since that will cause the subsequent assertion to
