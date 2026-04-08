@@ -87,7 +87,7 @@ test_that('reload includes transitive dependencies', {
     box::use(mod/reload/a)
     expect_messages(
         box::reload(a),
-        has = c('^c unloaded', '^c loaded')
+        has = c('^a unloaded', '^c unloaded', '^c loaded')
     )
 })
 

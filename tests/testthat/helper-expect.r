@@ -71,32 +71,64 @@ expect_messages = function (object, has = NULL, has_not = NULL, info = NULL, lab
     act = withCallingHandlers(
         testthat::quasi_label(rlang::enquo(object), label, arg = 'object'),
         message = function (m) {
-            self$messages = c(self$messages, m$message)
+            self$messages = c(self$messages, sub('\\n$', '', conditionMessage(m)))
             invokeRestart('muffleMessage')
         }
     )
 
-    pretty_messages = paste('*', messages, collapse = '')
+    pretty_messages = function (which) {
+        paste('*', vapply(messages[which], deparse, character(1L)), collapse = '\n')
+    }
 
-    find = function (pattern, x) any(grepl(pattern, x))
+    if (! is.null(has) && length(has) != length(messages)) {
+        testthat::expect(
+            FALSE,
+            sprintf(
+                '%s did not produce %s message(s). It produced:\n%s\n\nExpected:\n%s',
+                act$lab,
+                length(messages),
+                pretty_messages(TRUE),
+                paste('*', vapply(has[TRUE], deparse, character(1L)), collapse = '\n')
+            ),
+            info = info
+        )
+    }
 
-    testthat::expect(
-        all(vapply(has, find, logical(1L), messages)),
-        sprintf(
-            '%s did not produce the expected message(s). It produced:\n%s',
-            act$lab, pretty_messages
-        ),
-        info = info
+    expected = unlist(box:::map(grepl, has, messages))
+
+    if (! all(expected)) {
+        # We can’t use `testthat::expect(all(expected), …)` here, since that will cause the subsequent assertion to
+        # be ignored inside a nested assertion, such as when used inside `expect_failure`. This caused the test of
+        # this helper itself to fail.
+        testthat::expect(
+            FALSE,
+            sprintf(
+                '%s did not produce the expected message(s). It produced:\n%s\n\nExpected:\n%s',
+                act$lab,
+                pretty_messages(! expected),
+                paste('*', vapply(has[! expected], deparse, character(1L)), collapse = '\n')
+            ),
+            info = info
+        )
+    }
+
+    unexpected = vapply(
+        messages,
+        function (m) any(vapply(has_not, grepl, logical(1L), m)),
+        logical(1L)
     )
 
-    testthat::expect(
-        ! any(vapply(has_not, find, logical(1L), messages)),
-        sprintf(
-            '%s produces unexpected message(s). It produced:\n%s',
-            act$lab, pretty_messages
-        ),
-        info = info
-    )
+    if (any(unexpected)) {
+        testthat::expect(
+            FALSE,
+            sprintf(
+                '%s produced unwanted message(s):\n%s',
+                act$lab,
+                pretty_messages(unexpected)
+            ),
+            info = info
+        )
+    }
 }
 
 in_globalenv = function (expr) {

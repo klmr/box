@@ -1,3 +1,10 @@
+# box 1.2.2
+
+## Miscellaneous
+
+* Update the C implementation to adapt to R C API changes in R 4.6.0 (@ArcadeAntics, #391).
+
+
 # box 1.2.1
 
 ## Bug fixes
