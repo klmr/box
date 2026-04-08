@@ -29,26 +29,33 @@ SEXP strict_extract(SEXP e1, SEXP e2) {
     // Return value of `install` does not need to be protected:
     // <https://github.com/kalibera/cran-checks/blob/master/rchk/PROTECT.md>
     SEXP name = Rf_installTrChar(STRING_ELT(e2, 0));
-    SEXP ret =
-#if R_VERSION < R_Version(4, 5, 0)
-        Rf_findVarInFrame(e1, name);
+
+#if R_VERSION < R_Version(4, 6, 0)
+    SEXP ret = Rf_findVarInFrame(e1, name);
+    if (ret != R_UnboundValue) {
+        if (TYPEOF(ret) == PROMSXP) {
+            PROTECT(ret);
+            ret = Rf_eval(ret, e1);
+            UNPROTECT(1);
+        }
+        return ret;
+    }
 #else
-        R_getVarEx(name, e1, FALSE, R_UnboundValue);
+    SEXP ret = R_getVarEx(name, e1, /* inherits */ FALSE, /* ifnotfound */ NULL);
+    if (ret) {
+        return ret;
+    }
 #endif
 
-    if (ret == R_UnboundValue) {
-        SEXP parent = PROTECT(parent_frame());
-        SEXP call = PROTECT(sys_call(parent));
-        SEXP fst_arg = PROTECT(CADR(call));
+    SEXP parent = PROTECT(parent_frame());
+    SEXP call = PROTECT(sys_call(parent));
+    SEXP fst_arg = PROTECT(CADR(call));
 
-        Rf_errorcall(
-            call, "name '%s' not found in '%s'",
-            Rf_translateChar(STRING_ELT(e2, 0)),
-            Rf_translateChar(PRINTNAME(fst_arg))
-        );
-    }
-
-    return ret;
+    Rf_errorcall(
+        call, "name '%s' not found in '%s'",
+        Rf_translateChar(STRING_ELT(e2, 0)),
+        Rf_translateChar(PRINTNAME(fst_arg))
+    );
 }
 
 // Cached version of an R function that calls `sys.frame(-1L)`.
