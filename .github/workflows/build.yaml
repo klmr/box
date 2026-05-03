@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
 
       - uses: r-lib/actions/setup-r@v2
 
@@ -46,7 +46,9 @@ jobs:
     needs: build
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
+        with:
+          ref: build
 
       - uses: r-lib/actions/setup-r@v2
 
@@ -57,10 +59,11 @@ jobs:
 
       - name: Build documentation
         run: |
-          git checkout build
           make site
 
       - name: Publish documentation
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config user.name klmr
           git config user.email klmr@users.noreply.github.com
