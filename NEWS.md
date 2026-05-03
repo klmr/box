@@ -1,3 +1,10 @@
+# box (development version)
+
+## New and improved features
+
+* Improve the import performance by changing the way loaded packages are detected (#380).
+
+
 # box 1.2.2
 
 ## Miscellaneous

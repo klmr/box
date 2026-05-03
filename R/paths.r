@@ -146,7 +146,7 @@ unescape_path_arg = if (tolower(Sys.info()[['sysname']]) == 'windows') {
 #' document.
 #' @rdname path
 knitr_path = function (...) {
-    if (! 'knitr' %in% loadedNamespaces()) return(NULL)
+    if (! isNamespaceLoaded('knitr')) return(NULL)
 
     knitr_input = suppressWarnings(knitr::current_input(dir = TRUE))
     if (! is.null(knitr_input)) dirname(knitr_input)
@@ -157,7 +157,7 @@ knitr_path = function (...) {
 #' \pkg{Shiny} application.
 #' @rdname path
 shiny_path = function (...) {
-    if (! 'shiny' %in% loadedNamespaces()) return()
+    if (! isNamespaceLoaded('shiny')) return()
     in_shiny =
         (utils::packageVersion('shiny') < '1.6.0' && shiny::isRunning()) || {
             # `isRunning` no longer works in Shiny 1.6.0:
