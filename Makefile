@@ -28,8 +28,6 @@ favicon_default = pkgdown/favicon/apple-touch-icon.png
 
 favicons = ${favicons_small} ${favicons_large} ${favicon_default}
 
-inkscape = $(shell command -v inkscape || echo /Applications/Inkscape.app/Contents/MacOS/inkscape)
-
 .PHONY: test
 ## Run unit tests
 test: documentation
@@ -102,7 +100,7 @@ README.md: README.rmd NAMESPACE DESCRIPTION man/figures/logo.png
 	${rscript} -e "devtools::load_all(export_all = FALSE); knitr::knit('$<')"
 
 man/figures/logo.png: figures/logo.svg
-	${inkscape} -w 240 --export-filename ${@:.png=.tmp.png} $<
+	inkscape -w 240 --export-filename ${@:.png=.tmp.png} $<
 	pngcrush ${@:.png=.tmp.png} $@
 	${RM} ${@:.png=.tmp.png}
 
@@ -134,7 +132,7 @@ favicons: ${favicons}
 export-favicon = \
 	@sz=$$(sed 's/.*x\([[:digit:]]*\)\.png/\1/' <<<"$@") \
 	&& set -x; \
-	${inkscape} -w $$sz -h $$sz --export-area $1 --export-filename=${@D}/tmp-${@F} $< \
+	inkscape -w $$sz -h $$sz --export-area $1 --export-filename=${@D}/tmp-${@F} $< \
 	&& pngcrush -q ${@D}/tmp-${@F} $@ && rm ${@D}/tmp-${@F}
 
 ${favicons_small}: figures/logo.svg | pkgdown/favicon
@@ -144,7 +142,7 @@ ${favicons_large}: figures/logo.svg | pkgdown/favicon
 	$(call export-favicon,-51:0:711:760)
 
 ${favicon_default}: figures/logo.svg | pkgdown/favicon
-	${inkscape} -w 180 -h 180 --export-area -51:0:711:760 --export-filename=${@D}/tmp-${@F} $<
+	inkscape -w 180 -h 180 --export-area -51:0:711:760 --export-filename=${@D}/tmp-${@F} $<
 	pngcrush -q ${@D}/tmp-${@F} $@ && rm ${@D}/tmp-${@F}
 
 .PHONY: lint
