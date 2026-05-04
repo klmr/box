@@ -130,10 +130,10 @@ build-cran:
 favicons: ${favicons}
 
 export-favicon = \
-	@sz=$$(sed 's/.*x\([[:digit:]]*\)\.png/\1/' <<<"$@") \
-	&& set -x; \
+	@sz=$$(echo "$@" | sed 's/.*x\([[:digit:]]*\)\.png/\1/'); \
 	inkscape -w $$sz -h $$sz --export-area $1 --export-filename=${@D}/tmp-${@F} $< \
-	&& pngcrush -q ${@D}/tmp-${@F} $@ && rm ${@D}/tmp-${@F}
+	&& pngcrush -q ${@D}/tmp-${@F} $@ \
+	&& ${RM} ${@D}/tmp-${@F}
 
 ${favicons_small}: figures/logo.svg | pkgdown/favicon
 	$(call export-favicon,-11:1000:181:1192)
