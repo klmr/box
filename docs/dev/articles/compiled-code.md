@@ -1,0 +1,149 @@
+# Using compiled code
+
+## Current status
+
+The ‘box’ package doesn’t have a built-in foreign function interface yet
+but it is possible to integrate compiled code via R’s `SHLIB` mechanism
+for building shared libraries. In particular, this also works with
+packages such as [Rcpp](https://cran.r-project.org/package=Rcpp).
+
+For the time being, the following steps unfortunately require manual
+work:
+
+1.  Compile code when a module is installed or loaded for the first
+    time.
+2.  Load the compiled shared library when a module is loaded.
+3.  Interface with compiled code via function calls.
+
+This guide aims to describe all steps in sufficient detail to make them
+easy. In the long run, the plan is to automate all these steps.
+
+## Example
+
+To demonstrate these steps, we will use an example module named `c` that
+uses compiled code written in C. Here is the C code that we want to make
+usable in an R module, which is saved in the file `c/hello.c`:
+
+``` c
+#include "R.h"
+#include "Rdefines.h"
+
+#include <stdio.h>
+
+SEXP hello_world(SEXP name) {
+    char const msg_template[] = "Hello from C, %s!";
+    char const *const c_name = CHAR(asChar(name));
+    char *const msg_buf = R_alloc(sizeof msg_template - 2 + strlen(c_name) + 1, 1);
+    sprintf(msg_buf, msg_template, c_name);
+    return mkString(msg_buf);
+}
+```
+
+In addition, compiled code often includes specific compilation
+instructions. While this is unnecessary for this simple example, it’s
+included anyway for completeness. For R, these compilation instructions
+are contained in a file called
+[`Makevars`](https://cran.r-project.org/doc/manuals/r-release/R-exts.html#Using-Makevars):
+
+``` c/makevars
+PKG_CFLAGS = -pedantic -Wall -Wextra -Werror
+```
+
+## Compile code
+
+To make code loadable and callable by R, it should be compiled via the
+`R CMD SHLIB` mechanism. This only needs to happen *once* for each
+module, when it is first loaded. By convention, such code should go into
+a submodule called `__setup__`. This convention makes it clear that this
+is a “special” module, and not intended for direct consumption of the
+module user.
+
+The module specifies which object files to compile, and invokes
+`R CMD SHLIB`:
+
+``` r
+build_shared_lib = function (object_names) {
+    # Change working directory so R finds the Makevars.
+    old_dir = setwd(box::file())
+    on.exit(setwd(old_dir))
+    rbin = file.path(R.home('bin'), 'R')
+    exitcode = system2(rbin, c('CMD', 'SHLIB', paste0(object_names, '.c')))
+    stopifnot(exitcode == 0L)
+}
+
+build_shared_lib('hello')
+```
+
+In principle, only the last line in this file should need to be changed
+for other C projects.
+
+With this in place, we can invoke the compilation by loading the
+`c/__setup__` submodule:
+
+``` r
+box::use(./c/`__setup__`)
+```
+
+The result of the compilation will be a single file, `hello.so` (on Unix
+and macOS) or `hello.dll` (on Windows) which represents a *shared
+library file*, and which we can load and use inside R.
+
+## Loading compiled code
+
+Compiled code from a shared library is loaded in R using the `dyn.load`
+command. This will happen inside the module that uses and/or exposes the
+compiled code.
+
+Since the name of the shared library file is platform dependent, we need
+a helper function that gives us this name:
+
+``` r
+libname = function (name) {
+    box::file(paste0(name, .Platform$dynlib.ext))
+}
+```
+
+Now our module can load the compiled code; since this code needs to be
+executed every time the module is loaded, it goes into the `.on_load`
+hook:
+
+``` r
+.on_load = function (ns) {
+    ns$dll = dyn.load(libname('hello'))
+}
+```
+
+… and don’t forget to unload the dynamic library when the module is
+unloaded:
+
+``` r
+.on_unload = function (ns) {
+    dyn.unload(libname('hello'))
+}
+```
+
+## Interacting with compiled code
+
+Finally, our module needs a way of calling the compiled code. This is
+done via the R primitive `.Call`:
+
+``` r
+#' @export
+hello_world = function (name) {
+    .Call(dll$hello_world, name)
+}
+```
+
+To use the code, we load the module and call the `hello_world` function:
+
+``` r
+box::use(./c)
+c$hello_world('Rthur')
+```
+
+    ## [1] "Hello from C, Rthur!"
+
+Note that using `dll$hello_world` causes a somewhat costly call to
+`getNativeSymbolInfo` every time the function is invoked. If this is
+undesired, the value of `dll$hello_world` should be stored in a variable
+when loading the module.
