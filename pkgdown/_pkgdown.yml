@@ -49,8 +49,6 @@ navbar:
           href: articles/contributing.html
         - text: Module environments
           href: articles/mod-envs.html
-        - text: Module access benchmark
-          href: articles/extract-benchmark.html
 
 template:
   bootstrap: 5
