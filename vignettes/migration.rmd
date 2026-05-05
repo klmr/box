@@ -17,7 +17,7 @@ vignette: >
 
 ‘box’ is the spiritual successor of the [‘modules’ package][modules], which will forever remain at version 0.9.*x*. However, the API of ‘box’ intentionally breaks backwards compatibility, and module code written for use with ‘modules’ will no longer work with ‘box’.
 
-The following guide is intended to ease migration to ‘box’. **Migration is strongly recommended**, since the authors believe that ‘modules’ had conceptual shortcomings that have been fixed in ‘box’, and to keep the ecosystem consolidated. For the time being, ‘modules’ will receive support (only) in the form of critical bug fixes.
+The following guide is intended to ease migration to ‘box’. **Migration is strongly recommended**, since the authors believe that ‘modules’ had conceptual shortcomings that have been fixed in ‘box’, and to keep the ecosystem consolidated. Furthermore, *‘modules’ is no longer supported, and will no longer receive bug fixes*.
 
 ## Importing modules and packages
 

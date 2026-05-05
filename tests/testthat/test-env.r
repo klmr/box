@@ -1,4 +1,4 @@
-context(' environments')
+context('environments')
 
 test_that('`topenv` works inside modules', {
     box::use(mod/env)

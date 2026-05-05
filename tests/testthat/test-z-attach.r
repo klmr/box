@@ -6,13 +6,21 @@ test_mod_envname = 'mod:mod/a'
 
 test_that('‘box’ cannot be attached', {
     skip_on_cran()
-    detach('package:box')
+    pkg_pos = match('package:box', search())
+    if (! is.na(pkg_pos)) {
+        pkg = as.environment(pkg_pos)
+        detach(pos = pkg_pos)
+    }
+
     # Temporarily unset environment indicating that we’re inside testing mode:
     envs = c('_R_CHECK_PACKAGE_NAME_', 'R_TESTS')
     old_env = Sys.getenv(envs)
     on.exit({
         do.call('Sys.setenv', as.list(old_env))
         Sys.unsetenv('R_BOX_TEST_ALLOW_DEVTOOLS')
+        if (! is.na(pkg_pos)) {
+            attach(pkg, pos = pkg_pos, name = environmentName(pkg))
+        }
     })
     Sys.unsetenv(envs)
     Sys.setenv(R_BOX_TEST_ALLOW_DEVTOOLS = 'TRUE')

@@ -1,3 +1,17 @@
+# box (development version)
+
+## New and improved features
+
+* Improve the import performance by changing the way loaded packages are detected (#380).
+
+
+# box 1.2.2
+
+## Miscellaneous
+
+* Update the C implementation to adapt to R C API changes in R 4.6.0 (@ArcadeAntics, #391).
+
+
 # box 1.2.1
 
 ## Bug fixes

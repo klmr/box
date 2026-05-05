@@ -58,7 +58,8 @@ load_native = function (name) {
     oldwd = setwd('extract')
     on.exit(setwd(oldwd))
 
-    exitcode = system2('R', c('CMD', 'SHLIB', paste0(name, '.c')))
+    rbin = file.path(R.home('bin'), 'R')
+    exitcode = system2(rbin, c('CMD', 'SHLIB', paste0(name, '.c')))
     stopifnot(exitcode == 0L)
 
     dll_path = file.path(getwd(), paste0(name, .Platform$dynlib.ext))

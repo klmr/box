@@ -4,11 +4,6 @@ is_module_loaded = function (path) {
     path %in% names(box:::loaded_mods)
 }
 
-unload_all = function () {
-    modenv = box:::loaded_mods
-    rm(list = names(modenv), envir = modenv)
-}
-
 tempfile_dir = function (...) {
     file = tempfile()
     dir.create(file)
@@ -30,7 +25,7 @@ edit_nested_test_module = function (dir) {
 test_that('module can be reloaded', {
     # Required since other tests have side-effects.
     # Tear-down would be helpful here, but not supported by testthat.
-    unload_all()
+    box::purge_cache()
 
     box::use(mod/a)
     expect_equal(length(box:::loaded_mods), 1L)
@@ -61,6 +56,12 @@ test_that('reload includes module dependencies', {
     old_path = options(box.path = dir)
     on.exit(options(old_path), add = TRUE)
 
+    old_env = Sys.getenv('R_BOX_PATH', NA)
+    if (!is.na(old_env)) {
+        Sys.unsetenv('R_BOX_PATH')
+        on.exit(Sys.setenv(R_BOX_PATH = old_env), add = TRUE)
+    }
+
     create_nested_test_module(dir)
 
     box::use(mod/a)
@@ -86,7 +87,7 @@ test_that('reload includes transitive dependencies', {
     box::use(mod/reload/a)
     expect_messages(
         box::reload(a),
-        has = c('^c unloaded', '^c loaded')
+        has = c('^a unloaded', '^c unloaded', '^c loaded')
     )
 })
 
