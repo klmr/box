@@ -1,5 +1,5 @@
 R_HOME ?= $(shell Rscript --vanilla -e 'cat(R.home())')
-rscript = ${R_HOME}/bin/Rscript --no-save --no-restore
+rscript = ${R_HOME}/bin/Rscript --no-save --no-restore -e 'Sys.unsetenv("R_BOX_PATH")'
 r = ${R_HOME}/bin/R --no-save --no-restore
 
 # Helper functions for a recursive wildcard function.
