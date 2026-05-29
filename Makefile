@@ -15,7 +15,7 @@ vignette_files = $(call rec_find,vignettes,*)
 rmd_files = $(wildcard vignettes/*.rmd)
 knit_results = $(patsubst vignettes/%.rmd,doc/%.md,${rmd_files})
 
-pkg_bundle_name := $(shell ${rscript} --vanilla -e 'cat(sprintf("%s.tar.gz\n", paste(read.dcf("DESCRIPTION")[1L, c("Package", "Version")], collapse = "_")))')
+pkg_bundle_name := $(shell ${rscript} -e 'cat(sprintf("%s.tar.gz\n", paste(read.dcf("DESCRIPTION")[1L, c("Package", "Version")], collapse = "_")))')
 
 cran-tmpdir = tmp.cran
 
