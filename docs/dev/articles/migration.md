@@ -1,0 +1,323 @@
+# Migration guide
+
+## ‘modules’ “v1.0” == ‘box’
+
+‘box’ is the spiritual successor of the [‘modules’
+package](https://github.com/klmr/modules), which will forever remain at
+version 0.9.*x*. However, the API of ‘box’ intentionally breaks
+backwards compatibility, and module code written for use with ‘modules’
+will no longer work with ‘box’.
+
+The following guide is intended to ease migration to ‘box’. **Migration
+is strongly recommended**, since the authors believe that ‘modules’ had
+conceptual shortcomings that have been fixed in ‘box’, and to keep the
+ecosystem consolidated. Furthermore, *‘modules’ is no longer supported,
+and will no longer receive bug fixes*.
+
+## Importing modules and packages
+
+### General syntax
+
+With the ‘modules’ package, modules and packages were imported via
+
+``` r
+library(modules)
+
+# …
+
+modname = import('prefix/modname')
+pkgname = import_package('pkgname')
+```
+
+With ‘box’, modules and packages are imported via
+[`box::use`](https://klmr.me/box/reference/use.html):
+
+``` r
+box::use(prefix/modname)
+box::use(pkgname)
+```
+
+Notably, module and package names in a use declaration in ‘box’ are
+unquoted, unevaluated expressions; and **the ‘box’ package is never
+loaded via `library`**. In fact, [`library(box)`](https://klmr.me/box/)
+raises an error.
+
+Furthermore, with ‘box’, module names *must* be fully qualified. The
+equivalent of the ‘modules’ code `mod = import('modname')` no longer
+exists. To import a *local* module without namespace prefix, instead use
+
+``` r
+box::use(./modname)
+```
+
+[`box::use`](https://klmr.me/box/dev/reference/use.md) has no return
+value. Instead, it automatically creates an alias with the
+module/package name in the calling scope *if no names are attached* (see
+below). To override the alias name, specify it as as a named argument:
+
+``` r
+box::use(mod_alias = prefix/modname)
+```
+
+Unlike with `modules::import`,
+[`box::use`](https://klmr.me/box/dev/reference/use.md) allows (and
+encourages) multiple use declarations at once:
+
+``` r
+box::use(
+    prefix/mod1,
+    mod = prefix/mod2,
+    pkg
+)
+```
+
+### Attaching names
+
+In ‘modules’, the `attach` and `attach_operators` parameters controlled
+if and which names were attached. In ‘box’, attachment is controlled via
+attach list declarations:
+
+``` r
+# ‘modules’:
+import('prefix/mod', attach = c('name1', 'name2'))
+
+# ‘box’:
+box::use(prefix/mod[name1, name2])
+```
+
+Wildcard attach lists are also supported:
+
+``` r
+# ‘modules’:
+import('prefix/mod', attach = TRUE)
+
+# ‘box’:
+box::use(prefix/mod[...])
+```
+
+To introduce a module/package alias when attaching names, specify an
+alias name:
+
+``` r
+# ‘modules’:
+mod = import('prefix/mod', attach = c('name1', 'name2'))
+
+# ‘box’:
+box::use(mod = prefix/mod[name1, name2])
+```
+
+‘box’ also allows declaring aliases for attached names; this feature did
+not exist in ‘modules’:
+
+``` r
+# Declare alias for one name, attach other name unchanged:
+box::use(prefix/mod[name_alias = name1, name2])
+
+# Declare alias for two names, attach all other exported names unchanged:
+box::use(prefix/mod[name_alias1 = name1, name_alias2 = name2, ...])
+```
+
+The `attach_operators` option from ‘modules’ has been dropped. If users
+require operators, they need to explicitly attach them when using ‘box’.
+
+### Loading documentation
+
+The `doc` option from `modules::import` has been dropped without
+replacement. ‘box’ loads documentation lazily only when it is requested
+via [`box::help`](https://klmr.me/box/dev/reference/help.md) (see
+below).
+
+## Executing code during module loading
+
+The ‘modules’ package treated modules as regular R source code files:
+upon importing them, the entire code inside a module file was executed.
+‘box’ conceptually no longer does this. It regards module source code as
+*declarative*: the module source code defines a number of names to be
+exported. However, code with side-effects on the module file level is no
+longer guaranteed to execute.
+
+Instead, ‘box’ introduces [module event
+hooks](https://klmr.me/box/reference/mod-hooks.html), in particular
+`.on_load`, which is a function that gets executed whenever a module is
+first loaded inside an R session.
+
+## Changed options
+
+In ‘modules’, the module search path was set via
+`options('import.path')`. In ‘box’, use `options('box.path')` instead.
+
+The ‘modules’ options `options('import.attach')` and
+`options('warn.conflicts')` no longer exist. In particular, ‘box’ no
+longer warns of name conflicts when attaching names. Instead, it
+encourages consciously choosing which names to attach.
+
+## Changed function names
+
+The ‘modules’ function `module_file` is now called
+[`box::file`](https://klmr.me/box/reference/file.html). Its semantics
+have also changed: it no longer cares whether files relative to the
+module exist or not; it merely constructs appropriate path strings.
+
+The ‘module’ function `module_name` is now called
+[`box::name`](https://klmr.me/box/reference/name.html). It no longer has
+any arguments.
+
+## Exporting names from modules
+
+With the ‘modules’ packages, module source files exported all non-hidden
+names; that is, all names that didn’t start with a dot (`.`).
+
+‘box’ makes exporting explicit. By default, *no* names are exported from
+a module, unless they are marked with the directive comment
+`#' @export`:
+
+``` r
+# This function is not exported:
+f1 = function () {}
+
+# This nested module is not exported
+box::use(./nested1)
+
+# This function is exported:
+#' @export
+f2 = function () {}
+
+# This nested module is exported
+#' @export
+box::use(./nested2)
+```
+
+`@export` directives that decorate
+[`box::use`](https://klmr.me/box/dev/reference/use.md) declarations
+apply to *all* names declared in it:
+
+``` r
+#' @export
+box::use(
+    pkg_alias = pkg,
+    prefix/mod,
+    prefix/mod2[a, b, c]
+)
+```
+
+The above code will export the names `pkg_alias`, `mod`, `a`, `b` and
+`c`. This replaces the function `export_submodule` from ‘modules’, which
+no longer exists.
+
+There’s one exception to this: if a module contains *no* declared
+export, ‘box’ assumes that it is a plain R script, and treats it as a
+*legacy module*. This causes ‘box’ to revert to the export behaviour of
+‘modules’. To suppress this behaviour (that is, to create a module which
+explicitly doesn’t export any names), module authors can add the
+following declaration to their module source code, which explicitly
+declares that the source file is to be treated as a module with no
+exports:
+
+``` r
+box::export()
+```
+
+## Accessing default packages
+
+In ‘modules’, module source code “sees” the package search path at the
+time it is loaded. That is, modules have implicit access to all names in
+packages that were attached when the module was loaded. In particular,
+this means that legacy modules could access names in the default
+packages (in non-interactive sessions, that’s typically ‘datasets’,
+‘utils’, ‘grDevices’, ‘graphics’ and ‘stats’; in interactive sessions,
+the package ‘methods’ is added).
+
+‘box’ modules no longer attach *any* packages by default, except ‘base’.
+If a module needs to use functions from those other packages, it needs
+to declare them explicitly (e.g. via `box::use(stats)`). If users want
+to import all default R packages, they can import the module `r/core`
+for this purpose. The following declaration approximates the behaviour
+of ‘modules’:
+
+``` r
+box::use(r/core[...])
+```
+
+## Loading parents of nested modules
+
+Consider the following file hierarchy defining a nested module:
+
+    a
+    ├─ __init__.r
+    ╰─ b
+       ├─ __init__.r
+       ╰─ c.r
+
+In ‘modules’, the declaration `import(a/b/c)` would import the module
+`c`, but this would first execute the code of the modules `a` and `a/b`.
+In other words it would source the files `a/__init__.r`,
+`a/b/__init__.r`, and `a/b/c.r`, in this order.
+
+‘box’ no longer loads the full module hierarchy: `box::use(a/b/c)` loads
+only the module defined by `a/b/c.r`. Likewise, `box::use(a/b)` does
+*not* automatically load `a/b/c.r` (but the same behaviour was already
+present in ‘modules’).
+
+## Displaying documentation
+
+‘modules’ overrode the `help` function and the `?` operator to allow
+displaying module documentation. Since ‘box’ is no longer attached,
+these functions no longer display module documentation. Instead, the
+documentation of anything imported via ‘box’ (both modules and
+packages!) can be queried via
+[`box::help`](https://klmr.me/box/reference/help.html).
+
+Unlike ‘modules’, ‘box’ also supports displaying the documentation of
+nested module names, e.g. `box::help(a$b$c)`.
+
+## Cyclic imports
+
+Cyclic/circular imports are supported by both ‘modules’ and ‘box’.
+However, the level of support differs. The details are complicated, and
+it is generally recommended to avoid cyclic modules. However, there are
+some situations where circularity in the dependencies makes sense, and
+‘box’ strives to make this work, where technically possible.
+
+For instance, consider the following (nonsensical) working, circular
+definition of the functions `even` and `odd`, which determine whether a
+non-negative integer is even or odd:
+
+- `even.r`:
+
+  ``` r
+  box::use(./odd[...])
+
+  #' @export
+  even = function (n) {
+      n == 0L || ! odd(n)
+  }
+  ```
+
+- `odd.r`:
+
+  ``` r
+  box::use(./even[...])
+
+  #' @export
+  odd = function (n) {
+      n != 0L && even(n - 1L)
+  }
+  ```
+
+These modules compute `even` in terms of `odd`, and vice-versa. Yet
+‘box’ has no trouble importing and using both these modules. However,
+this no longer works once we attempt to export imported submodules
+themselves. That is, the following version of `odd.r` would cause an
+error:
+
+- `odd.r`:
+
+  ``` r
+  #' @export
+  box::use(./even[...])
+
+  #' @export
+  odd = function (n) {
+      n != 0L && even(n - 1L)
+  }
+  ```

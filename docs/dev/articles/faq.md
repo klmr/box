@@ -1,0 +1,103 @@
+# Frequently asked questions
+
+## General
+
+### Can I call `library`/`require`/`source` inside a module?
+
+No, this usually won’t work: `library` (and `require`) attaches names
+*globally*, rather than inside the calling module. Inside a module,
+[`box::use`](https://klmr.me/box/dev/reference/use.md) must be used
+instead.
+
+Likewise, by default `source` evaluates the source code in the global
+rather than in a local environment. This behaviour can be changed by
+setting its `local` argument to a suitable value.
+
+Calling these functions inside a module will raise a warning which can
+be silenced by setting `options(box.warn.legacy = FALSE)`. After
+changing this option, ‘box’ needs to be (unloaded and) reloaded for the
+change to take effect.
+
+### Can I use “meta packages” like ‘tidyverse’ with ‘box’?
+
+No. You can use *individual* packages from the tidyverse via
+[`box::use`](https://klmr.me/box/dev/reference/use.md). But directly
+loading a “meta package” such as ‘tidyverse’ is intentionally not
+supported.
+
+“Meta packages” such as ‘tidyverse’ are antithetical to the purpose of
+‘box’: the whole point of ‘box’ is to make package imports *explicit*,
+and to limit the number of names that are attached in the current scope.
+Using “meta packages” would undermine this and is therefore discouraged.
+
+### How to organise globally installed modules?
+
+Module names need to be *fully qualified*, meaning that using them
+requires providing a name consisting of a prefix (at least one
+high-level namespace) and the module’s proper name. The choice of prefix
+is, to some extent, arbitrary. However, there are some common
+conventions that are worth following.
+
+For example, it is common practice to use a company or user name (look
+at code sharing websites such as GitHub for inspiration). A project
+consisting of several nested modules might also serve the same purpose.
+For example, if ‘dplyr’ were implemented as a module, its common fully
+qualified name would probably be `tidyverse/dplyr`.
+
+As a concrete example, consider the following modules, stored in the
+module search path:
+
+    ‹box.path›
+    ├── klmr
+    │   ├── fun
+    │   ├── ggplots
+    │   └── sys
+    ├── mschubert
+    │   └── ebits
+    └── …
+
+Using the `sys` module (more precisely, `klmr/sys`) requires the
+following R code:
+
+``` r
+box::use(klmr/sys)
+```
+
+## Common error messages
+
+### “object ‘X’ not found” inside a module
+
+Inside modules, only the ‘base’ package is attached. *All* other
+packages need to be attached, including all core R packages that are
+otherwise attached by default. This includes ‘stats’, ‘graphics’,
+‘grDevices’, ‘utils’, ‘datasets’ and ‘methods’.
+
+To use names from any of these packages, the packages need to be loaded
+via [`box::use`](https://klmr.me/box/dev/reference/use.md), same as
+third-party packages. Alternatively, the standard module `r/core` can be
+used (and, optionally, attached):
+
+``` r
+box::use(r/core[...])
+```
+
+This is equivalent to using and attaching the default R packages
+‘methods’, ‘stats’, ‘graphics’, ‘grDevices’ and ‘utils’, and is
+therefore similar to the state of a regular R session.
+
+This module ships with ‘box’ and is always findable.
+
+### “there is no package called ‘X’” when running `box::use(X)`, even though the module ‘X’ exists
+
+`box::use(name)` never attempts to load a module, it always attempts to
+load a *package* called ‘name’, and fails if no such package exists.
+Modules need to be either *local* and start with `.` or `..`, or they
+need to be fully qualified. This means that the full module name
+contains at least one separator (`/`).
+
+In practice, this means that modules inside the global module search
+path (set via the environment variable `R_BOX_PATH` or via
+`getOption('box.path')`), modules need to be located in nested folders.
+
+See [how to organise globally installed
+modules?](#how-to-organise-globally-installed-modules) for details.
