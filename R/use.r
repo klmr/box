@@ -370,7 +370,7 @@ lazy_import = function (spec, info, caller) {
     }
     
     import_when_used = function () lazy_exports(spec, info, caller)
-    delayedAssign(spec$alias, import_when_used, assign.env = caller)
+    delayedAssign(spec$alias, import_when_used(), assign.env = caller)
 }
 
 #' @param mod_ns the module namespace environment of the newly loaded module
