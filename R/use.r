@@ -391,7 +391,8 @@ bind_attached = function (alias, export_name, import_env, import_when_used) {
     force(alias)
     force(export_name)
     
-    promise = function() env_get(import_when_used(), export_name)
+    promise = function () 
+        env_get(import_when_used(), export_name)
     delayedAssign(alias, promise(), assign.env = import_env)
 }
 
