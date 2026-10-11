@@ -364,13 +364,35 @@ load_and_register = function (spec, info, caller) {
 lazy_import = function (spec, info, caller) {
     force(info)
     force(caller)
-
-    if (! is.null(spec$attach)) {
-        return(load_and_register(spec, info, caller))
+    
+    exports_cache = new.env()
+    import_when_used = function () {
+        if (is.null(exports_cache$exports)) {
+            mod_exports = lazy_exports(spec, info, caller)
+            attach_list(spec, names(mod_exports))
+            exports_cache$exports = mod_exports
+        }
+        exports_cache$exports
+    }
+    if (is.null(spec$attach) || is.null(spec$explicit)) {
+        delayedAssign(spec$alias, import_when_used(), assign.env = caller)
     }
     
-    import_when_used = function () lazy_exports(spec, info, caller)
-    delayedAssign(spec$alias, import_when_used(), assign.env = caller)
+    if (! is.null(spec$attach)) {
+        import_env = find_import_env(caller, spec, info, mod_ns = NULL)
+        
+        for (i in seq_along(spec$attach)) {
+            bind_attached(names(spec$attach)[i], spec$attach[[i]], import_env, import_when_used)
+        }
+    }
+}
+
+bind_attached = function (alias, export_name, import_env, import_when_used) {
+    force(alias)
+    force(export_name)
+    
+    promise = function() env_get(import_when_used(), export_name)
+    delayedAssign(alias, promise(), assign.env = import_env)
 }
 
 #' @param mod_ns the module namespace environment of the newly loaded module
