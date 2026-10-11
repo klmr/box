@@ -51,3 +51,18 @@ test_that('lazy module imports are not loaded until used', {
     expect_true(box:::is_mod_loaded(info))
 })
 
+test_that('lazy attached names, are not loaded until used', {
+    unloadNamespace('devtools')
+    box::use(~devtools[load_all, unload])
+    expect_in('load_all', ls(parent.env(environment())))
+    expect_in('unload', ls(parent.env(environment())))
+    expect_false(isNamespaceLoaded('devtools'))
+    expect_identical(load_all, devtools::load_all)
+    expect_true(isNamespaceLoaded('devtools'))
+})
+
+test_that('renaming lazy attached names are allowed', {
+    unloadNamespace('devtools')
+    box::use(~devtools[l_all = load_all])
+    expect_identical(l_all, devtools::load_all)
+})
