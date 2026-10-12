@@ -256,6 +256,18 @@ use = function (...) {
 #'
 #' \code{load_and_register} performs the loading, attaching and exporting of a
 #' module identified by its spec and info.
+#' 
+#' \code{lazy_import} imports a use declaration that is marked as lazy
+#' (prefixed with \code{~}). The declaration is parsed and located as usual, but
+#' the module or package is not loaded until the imported name is first used:
+#' the alias is bound to a promise that calls \code{lazy_exports}. Declarations
+#' with an attach list are not deferred yet and are imported by
+#' \code{load_and_register}.
+#'
+#' \code{lazy_exports} performs the work that \code{lazy_import} defers: it
+#' loads the module or package, registers the import, builds the export
+#' environment and returns it. Unlike \code{export_and_attach}, it does not
+#' assign the alias itself, since the promise already is the alias binding.
 #'
 #' \code{register_as_import} registers a \code{use} declaration in the calling
 #' module so that it can be found later on, if the declaration is reexported by
@@ -302,6 +314,11 @@ use = function (...) {
 #' import chain), \code{load_and_register} earmarks the module for deferred
 #' registration and holds off on attaching and exporting for now, since not all
 #' its names are available yet.
+#' @note Lazy imports are parsed when \code{use} is called, and modules are
+#' located then, but loading, registration, module hooks and locking happen when
+#' the alias is first used. An error raised while loading therefore appears at
+#' first use, not at the \code{use} call. A lazy import that is used while its
+#' module is still being loaded (a cyclic import) is not handled yet.
 #' @keywords internal
 #' @name importing
 use_one = function (declaration, alias, caller, use_call) {
@@ -311,7 +328,11 @@ use_one = function (declaration, alias, caller, use_call) {
     rethrow_on_error({
         spec = parse_spec(declaration, alias)
         info = find_mod(spec, caller)
-        load_and_register(spec, info, caller)
+        if (spec$lazy) {
+            lazy_import(spec, info, caller)
+        } else {
+            load_and_register(spec, info, caller)
+        }
     }, call = use_call)
 }
 
@@ -337,6 +358,42 @@ load_and_register = function (spec, info, caller) {
     }
 
     export_and_attach(spec, info, mod_ns, caller)
+}
+
+#' @rdname importing
+lazy_import = function (spec, info, caller) {
+    force(info)
+    force(caller)
+    
+    exports_cache = new.env()
+    import_when_used = function () {
+        if (is.null(exports_cache$exports)) {
+            mod_exports = lazy_exports(spec, info, caller)
+            attach_list(spec, names(mod_exports))
+            exports_cache$exports = mod_exports
+        }
+        exports_cache$exports
+    }
+    if (is.null(spec$attach) || is.null(spec$explicit)) {
+        delayedAssign(spec$alias, import_when_used(), assign.env = caller)
+    }
+    
+    if (! is.null(spec$attach)) {
+        import_env = find_import_env(caller, spec, info, mod_ns = NULL)
+        
+        for (i in seq_along(spec$attach)) {
+            bind_attached(names(spec$attach)[i], spec$attach[[i]], import_env, import_when_used)
+        }
+    }
+}
+
+bind_attached = function (alias, export_name, import_env, import_when_used) {
+    force(alias)
+    force(export_name)
+    
+    promise = function () 
+        env_get(import_when_used(), export_name)
+    delayedAssign(alias, promise(), assign.env = import_env)
 }
 
 #' @param mod_ns the module namespace environment of the newly loaded module
@@ -386,6 +443,21 @@ export_and_attach = function (spec, info, mod_ns, caller) {
 
     assign_alias(spec, mod_exports, caller)
     attach_to_caller(spec, info, mod_exports, mod_ns, caller)
+}
+
+#' @return \code{lazy_exports} returns the export environment of the loaded
+#' module or package.
+#' @rdname importing
+lazy_exports = function (spec, info, caller) {
+    ret = load_mod(info)
+    mod_ns = ret$mod_ns
+    on.exit(lock_all_environments(ret$is_apex))
+    register_as_import(spec, info, mod_ns, caller)
+
+    finalize_deferred(info)
+    mod_exports = mod_exports(info, spec, mod_ns)
+    defer_locking(mod_exports)
+    mod_exports
 }
 
 #' @rdname importing

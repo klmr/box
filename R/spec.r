@@ -1,7 +1,8 @@
 # Module/package specification expression grammar as a PEG, approximating the R
 # parse tree:
 #
-# spec        → pkg_name (“[” attach_spec “]”)? !“/” /
+# declaration → “~”? spec
+# spec        → pkg_name (“[” attach_spec “]”)? !“/”?“~” /
 #               mod
 # pkg_name    → name
 # mod         → mod_prefix “/” mod_name (“[” attach_spec “]”)?
@@ -15,8 +16,18 @@
 #
 # Note: This is missing the alias declaration, since that is not captured in the
 # AST provided by R. It is instead handled separately.
+# A leading “~” marks a lazy import. It is only valid in front of a complete
+# spec, and “...” attach lists are rejected for lazy imports.
 
 #' Parse a mod or pkg spec expression passed to \code{use}
+#' 
+#' @details
+#' A declaration prefixed with \code{~} (for example \code{~dplyr} or
+#' \code{~./mod[a, b]}) marks a lazy import. The marker is removed before the
+#' declaration is parsed, so lazy declarations accept the same forms as ordinary
+#' ones, and it is recorded in the \code{lazy} field. Wildcard attach lists
+#' (\code{~pkg[...]}) are rejected, since the exported names are only known after
+#' loading.
 #'
 #' @param expr the mod or pkg spec expression to parse
 #' @param alias the mod or pkg spec alias as a character, or \code{NULL}
@@ -30,16 +41,30 @@
 #'  \item{\code{alias}}{the module or package alias}
 #'  \item{\code{explicit}}{a logical value indicating whether the caller
 #'      provided an explicit alias}
+#'  \item{\code{lazy}}{a logical value indicating whether the caller lazily
+#'      import the module}
 #' }
+#' 
 #' @keywords internal
 #' @name spec
 parse_spec = function (expr, alias) {
-    spec = parse_spec_impl(expr)
+    is_lazy = is_lazy_import(expr)
+    spec = parse_spec_impl(if (is_lazy) expr[[2L]] else expr)
+    if (is_lazy && anyNA(spec$attach)) {
+        throw('cannot lazily import all names in {expr;"}; list the names or remove the leading ~')
+    }
 
     is_pkg = 'pkg' %in% names(spec)
     spec_type = if (is_pkg) pkg_spec else mod_spec
     name = spec[[if (is_pkg) 'pkg' else 'mod']]$name
-    spec_type(spec, alias = alias %||% name, explicit = nzchar(alias))
+    spec_type(spec, alias = alias %||% name, explicit = nzchar(alias), lazy = is_lazy)
+}
+
+#' @return \code{is_lazy_import} returns \code{TRUE} if \code{expr} is a unary
+#' \code{~} call, and \code{FALSE} otherwise.
+#' @rdname spec
+is_lazy_import = function (expr) {
+    is.call(expr) && expr[[1L]] == '~' && length(expr) == 2L
 }
 
 #' @param spec named list of information the parser constructed from a given

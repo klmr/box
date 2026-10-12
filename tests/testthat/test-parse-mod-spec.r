@@ -271,3 +271,77 @@ test_that('aliases need a name', {
     expect_box_error(test_use(foo/bar[alias =, y]), 'alias without a name provided in attach list')
     expect_box_error(test_use(foo/bar[x, alias =]), 'alias without a name provided in attach list')
 })
+
+test_that('lazy imports are marked with a leading ~', {
+    m = test_use(~dplyr)
+    expect_true(is_pkg_spec(m))
+    expect_equal(m$name, 'dplyr')
+    expect_equal(m$alias, 'dplyr')
+    expect_false(m$explicit)
+    expect_null(m$attach)
+    expect_true(m$lazy)
+})
+
+test_that('imports are not lazy by default', {
+    expect_false(test_use(dplyr)$lazy)
+    expect_false(test_use(foo/bar)$lazy)
+    expect_false(test_use(dplyr[...])$lazy)
+})
+
+test_that('lazy imports can have explicit aliases', {
+    m = test_use(dl = ~dplyr)
+    expect_true(is_pkg_spec(m))
+    expect_equal(m$name, 'dplyr')
+    expect_equal(m$alias, 'dl')
+    expect_true(m$explicit)
+    expect_true(m$lazy)
+})
+
+test_that('lazy imports can have specific exports', {
+    m = test_use(~dplyr[filter, keep = select])
+    expect_true(is_pkg_spec(m))
+    expect_equal(m$attach, c(filter = 'filter', keep = 'select'))
+    expect_true(m$lazy)
+})
+
+test_that('lazy imports work for modules', {
+    m = test_use(~foo/bar)
+    expect_true(is_mod_spec(m))
+    expect_equal(m$name, 'bar')
+    expect_equal(m$prefix, 'foo')
+    expect_true(m$lazy)
+})
+
+test_that('lazy imports work for relative modules with exports', {
+    m = test_use(~./foo/bar[sym])
+    expect_true(is_mod_spec(m))
+    expect_equal(m$name, 'bar')
+    expect_equal(m$prefix, c('.', 'foo'))
+    expect_equal(m$attach, c(sym = 'sym'))
+    expect_true(m$lazy)
+})
+
+test_that('lazy imports cannot attach all names', {
+    expect_box_error(test_use(~dplyr[...]), 'cannot lazily import all names')
+    expect_box_error(test_use(~dplyr[filter, ...]), 'cannot lazily import all names')
+    expect_box_error(test_use(~foo/bar[...]), 'cannot lazily import all names')
+    expect_box_error(test_use(dl = ~dplyr[...]), 'cannot lazily import all names')
+})
+
+test_that('only a leading unary ~ is accepted', {
+    expect_box_error(test_use(a ~ b), '^expected')
+    expect_box_error(test_use(~~dplyr), '^expected')
+    expect_box_error(test_use(foo/~bar), '^expected')
+    expect_box_error(test_use(~dplyr + tidyr), '^expected')
+})
+
+test_that('is_lazy_import detects only a unary ~', {
+    expect_true(is_lazy_import(quote(~a)))
+    expect_true(is_lazy_import(quote(~a/b[c])))
+    expect_false(is_lazy_import(quote(a)))
+    expect_false(is_lazy_import(quote(a ~ b)))
+    expect_false(is_lazy_import(quote(a/b)))
+    expect_false(is_lazy_import(quote(f(x)(y))))
+})
+
+

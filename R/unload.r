@@ -153,8 +153,16 @@ purge_cache = function () {
 
 #' @keywords internal
 unload_mod = function (mod_ns, info) {
+    UseMethod('unload_mod', info)
+}
+
+`unload_mod.box$mod_info` = function (mod_ns, info) {
     call_hook(mod_ns, '.on_unload', mod_ns)
     deregister_mod(info)
+}
+
+`unload_mod.box$pkg_info` = function (mod_ns, info) {
+    invisible(NULL)
 }
 
 #' @keywords internal
